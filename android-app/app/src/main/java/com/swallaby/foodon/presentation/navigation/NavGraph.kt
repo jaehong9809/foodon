@@ -10,8 +10,8 @@ fun NavGraph(
     modifier: Modifier = Modifier
 ) {
 
-//    NavControllerProvider(navController = navController) {
-//
-//    }
+    NavControllerProvider(navController = navController) {
+
+    }
 
 }
