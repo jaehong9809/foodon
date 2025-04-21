@@ -46,7 +46,7 @@ object CustomTypography {
     val headlineLarge = TextStyle(
         fontFamily = NotoWithSpoqaFallback,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 22.sp,
+        fontSize = 20.sp,
         lineHeight = 30.sp
     )
 
@@ -87,33 +87,39 @@ object CustomTypography {
     val bodyLarge = TextStyle(
         fontFamily = NotoWithSpoqaFallback,
         fontWeight = FontWeight.Normal,
-        fontSize = 10.sp,
-        lineHeight = 16.sp
+        fontSize = 16.sp,
+        lineHeight = 24.sp
     )
     val bodyMedium = TextStyle(
         fontFamily = NotoWithSpoqaFallback,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp
+        fontSize = 14.sp,
+        lineHeight = 22.sp
     )
     val bodySmall = TextStyle(
         fontFamily = NotoWithSpoqaFallback,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 22 .sp
+        fontSize = 12.sp,
+        lineHeight = 18 .sp
     )
 
     val labelLarge = TextStyle(
         fontFamily = NotoWithSpoqaFallback,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 18.sp
+        fontSize = 16.sp,
+        lineHeight = 24.sp
+    )
+    val labelMedium = TextStyle(
+        fontFamily = NotoWithSpoqaFallback,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 22.sp
     )
     val labelSmall = TextStyle(
         fontFamily = NotoWithSpoqaFallback,
         fontWeight = FontWeight.Normal,
-        fontSize = 10.sp,
-        lineHeight = 16.sp
+        fontSize = 12.sp,
+        lineHeight = 18.sp
     )
 }
 
@@ -135,5 +141,6 @@ val Typography = Typography(
     bodySmall = CustomTypography.bodySmall,
 
     labelLarge = CustomTypography.labelLarge,
+    labelMedium = CustomTypography.labelMedium,
     labelSmall = CustomTypography.labelSmall
 )
