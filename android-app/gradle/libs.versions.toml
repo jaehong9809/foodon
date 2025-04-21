@@ -2,13 +2,13 @@
 agp = "8.7.2"
 kotlin = "1.8.10"
 compose = "1.4.4"
-coreKtx = "1.15.0"
+coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.9.3"
-composeBom = "2024.04.01"
+lifecycleRuntimeKtx = "2.6.2"
+activityCompose = "1.8.1"
+composeBom = "2024.02.00"
 
 # ----------- 의존성 추가 ------------
 ksp                 = "1.8.10-1.0.9"
