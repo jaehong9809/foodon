@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">foodon</string>
+
+    <!-- button -->
+    <string name="btn_next">다음</string>
+    <string name="btn_confirm">확인</string>
+    <string name="btn_complete">완료</string>
+    <string name="btn_input">입력하기</string>
+    <string name="btn_update">수정 완료</string>
+    <string name="btn_delete">삭제</string>
+    <string name="btn_record">기록하기</string>
+    <string name="btn_record_complete">기록 완료</string>
+
+    <!-- monthly -->
+    <string name="tab_rice">식사</string>
+    <string name="tab_weight">체중</string>
+    <string name="tab_recommend">추천</string>
+    <string name="tab_weekly">%d주차</string>
 </resources>
