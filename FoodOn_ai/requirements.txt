@@ -74,7 +74,7 @@ idna==3.10
 importlib_metadata==8.5.0
 importlib_resources==6.5.2
 ipykernel==6.29.5
-ipython==8.31.0
+ipython
 isoduration==20.11.0
 jedi==0.19.2
 Jinja2==3.1.5
@@ -146,7 +146,7 @@ pandocfilters==1.5.1
 parso==0.8.4
 pickleshare==0.7.5
 pillow==11.1.0
-pipreqs==0.5.0
+pipreqs
 platformdirs==4.3.6
 posthog==3.11.0
 prometheus_client==0.21.1
@@ -175,8 +175,6 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-json-logger==3.3.0
 pytz==2024.2
-pywin32==309
-pywinpty==2.0.15
 PyYAML==6.0.2
 pyzmq==26.2.0
 ragas==0.2.8
