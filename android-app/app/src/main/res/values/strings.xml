@@ -11,6 +11,9 @@
     <string name="btn_record">기록하기</string>
     <string name="btn_record_complete">기록 완료</string>
 
+    <!-- top bar -->
+    <string name="top_bar_nutrient_detail">영양소 전체보기</string>
+
     <!-- monthly -->
     <string name="tab_rice">식사</string>
     <string name="tab_weight">체중</string>
