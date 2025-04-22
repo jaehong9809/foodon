@@ -3,8 +3,6 @@ package com.swallaby.foodon.presentation.calendar.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +18,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,7 +55,10 @@ fun KcalBox(kcal: String) {
 }
 
 @Composable
-fun RecommendFoodCompact() {
+fun RecommendFoodCompact(
+    foodName: String,
+    foodKcal: String
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,17 +70,15 @@ fun RecommendFoodCompact() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // TODO: 각 음식 이름
             Text(
-                text = "병아리콩 커리",
+                text = foodName,
                 color = G900,
                 style = NotoTypography.NotoBold14,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // TODO: 각 음식의 칼로리
-            KcalBox("600")
+            KcalBox(foodKcal)
         }
 
     }
@@ -116,14 +114,14 @@ fun RecommendFoodDetail() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // TODO: 음식 먹으면 좋은 점 리스트
+            // TODO: 음식 먹으면 좋은 점 리스트 (LazyColumn Scroll X)
             val itemsList = listOf("포만감", "배고픔", "만족도")
 
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .then(Modifier.scrollable(rememberScrollState(), Orientation.Vertical)),
+                    .wrapContentHeight(),
+                userScrollEnabled = false,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(itemsList) { item ->
@@ -154,7 +152,7 @@ fun RecommendFoodPreview() {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            RecommendFoodCompact()
+            RecommendFoodCompact("병아리콩 커리", "600")
 
             Spacer(modifier = Modifier.height(12.dp))
 

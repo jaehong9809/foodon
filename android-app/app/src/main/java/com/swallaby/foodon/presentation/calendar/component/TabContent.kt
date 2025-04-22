@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -127,11 +130,20 @@ fun RecommendationContent() {
             Spacer(modifier = Modifier.height(4.dp))
 
             // TODO: 추천 음식 리스트 (LazyColumn Scroll X)
-            Text(
-                text = stringResource(R.string.format_kcal, "1,600"),
-                color = G900,
-                style = SpoqaTypography.SpoqaBold18,
-            )
+            val itemsList = listOf("두부 샐러드", "병아리콩 커리")
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                userScrollEnabled = false,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(itemsList) { item ->
+                    RecommendFoodCompact(item, "600")
+                }
+            }
+
         }
     }
 }
