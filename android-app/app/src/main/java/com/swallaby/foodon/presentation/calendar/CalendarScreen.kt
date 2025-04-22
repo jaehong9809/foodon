@@ -81,8 +81,6 @@ fun CalendarScreen(
                     selectedTab = selectedTabIndex,
                     onTabChanged = {
                         selectedTabIndex = it
-
-                        // TODO: 탭 바뀔 때마다 각 탭에 맞는 API 호출,  데이터 갱신
                     }
                 )
             }
