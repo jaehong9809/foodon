@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G800
@@ -29,13 +30,14 @@ fun TabContentLayout(
     title: String,
     bgColor: Color,
     @DrawableRes icon: Int = R.drawable.icon_mountain,
+    bottomPadding: Dp = 16.dp,
     content: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(color = bgColor, shape = RoundedCornerShape(10.dp))
-            .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = bottomPadding)
     ) {
 
         Row(

@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,7 +33,8 @@ fun WeightContent() {
         modifier = Modifier.fillMaxWidth()
     ) {
         TabContentLayout(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f),
             title = stringResource(R.string.tab_content_title_goal_weight),
             bgColor = Bkg04
         ) {
@@ -43,9 +47,11 @@ fun WeightContent() {
         }
 
         TabContentLayout(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f),
             title = stringResource(R.string.tab_content_title_cur_weight),
             bgColor = WB500F1A,
+            bottomPadding = 11.dp,
             icon = R.drawable.icon_cur_weight
         ) {
             Row(
