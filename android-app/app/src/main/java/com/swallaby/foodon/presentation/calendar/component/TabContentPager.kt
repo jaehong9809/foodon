@@ -37,6 +37,7 @@ fun TabContentPager(
                 .padding(vertical = 16.dp, horizontal = 24.dp),
             contentAlignment = Alignment.TopStart
         ) {
+            // TODO: 각 화면에서 ViewModel 주입 받아서 데이터 사용
             when (page) {
                 0 -> MealContent()
                 1 -> WeightContent()

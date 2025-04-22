@@ -13,6 +13,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,11 @@ import com.swallaby.foodon.presentation.calendar.component.TabContentPager
 @Composable
 fun CalendarScreen() {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+
+    // TODO: 탭 변경 시 캘린더 데이터 갱신
+    LaunchedEffect(selectedTabIndex) {
+
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -67,7 +73,11 @@ fun CalendarScreen() {
 
                 TabContentPager(
                     selectedTab = selectedTabIndex,
-                    onTabChanged = { selectedTabIndex = it }
+                    onTabChanged = {
+                        selectedTabIndex = it
+
+                        // TODO: 탭 바뀔 때마다 각 탭에 맞는 API 호출,  데이터 갱신
+                    }
                 )
             }
         }
