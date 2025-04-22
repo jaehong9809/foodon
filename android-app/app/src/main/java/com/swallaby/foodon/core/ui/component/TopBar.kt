@@ -22,11 +22,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
-import com.swallaby.foodon.core.ui.theme.MainBlack
-import com.swallaby.foodon.core.ui.theme.MainBlue
-import com.swallaby.foodon.core.ui.theme.MainGray
+import com.swallaby.foodon.core.ui.theme.G500
+import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.Typography
+import com.swallaby.foodon.core.ui.theme.WB500
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
 fun CommonBackTopBar(
@@ -52,7 +52,7 @@ fun CommonBackTopBar(
             TopBarText(
                 modifier = Modifier.align(Alignment.Center),
                 text = title,
-                fontColor = MainBlack
+                fontColor = G900
             )
         }
     }
@@ -84,21 +84,21 @@ fun OnBoardingTopBar(
         ) {
             TopBarText(
                 text = curIdx.toString(),
-                fontColor = MainBlue
+                fontColor = WB500
             )
 
             Spacer(modifier = Modifier.width(2.dp))
 
             TopBarText(
                 text = "/",
-                fontColor = MainGray
+                fontColor = G500
             )
 
             Spacer(modifier = Modifier.width(2.dp))
 
             TopBarText(
                 text = total.toString(),
-                fontColor = MainGray
+                fontColor = G500
             )
         }
     }
@@ -125,13 +125,13 @@ fun BackIconImage(
 fun TopBarText(
     modifier: Modifier = Modifier,
     text: String,
-    fontColor: Color,
+    fontColor: Color
 ) {
     Text(
         modifier = modifier,
         text = text,
-        style = Typography.titleLarge,
         color = fontColor,
+        style = NotoTypography.NotoMedium16,
     )
 }
 
