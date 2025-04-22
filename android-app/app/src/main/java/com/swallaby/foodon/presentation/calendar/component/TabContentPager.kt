@@ -1,13 +1,18 @@
 package com.swallaby.foodon.presentation.calendar.component
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @Composable
@@ -26,10 +31,17 @@ fun TabContentPager(
             .fillMaxWidth()
             .wrapContentHeight()
     ) { page ->
-        when (page) {
-            0 -> MealContent()
-            1 -> WeightContent()
-            2 -> RecommendationContent()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp, horizontal = 24.dp),
+            contentAlignment = Alignment.TopStart
+        ) {
+            when (page) {
+                0 -> MealContent()
+                1 -> WeightContent()
+                2 -> RecommendationContent()
+            }
         }
     }
 
