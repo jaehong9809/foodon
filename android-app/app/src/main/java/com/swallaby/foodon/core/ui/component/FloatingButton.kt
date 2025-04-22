@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.MainBlack
-import com.swallaby.foodon.core.ui.theme.MainBlue
 import com.swallaby.foodon.core.ui.theme.MainWhite
+import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
@@ -53,7 +53,7 @@ fun FloatingButton(
                 onClick = { onClick() }
             )
             .background(
-                MainBlue,
+                WB500,
                 shape = RoundedCornerShape(100.dp)
             ),
         contentAlignment = Alignment.Center

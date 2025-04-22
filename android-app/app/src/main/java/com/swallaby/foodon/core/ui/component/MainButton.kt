@@ -21,12 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.swallaby.foodon.core.ui.theme.BorderGray
-import com.swallaby.foodon.core.ui.theme.BtnBgGray
+import com.swallaby.foodon.core.ui.theme.BG04
+import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.BtnTextGray
-import com.swallaby.foodon.core.ui.theme.MainBlue
+import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.SubBlack
+import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 // vertical padding은 각 화면에서 알맞게 조절
@@ -48,7 +48,7 @@ fun CommonWideButton(
                 indication = null,
                 onClick = { onClick() }
             )
-            .background(if (isEnabled) MainBlue else BtnBgGray,
+            .background(if (isEnabled) WB500 else BG04,
                 shape = RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
@@ -56,7 +56,7 @@ fun CommonWideButton(
             Text(
                 modifier = modifier,
                 text = it,
-                style = NotoTypography.NotoMedium16,
+                style =  NotoTypography.NotoMedium16,
                 color = if (isEnabled) MainWhite else BtnTextGray,
                 textAlign = TextAlign.Center
             )
@@ -80,7 +80,7 @@ fun CancelWideButton(
                 indication = null,
                 onClick = { onClick() }
             )
-            .border(1.dp, BorderGray, shape = RoundedCornerShape(8.dp))
+            .border(1.dp, Border025, shape = RoundedCornerShape(8.dp))
             .background(MainWhite, shape = RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
@@ -89,7 +89,7 @@ fun CancelWideButton(
                 modifier = Modifier,
                 text = it,
                 style = NotoTypography.NotoMedium16,
-                color = SubBlack
+                color = G800
             )
         }
     }

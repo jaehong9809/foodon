@@ -35,12 +35,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.ui.theme.Border02
+import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.MainBlack
-import com.swallaby.foodon.core.ui.theme.MainBlue
 import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.SubBlack
-import com.swallaby.foodon.core.ui.theme.TabBgGray
-import com.swallaby.foodon.core.ui.theme.TabBorderGray
+import com.swallaby.foodon.core.ui.theme.WB100
+import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
@@ -79,12 +79,12 @@ fun MonthlyTabBar(
             val isSelected = selectedIndex == index
 
             val backgroundColor by animateColorAsState(
-                targetValue = if (isSelected) MainBlue else TabBgGray,
+                targetValue = if (isSelected) WB500 else WB100,
                 label = "BackgroundColor"
             )
 
             val iconTint by animateColorAsState(
-                targetValue = if (isSelected) MainWhite else MainBlue,
+                targetValue = if (isSelected) MainWhite else WB500 ,
                 label = "IconTint"
             )
 
@@ -140,10 +140,10 @@ fun WeekTabBar(
             val isSelected = index == selectedIndex
 
             val borderColor by animateColorAsState(
-                if (isSelected) MainBlue else TabBorderGray
+                if (isSelected) WB500 else Border02
             )
             val textColor by animateColorAsState(
-                if (isSelected) MainBlue else SubBlack
+                if (isSelected) WB500 else G800
             )
             val backgroundColor by animateColorAsState(
                 MainWhite

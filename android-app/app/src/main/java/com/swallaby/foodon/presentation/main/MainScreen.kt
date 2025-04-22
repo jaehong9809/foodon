@@ -17,9 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainBlack
-import com.swallaby.foodon.core.ui.theme.MainBlue
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.Typography
+import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 
@@ -46,7 +46,7 @@ fun MainScreen() {
 
         Box(
             modifier = Modifier
-                .background(MainBlue)
+                .background(WB500)
                 .clickable {
                     navController.navigate(NavRoutes.NutrientDetail.route)
                 }
