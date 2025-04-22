@@ -11,11 +11,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,17 +35,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.ui.theme.BGTab
 import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.WB100
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
 fun MonthlyTabBar(
+    modifier: Modifier = Modifier,
     selectedIndex: Int,
     onTabSelected: (Int) -> Unit
 ) {
@@ -62,7 +63,7 @@ fun MonthlyTabBar(
     )
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .dropShadow(
                 shape = RoundedCornerShape(100.dp),
                 color = MainBlack.copy(alpha = 0.2f),
@@ -79,7 +80,7 @@ fun MonthlyTabBar(
             val isSelected = selectedIndex == index
 
             val backgroundColor by animateColorAsState(
-                targetValue = if (isSelected) WB500 else WB100,
+                targetValue = if (isSelected) WB500 else BGTab,
                 label = "BackgroundColor"
             )
 
@@ -91,7 +92,8 @@ fun MonthlyTabBar(
             Box(
                 modifier = Modifier
                     .height(48.dp)
-                    .defaultMinSize(minWidth = if (isSelected) 80.dp else 48.dp)
+//                    .defaultMinSize(minWidth = if (isSelected) 82.dp else 48.dp)
+                    .wrapContentWidth()
                     .clip(RoundedCornerShape(100.dp))
                     .background(backgroundColor)
                     .clickable(
@@ -99,7 +101,7 @@ fun MonthlyTabBar(
                         indication = null,
                         onClick = { onTabSelected(index) }
                     )
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
