@@ -48,6 +48,7 @@ val Border04 = Color(0xFFDCDCDC)
 /* Background Color */
 val Bkg01 = Color(0xFFFCFCFC)
 val Bkg02 = Color(0xFFF7F7F7)
+val Bkg03 = Color(0xFFF8F9FD)
 val Bkg04 = Color(0xFFF3F4F8)
 val Bkg05 = Color(0xFFEFEFF3)
 val BG100 = Color(0xFFF3F4F8)

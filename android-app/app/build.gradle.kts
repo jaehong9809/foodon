@@ -20,7 +20,7 @@ android {
     }
 
     buildTypes {
-        debug{
+        debug {
             buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL")}\"")
         }
         release {
@@ -102,5 +102,9 @@ dependencies {
     // navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // coil
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
 
 }
