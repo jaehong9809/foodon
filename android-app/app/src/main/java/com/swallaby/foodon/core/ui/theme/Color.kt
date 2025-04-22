@@ -54,3 +54,7 @@ val BG100 = Color(0xFFF3F4F8)
 val BG300 = Color(0xFFD6D8E1)
 val BGTab = Color(0xFFE9F2FF)
 val BGBlueTransparent = Color(0x1A2581FF)
+val BGKcal = Color(0x1F11CA72)
+
+/* Text Color */
+val TextKcal = Color(0xFF25A572)
