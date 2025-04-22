@@ -5,17 +5,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 object SpoqaTypography {
-    val SpoqaBold20 = TextStyle(
+    val SpoqaBold24 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        lineHeight = 30.sp
-    )
-
-    val SpoqaBold18 = TextStyle(
-        fontFamily = SpoqaHanSansNeo,
-        fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
+        fontSize = 24.sp,
         lineHeight = 24.sp
     )
 
@@ -23,20 +16,27 @@ object SpoqaTypography {
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        lineHeight = 24.sp
+        lineHeight = 16.sp
     )
 
-    val SpoqaMedium20 = TextStyle(
+    val SpoqaMedium36 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Medium,
-        fontSize = 20.sp,
-        lineHeight = 30.sp
+        fontSize = 36.sp,
+        lineHeight = 36.sp
     )
 
-    val SpoqaMedium18 = TextStyle(
+    val SpoqaMedium28 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Medium,
-        fontSize = 18.sp,
+        fontSize = 28.sp,
+        lineHeight = 28.sp
+    )
+
+    val SpoqaMedium24 = TextStyle(
+        fontFamily = SpoqaHanSansNeo,
+        fontWeight = FontWeight.Medium,
+        fontSize = 24.sp,
         lineHeight = 24.sp
     )
 
@@ -44,55 +44,48 @@ object SpoqaTypography {
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        lineHeight = 24.sp
+        lineHeight = 16.sp
     )
 
     val SpoqaMedium14 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        lineHeight = 22.sp
+        lineHeight = 14.sp
+    )
+
+    val SpoqaMedium13 = TextStyle(
+        fontFamily = SpoqaHanSansNeo,
+        fontWeight = FontWeight.Medium,
+        fontSize = 13.sp,
+        lineHeight = 13.sp
     )
 
     val SpoqaMedium12 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
-        lineHeight = 18.sp
-    )
-
-    val SpoqaNormal20 = TextStyle(
-        fontFamily = SpoqaHanSansNeo,
-        fontWeight = FontWeight.Normal,
-        fontSize = 20.sp,
-        lineHeight = 30.sp
-    )
-
-    val SpoqaNormal18 = TextStyle(
-        fontFamily = SpoqaHanSansNeo,
-        fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
-        lineHeight = 24.sp
+        lineHeight = 12.sp
     )
 
     val SpoqaNormal16 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 24.sp
+        lineHeight = 16.sp
     )
 
     val SpoqaNormal14 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 22.sp
+        lineHeight = 14.sp
     )
 
     val SpoqaNormal12 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        lineHeight = 18.sp
+        lineHeight = 12.sp
     )
 }
