@@ -21,9 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.swallaby.foodon.core.ui.theme.BG04
+import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.Border025
-import com.swallaby.foodon.core.ui.theme.BtnTextGray
+import com.swallaby.foodon.core.ui.theme.G000
 import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
@@ -48,7 +48,7 @@ fun CommonWideButton(
                 indication = null,
                 onClick = { onClick() }
             )
-            .background(if (isEnabled) WB500 else BG04,
+            .background(if (isEnabled) WB500 else Bkg04,
                 shape = RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
@@ -57,7 +57,7 @@ fun CommonWideButton(
                 modifier = modifier,
                 text = it,
                 style =  NotoTypography.NotoMedium16,
-                color = if (isEnabled) MainWhite else BtnTextGray,
+                color = if (isEnabled) MainWhite else G000,
                 textAlign = TextAlign.Center
             )
         }

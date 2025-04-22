@@ -13,8 +13,6 @@ val Pink40 = Color(0xFF7D5260)
 val MainWhite = Color(0xFFFFFFFF)
 val MainBlack = Color(0xFF111111)
 
-val BtnTextGray = Color(0xFFA9ABB5)
-
 /* Main Color */
 val WB900 = Color(0xFF07247A)
 val WB800 = Color(0xFF0B3393)
@@ -29,6 +27,7 @@ val WB100 = Color(0xFFD3EDFF)
 /* Gray Color */
 val G900 = Color(0xFF111111)
 val G800 = Color(0xFF333333)
+val G750 = Color(0xFF525252)
 val G700 = Color(0xFF525252)
 val G600 = Color(0xFF666666)
 val G500 = Color(0xFF999999)
@@ -37,6 +36,7 @@ val G300 = Color(0xFFDCDCDC)
 val G200 = Color(0xFFECECEC)
 val G100 = Color(0xFFF7F7F7)
 val G50 = Color(0xFFFCFCFC)
+val G000 = Color(0xFFA9ABB5)
 
 /* Border Color */
 val Border01 = Color(0xFFF3F4F8)
@@ -46,7 +46,9 @@ val Border03 = Color(0xFFD6D8E1)
 val Border04 = Color(0xFFDCDCDC)
 
 /* Background Color */
-val BG01 = Color(0xFFFCFCFC)
-val BG02 = Color(0xFFF7F7F7)
-val BG04 = Color(0xFFF3F4F8)
-val BG05 = Color(0xFFEFEFF3)
+val Bkg01 = Color(0xFFFCFCFC)
+val Bkg02 = Color(0xFFF7F7F7)
+val Bkg04 = Color(0xFFF3F4F8)
+val Bkg05 = Color(0xFFEFEFF3)
+val BG100 = Color(0xFFF3F4F8)
+val BG300 = Color(0xFFD6D8E1)
