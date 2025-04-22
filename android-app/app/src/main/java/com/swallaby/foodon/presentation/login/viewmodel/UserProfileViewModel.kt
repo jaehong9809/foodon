@@ -8,9 +8,10 @@ import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.user.usecase.GetUserProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class UserProfileViewModel(
+class UserProfileViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase
 ) : BaseViewModel<UserProfileUiState>(UserProfileUiState()) {
 

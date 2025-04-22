@@ -40,9 +40,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    kotlin {
-        jvmToolchain(17)
-    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -99,4 +96,6 @@ dependencies {
     implementation(libs.androidx.datastore.core.android)
     implementation(libs.androidx.foundation.layout.android)
 
+    // javapoet
+    implementation("com.squareup:javapoet:1.13.0")
 }
