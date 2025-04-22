@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.fooddetail.component
+package com.swallaby.foodon.presentation.foodDetail.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
