@@ -96,6 +96,9 @@ dependencies {
     implementation(libs.androidx.datastore.core.android)
     implementation(libs.androidx.foundation.layout.android)
 
+    // javapoet
+    implementation("com.squareup:javapoet:1.13.0")
+
     // navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)

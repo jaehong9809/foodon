@@ -16,7 +16,7 @@ room                = "2.5.2"
 okhttp              = "4.11.0"
 retrofit            = "2.9.0"
 gson                = "2.10.1"
-hilt                = "2.44"
+hilt                = "2.48"
 coil                = "2.4.0"
 
 foundationLayoutAndroid = "1.7.2"
