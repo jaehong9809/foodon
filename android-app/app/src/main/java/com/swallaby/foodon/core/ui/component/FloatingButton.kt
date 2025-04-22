@@ -27,8 +27,8 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.MainBlue
 import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.dropShadow
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
 fun FloatingButton(
@@ -75,7 +75,7 @@ fun FloatingButton(
                 Text(
                     modifier = Modifier,
                     text = it,
-                    style = Typography.titleLarge,
+                    style = NotoTypography.NotoMedium16,
                     color = MainWhite
                 )
             }

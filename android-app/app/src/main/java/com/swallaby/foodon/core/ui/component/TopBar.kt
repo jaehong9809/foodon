@@ -26,7 +26,7 @@ import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.MainBlue
 import com.swallaby.foodon.core.ui.theme.MainGray
 import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.Typography
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
 fun CommonBackTopBar(
@@ -125,13 +125,13 @@ fun BackIconImage(
 fun TopBarText(
     modifier: Modifier = Modifier,
     text: String,
-    fontColor: Color,
+    fontColor: Color
 ) {
     Text(
         modifier = modifier,
         text = text,
-        style = Typography.titleLarge,
         color = fontColor,
+        style = NotoTypography.NotoMedium16,
     )
 }
 

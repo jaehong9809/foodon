@@ -41,8 +41,8 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.SubBlack
 import com.swallaby.foodon.core.ui.theme.TabBgGray
 import com.swallaby.foodon.core.ui.theme.TabBorderGray
-import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.dropShadow
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
 fun MonthlyTabBar(
@@ -117,7 +117,7 @@ fun MonthlyTabBar(
                         Text(
                             text = labels[index],
                             color = MainWhite,
-                            style = Typography.titleLarge,
+                            style = NotoTypography.NotoMedium16,
                         )
                     }
                 }
@@ -164,7 +164,7 @@ fun WeekTabBar(
                 Text(
                     text = label,
                     color = textColor,
-                    style = Typography.titleMedium,
+                    style = NotoTypography.NotoMedium14,
                 )
             }
         }

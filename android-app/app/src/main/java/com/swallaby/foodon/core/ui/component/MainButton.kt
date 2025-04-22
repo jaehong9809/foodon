@@ -27,7 +27,7 @@ import com.swallaby.foodon.core.ui.theme.BtnTextGray
 import com.swallaby.foodon.core.ui.theme.MainBlue
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.SubBlack
-import com.swallaby.foodon.core.ui.theme.Typography
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 // vertical padding은 각 화면에서 알맞게 조절
 @Composable
@@ -56,7 +56,7 @@ fun CommonWideButton(
             Text(
                 modifier = modifier,
                 text = it,
-                style = Typography.titleLarge,
+                style = NotoTypography.NotoMedium16,
                 color = if (isEnabled) MainWhite else BtnTextGray,
                 textAlign = TextAlign.Center
             )
@@ -88,7 +88,7 @@ fun CancelWideButton(
             Text(
                 modifier = Modifier,
                 text = it,
-                style = Typography.titleLarge,
+                style = NotoTypography.NotoMedium16,
                 color = SubBlack
             )
         }
