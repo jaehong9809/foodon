@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,10 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.WeekTabBar
-import com.swallaby.foodon.core.ui.theme.BGBlueTransparent
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G900
+import com.swallaby.foodon.core.ui.theme.WB500F1A
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 
 @Composable
@@ -71,7 +69,7 @@ fun WeightContent() {
         TabContentLayout(
             modifier = Modifier.weight(1f),
             title = stringResource(R.string.tab_content_title_cur_weight),
-            bgColor = BGBlueTransparent,
+            bgColor = WB500F1A,
             icon = R.drawable.icon_cur_weight
         ) {
             Row(
@@ -107,9 +105,9 @@ fun WeightContent() {
     }
 }
 
+// TODO: 몇 주까지 있는지, 각 주의 추천 음식 리스트
 @Composable
 fun RecommendationContent() {
-
     var selectedWeek by remember { mutableIntStateOf(0) }
 
     Column {
@@ -132,14 +130,12 @@ fun RecommendationContent() {
             // TODO: 추천 음식 리스트 (LazyColumn Scroll X)
             val itemsList = listOf("두부 샐러드", "병아리콩 커리")
 
-            LazyColumn(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .wrapContentHeight(),
-                userScrollEnabled = false,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(itemsList) { item ->
+                itemsList.forEach { item ->
                     RecommendFoodCompact(item, "600")
                 }
             }

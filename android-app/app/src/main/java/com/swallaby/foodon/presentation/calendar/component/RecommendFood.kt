@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,13 +26,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
-import com.swallaby.foodon.core.ui.theme.BGKcal
+import com.swallaby.foodon.core.ui.theme.BGGreen
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.TextKcal
+import com.swallaby.foodon.core.ui.theme.TextGreen
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 
@@ -43,12 +41,12 @@ fun KcalBox(kcal: String) {
     Column(
         modifier = Modifier
             .wrapContentSize()
-            .background(color = BGKcal, shape = RoundedCornerShape(4.dp))
+            .background(color = BGGreen, shape = RoundedCornerShape(4.dp))
             .padding(4.dp)
     ) {
         Text(
             text = stringResource(R.string.format_kcal, kcal),
-            color = TextKcal,
+            color = TextGreen,
             style = SpoqaTypography.SpoqaMedium12,
         )
     }
@@ -117,14 +115,13 @@ fun RecommendFoodDetail() {
             // TODO: 음식 먹으면 좋은 점 리스트 (LazyColumn Scroll X)
             val itemsList = listOf("포만감", "배고픔", "만족도")
 
-            LazyColumn(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .wrapContentHeight(),
-                userScrollEnabled = false,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(itemsList) { item ->
+
+                itemsList.forEach { item ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
