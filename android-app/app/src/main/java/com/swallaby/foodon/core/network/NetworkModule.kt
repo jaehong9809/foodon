@@ -1,7 +1,7 @@
 package com.swallaby.foodon.core.network
 
-import android.content.Context
 import com.swallaby.foodon.BuildConfig
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
