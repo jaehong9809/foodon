@@ -22,19 +22,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.TabContentPager
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(
+    viewModel: CalendarViewModel = viewModel(),
+) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val calendarType = CalendarType.values()[selectedTabIndex]
 
-    // TODO: 탭 변경 시 캘린더 데이터 갱신
-    LaunchedEffect(selectedTabIndex) {
-
+    // 탭 변경 시 캘린더 데이터 갱신
+    LaunchedEffect(calendarType) {
+        viewModel.fetchCalendarData(calendarType, "2025-04")
     }
 
     Scaffold(
