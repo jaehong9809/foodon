@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +39,7 @@ fun FoodDetailScreen(
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
 ) {
+
     val scrollState = rememberScrollState()
     Column(
         modifier = modifier.fillMaxSize()
@@ -50,7 +52,8 @@ fun FoodDetailScreen(
 
 
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data("https://picsum.photos/200")
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740")
                     .crossfade(true).listener(onError = { _, result ->
                         Log.e("ImageLoading", "Error loading image: ${result.throwable}")
                     }, onSuccess = { _, _ ->
@@ -61,6 +64,7 @@ fun FoodDetailScreen(
                     .fillMaxWidth()
                     .aspectRatio(1f),
 //                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillBounds,
                 error = painterResource(R.drawable.icon_time), // 에러 시 표시할 이미지
                 placeholder = painterResource(R.drawable.icon_search) // 로딩 중 표시할 이미지
             )

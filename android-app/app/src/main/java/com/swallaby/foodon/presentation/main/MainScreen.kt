@@ -86,6 +86,21 @@ fun MainScreen() {
             )
         }
 
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Box(modifier = Modifier
+            .background(WB500)
+            .clickable {
+                navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(0))
+            }) {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "음식 정보 수정 화면 이동",
+                color = MainWhite,
+                style = Typography.displayLarge
+            )
+        }
+
     }
 }
 
