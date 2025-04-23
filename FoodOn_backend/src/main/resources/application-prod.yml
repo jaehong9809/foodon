@@ -26,6 +26,21 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
+cloud:
+  aws:
+    s3:
+      bucket: ${CLOUD_AWS_S3_BUCKET}
+      upload-path: ${S3_UPLOAD_PATH}
+      base-url: ${S3_BASE_URL}
+    region:
+      static: ${CLOUD_AWS_REGION_STATIC}
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
+      secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
+
 logging:
   level:
     root: INFO
