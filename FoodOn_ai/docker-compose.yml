@@ -1,0 +1,9 @@
+services:
+  fastapi:
+    build:
+      context: ./fastapi
+    ports:
+      - "8000:8000"
+    restart: always
+    environment:
+      - TZ=Asia/Seoul
