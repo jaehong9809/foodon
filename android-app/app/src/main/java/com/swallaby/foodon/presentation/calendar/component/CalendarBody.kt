@@ -40,7 +40,7 @@ fun CalendarBody(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 for (dayOfWeek in 0..6) {
                     val day = if (week == 0 && dayOfWeek < firstDayOfWeek) {

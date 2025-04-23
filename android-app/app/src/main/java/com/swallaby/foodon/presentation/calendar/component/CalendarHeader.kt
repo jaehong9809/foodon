@@ -24,6 +24,7 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.presentation.navigation.LocalNavController
 import org.threeten.bp.YearMonth
 
 @Composable
@@ -33,6 +34,8 @@ fun CalendarHeader(
     onNextMonth: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val navController = LocalNavController.current
 
     Box(
         modifier = modifier
@@ -91,14 +94,13 @@ fun CalendarHeader(
                 )
             }
 
-
             Icon(
                 modifier = modifier
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = {
-                            // TODO: 현재 창 닫기
+                            navController.popBackStack()
                         }
                     ),
                 painter = painterResource(id = R.drawable.icon_close),
