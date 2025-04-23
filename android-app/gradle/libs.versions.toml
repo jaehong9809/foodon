@@ -27,6 +27,8 @@ navCompose = "2.8.5"
 hiltCompose = "1.2.0"
 accompanist = "0.34.0"
 
+threetenabp = "1.4.9"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -77,6 +79,8 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanist" }
 accompanist-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanist" }
+
+threetenabp = { group = "com.jakewharton.threetenabp", name = "threetenabp", version.ref = "threetenabp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

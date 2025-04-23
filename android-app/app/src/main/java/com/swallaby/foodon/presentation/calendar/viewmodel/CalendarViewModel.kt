@@ -9,7 +9,7 @@ import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import org.threeten.bp.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel

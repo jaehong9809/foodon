@@ -1,7 +1,5 @@
 package com.swallaby.foodon.presentation.calendar
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,10 +38,9 @@ import com.swallaby.foodon.presentation.calendar.component.TabContentPager
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.YearMonth
+import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel = viewModel(),
@@ -153,7 +150,6 @@ fun CalendarScreen(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun CalendarPreview() {

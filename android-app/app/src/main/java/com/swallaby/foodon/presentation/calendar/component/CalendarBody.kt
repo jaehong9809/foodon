@@ -1,8 +1,6 @@
 package com.swallaby.foodon.presentation.calendar.component
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +11,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import java.time.LocalDate
-import java.time.YearMonth
+import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarBody(
     yearMonth: YearMonth,

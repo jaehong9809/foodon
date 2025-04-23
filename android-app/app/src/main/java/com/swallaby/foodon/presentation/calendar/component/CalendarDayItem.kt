@@ -1,7 +1,5 @@
 package com.swallaby.foodon.presentation.calendar.component
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,9 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import java.time.LocalDate
+import org.threeten.bp.LocalDate
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarDayItem(
     date: LocalDate,
