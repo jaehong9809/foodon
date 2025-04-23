@@ -1,11 +1,13 @@
 package com.foodon.foodon.auth.resolver;
 
 import static com.foodon.foodon.auth.exception.AuthException.AuthUnauthorizedException;
+import static com.foodon.foodon.member.exception.MemberException.MemberNotFoundException;
 
 import com.foodon.foodon.auth.annotation.AuthMember;
 import com.foodon.foodon.auth.exception.AuthErrorCode;
 import com.foodon.foodon.auth.util.JwtUtil;
 import com.foodon.foodon.member.domain.Member;
+import com.foodon.foodon.member.exception.MemberErrorCode;
 import com.foodon.foodon.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -63,15 +65,17 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
     }
 
     private String extractRefreshToken(HttpServletRequest request) {
-        // refreshToken 빼오는 로직 설정
-        return "";
+        String refreshToken = request.getHeader("X-Refresh-Token");
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new AuthUnauthorizedException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        return refreshToken;
     }
 
     private Member extractMember(String accessToken) {
         Long userId = Long.valueOf(jwtUtil.getSubject(accessToken));
 
         return memberRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.USER_NOT_FOUND));
     }
-
 }
