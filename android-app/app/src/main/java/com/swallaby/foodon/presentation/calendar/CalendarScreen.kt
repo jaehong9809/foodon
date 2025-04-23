@@ -17,6 +17,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,8 +60,8 @@ fun CalendarScreen(
 
     var currentYearMonth by remember { mutableStateOf(baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())) }
 
-    val selectedDate by viewModel.selectedDate
-    val calorieMap by viewModel.calorieDataMap
+    val uiState by viewModel.uiState.collectAsState()
+    val selectedDate = uiState.selectedDate
 
     // 페이지가 변경될 때마다 캘린더 데이터를 갱신
     LaunchedEffect(pagerState.currentPage) {
@@ -122,8 +123,8 @@ fun CalendarScreen(
                     ) {
                         CalendarBody(
                             yearMonth = yearMonth,
-                            calorieDataMap = calorieMap,
                             selectedDate = selectedDate,
+                            today = uiState.today,
                             onDateSelected = { viewModel.selectDate(it) }
                         )
                     }

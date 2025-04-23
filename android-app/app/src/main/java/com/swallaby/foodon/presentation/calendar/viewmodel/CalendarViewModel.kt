@@ -8,6 +8,7 @@ import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import javax.inject.Inject
@@ -17,31 +18,21 @@ class CalendarViewModel @Inject constructor(
     private val getCalendarUseCase: GetCalendarUseCase
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
 
-    private val _calorieDataMap = mutableStateOf<Map<LocalDate, Int>>(emptyMap())
-    val calorieDataMap: androidx.compose.runtime.State<Map<LocalDate, Int>> get() = _calorieDataMap
-
-    private val _selectedDate = mutableStateOf<LocalDate?>(null)
-    val selectedDate: androidx.compose.runtime.State<LocalDate?> get() = _selectedDate
-
     fun fetchCalendarData(type: CalendarType, date: String) {
-        _uiState.value = _uiState.value.copy(calendarState = ResultState.Loading)
+        updateState { it.copy(calendarState = ResultState.Loading) }
 
         viewModelScope.launch {
             val result = getCalendarUseCase(type, date)
-            _uiState.value = _uiState.value.copy(calendarState = result.toResultState())
+            updateState { it.copy(calendarState = result.toResultState()) }
         }
     }
 
     fun selectDate(date: LocalDate) {
-        _selectedDate.value = date
-        updateSelectedDate(date)
+        updateState { it.copy(selectedDate = date) }
     }
 
-    fun updateSelectedDate(newDate: LocalDate) {
-        _selectedDate.value = newDate
+    fun updateState(block: (CalendarUiState) -> CalendarUiState) {
+        _uiState.update(block)
     }
 
-    fun updateCalorieData(newCalorieMap: Map<LocalDate, Int>) {
-        _calorieDataMap.value = newCalorieMap
-    }
 }

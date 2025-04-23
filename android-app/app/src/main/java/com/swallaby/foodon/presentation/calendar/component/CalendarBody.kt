@@ -17,8 +17,8 @@ import org.threeten.bp.YearMonth
 @Composable
 fun CalendarBody(
     yearMonth: YearMonth,
-    calorieDataMap: Map<LocalDate, Int>,
     selectedDate: LocalDate?,
+    today: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
     val firstDayOfMonth = yearMonth.atDay(1)
@@ -59,7 +59,7 @@ fun CalendarBody(
                         ) {
                             CalendarDayItem(
                                 date = date,
-                                kcal = calorieDataMap[date],
+                                today = today,
                                 isSelected = selectedDate == date,
                                 onClick = { onDateSelected(date) }
                             )

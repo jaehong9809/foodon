@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.component.RoundedCircularProgress
+import com.swallaby.foodon.core.ui.theme.G500
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
@@ -26,10 +27,12 @@ import org.threeten.bp.LocalDate
 @Composable
 fun CalendarDayItem(
     date: LocalDate,
-    kcal: Int?,
+    today: LocalDate,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+
+    val isFutureDay = date.isAfter(today)
 
     Column(
         modifier = Modifier
@@ -37,7 +40,8 @@ fun CalendarDayItem(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onClick
+                onClick = onClick,
+                enabled = !isFutureDay // 미래 날짜 선택 불가
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -50,18 +54,12 @@ fun CalendarDayItem(
                 modifier = Modifier.size(30.dp),
             )
 
-            DayText(date.dayOfMonth, isSelected)
+            DayText(date.dayOfMonth, isSelected, isFutureDay)
         }
 
 //        DayText(date.dayOfMonth, isSelected)
 
-        // 칼로리 표시
-        kcal?.let {
-            Text(
-                text = "$it kcal",
-                style = SpoqaTypography.SpoqaNormal11,
-            )
-        }
+        // TODO: 식사 -> 칼로리, 체중 -> 체중, 추천 -> 없음
     }
 }
 
@@ -69,7 +67,14 @@ fun CalendarDayItem(
 fun DayText(
     day: Int,
     isSelected: Boolean,
+    isFutureDay: Boolean
 ) {
+
+    val fontColor = when {
+        isSelected -> MainWhite
+        isFutureDay -> G500
+        else -> G900
+    }
 
     // 날짜 박스
     Box(
@@ -87,7 +92,7 @@ fun DayText(
             Text(
                 text = "$day",
                 style = SpoqaTypography.SpoqaBold13,
-                color = if (isSelected) MainWhite else G900,
+                color = fontColor,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
