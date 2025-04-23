@@ -34,5 +34,14 @@ class CalendarViewModel @Inject constructor(
 
     fun selectDate(date: LocalDate) {
         _selectedDate.value = date
+        updateSelectedDate(date)
+    }
+
+    fun updateSelectedDate(newDate: LocalDate) {
+        _selectedDate.value = newDate
+    }
+
+    fun updateCalorieData(newCalorieMap: Map<LocalDate, Int>) {
+        _calorieDataMap.value = newCalorieMap
     }
 }

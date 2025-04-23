@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -20,9 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,32 +48,31 @@ import java.time.YearMonth
 fun CalendarScreen(
     viewModel: CalendarViewModel = viewModel(),
 ) {
-//    var selectedTabIndex by remember { mutableIntStateOf(0) }
-//    val calendarType = CalendarType.values()[selectedTabIndex]
-//
-//    // 탭 변경 시 캘린더 데이터 갱신
-//    LaunchedEffect(calendarType) {
-//        viewModel.fetchCalendarData(calendarType, "2025-04")
-//    }
 
-    val monthOffsetRange = -12..12
     val today = remember { LocalDate.now() }
     val baseYearMonth = remember { YearMonth.from(today) }
 
-    val pagerState = rememberPagerState(initialPage = 12, pageCount = {monthOffsetRange.count()}) // 0부터 시작하니까 base는 중간
+    val monthOffsetRange = -12..12
+
+    val pagerState = rememberPagerState(initialPage = 12, pageCount = { monthOffsetRange.count() })
     val coroutineScope = rememberCoroutineScope()
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val calendarType = CalendarType.values()[selectedTabIndex]
 
-    val currentYearMonth = remember(pagerState.currentPage) {
-        baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())
-    }
+    var currentYearMonth by remember { mutableStateOf(baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())) }
 
     val selectedDate by viewModel.selectedDate
     val calorieMap by viewModel.calorieDataMap
 
-    LaunchedEffect(currentYearMonth, calendarType) {
+    // 페이지가 변경될 때마다 캘린더 데이터를 갱신
+    LaunchedEffect(pagerState.currentPage) {
+        currentYearMonth = baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())
+        viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
+    }
+
+    // 탭이 변경될 때마다 데이터 갱신
+    LaunchedEffect(selectedTabIndex) {
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
     }
 
@@ -109,17 +111,27 @@ fun CalendarScreen(
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxWidth().weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
                 ) { page ->
                     val yearMonth = baseYearMonth.plusMonths((page - 12).toLong())
 
-                    CalendarBody(
-                        yearMonth = yearMonth,
-                        calorieDataMap = calorieMap,
-                        selectedDate = selectedDate,
-                        onDateSelected = { viewModel.selectDate(it) }
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.TopStart
+                    ) {
+                        CalendarBody(
+                            yearMonth = yearMonth,
+                            calorieDataMap = calorieMap,
+                            selectedDate = selectedDate,
+                            onDateSelected = { viewModel.selectDate(it) }
+                        )
+                    }
                 }
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
