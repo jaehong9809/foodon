@@ -3,6 +3,7 @@ package com.swallaby.foodon.presentation.foodDetail.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +36,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 
 @Composable
-fun FoodCard(modifier: Modifier = Modifier) {
+fun FoodCard(modifier: Modifier = Modifier, onClick: (foodId: Long) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,13 +56,19 @@ fun FoodCard(modifier: Modifier = Modifier) {
                     AsyncImage(
                         model = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
                         contentDescription = "음식 사진",
-                        modifier
+                        contentScale = ContentScale.FillBounds,
+                        modifier = modifier
                             .height(64.dp)
                             .width(64.dp)
+                            .clip(shape = RoundedCornerShape(10.dp))
                     )
                     Spacer(modifier.width(12.dp))
                     Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically,
+                            modifier = modifier.clickable {
+                                // todo foodId 추가
+                                onClick(0)
+                            }) {
                             Text(
                                 text = "바질 피자",
                                 style = NotoTypography.NotoMedium16.copy(color = G900)
@@ -108,5 +117,5 @@ fun FoodCard(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun FoodCardPreview() {
-    FoodCard()
+    FoodCard(onClick = {})
 }

@@ -20,7 +20,7 @@ import com.swallaby.foodon.presentation.foodEdit.component.FoodThumbnailList
 import com.swallaby.foodon.presentation.foodEdit.component.SearchChip
 
 @Composable
-fun FoodEditScreen(modifier: Modifier = Modifier) {
+fun FoodEditScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit, foodId: Long = 0) {
     Scaffold { innerPadding ->
         Column(modifier = modifier.padding(innerPadding)) {
             FoodThumbnailList()
@@ -54,5 +54,5 @@ fun FoodSearch(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun FoodEditScreenPreview() {
-    FoodEditScreen()
+    FoodEditScreen(onBackClick = {})
 }

@@ -31,14 +31,14 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.presentation.foodDetail.component.FoodInfoComponent
 import com.swallaby.foodon.presentation.foodDetail.component.MealType
 import com.swallaby.foodon.presentation.foodDetail.component.NutritionalIngredientsComponent
-import java.net.URLEncoder
 
 @Composable
-fun FoodDetailScreen(modifier: Modifier = Modifier, onBackClick: (() -> Unit)) {
+fun FoodDetailScreen(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onFoodClick: (foodId: Long) -> Unit,
+) {
     val scrollState = rememberScrollState()
-    val originalUrl = "https://media.istockphoto.com/id/520700958/ko/사진/아름다운-꽃-배경기술.jpg"
-    val encodedUrl = URLEncoder.encode(originalUrl, "UTF-8")
-        .replace("+", "%20")
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -50,18 +50,12 @@ fun FoodDetailScreen(modifier: Modifier = Modifier, onBackClick: (() -> Unit)) {
 
 
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://picsum.photos/200")
-                    .crossfade(true)
-                    .listener(
-                        onError = { _, result ->
-                            Log.e("ImageLoading", "Error loading image: ${result.throwable}")
-                        },
-                        onSuccess = { _, _ ->
-                            Log.d("ImageLoading", "Image loaded successfully")
-                        }
-                    )
-                    .build(),
+                model = ImageRequest.Builder(LocalContext.current).data("https://picsum.photos/200")
+                    .crossfade(true).listener(onError = { _, result ->
+                        Log.e("ImageLoading", "Error loading image: ${result.throwable}")
+                    }, onSuccess = { _, _ ->
+                        Log.d("ImageLoading", "Image loaded successfully")
+                    }).build(),
                 contentDescription = "음식 사진",
                 modifier = modifier
                     .fillMaxWidth()
@@ -83,7 +77,7 @@ fun FoodDetailScreen(modifier: Modifier = Modifier, onBackClick: (() -> Unit)) {
                     .background(Bkg04)
             )
 
-            FoodInfoComponent()
+            FoodInfoComponent(onClick = onFoodClick)
 
         }
 
@@ -109,6 +103,6 @@ fun FoodDetailScreen(modifier: Modifier = Modifier, onBackClick: (() -> Unit)) {
 @Composable
 fun FoodDetailScreenPreview() {
     FoodonTheme {
-        FoodDetailScreen(modifier = Modifier, onBackClick = {})
+        FoodDetailScreen(modifier = Modifier, onBackClick = {}, onFoodClick = {})
     }
 }
