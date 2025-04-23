@@ -1,8 +1,9 @@
 package com.foodon.foodon.auth.resolver;
 
+import static com.foodon.foodon.auth.exception.AuthException.AuthUnauthorizedException;
+
 import com.foodon.foodon.auth.annotation.AuthMember;
 import com.foodon.foodon.auth.exception.AuthErrorCode;
-import com.foodon.foodon.auth.exception.InvalidJwtException;
 import com.foodon.foodon.auth.util.JwtUtil;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.repository.MemberRepository;
@@ -40,7 +41,7 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         if (request == null) {
-            throw new InvalidJwtException(AuthErrorCode.FAILED_TO_VALIDATE_TOKEN);
+            throw new AuthUnauthorizedException(AuthErrorCode.UNAUTHORIZED_ACCESS);
         }
 
         String refreshToken = extractRefreshToken(request);
@@ -50,13 +51,13 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
             return extractMember(accessToken);
         }
 
-        throw new InvalidJwtException(AuthErrorCode.FAILED_TO_VALIDATE_TOKEN);
+        throw new AuthUnauthorizedException(AuthErrorCode.FAILED_TO_VALIDATE_TOKEN);
     }
 
     private String extractAccessToken(HttpServletRequest request) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null) {
-            throw new InvalidJwtException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+            throw new AuthUnauthorizedException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         }
         return authHeader.split(" ")[1];
     }

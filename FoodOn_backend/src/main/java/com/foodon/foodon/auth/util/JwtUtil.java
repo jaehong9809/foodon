@@ -1,8 +1,9 @@
 package com.foodon.foodon.auth.util;
 
+import static com.foodon.foodon.auth.exception.AuthException.AuthUnauthorizedException;
 import com.foodon.foodon.auth.domain.UserTokens;
 import com.foodon.foodon.auth.exception.AuthErrorCode;
-import com.foodon.foodon.auth.exception.InvalidJwtException;
+import com.foodon.foodon.auth.exception.AuthException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,7 +71,7 @@ public class JwtUtil {
         try {
             parseToken(refreshToken);
         } catch (JwtException e) {
-            throw new InvalidJwtException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+            throw new AuthUnauthorizedException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.foodon.foodon.common.exception;
 
-import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.exception.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
 
 @Slf4j
 @RestControllerAdvice
