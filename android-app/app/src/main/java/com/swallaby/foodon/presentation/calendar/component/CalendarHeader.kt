@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G900
@@ -65,16 +64,19 @@ fun CalendarHeader(
                         )
                 )
 
-                Text(
-                    text = stringResource(
-                        R.string.format_calendar_date,
-                        currentYearMonth.year,
-                        currentYearMonth.monthValue
-                    ),
-                    style = NotoTypography.NotoBold16,
-                    color = G900,
-                    textAlign = TextAlign.Center
-                )
+                Box(
+                    modifier = Modifier.padding(bottom = 2.5.dp)
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.format_calendar_date,
+                            currentYearMonth.year,
+                            currentYearMonth.monthValue
+                        ),
+                        style = NotoTypography.NotoBold16,
+                        color = G900,
+                    )
+                }
 
                 Icon(
                     painter = painterResource(R.drawable.icon_chevron_black),
@@ -87,8 +89,8 @@ fun CalendarHeader(
                             onClick = onNextMonth
                         )
                 )
-
             }
+
 
             Icon(
                 modifier = modifier
