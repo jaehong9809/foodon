@@ -40,6 +40,9 @@ dependencies {
 	// ---------- * Spring Data Redis * ---------- //
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// ---------- * Webflux for WebClient * ---------- //
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 }
 
 tasks.named('test') {

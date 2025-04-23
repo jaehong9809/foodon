@@ -3,7 +3,6 @@ package com.foodon.foodon.auth.util;
 import static com.foodon.foodon.auth.exception.AuthException.AuthUnauthorizedException;
 import com.foodon.foodon.auth.domain.UserTokens;
 import com.foodon.foodon.auth.exception.AuthErrorCode;
-import com.foodon.foodon.auth.exception.AuthException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
