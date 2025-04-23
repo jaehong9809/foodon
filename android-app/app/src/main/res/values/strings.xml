@@ -31,6 +31,7 @@
     <string name="tab_content_title_recommend">이 주의 추천 음식</string>
     <string name="format_kcal">%skcal</string>
     <string name="format_kg">%dkg</string>
+    <string name="format_calendar_date">%d년 %d월</string>
 
     <!-- food-->
     <string name="total_intake">전체 섭취량</string>
