@@ -65,7 +65,7 @@ fun NutritionalIngredientsComponent(
                     .wrapContentWidth()
                     .height(32.dp),
                     onClick = {},
-                    text = mealType.displayName,
+                    text = mealTime,
                     prefixIcon = {
                         Image(
                             modifier = modifier.size(12.dp),
