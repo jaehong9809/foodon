@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -29,10 +30,17 @@ fun FoodThumbnailList(modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
     Row(
         modifier = modifier
-            .padding(top = 8.dp, bottom = 16.dp)
-            .horizontalScroll(scrollState),
+            .horizontalScroll(scrollState)
+            .padding(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        FoodThumbnail(modifier, isSelected = true)
+        FoodThumbnail(modifier, isSelected = true)
+        FoodThumbnail(modifier, isSelected = true)
+        FoodThumbnail(modifier, isSelected = true)
+        FoodThumbnail(modifier, isSelected = true)
+        FoodThumbnail(modifier, isSelected = true)
+        FoodThumbnail(modifier, isSelected = true)
         FoodThumbnail(modifier, isSelected = true)
         FoodThumbnail(modifier, isSelected = true)
         FoodThumbnail(modifier, isSelected = false)
@@ -52,8 +60,9 @@ private fun FoodThumbnail(modifier: Modifier, isSelected: Boolean = false) {
                 .size(72.dp), contentAlignment = Alignment.Center
         ) {
             AsyncImage(
-                model = "",
+                model = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
                 contentDescription = "음식 사진",
+                contentScale = ContentScale.FillBounds,
                 modifier = modifier
                     .size(64.dp)
                     .clip(shape = RoundedCornerShape(10.dp))

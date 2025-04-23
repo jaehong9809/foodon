@@ -58,12 +58,18 @@ fun NutritionalIngredientsComponent(
                         .height(32.dp),
                     onClick = {},
                     text = mealType.displayName,
-                    prefixIcon = { },
+                    suffixIcon = {
+                        Image(
+                            painter = painterResource(R.drawable.icon_down_chevron),
+                            contentDescription = "down_chevron"
+                        )
+                    },
                 )
                 Spacer(modifier = modifier.width(6.dp))
-                DropButton(modifier = modifier
-                    .wrapContentWidth()
-                    .height(32.dp),
+                DropButton(
+                    modifier = modifier
+                        .wrapContentWidth()
+                        .height(32.dp),
                     onClick = {},
                     text = mealTime,
                     prefixIcon = {
@@ -72,7 +78,15 @@ fun NutritionalIngredientsComponent(
                             painter = painterResource(R.drawable.icon_time),
                             contentDescription = "time"
                         )
-                    })
+                    },
+                    suffixIcon = {
+                        Image(
+                            painter = painterResource(R.drawable.icon_down_chevron),
+                            contentDescription = "down_chevron"
+                        )
+                    },
+
+                    )
             }
             Spacer(modifier.height(24.dp))
             Row(

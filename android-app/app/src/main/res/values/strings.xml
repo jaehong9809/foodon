@@ -39,6 +39,8 @@
     <!-- food-->
     <string name="total_intake">전체 섭취량</string>
     <string name="food_info_check">음식 정보를 확인해 보세요!</string>
+    <string name="food_amount">음식양</string>
+    <string name="nutritional_ingredients">영양 성분</string>
 
 
 </resources>
