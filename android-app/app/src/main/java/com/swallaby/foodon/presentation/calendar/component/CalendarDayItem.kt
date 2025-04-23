@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.ui.component.RoundedCircularProgress
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
@@ -40,7 +42,18 @@ fun CalendarDayItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        DayText(date.dayOfMonth, isSelected)
+        // TODO: 식사, 체중, 추천 탭에 맞게 수정 (식사인 경우 progress 사용)
+
+        Box(contentAlignment = Alignment.Center) {
+            RoundedCircularProgress(
+                progress = 0f, // 0f ~ 1f
+                modifier = Modifier.size(30.dp),
+            )
+
+            DayText(date.dayOfMonth, isSelected)
+        }
+
+//        DayText(date.dayOfMonth, isSelected)
 
         // 칼로리 표시
         kcal?.let {
@@ -57,6 +70,8 @@ fun DayText(
     day: Int,
     isSelected: Boolean,
 ) {
+
+    // 날짜 박스
     Box(
         modifier = Modifier
             .background(
@@ -76,8 +91,6 @@ fun DayText(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-
     }
+
 }
-
-
