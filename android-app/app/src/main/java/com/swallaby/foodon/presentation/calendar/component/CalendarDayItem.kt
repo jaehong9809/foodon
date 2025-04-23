@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
@@ -70,11 +71,8 @@ fun DayText(
         ) {
             Text(
                 text = "$day",
-                style = if (isSelected) {
-                    SpoqaTypography.SpoqaBold13.copy(color = MainWhite)
-                } else {
-                    SpoqaTypography.SpoqaBold13.copy(color = Color.Black)
-                },
+                style = SpoqaTypography.SpoqaBold13,
+                color = if (isSelected) MainWhite else G900,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
