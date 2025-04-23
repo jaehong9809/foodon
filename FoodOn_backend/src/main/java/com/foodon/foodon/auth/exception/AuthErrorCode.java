@@ -1,10 +1,8 @@
 package com.foodon.foodon.auth.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public enum AuthErrorCode {
 
     UNAUTHORIZED_ACCESS(3000, "접근할 수 없는 리소스입니다."),
@@ -14,4 +12,9 @@ public enum AuthErrorCode {
 
     private final int code;
     private final String message;
+
+    AuthErrorCode(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 }
