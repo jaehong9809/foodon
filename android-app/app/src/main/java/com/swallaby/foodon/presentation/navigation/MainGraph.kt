@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -12,7 +13,7 @@ fun NavGraphBuilder.mainGraph(
 ) {
 
     navigation(
-        startDestination = NavRoutes.Main.route, route = NavRoutes.Main.route
+        startDestination = NavRoutes.Main.route, route = NavRoutes.MainGraph.route
     ) {
         composable(NavRoutes.Main.route) {
             MainScreen()

@@ -48,6 +48,23 @@ fun MainScreen() {
             modifier = Modifier
                 .background(WB500)
                 .clickable {
+                    navController.navigate(NavRoutes.Calendar.route)
+                }
+        ) {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "달력 이동",
+                color = MainWhite,
+                style = Typography.displayLarge
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Box(
+            modifier = Modifier
+                .background(WB500)
+                .clickable {
                     navController.navigate(NavRoutes.NutrientDetail.route)
                 }
         ) {

@@ -25,6 +25,12 @@
     <string name="tab_weight">체중</string>
     <string name="tab_recommend">추천</string>
     <string name="tab_weekly">%d주차</string>
+    <string name="tab_content_title_meal">하루 목표 섭취량</string>
+    <string name="tab_content_title_goal_weight">목표 체중</string>
+    <string name="tab_content_title_cur_weight">현재 체중</string>
+    <string name="tab_content_title_recommend">이 주의 추천 음식</string>
+    <string name="format_kcal">%skcal</string>
+    <string name="format_kg">%dkg</string>
 
     <!-- food-->
     <string name="total_intake">전체 섭취량</string>

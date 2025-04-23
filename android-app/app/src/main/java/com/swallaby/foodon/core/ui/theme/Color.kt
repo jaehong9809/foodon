@@ -23,6 +23,7 @@ val WB400 = Color(0xFF5BA7FF)
 val WB300 = Color(0xFF7CBEFF)
 val WB200 = Color(0xFFA7D7FF)
 val WB100 = Color(0xFFD3EDFF)
+val WB500F1A = Color(0x1A2581FF)
 
 /* Gray Color */
 val G900 = Color(0xFF111111)
@@ -53,3 +54,8 @@ val Bkg04 = Color(0xFFF3F4F8)
 val Bkg05 = Color(0xFFEFEFF3)
 val BG100 = Color(0xFFF3F4F8)
 val BG300 = Color(0xFFD6D8E1)
+val BGTab = Color(0xFFE9F2FF)
+val BGGreen = Color(0x1F11CA72)
+
+/* Text Color */
+val TextGreen = Color(0xFF25A572)
