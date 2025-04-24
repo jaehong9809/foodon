@@ -27,7 +27,7 @@ import coil.request.ImageRequest
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.RoundedCircularProgress
 import com.swallaby.foodon.core.ui.theme.G500
-import com.swallaby.foodon.core.ui.theme.G750
+import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.MainWhite
@@ -101,7 +101,7 @@ fun CalendarDayItem(
                 Text(
                     text = "${meal.intakeKcal}",
                     style = SpoqaTypography.SpoqaMedium11,
-                    color = G750
+                    color = G700
                 )
             }
 
