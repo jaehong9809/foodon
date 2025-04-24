@@ -2,7 +2,9 @@ package com.foodon.foodon.common.exception;
 
 import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.exception.dto.ErrorResponse;
+import com.foodon.foodon.common.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ public class GlobalExceptionHandler {
     private static final String LOG_FORMAT = "request = {}, {} \n class = {} \n code = {} \n message = {}";
 
     @ExceptionHandler(GlobalException.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(
+    public ResponseEntity<Response<Void>> handleGlobalException(
             GlobalException exception,
             HttpServletRequest request
     ){
@@ -33,18 +35,14 @@ public class GlobalExceptionHandler {
         );
         exception.printStackTrace();
 
-        return ResponseEntity
-                .status(exception.getHttpStatus())
-                .body(ErrorResponse.from(errorCode));
+        return ResponseUtil.failure(exception, errorCode);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleServerException(
+    public ResponseEntity<Response<Void>> handleServerException(
             Exception exception,
             HttpServletRequest request
     ){
-        String code = "500";
-        String message = "서버 에러가 발생하였습니다.";
         log.warn(
                 LOG_FORMAT,
                 request.getMethod(),
@@ -55,9 +53,7 @@ public class GlobalExceptionHandler {
         );
         exception.printStackTrace();
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(code, message));
+        return ResponseUtil.failure(exception);
     }
 
 }

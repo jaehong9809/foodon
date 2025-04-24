@@ -1,5 +1,7 @@
 package com.foodon.foodon.meal.presentation;
 
+import com.foodon.foodon.common.dto.Response;
+import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.meal.application.MealService;
 import com.foodon.foodon.meal.dto.MealInfoResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +24,11 @@ public class MealController {
             value = "/detect",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
-    public ResponseEntity<MealInfoResponse> uploadAndDetectMeal(
+    public ResponseEntity<Response<MealInfoResponse>> uploadAndDetectMeal(
             @RequestPart("image") MultipartFile multipartFile
     ) {
 
         MealInfoResponse result = mealService.uploadAndDetect(multipartFile);
-        return ResponseEntity.ok(result);
+        return ResponseUtil.success(result);
     }
 }

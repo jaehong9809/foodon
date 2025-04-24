@@ -1,0 +1,53 @@
+package com.foodon.foodon.common.util;
+
+import com.foodon.foodon.common.dto.Response;
+import com.foodon.foodon.common.exception.ErrorCode;
+import com.foodon.foodon.common.exception.GlobalException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ResponseUtil {
+
+    public static <T> ResponseEntity<Response<T>> success(String message, T data) {
+        return ResponseEntity.ok(Response.<T>builder().code("00000").message(message).data(data).build());
+    }
+
+    public static <T> ResponseEntity<Response<T>> success(T data) {
+        return ResponseEntity.ok(
+                Response.<T>builder()
+                        .code("00000")
+                        .message("정상적으로 처리되었습니다.")
+                        .data(data)
+                        .build());
+    }
+
+    public static <T> ResponseEntity<Response<T>> success() {
+        return ResponseEntity.ok(
+                Response.<T>builder()
+                        .code("00000")
+                        .message("정상적으로 처리되었습니다.")
+                        .build());
+    }
+
+    public static <T> ResponseEntity<Response<T>> failure(
+            GlobalException e,
+            ErrorCode errorCode
+    ) {
+        return ResponseEntity.status(e.getHttpStatus())
+                .body(Response.<T>builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
+    }
+
+    public static <T> ResponseEntity<Response<T>> failure(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Response.<T>builder()
+                        .code("50000")
+                        .message("서버 에러가 발생하였습니다.")
+                        .build());
+    }
+
+}
