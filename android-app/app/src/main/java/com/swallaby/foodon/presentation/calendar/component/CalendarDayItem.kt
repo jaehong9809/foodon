@@ -5,7 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -14,18 +16,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.RoundedCircularProgress
 import com.swallaby.foodon.core.ui.theme.G500
+import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
+import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.domain.calendar.model.CalendarType
 import org.threeten.bp.LocalDate
 
 @Composable
 fun CalendarDayItem(
+    calendarItem: CalendarItem?,
+    type: CalendarType = CalendarType.MEAL,
     date: LocalDate,
     today: LocalDate,
     isSelected: Boolean,
@@ -33,6 +48,9 @@ fun CalendarDayItem(
 ) {
 
     val isFutureDay = date.isAfter(today)
+
+    val recommendationImageUrl = (calendarItem as? CalendarItem.Recommendation)?.data?.thumbnailImage
+    val hasRecommendationImage = recommendationImageUrl?.isNotBlank() == true
 
     Column(
         modifier = Modifier
@@ -46,20 +64,62 @@ fun CalendarDayItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // TODO: 식사, 체중, 추천 탭에 맞게 수정 (식사인 경우 progress 사용)
-
         Box(contentAlignment = Alignment.Center) {
-            RoundedCircularProgress(
-                progress = 0f, // 0f ~ 1f
-                modifier = Modifier.size(30.dp),
-            )
+            if (type == CalendarType.MEAL) {
+                val progress = (calendarItem as? CalendarItem.Meal)?.data?.let { meal ->
+                    if (meal.goalKcal > 0) {
+                        (meal.intakeKcal.toFloat() / meal.goalKcal).coerceIn(0f, 1f)
+                    } else {
+                        0f
+                    }
+                } ?: 0f
 
-            DayText(date.dayOfMonth, isSelected, isFutureDay)
+                RoundedCircularProgress(
+                    progress = progress,
+                    modifier = Modifier.size(30.dp),
+                )
+            } else if (type == CalendarType.RECOMMENDATION) {
+                recommendationImageUrl?.takeIf { it.isNotBlank() }?.let { imageUrl ->
+                    RecommendationFoodImage(imageUrl)
+                }
+            }
+
+            DayText(
+                day = date.dayOfMonth,
+                isSelected = isSelected,
+                isFutureDay = isFutureDay,
+                textColor = if (hasRecommendationImage) MainWhite else G900
+            )
         }
 
-//        DayText(date.dayOfMonth, isSelected)
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // TODO: 식사 -> 칼로리, 체중 -> 체중, 추천 -> 없음
+        // 하단 정보
+        when (calendarItem) {
+            is CalendarItem.Meal -> {
+                val meal = calendarItem.data
+
+                Text(
+                    text = "${meal.intakeKcal}",
+                    style = SpoqaTypography.SpoqaMedium11,
+                    color = G750
+                )
+            }
+
+            is CalendarItem.Weight -> {
+                val weight = calendarItem.data
+
+                WeightBox(
+                    text = stringResource(R.string.format_kg, weight.weight),
+                    fontStyle = SpoqaTypography.SpoqaMedium11,
+                    isSmall = true
+                )
+            }
+
+            else -> {
+                // 아무것도 안 띄움
+            }
+        }
     }
 }
 
@@ -67,13 +127,14 @@ fun CalendarDayItem(
 fun DayText(
     day: Int,
     isSelected: Boolean,
-    isFutureDay: Boolean
+    isFutureDay: Boolean,
+    textColor: Color
 ) {
 
     val fontColor = when {
         isSelected -> MainWhite
         isFutureDay -> G500
-        else -> G900
+        else -> textColor
     }
 
     // 날짜 박스
@@ -98,4 +159,32 @@ fun DayText(
         }
     }
 
+}
+
+@Composable
+fun RecommendationFoodImage(
+    imageUrl: String? = ""
+) {
+    Box(
+        modifier = Modifier
+            .size(30.dp)
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .build(),
+            contentDescription = "추천 음식 사진",
+            modifier = Modifier
+                .size(30.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
+        )
+
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(MainBlack.copy(alpha = 0.2f), shape = CircleShape)
+        )
+    }
 }

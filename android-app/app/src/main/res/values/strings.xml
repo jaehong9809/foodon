@@ -36,6 +36,8 @@
     <string name="format_kcal">%skcal</string>
     <string name="format_kg">%dkg</string>
     <string name="format_calendar_date">%d년 %d월</string>
+    <string name="tab_meal_bottom">단위:kcal</string>
+    <string name="tab_weight_bottom">체중 변화(kg)</string>
 
     <!-- food-->
     <string name="total_intake">전체 섭취량</string>
