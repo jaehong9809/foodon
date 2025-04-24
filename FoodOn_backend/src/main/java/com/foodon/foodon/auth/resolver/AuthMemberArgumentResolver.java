@@ -61,7 +61,7 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
         if (authHeader == null) {
             throw new AuthUnauthorizedException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         }
-        return authHeader.split(" ")[1];
+        return authHeader.substring("Bearer ".length());
     }
 
     private String extractRefreshToken(HttpServletRequest request) {
