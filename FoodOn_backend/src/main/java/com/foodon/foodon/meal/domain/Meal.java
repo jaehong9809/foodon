@@ -29,6 +29,9 @@ public class Meal {
     @JoinColumn(name = "calendar_id", nullable = false)
     private Calendar calendar;
 
+    @Enumerated(EnumType.STRING)
+    private MealTimeType mealTimeType;
+
     @Column(nullable = false)
     private int totalKcal;
 
