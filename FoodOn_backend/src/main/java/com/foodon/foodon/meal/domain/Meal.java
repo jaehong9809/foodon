@@ -29,8 +29,17 @@ public class Meal {
     @JoinColumn(name = "calendar_id", nullable = false)
     private Calendar calendar;
 
-    @Embedded
-    private MealInfo mealInfo;
+    @Column(nullable = false)
+    private int totalKcal;
+
+    @Column(nullable = false)
+    private int totalCarbs;
+
+    @Column(nullable = false)
+    private int totalProtein;
+
+    @Column(nullable = false)
+    private int totalFat;
 
     @Column(nullable = false)
     private LocalDateTime mealTime;
