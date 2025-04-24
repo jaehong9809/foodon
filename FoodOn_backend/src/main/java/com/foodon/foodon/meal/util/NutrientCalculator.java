@@ -12,8 +12,8 @@ import java.util.function.Function;
 @Component
 public class NutrientCalculator {
 
-    public static BigDecimal multiply(BigDecimal value, Integer quantity) {
-        return value.multiply(BigDecimal.valueOf(quantity != null ? quantity : 1));
+    public static BigDecimal multiply(BigDecimal value, BigDecimal quantity) {
+        return value.multiply(quantity != null ? quantity : BigDecimal.ONE);
     }
 
     public static BigDecimal sum(
