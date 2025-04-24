@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
@@ -86,23 +87,37 @@ fun CalendarScreen(
                     .padding(bottom = 96.dp)
                     .fillMaxSize(),
             ) {
-                CalendarPager(
-                    baseYearMonth = baseYearMonth,
-                    pagerState = pagerState,
-                    selectedDate = selectedDate,
-                    today = uiState.today,
-                    onDateSelected = { viewModel.selectDate(it) },
-                    onPreviousMonth = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                        }
-                    },
-                    onNextMonth = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        }
+
+                when (val calendarResult = uiState.calendarState) {
+                    is ResultState.Loading -> {
+                        // 로딩 UI 표시
                     }
-                )
+                    is ResultState.Success -> {
+                        val calendarItems = calendarResult.data
+
+                        CalendarPager(
+                            baseYearMonth = baseYearMonth,
+                            pagerState = pagerState,
+                            selectedDate = selectedDate,
+                            today = uiState.today,
+                            calendarItems = calendarItems,
+                            onDateSelected = { viewModel.selectDate(it) },
+                            onPreviousMonth = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                }
+                            },
+                            onNextMonth = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                        )
+                    }
+                    is ResultState.Error -> {
+                        // 에러 UI 표시
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 

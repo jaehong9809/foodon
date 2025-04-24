@@ -12,11 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
 @Composable
 fun CalendarPager(
+    calendarItems: List<CalendarItem>,
     baseYearMonth: YearMonth,
     pagerState: PagerState,
     selectedDate: LocalDate,
