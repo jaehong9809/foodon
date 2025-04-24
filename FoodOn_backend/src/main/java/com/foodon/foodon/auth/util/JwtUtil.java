@@ -1,7 +1,8 @@
 package com.foodon.foodon.auth.util;
 
 import static com.foodon.foodon.auth.exception.AuthException.AuthUnauthorizedException;
-import com.foodon.foodon.auth.domain.UserTokens;
+
+import com.foodon.foodon.auth.dto.MemberTokens;
 import com.foodon.foodon.auth.exception.AuthErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -31,10 +32,10 @@ public class JwtUtil {
 
     // ---------- * 토큰 생성 * ---------- //
 
-    public UserTokens createUserToken(String subject) {
+    public MemberTokens createMemberToken(String subject) {
         String refreshToken = createToken("", refreshTokenExpiry);
         String accessToken = createToken(subject, accessTokenExpiry);
-        return new UserTokens(refreshToken, accessToken);
+        return new MemberTokens(refreshToken, accessToken);
     }
 
     private String createToken(String subject, Long expiredMs) {
