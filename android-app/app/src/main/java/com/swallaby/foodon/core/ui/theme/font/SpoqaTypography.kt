@@ -26,6 +26,13 @@ object SpoqaTypography {
         lineHeight = 16.sp
     )
 
+    val SpoqaBold13 = TextStyle(
+        fontFamily = SpoqaHanSansNeo,
+        fontWeight = FontWeight.Bold,
+        fontSize = 13.sp,
+        lineHeight = 13.sp
+    )
+
     val SpoqaBold9 = TextStyle(
         fontFamily = SpoqaHanSansNeo,
         fontWeight = FontWeight.Bold,
@@ -81,6 +88,14 @@ object SpoqaTypography {
         fontSize = 12.sp,
         lineHeight = 12.sp
     )
+
+    val SpoqaMedium11 = TextStyle(
+        fontFamily = SpoqaHanSansNeo,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 11.sp
+    )
+
 
     val SpoqaNormal16 = TextStyle(
         fontFamily = SpoqaHanSansNeo,

@@ -1,6 +1,6 @@
-package com.swallaby.foodon.data.calendar.dto
+package com.swallaby.foodon.data.calendar.remote.dto
 
-import com.swallaby.foodon.domain.calendar.model.Weight
+import com.swallaby.foodon.domain.calendar.model.CalendarWeight
 
 data class WeightResponse(
     val calendarId: Long = 0,
@@ -8,8 +8,8 @@ data class WeightResponse(
     val weight: Int = 0
 )
 
-fun WeightResponse.toDomain(): Weight {
-    return Weight(
+fun WeightResponse.toDomain(): CalendarWeight {
+    return CalendarWeight(
         calendarId = this.calendarId,
         date = this.date,
         weight = this.weight
