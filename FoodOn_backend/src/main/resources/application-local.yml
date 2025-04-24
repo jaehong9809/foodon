@@ -47,6 +47,9 @@ cloud:
       accessKey: ${CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
       secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
 
+meal-detect-ai-model:
+  url: https://ssafy/api/v1/ai/detect
+  
 logging:
   level:
     root: INFO
