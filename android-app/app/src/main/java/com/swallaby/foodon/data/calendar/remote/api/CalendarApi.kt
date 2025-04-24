@@ -3,6 +3,7 @@ package com.swallaby.foodon.data.calendar.remote.api
 import com.swallaby.foodon.core.data.remote.BaseResponse
 import com.swallaby.foodon.data.calendar.remote.dto.MealResponse
 import com.swallaby.foodon.data.calendar.remote.dto.RecommendationResponse
+import com.swallaby.foodon.data.calendar.remote.dto.UserWeightResponse
 import com.swallaby.foodon.data.calendar.remote.dto.WeightResponse
 import retrofit2.http.GET
 
@@ -16,5 +17,8 @@ interface CalendarApi {
 
     @GET("calendar/recommendations")
     suspend fun getCalendarRecommendations(date: String): BaseResponse<List<RecommendationResponse>>
+
+    @GET("members/profile/weight")
+    suspend fun getUserWeight(): BaseResponse<UserWeightResponse>
 
 }
