@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.fooddetail.component
+package com.swallaby.foodon.presentation.foodDetail.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,10 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
-fun FoodInfoComponent(modifier: Modifier = Modifier) {
+fun FoodInfoComponent(
+    modifier: Modifier = Modifier,
+    onClick: (foodId: Long) -> Unit,
+) {
     Column(
         modifier = modifier
             .background(color = Color.White)
@@ -30,8 +33,12 @@ fun FoodInfoComponent(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = modifier.height(24.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FoodCard()
-            FoodCard()
+            FoodCard(
+                onClick = onClick
+            )
+            FoodCard(
+                onClick = onClick
+            )
         }
 
     }
@@ -42,5 +49,5 @@ fun FoodInfoComponent(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun FoodInfoComponentPreview() {
-    FoodInfoComponent()
+    FoodInfoComponent(onClick = {})
 }

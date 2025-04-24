@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.fooddetail.component
+package com.swallaby.foodon.presentation.foodDetail.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -11,7 +11,10 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography.SpoqaMedium14
 
 @Composable
-fun PercentageBar(modifier: Modifier = Modifier, percentage: Float = 0.5f) {
+fun PercentageBar(
+    modifier: Modifier = Modifier,
+    percentage: Float = 0.5f,
+) {
     Box(
         modifier = modifier.padding(horizontal = 8.dp),
         contentAlignment = androidx.compose.ui.Alignment.CenterStart
