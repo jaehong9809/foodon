@@ -1,6 +1,7 @@
 package com.foodon.foodon.meal.presentation;
 
 import com.foodon.foodon.meal.application.MealService;
+import com.foodon.foodon.meal.dto.MealInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,11 @@ public class MealController {
             value = "/detect",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
-    public ResponseEntity<Void> detectMealImage(
+    public ResponseEntity<MealInfoResponse> uploadAndDetectMeal(
             @RequestPart("image") MultipartFile multipartFile
     ) {
 
-
+        MealInfoResponse result = mealService.uploadAndDetect(multipartFile);
+        return ResponseEntity.ok(result);
     }
 }
