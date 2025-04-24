@@ -166,7 +166,7 @@ fun RecommendationFoodImage(
 ) {
     Box(
         modifier = Modifier
-            .size(30.dp)
+            .size(32.dp)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -174,11 +174,10 @@ fun RecommendationFoodImage(
                 .build(),
             contentDescription = "추천 음식 사진",
             modifier = Modifier
-                .size(30.dp)
+                .size(32.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop,
         )
-
 
         Box(
             modifier = Modifier
