@@ -1,4 +1,4 @@
-package com.foodon.foodon.meal.client;
+package com.foodon.foodon.meal.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,12 +12,10 @@ public class MealDetectAiClient {
 
     public MealDetectAiResponse detect(String imageUrl) {
         return webClient.post()
-                .bodyValue(imageUrl)
+                .bodyValue(new MealDetectAiRequest(imageUrl))
                 .retrieve()
                 .bodyToMono(MealDetectAiResponse.class)
                 .block();
-
-
     }
 
 }

@@ -1,4 +1,4 @@
-package com.foodon.foodon.meal.client;
+package com.foodon.foodon.meal.infrastructure;
 
 public record MealDetectAiRequest(
         String url
