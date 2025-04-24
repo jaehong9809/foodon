@@ -82,7 +82,7 @@ class CalendarViewModel @Inject constructor(
                             calendarType = CalendarType.RECOMMENDATION,
                             calendarId = 6L,
                             date = "2025-04-10",
-                            thumbnailImage = "https://via.placeholder.com/150"
+                            thumbnailImage = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
                         )
                     )
                 )

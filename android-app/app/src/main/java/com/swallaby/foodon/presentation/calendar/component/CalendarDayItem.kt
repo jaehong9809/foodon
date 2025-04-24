@@ -54,7 +54,6 @@ fun CalendarDayItem(
 
     Column(
         modifier = Modifier
-            .padding(9.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,

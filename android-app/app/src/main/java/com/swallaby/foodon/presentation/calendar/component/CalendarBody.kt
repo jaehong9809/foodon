@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import org.threeten.bp.LocalDate
@@ -46,7 +48,7 @@ fun CalendarBody(
         for (week in 0 until 6) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 for (dayOfWeek in 0..6) {
                     val day = if (week == 0 && dayOfWeek < firstDayOfWeek) {
@@ -61,8 +63,9 @@ fun CalendarBody(
 
                         Box(
                             modifier = Modifier
-                                .weight(1f),
-                            contentAlignment = Alignment.Center
+                                .weight(1f)
+                                .heightIn(min = 82.dp),
+                            contentAlignment = Alignment.TopCenter
                         ) {
                             CalendarDayItem(
                                 calendarItem = calendarItem,
