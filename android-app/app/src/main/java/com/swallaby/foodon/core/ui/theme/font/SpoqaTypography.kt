@@ -102,4 +102,11 @@ object SpoqaTypography {
         fontSize = 12.sp,
         lineHeight = 12.sp
     )
+
+    val SpoqaNormal11 = TextStyle(
+        fontFamily = SpoqaHanSansNeo,
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp,
+        lineHeight = 11.sp
+    )
 }
