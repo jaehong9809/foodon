@@ -32,8 +32,7 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideFoodApi(@NetworkModule.MainRetrofit retrofit: Retrofit)
-            : FoodApi {
-        return retrofit.create(FoodApi::class.java)
-    }
+            : FoodApi =
+        retrofit.create(FoodApi::class.java)
 
 }

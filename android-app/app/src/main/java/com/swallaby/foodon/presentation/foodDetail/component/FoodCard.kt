@@ -38,7 +38,10 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 
 @Composable
-fun FoodCard(modifier: Modifier = Modifier, onClick: (foodId: Long) -> Unit) {
+fun FoodCard(
+    modifier: Modifier = Modifier,
+    onClick: (foodId: Long) -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

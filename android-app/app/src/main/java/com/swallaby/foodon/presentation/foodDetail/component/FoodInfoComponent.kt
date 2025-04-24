@@ -18,7 +18,10 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
-fun FoodInfoComponent(modifier: Modifier = Modifier, onClick: (foodId: Long) -> Unit) {
+fun FoodInfoComponent(
+    modifier: Modifier = Modifier,
+    onClick: (foodId: Long) -> Unit,
+) {
     Column(
         modifier = modifier
             .background(color = Color.White)

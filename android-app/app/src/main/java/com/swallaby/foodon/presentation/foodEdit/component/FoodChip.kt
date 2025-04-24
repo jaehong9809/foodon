@@ -22,7 +22,10 @@ import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 @Composable
-private fun DefaultChip(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+private fun DefaultChip(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
     Box(
         modifier = modifier
             .height(32.dp)

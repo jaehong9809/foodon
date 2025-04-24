@@ -27,7 +27,11 @@ import com.swallaby.foodon.presentation.foodEdit.component.FoodThumbnailList
 import com.swallaby.foodon.presentation.foodEdit.component.SearchChip
 
 @Composable
-fun FoodEditScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit, foodId: Long = 0) {
+fun FoodEditScreen(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    foodId: Long = 0,
+) {
     Column {
         FoodThumbnailList()
         HorizontalDivider(
