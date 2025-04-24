@@ -1,9 +1,8 @@
 package com.foodon.foodon.common.exception;
 
-import com.foodon.foodon.common.exception.dto.ErrorResponse;
+import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
