@@ -10,7 +10,7 @@ import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     NavControllerProvider(navController = navController) {
@@ -25,7 +25,7 @@ fun NavGraph(
 
             mainGraph(navController)
             calendarGraph(navController, calendarViewModel)
-
+            foodGraph(navController)
         }
     }
 

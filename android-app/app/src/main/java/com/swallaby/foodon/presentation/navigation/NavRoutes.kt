@@ -11,4 +11,13 @@ sealed class NavRoutes(val route: String) {
     object CalendarGraph : NavRoutes("calendar_graph")
     object Calendar : NavRoutes("calendar")
 
+    /* Food */
+    object FoodGraph : NavRoutes("food_graph") {
+        object FoodDetail : NavRoutes("food_detail")
+        object FoodEdit : NavRoutes("food_edit/{foodId}") {
+            fun createRoute(foodId: Long) = "food_edit/$foodId"
+        }
+    }
+
+
 }
