@@ -45,15 +45,25 @@ public class Member extends BaseTimeEntity {
 
     private Long activityTypeId;
 
-    public static Member create(
+    private Member (
+            String nickname,
+            String email,
+            String profileImgUrl
+    ){
+        this.nickname = nickname;
+        this.email = email;
+        this.profileImage = profileImgUrl;
+    }
+
+    public static Member createMember(
             String nickname,
             String email,
             String profileImgUrl
     ) {
-        Member member = new Member();
-        member.nickname = nickname;
-        member.email = email;
-        member.profileImage = profileImgUrl;
-        return member;
+        return new Member(
+                nickname,
+                email,
+                profileImgUrl
+        );
     }
 }

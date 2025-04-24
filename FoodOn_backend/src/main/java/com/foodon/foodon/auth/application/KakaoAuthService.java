@@ -55,7 +55,7 @@ public class KakaoAuthService {
 
     private Member createMemberAndLinkOauth(KakaoLoginRequest request) {
         Member newMember = memberRepository.save(
-                Member.create(
+                Member.createMember(
                     request.nickname(),
                     request.email(),
                     request.profileImgUrl()
