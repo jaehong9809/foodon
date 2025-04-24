@@ -1,0 +1,43 @@
+package com.swallaby.foodon.domain.food.model
+
+
+data class MealNutrientWithType(
+    override val alcohol: Int,
+    override val caffeine: Int,
+    override val carbs: Int,
+    override val cholesterol: Int,
+    override val fat: Int,
+    override val fattyAcid: Int,
+    override val fiber: Int,
+    override val foodId: Long,
+    override val foodName: String,
+    override val kalium: Int,
+    override val kcal: Int,
+    override val protein: Int,
+    override val saturatedFat: Int,
+    override val sodium: Int,
+    override val sugar: Int,
+    override val transFat: Int,
+    override val unit: String,
+    override val unsaturatedFat: Int,
+    val type: String,
+) : BaseMealNutrient(
+    alcohol,
+    caffeine,
+    carbs,
+    cholesterol,
+    fat,
+    fattyAcid,
+    fiber,
+    foodId,
+    foodName,
+    kalium,
+    kcal,
+    protein,
+    saturatedFat,
+    sodium,
+    sugar,
+    transFat,
+    unit,
+    unsaturatedFat
+)
