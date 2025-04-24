@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,10 +30,8 @@ import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.domain.calendar.model.CalendarType
-import com.swallaby.foodon.presentation.calendar.component.CalendarBody
-import com.swallaby.foodon.presentation.calendar.component.CalendarHeader
+import com.swallaby.foodon.presentation.calendar.component.CalendarPager
 import com.swallaby.foodon.presentation.calendar.component.TabContentPager
-import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
@@ -53,7 +48,7 @@ fun CalendarScreen(
     val monthOffsetRange = -12..12
 
     val pagerState = rememberPagerState(initialPage = 12, pageCount = { monthOffsetRange.count() })
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val calendarType = CalendarType.values()[selectedTabIndex]
@@ -91,45 +86,23 @@ fun CalendarScreen(
                     .padding(bottom = 96.dp)
                     .fillMaxSize(),
             ) {
-                CalendarHeader(
-                    currentYearMonth = currentYearMonth,
+                CalendarPager(
+                    baseYearMonth = baseYearMonth,
+                    pagerState = pagerState,
+                    selectedDate = selectedDate,
+                    today = uiState.today,
+                    onDateSelected = { viewModel.selectDate(it) },
                     onPreviousMonth = {
-                        coroutineScope.launch {
+                        scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage - 1)
                         }
                     },
                     onNextMonth = {
-                        coroutineScope.launch {
+                        scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
                     }
                 )
-
-                WeeklyLabel()
-
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                ) { page ->
-                    val yearMonth = baseYearMonth.plusMonths((page - 12).toLong())
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 8.dp),
-                        contentAlignment = Alignment.TopStart
-                    ) {
-                        CalendarBody(
-                            yearMonth = yearMonth,
-                            selectedDate = selectedDate,
-                            today = uiState.today,
-                            onDateSelected = { viewModel.selectDate(it) }
-                        )
-                    }
-                }
-
 
                 Spacer(modifier = Modifier.height(8.dp))
 
