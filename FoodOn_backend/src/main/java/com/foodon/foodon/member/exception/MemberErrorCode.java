@@ -10,8 +10,8 @@ public enum MemberErrorCode {
     ILLEGAL_EMAIL_NULL("30002", "이메일은 필수로 입력해야합니다."),
     ILLEGAL_EMAIL_PATTERN("30003", "올바르지 않은 이메일 형식입니다."),
     ILLEGAL_REQUEST_PARAMETER("30004", "필수값이 잘못된 요청입니다"),
-    FORBIDDEN_USER_STATUS("30005", "회원 정보를 볼 수 없습니다."),
-    USER_NOT_FOUND("30006", "존재하지 않는 회원입니다."),
+    FORBIDDEN_MEMBER_STATUS("30005", "회원 정보를 볼 수 없습니다."),
+    MEMBER_NOT_FOUND("30006", "존재하지 않는 회원입니다."),
     ILLEGAL_SOCIAL_ACCOUNT_ALREADY_EXISTS("30007", "해당 소셜 계정과 연동된 계정이 이미 존재합니다.")
     ;
 

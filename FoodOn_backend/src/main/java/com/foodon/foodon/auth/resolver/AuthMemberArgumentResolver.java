@@ -76,6 +76,6 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
         Long userId = Long.valueOf(jwtUtil.getSubject(accessToken));
 
         return memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }
