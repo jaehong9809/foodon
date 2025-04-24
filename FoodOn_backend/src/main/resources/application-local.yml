@@ -30,7 +30,7 @@ spring:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
       access-token-expiry: ${JWT_ACCESS_TOKEN_EXPIRY}
-      refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY}     # 14일 = 14 * 24 * 60 * 60 * 1000 (ms)
+      refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY}
 
 logging:
   level:
@@ -45,8 +45,5 @@ logging:
       connection: OFF
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
-
-oauth:
-  kakao:
 
 
