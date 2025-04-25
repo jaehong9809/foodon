@@ -13,6 +13,10 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
+        composable(NavRoutes.FoodGraph.FoodDetail.route) {
+            MealDetailScreen(onBackClick = { navController.popBackStack() }, onFoodClick = {
+                navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
+            })
 
         composable(NavRoutes.FoodGraph.FoodRecord.route) {
             // TODO: 식사 기록 카메라 화면

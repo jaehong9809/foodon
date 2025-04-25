@@ -23,7 +23,7 @@ import com.swallaby.foodon.domain.food.model.Nutrition
 @Composable
 fun NutritionalSmallInfo(
     modifier: Modifier = Modifier,
-    nutrition: Nutrition
+    nutrition: Nutrition,
 ) {
     Row {
         Box(
