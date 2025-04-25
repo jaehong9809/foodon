@@ -1,6 +1,5 @@
 package com.foodon.foodon.meal.domain;
 
-import com.foodon.foodon.calendar.domain.Calendar;
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -25,12 +24,11 @@ public class Meal {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "calendar_id", nullable = false)
-    private Calendar calendar;
-
     @Enumerated(EnumType.STRING)
     private MealTimeType mealTimeType;
+
+    @Column(nullable = false)
+    private LocalDateTime mealTime;
 
     @Column(nullable = false)
     private int totalKcal;
@@ -43,9 +41,6 @@ public class Meal {
 
     @Column(nullable = false)
     private int totalFat;
-
-    @Column(nullable = false)
-    private LocalDateTime mealTime;
 
     private String mealImage;
 

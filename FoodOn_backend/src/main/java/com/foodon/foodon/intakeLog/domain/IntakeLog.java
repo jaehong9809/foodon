@@ -1,4 +1,4 @@
-package com.foodon.foodon.calendar.domain;
+package com.foodon.foodon.intakeLog.domain;
 
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
@@ -8,18 +8,20 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "calendars")
-public class Calendar {
+@NoArgsConstructor(access = PROTECTED)
+@Table(name = "intake_logs")
+public class IntakeLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "calendar_id")
+    @Column(name = "intake_log_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
@@ -31,7 +33,5 @@ public class Calendar {
 
     @Column(nullable = false)
     private int intakeKcal;
-
-    private int weight;
 
 }
