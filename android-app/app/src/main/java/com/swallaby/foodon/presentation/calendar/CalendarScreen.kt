@@ -126,34 +126,30 @@ fun CalendarScreen(
                         .fillMaxWidth()
                         .wrapContentHeight()
                 ) { page ->
-                    when (val calendarResult = uiState.calendarState) {
-                        is ResultState.Loading -> {
+                    val yearMonth = baseYearMonth.plusMonths((page - 12).toLong())
+                    val calendarItems = (uiState.calendarState as? ResultState.Success)?.data.orEmpty()
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.TopStart
+                    ) {
+                        CalendarBody(
+                            calendarItems = calendarItems,
+                            type = calendarType,
+                            yearMonth = yearMonth,
+                            selectedDate = selectedDate,
+                            today = today,
+                            onDateSelected = { viewModel.selectDate(it) }
+                        )
+
+                        if (uiState.calendarState is ResultState.Loading) {
                             LoadingProgress()
                         }
-                        is ResultState.Success -> {
-                            val yearMonth = baseYearMonth.plusMonths((page - 12).toLong())
-                            val calendarItems = calendarResult.data
 
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 8.dp),
-                                contentAlignment = Alignment.TopStart
-                            ) {
-                                CalendarBody(
-                                    calendarItems = calendarItems,
-                                    type = calendarType,
-                                    yearMonth = yearMonth,
-                                    selectedDate = selectedDate,
-                                    today = today,
-                                    onDateSelected = { viewModel.selectDate(it) }
-                                )
-                            }
-                        }
-                        is ResultState.Error -> {
-
-                        }
                     }
+
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
