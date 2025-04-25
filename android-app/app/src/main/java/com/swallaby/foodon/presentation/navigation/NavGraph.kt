@@ -25,7 +25,7 @@ fun NavGraph(
 
             mainGraph(navController)
             calendarGraph(navController, calendarViewModel)
-            foodGraph(navController)
+            mealGraph(navController)
         }
     }
 

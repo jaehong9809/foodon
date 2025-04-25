@@ -21,7 +21,7 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.presentation.foodDetail.component.DropButton
+import com.swallaby.foodon.presentation.mealDetail.component.DropButton
 
 @Composable
 fun FoodAmountComponent(modifier: Modifier = Modifier) {
@@ -57,7 +57,7 @@ fun FoodAmountComponent(modifier: Modifier = Modifier) {
                     modifier = modifier
                         .height(48.dp)
                         .weight(1f),
-                    onClick = {}, text = "조각",
+                    onClick = {}, text = "1 ½",
                     contentModifier = modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     contentAlignment = Arrangement.SpaceBetween,

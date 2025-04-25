@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodDetail.component
+package com.swallaby.foodon.presentation.mealDetail.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +15,14 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography.SpoqaMedium14
 
+private val DefaultPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+
 @Composable
 fun DropButton(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+    contentPadding: PaddingValues = DefaultPadding,
     contentModifier: Modifier = Modifier,
-    contentAlignment: Arrangement.HorizontalOrVertical = Arrangement.spacedBy(4.dp),
+    contentAlignment: Arrangement.Horizontal = Arrangement.spacedBy(4.dp),
     prefixIcon: @Composable () -> Unit = {},
     suffixIcon: @Composable () -> Unit = {},
     text: String,
