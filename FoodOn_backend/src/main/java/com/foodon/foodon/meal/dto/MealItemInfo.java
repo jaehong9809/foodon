@@ -7,7 +7,7 @@ import com.foodon.foodon.food.domain.Unit;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record MealItemInfoResponse(
+public record MealItemInfo(
         FoodType type,
         Long foodId,
         String foodName,
@@ -17,13 +17,13 @@ public record MealItemInfoResponse(
         List<PositionInfo> positions
 ) {
 
-    public static MealItemInfoResponse from(
+    public static MealItemInfo from(
             Food food,
             BigDecimal quantity,
             List<PositionInfo> positions
     ) {
 
-        return new MealItemInfoResponse(
+        return new MealItemInfo(
                 food.getFoodType(),
                 food.getId(),
                 food.getName(),

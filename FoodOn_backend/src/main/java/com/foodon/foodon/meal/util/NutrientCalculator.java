@@ -1,6 +1,6 @@
 package com.foodon.foodon.meal.util;
 
-import com.foodon.foodon.meal.dto.MealItemInfoResponse;
+import com.foodon.foodon.meal.dto.MealItemInfo;
 import com.foodon.foodon.meal.dto.NutrientInfo;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class NutrientCalculator {
     }
 
     public static BigDecimal sum(
-            List<MealItemInfoResponse> items,
+            List<MealItemInfo> items,
             Function<NutrientInfo, BigDecimal> getter
     ) {
 
