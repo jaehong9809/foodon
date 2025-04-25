@@ -10,6 +10,7 @@ import com.swallaby.foodon.domain.calendar.model.CalendarRecommendation
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.model.CalendarWeight
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
+import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class CalendarViewModel @Inject constructor(
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getUserWeightUseCase: GetUserWeightUseCase,
+    private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
 
     fun fetchCalendarData(type: CalendarType, date: String) {
@@ -112,6 +114,15 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch {
             val result = getUserWeightUseCase()
             updateState { it.copy(weightState = result.toResultState()) }
+        }
+    }
+
+    fun fetchRecommendFoods(yearMonth: String, week: Int, day: String) {
+        updateState { it.copy(recommendFoods = ResultState.Loading) }
+
+        viewModelScope.launch {
+            val result = getRecommendFoodUseCase(yearMonth, week, day)
+            updateState { it.copy(recommendFoods = result.toResultState()) }
         }
     }
 

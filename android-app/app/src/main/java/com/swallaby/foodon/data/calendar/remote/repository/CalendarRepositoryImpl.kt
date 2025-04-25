@@ -8,6 +8,7 @@ import com.swallaby.foodon.data.calendar.remote.dto.toDomain
 import com.swallaby.foodon.domain.calendar.model.CalendarMeal
 import com.swallaby.foodon.domain.calendar.model.CalendarRecommendation
 import com.swallaby.foodon.domain.calendar.model.CalendarWeight
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.model.UserWeight
 import com.swallaby.foodon.domain.calendar.repository.CalendarRepository
 import javax.inject.Inject
@@ -30,6 +31,14 @@ class CalendarRepositoryImpl @Inject constructor(
 
     override suspend fun getUserWeight(): ApiResult<UserWeight> = safeApiCall {
         api.getUserWeight().getOrThrow { it.toDomain() }
+    }
+
+    override suspend fun getRecommendFood(
+        yearMonth: String,
+        week: Int,
+        day: String
+    ): ApiResult<List<RecommendFood>> = safeApiCall {
+        api.getRecommendFoods(yearMonth, week, day).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
 }

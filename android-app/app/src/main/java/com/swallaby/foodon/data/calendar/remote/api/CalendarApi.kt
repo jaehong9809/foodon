@@ -2,6 +2,7 @@ package com.swallaby.foodon.data.calendar.remote.api
 
 import com.swallaby.foodon.core.data.remote.BaseResponse
 import com.swallaby.foodon.data.calendar.remote.dto.MealResponse
+import com.swallaby.foodon.data.calendar.remote.dto.RecommendFoodResponse
 import com.swallaby.foodon.data.calendar.remote.dto.RecommendationResponse
 import com.swallaby.foodon.data.calendar.remote.dto.UserWeightResponse
 import com.swallaby.foodon.data.calendar.remote.dto.WeightResponse
@@ -20,5 +21,8 @@ interface CalendarApi {
 
     @GET("members/profile/weight")
     suspend fun getUserWeight(): BaseResponse<UserWeightResponse>
+
+    @GET("recommendations")
+    suspend fun getRecommendFoods(yearMonth: String, week: Int, day: String): BaseResponse<List<RecommendFoodResponse>>
 
 }

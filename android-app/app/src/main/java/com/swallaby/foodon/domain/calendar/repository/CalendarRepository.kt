@@ -4,6 +4,7 @@ import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.domain.calendar.model.CalendarMeal
 import com.swallaby.foodon.domain.calendar.model.CalendarRecommendation
 import com.swallaby.foodon.domain.calendar.model.CalendarWeight
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.model.UserWeight
 
 interface CalendarRepository {
@@ -14,4 +15,6 @@ interface CalendarRepository {
     suspend fun getCalendarRecommendations(date: String): ApiResult<List<CalendarRecommendation>>
 
     suspend fun getUserWeight(): ApiResult<UserWeight>
+
+    suspend fun getRecommendFood(yearMonth: String, week: Int, day: String): ApiResult<List<RecommendFood>>
 }
