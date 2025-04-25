@@ -19,7 +19,7 @@ import org.threeten.bp.YearMonth
 
 @Composable
 fun CalendarBody(
-    calendarItems: List<CalendarItem>,
+    calendarItemMap: Map<String, CalendarItem>,
     type: CalendarType = CalendarType.MEAL,
     yearMonth: YearMonth,
     selectedDate: LocalDate?,
@@ -29,14 +29,6 @@ fun CalendarBody(
     val firstDayOfMonth = yearMonth.atDay(1)
     val daysInMonth = yearMonth.lengthOfMonth()
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
-
-    val calendarItemMap = calendarItems.associateBy { item ->
-        when (item) {
-            is CalendarItem.Meal -> item.data.date
-            is CalendarItem.Weight -> item.data.date
-            is CalendarItem.Recommendation -> item.data.date
-        }
-    }
 
     Column(
         modifier = Modifier

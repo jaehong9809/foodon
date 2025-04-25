@@ -13,13 +13,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import kotlinx.coroutines.launch
 
 @Composable
 fun TabContentPager(
     modifier: Modifier = Modifier,
     selectedTab: Int,
-    onTabChanged: (Int) -> Unit
+    selectedItem: CalendarItem?,
+    onTabChanged: (Int) -> Unit,
+    onFetchTabData: (Int) -> Unit
 ) {
 
     val pagerState = rememberPagerState(initialPage = selectedTab, pageCount = { 3 })
@@ -39,9 +42,17 @@ fun TabContentPager(
         ) {
             // TODO: 각 화면에서 ViewModel 주입 받아서 데이터 사용
             when (page) {
-                0 -> MealContent()
-                1 -> WeightContent()
-                2 -> RecommendationContent()
+                0 -> {
+                    if (selectedItem is CalendarItem.Meal) {
+                        MealContent(calendarMeal = selectedItem.data)
+                    }
+                }
+                1 -> {
+                    WeightContent()
+                }
+                2 -> {
+                    RecommendationContent()
+                }
             }
         }
     }
@@ -50,6 +61,7 @@ fun TabContentPager(
     LaunchedEffect(pagerState.currentPage) {
         if (selectedTab != pagerState.currentPage) {
             onTabChanged(pagerState.currentPage)
+            onFetchTabData(pagerState.currentPage)
         }
     }
 

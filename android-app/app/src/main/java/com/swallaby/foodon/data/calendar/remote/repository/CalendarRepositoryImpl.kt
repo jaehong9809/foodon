@@ -35,8 +35,8 @@ class CalendarRepositoryImpl @Inject constructor(
 
     override suspend fun getRecommendFood(
         yearMonth: String,
-        week: Int,
-        day: String
+        week: Int?,
+        day: String?
     ): ApiResult<List<RecommendFood>> = safeApiCall {
         api.getRecommendFoods(yearMonth, week, day).getOrThrow { it.map { data -> data.toDomain() } }
     }

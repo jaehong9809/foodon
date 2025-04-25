@@ -117,7 +117,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun fetchRecommendFoods(yearMonth: String, week: Int, day: String) {
+    fun fetchRecommendFoods(yearMonth: String, week: Int? = null, day: String? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
 
         viewModelScope.launch {

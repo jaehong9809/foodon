@@ -40,6 +40,7 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.CalendarBody
 import com.swallaby.foodon.presentation.calendar.component.CalendarHeader
@@ -71,6 +72,18 @@ fun CalendarScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val selectedDate = uiState.selectedDate
+
+    val calendarItems = (uiState.calendarState as? ResultState.Success)?.data.orEmpty()
+
+    val calendarItemMap = calendarItems.associateBy {
+        when (it) {
+            is CalendarItem.Meal -> it.data.date
+            is CalendarItem.Weight -> it.data.date
+            is CalendarItem.Recommendation -> it.data.date
+        }
+    }
+
+    val selectedItem = calendarItemMap[selectedDate.toString()]
 
     // TODO: 맨 처음 API 두 번 호출되는 문제 수정 필요
 
@@ -127,7 +140,6 @@ fun CalendarScreen(
                         .wrapContentHeight()
                 ) { page ->
                     val yearMonth = baseYearMonth.plusMonths((page - 12).toLong())
-                    val calendarItems = (uiState.calendarState as? ResultState.Success)?.data.orEmpty()
 
                     Box(
                         modifier = Modifier
@@ -136,7 +148,7 @@ fun CalendarScreen(
                         contentAlignment = Alignment.TopStart
                     ) {
                         CalendarBody(
-                            calendarItems = calendarItems,
+                            calendarItemMap = calendarItemMap,
                             type = calendarType,
                             yearMonth = yearMonth,
                             selectedDate = selectedDate,
@@ -181,10 +193,22 @@ fun CalendarScreen(
 
                 TabContentPager(
                     selectedTab = selectedTabIndex,
+                    selectedItem = selectedItem,
                     onTabChanged = {
                         selectedTabIndex = it
+                    },
+                    onFetchTabData = { tabIndex ->
+                        if (calendarType == CalendarType.WEIGHT) {
+                            viewModel.fetchUserWeight()
+                        } else if (calendarType == CalendarType.RECOMMENDATION) {
+                            viewModel.fetchRecommendFoods(
+                                yearMonth = currentYearMonth.toString(),
+                                week = null
+                            )
+                        }
                     }
                 )
+
             }
         }
     )
