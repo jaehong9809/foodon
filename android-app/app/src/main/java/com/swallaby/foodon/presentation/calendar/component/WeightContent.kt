@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,9 +22,12 @@ import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.WB500F1A
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.domain.calendar.model.UserWeight
 
 @Composable
-fun WeightContent() {
+fun WeightContent(
+    userWeight: UserWeight = UserWeight()
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
@@ -38,9 +38,8 @@ fun WeightContent() {
             title = stringResource(R.string.tab_content_title_goal_weight),
             bgColor = Bkg04
         ) {
-            // TODO: 목표 체중
             Text(
-                text = stringResource(R.string.format_kg, 50),
+                text = stringResource(R.string.format_kg, userWeight.goalWeight),
                 color = G900,
                 style = SpoqaTypography.SpoqaBold18,
             )
@@ -59,10 +58,8 @@ fun WeightContent() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                // TODO: 현재 체중
                 Text(
-                    text = stringResource(R.string.format_kg, 55),
+                    text = stringResource(R.string.format_kg, userWeight.currentWeight),
                     color = G900,
                     style = SpoqaTypography.SpoqaBold18,
                 )

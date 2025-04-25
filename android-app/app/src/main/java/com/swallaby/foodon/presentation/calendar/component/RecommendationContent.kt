@@ -17,10 +17,13 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.WeekTabBar
 import com.swallaby.foodon.core.ui.theme.Bkg04
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
 
-// TODO: 몇 주까지 있는지, 각 주의 추천 음식 리스트
+// TODO: 몇 주까지 있는지, 선택된 주 인덱스
 @Composable
-fun RecommendationContent() {
+fun RecommendationContent(
+    recommendFoods: List<RecommendFood> = emptyList()
+) {
     var selectedWeek by remember { mutableIntStateOf(0) }
 
     Column {
@@ -48,8 +51,8 @@ fun RecommendationContent() {
                     .wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                itemsList.forEach { item ->
-                    RecommendFoodCompact(item, "600")
+                recommendFoods.forEach { item ->
+                    RecommendFoodCompact(item)
                 }
             }
 

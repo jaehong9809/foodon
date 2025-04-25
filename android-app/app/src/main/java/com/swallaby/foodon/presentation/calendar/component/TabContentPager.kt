@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.calendar.model.UserWeight
 import kotlinx.coroutines.launch
 
 @Composable
@@ -21,6 +23,8 @@ fun TabContentPager(
     modifier: Modifier = Modifier,
     selectedTab: Int,
     selectedItem: CalendarItem?,
+    userWeight: UserWeight = UserWeight(),
+    recommendFoods: List<RecommendFood> = emptyList(),
     onTabChanged: (Int) -> Unit,
     onFetchTabData: (Int) -> Unit
 ) {
@@ -48,7 +52,7 @@ fun TabContentPager(
                     }
                 }
                 1 -> {
-                    WeightContent()
+                    WeightContent(userWeight = userWeight)
                 }
                 2 -> {
                     RecommendationContent()

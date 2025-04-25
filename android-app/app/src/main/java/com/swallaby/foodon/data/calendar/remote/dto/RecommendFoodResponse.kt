@@ -14,7 +14,7 @@ data class RecommendFoodResponse(
 fun RecommendFoodResponse.toDomain(): RecommendFood {
     return RecommendFood(
         foodRecommendId = this.foodRecommendId,
-        foodName = this.foodName,
+        name = this.foodName,
         kcal = this.kcal,
         reason = this.reason,
         effects = this.effects

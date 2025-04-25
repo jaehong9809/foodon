@@ -35,6 +35,8 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.TextGreen
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.core.util.StringUtil.formatKcal
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
 
 @Composable
 fun KcalBox(kcal: String) {
@@ -54,8 +56,7 @@ fun KcalBox(kcal: String) {
 
 @Composable
 fun RecommendFoodCompact(
-    foodName: String,
-    foodKcal: String
+    food: RecommendFood = RecommendFood()
 ) {
     Box(
         modifier = Modifier
@@ -69,14 +70,14 @@ fun RecommendFoodCompact(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = foodName,
+                text = food.name,
                 color = G900,
                 style = NotoTypography.NotoBold14,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            KcalBox(foodKcal)
+            KcalBox(formatKcal(food.kcal))
         }
 
     }
@@ -84,7 +85,9 @@ fun RecommendFoodCompact(
 }
 
 @Composable
-fun RecommendFoodDetail() {
+fun RecommendFoodDetail(
+    food: RecommendFood = RecommendFood()
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,17 +100,15 @@ fun RecommendFoodDetail() {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column{
-                // TODO: 각 음식 이름
                 Text(
-                    text = "병아리콩 커리",
+                    text = food.name,
                     color = G900,
                     style = NotoTypography.NotoBold14,
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // TODO: 각 음식의 칼로리
-                KcalBox("600")
+                KcalBox(formatKcal(food.kcal))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -149,7 +150,7 @@ fun RecommendFoodPreview() {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            RecommendFoodCompact("병아리콩 커리", "600")
+            RecommendFoodCompact()
 
             Spacer(modifier = Modifier.height(12.dp))
 
