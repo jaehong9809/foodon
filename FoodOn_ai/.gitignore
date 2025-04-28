@@ -3,6 +3,9 @@
 **/*.py[cod]
 **/*$py.class
 
+**/research/
+**/.research/
+
 # 가상 환경
 **/food_env/
 **/.food_env/
