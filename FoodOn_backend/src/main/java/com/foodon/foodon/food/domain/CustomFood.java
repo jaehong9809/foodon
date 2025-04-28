@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "custom_foods", indexes = {
         @Index(name = "idx_custom_food_member_food_name", columnList = "member_id, food_name")
 })
-public class CustomFood extends BaseTimeEntity {
+public class CustomFood extends BaseTimeEntity implements FoodInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

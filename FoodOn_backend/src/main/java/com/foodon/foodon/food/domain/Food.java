@@ -13,7 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "foods")
-public class Food {
+public class Food implements FoodInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
