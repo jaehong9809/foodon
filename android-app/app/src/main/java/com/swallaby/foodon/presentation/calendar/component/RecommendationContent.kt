@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,11 @@ fun RecommendationContent(
     onWeeklyTabChanged: (Int) -> Unit
 ) {
     var selectedWeek by remember { mutableIntStateOf(0) }
+
+    // 달이 바뀔 때마다 선택된 week 초기화
+    LaunchedEffect(weeksInCurrentMonth) {
+        selectedWeek = 0
+    }
 
     Column {
         WeekTabBar(

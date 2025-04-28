@@ -23,10 +23,10 @@ import kotlinx.coroutines.launch
 fun TabContentPager(
     modifier: Modifier = Modifier,
     selectedTab: Int,
-    selectedItem: CalendarItem?,
+    selectedMeal: CalendarItem?,
     userWeight: ResultState<UserWeight>,
     recommendFoods: ResultState<List<RecommendFood>>,
-    weeksInCurrentMonth: Int,
+    weekCount: Int,
     onTabChanged: (Int) -> Unit,
     onWeeklyTabChanged: (Int) -> Unit
 ) {
@@ -48,31 +48,21 @@ fun TabContentPager(
         ) {
             when (page) {
                 0 -> {
-                    if (selectedItem is CalendarItem.Meal) {
-                        MealContent(calendarMeal = selectedItem.data)
+                    if (selectedMeal is CalendarItem.Meal) {
+                        MealContent(calendarMeal = selectedMeal.data)
                     }
                 }
-                1 -> {
-                    when (userWeight) {
-                        is ResultState.Success -> {
-                            WeightContent(userWeight = userWeight.data)
-                        }
-                        else -> {}
-                    }
+                1 -> userWeight.takeIf { it is ResultState.Success }?.let {
+                    WeightContent(userWeight = (it as ResultState.Success).data)
                 }
-                2 -> {
-                    when (recommendFoods) {
-                        is ResultState.Success -> {
-                            RecommendationContent(
-                                weeksInCurrentMonth = weeksInCurrentMonth,
-                                recommendFoods = recommendFoods.data,
-                                onWeeklyTabChanged = {
-                                    onWeeklyTabChanged(it)
-                                }
-                            )
+                2 -> recommendFoods.takeIf { it is ResultState.Success }?.let {
+                    RecommendationContent(
+                        weeksInCurrentMonth = weekCount,
+                        recommendFoods = (it as ResultState.Success).data,
+                        onWeeklyTabChanged = {
+                            onWeeklyTabChanged(it)
                         }
-                        else -> {}
-                    }
+                    )
                 }
             }
         }

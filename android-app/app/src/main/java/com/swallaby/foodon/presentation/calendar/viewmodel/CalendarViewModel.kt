@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.calendar.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
@@ -29,6 +30,8 @@ class CalendarViewModel @Inject constructor(
 
     fun fetchCalendarData(type: CalendarType, date: String) {
         updateState { it.copy(calendarState = ResultState.Loading) }
+
+        Log.d("Calendar ViewModel", "$date")
 
         viewModelScope.launch {
 //            val result = getCalendarUseCase(type, date)
@@ -124,6 +127,8 @@ class CalendarViewModel @Inject constructor(
 
     fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
+
+        Log.d("Calendar ViewModel", "$yearMonth $week")
 
         viewModelScope.launch {
 //            val result = getRecommendFoodUseCase(yearMonth, week)
