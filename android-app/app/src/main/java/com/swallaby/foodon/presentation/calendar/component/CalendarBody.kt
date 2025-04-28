@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -72,57 +71,36 @@ fun CalendarBody(
                             modifier = Modifier
                                 .weight(1f)
                         ) {
-                            // 배경 Box
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .align(Alignment.TopCenter)
-                                    .background(
-                                        color = if (type == CalendarType.RECOMMENDATION && isSelectedWeek)
-                                            WB500.copy(alpha = 0.1f)
-                                        else Color.Transparent,
-                                        shape = shape
-                                    )
+                                    .heightIn(min = 82.dp),  // 날짜 영역만큼 높이를 지정
+                                contentAlignment = Alignment.TopCenter
                             ) {
-                                // 내부 Box는 padding을 추가해서 내용이 위로 밀리도록 설정
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(41.dp)  // 높이 설정
-                                        .align(Alignment.Center)  // 중앙 정렬
-                                        .padding(top = 8.dp)  // 위쪽 패딩 추가
+                                        .height(41.dp)  // 배경 높이를 41.dp로 설정
+                                        .align(Alignment.TopCenter)
+                                        .background(
+                                            color = if (type == CalendarType.RECOMMENDATION && isSelectedWeek)
+                                                WB500.copy(alpha = 0.1f)
+                                            else Color.Transparent,
+                                            shape = shape
+                                        )
+                                )
+
+                                CalendarDayItem(
+                                    calendarItem = calendarItem,
+                                    type = type,
+                                    date = date,
+                                    today = today,
+                                    isSelected = selectedDate == date,
+                                    onClick = { onDateSelected(date) }
                                 )
                             }
 
-                            // 날짜 Box
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 82.dp),
-                                contentAlignment = Alignment.TopCenter
-                            ) {
-//                                CalendarDayItem(
-//                                    calendarItem = calendarItem,
-//                                    type = type,
-//                                    date = date,
-//                                    today = today,
-//                                    isSelected = selectedDate == date,
-//                                    onClick = { onDateSelected(date) }
-//                                )
-
-                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                    CalendarDayItem(
-                                        calendarItem = calendarItem,
-                                        type = type,
-                                        date = date,
-                                        today = today,
-                                        isSelected = selectedDate == date,
-                                        onClick = { onDateSelected(date) }
-                                    )
-                                }
-                            }
                         }
-
 
                         dayCounter++
                     } else {
