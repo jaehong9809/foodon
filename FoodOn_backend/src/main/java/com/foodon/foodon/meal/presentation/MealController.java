@@ -40,7 +40,7 @@ public class MealController {
     ) {
 
         mealService.saveMeal(request, member);
-        return ResponseUtil.success();
+        return ResponseUtil.created();
     }
 
 }

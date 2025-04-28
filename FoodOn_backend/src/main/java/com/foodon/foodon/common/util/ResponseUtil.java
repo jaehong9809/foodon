@@ -50,4 +50,10 @@ public class ResponseUtil {
                         .build());
     }
 
+    public static <T> ResponseEntity<Response<T>> created() {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Response.<T>builder().code("00001")
+                        .build());
+    }
+
 }

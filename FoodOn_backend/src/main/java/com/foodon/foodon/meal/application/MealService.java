@@ -110,13 +110,15 @@ public class MealService {
     }
 
     @Transactional
-    public void saveMeal(
+    public long saveMeal(
             MealCreateRequest request,
             Member member
     ) {
         Meal meal = Meal.createMeal(member, request);
         addMealItemsToMeal(member, meal, request.mealItems());
         mealRepository.save(meal);
+
+        return meal.getId();
     }
 
     private void addMealItemsToMeal(
