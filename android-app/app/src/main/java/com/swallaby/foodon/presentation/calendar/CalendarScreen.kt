@@ -40,6 +40,7 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.rememberWeeksInMonth
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.CalendarBody
@@ -85,6 +86,8 @@ fun CalendarScreen(
 
     val selectedItem = calendarItemMap[selectedDate.toString()]
 
+    val weeksInCurrentMonth = rememberWeeksInMonth(currentYearMonth, today)
+
     // TODO: 맨 처음 API 두 번 호출되는 문제 수정 필요
 
     // 페이지가 변경될 때 데이터 갱신
@@ -96,7 +99,16 @@ fun CalendarScreen(
     // 탭이 변경될 때 데이터 갱신
     LaunchedEffect(selectedTabIndex) {
         Log.d("CalendarScreen", calendarType.value)
+
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
+
+        if (calendarType == CalendarType.WEIGHT) {
+            viewModel.fetchUserWeight()
+        } else if (calendarType == CalendarType.RECOMMENDATION) {
+            viewModel.fetchRecommendFoods(
+                yearMonth = currentYearMonth.toString()
+            )
+        }
     }
 
     Scaffold(
@@ -194,18 +206,17 @@ fun CalendarScreen(
                 TabContentPager(
                     selectedTab = selectedTabIndex,
                     selectedItem = selectedItem,
+                    userWeight = uiState.weightState,
+                    recommendFoods = uiState.recommendFoods,
+                    weeksInCurrentMonth = weeksInCurrentMonth,
                     onTabChanged = {
                         selectedTabIndex = it
                     },
-                    onFetchTabData = { tabIndex ->
-                        if (calendarType == CalendarType.WEIGHT) {
-                            viewModel.fetchUserWeight()
-                        } else if (calendarType == CalendarType.RECOMMENDATION) {
-                            viewModel.fetchRecommendFoods(
-                                yearMonth = currentYearMonth.toString(),
-                                week = null
-                            )
-                        }
+                    onWeeklyTabChanged = {
+                        viewModel.fetchRecommendFoods(
+                            yearMonth = currentYearMonth.toString(),
+                            week = (it + 1)
+                        )
                     }
                 )
 

@@ -3,12 +3,14 @@ package com.swallaby.foodon.presentation.calendar.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
-import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarMeal
 import com.swallaby.foodon.domain.calendar.model.CalendarRecommendation
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.model.CalendarWeight
+import com.swallaby.foodon.domain.calendar.model.Effect
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.calendar.model.UserWeight
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
@@ -29,8 +31,8 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(calendarState = ResultState.Loading) }
 
         viewModelScope.launch {
-            val result = getCalendarUseCase(type, date)
-            updateState { it.copy(calendarState = result.toResultState()) }
+//            val result = getCalendarUseCase(type, date)
+//            updateState { it.copy(calendarState = result.toResultState()) }
 
             // TODO: 서버 연동 시 삭제
             val fakeData: List<CalendarItem> = when (type) {
@@ -112,17 +114,57 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(weightState = ResultState.Loading) }
 
         viewModelScope.launch {
-            val result = getUserWeightUseCase()
-            updateState { it.copy(weightState = result.toResultState()) }
+//            val result = getUserWeightUseCase()
+//            updateState { it.copy(weightState = result.toResultState()) }
+
+            val fakeData = UserWeight(1, 2)
+            updateState { it.copy(weightState = ResultState.Success(fakeData)) }
         }
     }
 
-    fun fetchRecommendFoods(yearMonth: String, week: Int? = null, day: String? = null) {
+    fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
 
         viewModelScope.launch {
-            val result = getRecommendFoodUseCase(yearMonth, week, day)
-            updateState { it.copy(recommendFoods = result.toResultState()) }
+//            val result = getRecommendFoodUseCase(yearMonth, week)
+//            updateState { it.copy(recommendFoods = result.toResultState()) }
+
+            val fakeData = listOf(
+                RecommendFood(
+                    foodRecommendId = 1,
+                    name = "고구마",
+                    kcal = 120,
+                    reason = "에너지원으로 좋아서 추천합니다.",
+                    effects = listOf(
+                        Effect(label = "혈당 조절"),
+                        Effect(label = "소화 촉진")
+                    )
+                ),
+                RecommendFood(
+                    foodRecommendId = 2,
+                    name = "닭가슴살",
+                    kcal = 165,
+                    reason = "단백질 섭취를 위해 추천합니다.",
+                    effects = listOf(
+                        Effect(label = "근육 생성"),
+                        Effect(label = "포만감 증가")
+                    )
+                ),
+                RecommendFood(
+                    foodRecommendId = 3,
+                    name = "아몬드",
+                    kcal = 575,
+                    reason = "건강한 지방 섭취를 위해 추천합니다.",
+                    effects = listOf(
+                        Effect(label = "심장 건강"),
+                        Effect(label = "혈압 조절")
+                    )
+                )
+            )
+
+            updateState {
+                it.copy(recommendFoods = ResultState.Success(fakeData))
+            }
         }
     }
 

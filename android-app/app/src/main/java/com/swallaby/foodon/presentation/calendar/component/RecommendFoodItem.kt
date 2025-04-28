@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -113,26 +114,25 @@ fun RecommendFoodDetail(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // TODO: 음식 먹으면 좋은 점 리스트 (LazyColumn Scroll X)
-            val itemsList = listOf("포만감", "배고픔", "만족도")
-
             Column(
                 modifier = Modifier
                     .wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-
-                itemsList.forEach { item ->
+                food.effects.forEach { item ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
                             painter = painterResource(R.drawable.icon_red_arrow),
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.graphicsLayer(
+                                rotationZ = if (item.direct == "down") 180f else 0f
+                            )
                         )
 
                         Text(
-                            text = item,
+                            text = item.label,
                             color = G700,
                             style = NotoTypography.NotoMedium13,
                         )

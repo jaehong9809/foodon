@@ -19,19 +19,22 @@ import com.swallaby.foodon.core.ui.component.WeekTabBar
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 
-// TODO: 몇 주까지 있는지, 선택된 주 인덱스
 @Composable
 fun RecommendationContent(
-    recommendFoods: List<RecommendFood> = emptyList()
+    weeksInCurrentMonth: Int,
+    recommendFoods: List<RecommendFood> = emptyList(),
+    onWeeklyTabChanged: (Int) -> Unit
 ) {
     var selectedWeek by remember { mutableIntStateOf(0) }
 
     Column {
-        // TODO: 현재 월의 주까지만 탭 보여주기
         WeekTabBar(
-            weeks = (1..5).map { stringResource(R.string.tab_weekly, it) },
+            weeks = (1..weeksInCurrentMonth).map { stringResource(R.string.tab_weekly, it) },
             selectedIndex = selectedWeek,
-            onTabSelected = { selectedWeek = it }
+            onTabSelected = {
+                selectedWeek = it
+                onWeeklyTabChanged(selectedWeek)
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -42,9 +45,6 @@ fun RecommendationContent(
         ) {
 
             Spacer(modifier = Modifier.height(4.dp))
-
-            // TODO: 추천 음식 리스트 (LazyColumn Scroll X)
-            val itemsList = listOf("두부 샐러드", "병아리콩 커리")
 
             Column(
                 modifier = Modifier
@@ -63,5 +63,5 @@ fun RecommendationContent(
 @Preview(showBackground = true)
 @Composable
 fun RecommendationPreview() {
-    RecommendationContent()
+    RecommendationContent(weeksInCurrentMonth = 4, onWeeklyTabChanged = {})
 }

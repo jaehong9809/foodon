@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.model.UserWeight
@@ -23,10 +24,11 @@ fun TabContentPager(
     modifier: Modifier = Modifier,
     selectedTab: Int,
     selectedItem: CalendarItem?,
-    userWeight: UserWeight = UserWeight(),
-    recommendFoods: List<RecommendFood> = emptyList(),
+    userWeight: ResultState<UserWeight>,
+    recommendFoods: ResultState<List<RecommendFood>>,
+    weeksInCurrentMonth: Int,
     onTabChanged: (Int) -> Unit,
-    onFetchTabData: (Int) -> Unit
+    onWeeklyTabChanged: (Int) -> Unit
 ) {
 
     val pagerState = rememberPagerState(initialPage = selectedTab, pageCount = { 3 })
@@ -44,7 +46,6 @@ fun TabContentPager(
                 .padding(vertical = 16.dp, horizontal = 24.dp),
             contentAlignment = Alignment.TopStart
         ) {
-            // TODO: 각 화면에서 ViewModel 주입 받아서 데이터 사용
             when (page) {
                 0 -> {
                     if (selectedItem is CalendarItem.Meal) {
@@ -52,10 +53,26 @@ fun TabContentPager(
                     }
                 }
                 1 -> {
-                    WeightContent(userWeight = userWeight)
+                    when (userWeight) {
+                        is ResultState.Success -> {
+                            WeightContent(userWeight = userWeight.data)
+                        }
+                        else -> {}
+                    }
                 }
                 2 -> {
-                    RecommendationContent()
+                    when (recommendFoods) {
+                        is ResultState.Success -> {
+                            RecommendationContent(
+                                weeksInCurrentMonth = weeksInCurrentMonth,
+                                recommendFoods = recommendFoods.data,
+                                onWeeklyTabChanged = {
+                                    onWeeklyTabChanged(it)
+                                }
+                            )
+                        }
+                        else -> {}
+                    }
                 }
             }
         }
@@ -65,7 +82,6 @@ fun TabContentPager(
     LaunchedEffect(pagerState.currentPage) {
         if (selectedTab != pagerState.currentPage) {
             onTabChanged(pagerState.currentPage)
-            onFetchTabData(pagerState.currentPage)
         }
     }
 

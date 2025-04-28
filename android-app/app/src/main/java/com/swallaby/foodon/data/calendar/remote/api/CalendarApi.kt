@@ -24,6 +24,6 @@ interface CalendarApi {
     suspend fun getUserWeight(): BaseResponse<UserWeightResponse>
 
     @GET("recommendations")
-    suspend fun getRecommendFoods(yearMonth: String, week: Int?, day: String?): BaseResponse<List<RecommendFoodResponse>>
+    suspend fun getRecommendFoods(yearMonth: String, week: Int?): BaseResponse<List<RecommendFoodResponse>>
 
 }

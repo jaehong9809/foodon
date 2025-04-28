@@ -32,54 +32,60 @@ fun WeightContent(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        TabContentLayout(
-            modifier = Modifier
-                .weight(1f),
-            title = stringResource(R.string.tab_content_title_goal_weight),
-            bgColor = Bkg04
+        CurrentWeight(modifier = Modifier.weight(1f), userWeight.currentWeight)
+        GoalWeight(modifier = Modifier.weight(1f), userWeight.goalWeight)
+    }
+}
+
+@Composable
+fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
+    TabContentLayout(
+        modifier = modifier,
+        title = stringResource(R.string.tab_content_title_goal_weight),
+        bgColor = Bkg04
+    ) {
+        Text(
+            text = stringResource(R.string.format_kg, weight),
+            color = G900,
+            style = SpoqaTypography.SpoqaBold18,
+        )
+    }
+}
+
+@Composable
+fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
+    TabContentLayout(
+        modifier = modifier,
+        title = stringResource(R.string.tab_content_title_cur_weight),
+        bgColor = WB500F1A,
+        bottomPadding = 11.dp,
+        icon = R.drawable.icon_cur_weight
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.format_kg, userWeight.goalWeight),
+                text = stringResource(R.string.format_kg, weight),
                 color = G900,
                 style = SpoqaTypography.SpoqaBold18,
             )
-        }
 
-        TabContentLayout(
-            modifier = Modifier
-                .weight(1f),
-            title = stringResource(R.string.tab_content_title_cur_weight),
-            bgColor = WB500F1A,
-            bottomPadding = 11.dp,
-            icon = R.drawable.icon_cur_weight
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.format_kg, userWeight.currentWeight),
-                    color = G900,
-                    style = SpoqaTypography.SpoqaBold18,
-                )
+            Spacer(modifier = Modifier.width(8.dp))
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Image(
-                    modifier = Modifier
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = {
-                                // TODO: 현재 체중 수정 (바텀시트 또는 새로운 화면)
-                            }
-                        ),
-                    painter = painterResource(id = R.drawable.icon_bg_pencil),
-                    contentDescription = null,
-                )
-            }
-
+            Image(
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {
+                            // TODO: 현재 체중 수정
+                        }
+                    ),
+                painter = painterResource(id = R.drawable.icon_bg_pencil),
+                contentDescription = null,
+            )
         }
     }
 }
