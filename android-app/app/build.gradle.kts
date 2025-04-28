@@ -17,11 +17,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = "24a64adccf1bc7b63a4cd6c0ba58dc9f"
     }
 
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL")}\"")
+            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"24a64adccf1bc7b63a4cd6c0ba58dc9f\"")
         }
         release {
             isMinifyEnabled = false
@@ -31,6 +34,7 @@ android {
             )
 
             buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL")}\"")
+            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"24a64adccf1bc7b63a4cd6c0ba58dc9f\"")
         }
     }
     compileOptions {
@@ -115,5 +119,8 @@ dependencies {
 
     // dataStore
     implementation(libs.datastore.preferences)
+
+    // kakao
+    implementation(libs.kakao.user)
 
 }
