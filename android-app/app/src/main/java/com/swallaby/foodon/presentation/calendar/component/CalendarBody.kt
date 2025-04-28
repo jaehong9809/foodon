@@ -1,20 +1,11 @@
 package com.swallaby.foodon.presentation.calendar.component
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.util.DateUtil.getDateShape
@@ -37,8 +28,7 @@ fun CalendarBody(
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
     val daysInMonth = yearMonth.lengthOfMonth()
 
-    Log.d("CalendarBody", "$selectedWeekIndex")
-
+    // 달력 그리기
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,7 +36,7 @@ fun CalendarBody(
     ) {
         var dayCounter = 1
 
-        for (week in 0 until 6) {
+        repeat(6) { week ->
             val isSelectedWeek = week == selectedWeekIndex
 
             Row(
@@ -54,64 +44,29 @@ fun CalendarBody(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 for (dayOfWeek in 0..6) {
-                    val day = if (week == 0 && dayOfWeek < firstDayOfWeek) {
-                        null  // 첫 번째 주의 첫날 이전은 비어있음
-                    } else {
-                        dayCounter
+                    val day = when {
+                        week == 0 && dayOfWeek < firstDayOfWeek -> null
+                        else -> dayCounter
                     }
 
                     if (day != null && day <= daysInMonth) {
                         val date = yearMonth.atDay(day)
                         val calendarItem = calendarItemMap[date.toString()]
-
                         val dayOfWeekFromDate = date.dayOfWeek.value % 7
                         val shape = getDateShape(dayOfWeekFromDate, day, daysInMonth, isSelectedWeek)
 
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 82.dp),  // 날짜 영역만큼 높이를 지정
-                                contentAlignment = Alignment.TopCenter
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(41.dp)  // 배경 높이를 41.dp로 설정
-                                        .background(
-                                            color = if (type == CalendarType.RECOMMENDATION && isSelectedWeek)
-                                                WB500.copy(alpha = 0.1f)
-                                            else Color.Transparent,
-                                            shape = shape
-                                        )
-                                )
-
-                                Box(
-                                    modifier = Modifier
-                                        .then(
-                                            if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
-                                                Modifier.height(41.dp) // 조건에 맞으면 41.dp 높이를 주기
-                                            } else {
-                                                Modifier // 그렇지 않으면 높이를 지정하지 않음
-                                            }
-                                        ),
-                                    contentAlignment = Alignment.Center // 내용물을 중앙에 배치
-                                ) {
-                                    CalendarDayItem(
-                                        calendarItem = calendarItem,
-                                        type = type,
-                                        date = date,
-                                        today = today,
-                                        isSelected = selectedDate == date,
-                                        onClick = { onDateSelected(date) }
-                                    )
-                                }
-                            }
-
-                        }
+                        // 캘린더 안에 내용
+                        CalendarDayBox(
+                            modifier = Modifier.weight(1f),
+                            date = date,
+                            calendarItem = calendarItem,
+                            type = type,
+                            isSelected = selectedDate == date,
+                            today = today,
+                            shape = shape,
+                            isSelectedWeek = isSelectedWeek,
+                            onDateSelected = onDateSelected
+                        )
 
                         dayCounter++
                     } else {
@@ -123,3 +78,59 @@ fun CalendarBody(
     }
 }
 
+@Composable
+private fun CalendarDayBox(
+    modifier: Modifier = Modifier,
+    date: LocalDate,
+    calendarItem: CalendarItem?,
+    type: CalendarType,
+    isSelected: Boolean,
+    today: LocalDate,
+    shape: Shape,
+    isSelectedWeek: Boolean,
+    onDateSelected: (LocalDate) -> Unit
+) {
+    Box(
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = if (type == CalendarType.RECOMMENDATION) 68.dp else 82.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(41.dp)
+                        .background(
+                            color = WB500.copy(alpha = 0.1f),
+                            shape = shape
+                        )
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .then(
+                        if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
+                            Modifier.height(41.dp)
+                        } else {
+                            Modifier
+                        }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                CalendarDayItem(
+                    calendarItem = calendarItem,
+                    type = type,
+                    date = date,
+                    today = today,
+                    isSelected = isSelected,
+                    onClick = { onDateSelected(date) }
+                )
+            }
+        }
+    }
+}

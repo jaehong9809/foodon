@@ -15,8 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
-import com.swallaby.foodon.domain.calendar.model.RecommendFood
-import com.swallaby.foodon.domain.calendar.model.UserWeight
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -24,8 +23,7 @@ fun TabContentPager(
     modifier: Modifier = Modifier,
     selectedTab: Int,
     selectedMeal: CalendarItem?,
-    userWeight: ResultState<UserWeight>,
-    recommendFoods: ResultState<List<RecommendFood>>,
+    uiState: CalendarUiState,
     weekCount: Int,
     selectedWeekIndex: Int,
     onTabChanged: (Int) -> Unit,
@@ -53,10 +51,10 @@ fun TabContentPager(
                         MealContent(calendarMeal = selectedMeal.data)
                     }
                 }
-                1 -> userWeight.takeIf { it is ResultState.Success }?.let {
+                1 -> uiState.weightState.takeIf { it is ResultState.Success }?.let {
                     WeightContent(userWeight = (it as ResultState.Success).data)
                 }
-                2 -> recommendFoods.takeIf { it is ResultState.Success }?.let {
+                2 -> uiState.recommendFoods.takeIf { it is ResultState.Success }?.let {
                     RecommendationContent(
                         weekCount = weekCount,
                         selectedWeekIndex = selectedWeekIndex,
