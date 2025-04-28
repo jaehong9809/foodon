@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalTime.parse;
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "meals")
 public class Meal {
 
