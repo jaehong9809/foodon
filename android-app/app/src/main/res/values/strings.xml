@@ -45,5 +45,7 @@
     <string name="food_amount">음식양</string>
     <string name="nutritional_ingredients">영양 성분</string>
 
+    <!-- Kakao Login -->
+    <string name="kakao_login">카카오톡으로 로그인</string>
 
 </resources>

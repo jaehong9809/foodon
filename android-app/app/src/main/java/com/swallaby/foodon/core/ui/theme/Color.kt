@@ -59,3 +59,6 @@ val BGGreen = Color(0x1F11CA72)
 
 /* Text Color */
 val TextGreen = Color(0xFF25A572)
+
+/* Kakao Color */
+val KakaoYellow = Color(0xFFFEE500)
