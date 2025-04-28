@@ -43,7 +43,7 @@ class CalendarViewModel @Inject constructor(
                     CalendarItem.Meal(
                         data = CalendarMeal(
                             calendarType = CalendarType.MEAL,
-                            calendarId = 1L,
+                            intakeLogId = 1L,
                             date = "2025-04-01",
                             intakeKcal = 1800,
                             goalKcal = 2000
@@ -52,7 +52,7 @@ class CalendarViewModel @Inject constructor(
                     CalendarItem.Meal(
                         data = CalendarMeal(
                             calendarType = CalendarType.MEAL,
-                            calendarId = 2L,
+                            intakeLogId = 2L,
                             date = "2025-04-05",
                             intakeKcal = 1950,
                             goalKcal = 2000
@@ -64,7 +64,7 @@ class CalendarViewModel @Inject constructor(
                     CalendarItem.Weight(
                         data = CalendarWeight(
                             calendarType = CalendarType.WEIGHT,
-                            calendarId = 3L,
+                            weightRecordId = 3L,
                             date = "2025-04-03",
                             weight = 68
                         )
@@ -72,7 +72,7 @@ class CalendarViewModel @Inject constructor(
                     CalendarItem.Weight(
                         data = CalendarWeight(
                             calendarType = CalendarType.WEIGHT,
-                            calendarId = 4L,
+                            weightRecordId = 4L,
                             date = "2025-04-09",
                             weight = 67
                         )
@@ -83,7 +83,7 @@ class CalendarViewModel @Inject constructor(
                     CalendarItem.Recommendation(
                         data = CalendarRecommendation(
                             calendarType = CalendarType.RECOMMENDATION,
-                            calendarId = 5L,
+                            mealId = 5L,
                             date = "2025-04-07",
                             thumbnailImage = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
                         )
@@ -91,7 +91,7 @@ class CalendarViewModel @Inject constructor(
                     CalendarItem.Recommendation(
                         data = CalendarRecommendation(
                             calendarType = CalendarType.RECOMMENDATION,
-                            calendarId = 6L,
+                            mealId = 6L,
                             date = "2025-04-10",
                             thumbnailImage = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
                         )
