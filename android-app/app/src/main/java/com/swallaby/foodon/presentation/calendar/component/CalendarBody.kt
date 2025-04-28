@@ -81,7 +81,6 @@ fun CalendarBody(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(41.dp)  // 배경 높이를 41.dp로 설정
-                                        .align(Alignment.TopCenter)
                                         .background(
                                             color = if (type == CalendarType.RECOMMENDATION && isSelectedWeek)
                                                 WB500.copy(alpha = 0.1f)
@@ -90,14 +89,26 @@ fun CalendarBody(
                                         )
                                 )
 
-                                CalendarDayItem(
-                                    calendarItem = calendarItem,
-                                    type = type,
-                                    date = date,
-                                    today = today,
-                                    isSelected = selectedDate == date,
-                                    onClick = { onDateSelected(date) }
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .then(
+                                            if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
+                                                Modifier.height(41.dp) // 조건에 맞으면 41.dp 높이를 주기
+                                            } else {
+                                                Modifier // 그렇지 않으면 높이를 지정하지 않음
+                                            }
+                                        ),
+                                    contentAlignment = Alignment.Center // 내용물을 중앙에 배치
+                                ) {
+                                    CalendarDayItem(
+                                        calendarItem = calendarItem,
+                                        type = type,
+                                        date = date,
+                                        today = today,
+                                        isSelected = selectedDate == date,
+                                        onClick = { onDateSelected(date) }
+                                    )
+                                }
                             }
 
                         }
