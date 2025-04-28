@@ -1,6 +1,6 @@
 package com.swallaby.foodon.core.di
 
-import com.swallaby.foodon.data.calendar.repository.CalendarRepositoryImpl
+import com.swallaby.foodon.data.calendar.remote.repository.CalendarRepositoryImpl
 import com.swallaby.foodon.data.food.remote.repository.FoodRemoteRepositoryImpl
 import com.swallaby.foodon.data.user.remote.repository.UserRemoteRepositoryImpl
 import com.swallaby.foodon.domain.calendar.repository.CalendarRepository

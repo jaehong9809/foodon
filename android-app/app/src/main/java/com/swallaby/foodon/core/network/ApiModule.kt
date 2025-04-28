@@ -1,6 +1,6 @@
 package com.swallaby.foodon.core.network
 
-import com.swallaby.foodon.data.calendar.api.CalendarApi
+import com.swallaby.foodon.data.calendar.remote.api.CalendarApi
 import com.swallaby.foodon.data.food.remote.api.FoodApi
 import com.swallaby.foodon.data.user.remote.api.UserApi
 import dagger.Module

@@ -1,6 +1,6 @@
-package com.swallaby.foodon.data.calendar.dto
+package com.swallaby.foodon.data.calendar.remote.dto
 
-import com.swallaby.foodon.domain.calendar.model.Meal
+import com.swallaby.foodon.domain.calendar.model.CalendarMeal
 
 data class MealResponse(
     val calendarId: Long = 0,
@@ -9,8 +9,8 @@ data class MealResponse(
     val goalKcal: Int = 0
 )
 
-fun MealResponse.toDomain(): Meal {
-    return Meal(
+fun MealResponse.toDomain(): CalendarMeal {
+    return CalendarMeal(
         calendarId = this.calendarId,
         date = this.date,
         intakeKcal = this.intakeKcal,

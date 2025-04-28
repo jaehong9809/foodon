@@ -36,6 +36,9 @@ public class Meal {
     private MealTimeType mealTimeType;
 
     @Column(nullable = false)
+    private LocalDateTime mealTime;
+
+    @Column(nullable = false)
     private int totalKcal;
 
     @Column(nullable = false)
@@ -46,9 +49,6 @@ public class Meal {
 
     @Column(nullable = false)
     private int totalFat;
-
-    @Column(nullable = false)
-    private LocalDateTime mealTime;
 
     private String mealImage;
 

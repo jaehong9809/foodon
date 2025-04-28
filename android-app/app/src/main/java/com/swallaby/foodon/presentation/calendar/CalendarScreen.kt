@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.calendar
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,17 +28,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.ui.component.LoadingProgress
 import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
+import com.swallaby.foodon.core.ui.theme.G700
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.CalendarBody
 import com.swallaby.foodon.presentation.calendar.component.CalendarHeader
 import com.swallaby.foodon.presentation.calendar.component.TabContentPager
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
+import com.swallaby.foodon.presentation.calendar.component.WeightBox
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
@@ -52,24 +62,27 @@ fun CalendarScreen(
     val monthOffsetRange = -12..12
 
     val pagerState = rememberPagerState(initialPage = 12, pageCount = { monthOffsetRange.count() })
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val calendarType = CalendarType.values()[selectedTabIndex]
 
     var currentYearMonth by remember { mutableStateOf(baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())) }
 
-    val selectedDate by viewModel.selectedDate
-    val calorieMap by viewModel.calorieDataMap
+    val uiState by viewModel.uiState.collectAsState()
+    val selectedDate = uiState.selectedDate
 
-    // 페이지가 변경될 때마다 캘린더 데이터를 갱신
+    // TODO: 맨 처음 API 두 번 호출되는 문제 수정 필요
+
+    // 페이지가 변경될 때 데이터 갱신
     LaunchedEffect(pagerState.currentPage) {
         currentYearMonth = baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
     }
 
-    // 탭이 변경될 때마다 데이터 갱신
+    // 탭이 변경될 때 데이터 갱신
     LaunchedEffect(selectedTabIndex) {
+        Log.d("CalendarScreen", calendarType.value)
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
     }
 
@@ -90,15 +103,16 @@ fun CalendarScreen(
                     .padding(bottom = 96.dp)
                     .fillMaxSize(),
             ) {
+
                 CalendarHeader(
                     currentYearMonth = currentYearMonth,
                     onPreviousMonth = {
-                        coroutineScope.launch {
+                        scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage - 1)
                         }
                     },
                     onNextMonth = {
-                        coroutineScope.launch {
+                        scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
                     }
@@ -112,25 +126,55 @@ fun CalendarScreen(
                         .fillMaxWidth()
                         .wrapContentHeight()
                 ) { page ->
-                    val yearMonth = baseYearMonth.plusMonths((page - 12).toLong())
+                    when (val calendarResult = uiState.calendarState) {
+                        is ResultState.Loading -> {
+                            LoadingProgress()
+                        }
+                        is ResultState.Success -> {
+                            val yearMonth = baseYearMonth.plusMonths((page - 12).toLong())
+                            val calendarItems = calendarResult.data
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 8.dp),
-                        contentAlignment = Alignment.TopStart
-                    ) {
-                        CalendarBody(
-                            yearMonth = yearMonth,
-                            calorieDataMap = calorieMap,
-                            selectedDate = selectedDate,
-                            onDateSelected = { viewModel.selectDate(it) }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 8.dp),
+                                contentAlignment = Alignment.TopStart
+                            ) {
+                                CalendarBody(
+                                    calendarItems = calendarItems,
+                                    type = calendarType,
+                                    yearMonth = yearMonth,
+                                    selectedDate = selectedDate,
+                                    today = today,
+                                    onDateSelected = { viewModel.selectDate(it) }
+                                )
+                            }
+                        }
+                        is ResultState.Error -> {
+
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box(
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                ) {
+                    if (calendarType == CalendarType.MEAL) {
+                        Text(
+                            text = stringResource(R.string.tab_meal_bottom),
+                            style = NotoTypography.NotoMedium13,
+                            color = G700
+                        )
+                    } else if (calendarType == CalendarType.WEIGHT) {
+                        WeightBox(
+                            text = stringResource(R.string.tab_weight_bottom)
                         )
                     }
                 }
 
-
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Box(
                     modifier = Modifier
