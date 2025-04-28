@@ -97,7 +97,7 @@ dependencies {
     implementation(libs.androidx.foundation.layout.android)
 
     // javapoet
-    implementation("com.squareup:javapoet:1.13.0")
+    //implementation("com.squareup:javapoet:1.13.0")
 
     // navigation
     implementation(libs.androidx.navigation.compose)
@@ -112,5 +112,8 @@ dependencies {
     implementation(libs.accompanist.pager.indicators)
 
     implementation(libs.threetenabp)
+
+    // dataStore
+    implementation(libs.datastore.preferences)
 
 }
