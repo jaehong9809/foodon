@@ -10,6 +10,8 @@ services:
     restart: always
     environment:
       - TZ=Asia/Seoul
+    volumes:
+      - shared-model-volume:/shared_model
 
   airflow-webserver:
     container_name: airflow_webserver
@@ -28,6 +30,8 @@ services:
     ports:
       - "8787:8787"
     command: webserver
+    volumes:
+      - shared-model-volume:/shared_model
 
   airflow-scheduler:
     container_name: airflow_scheduler
@@ -40,6 +44,8 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
     command: scheduler
+    volumes:
+      - shared-model-volume:/shared_model  
 
   airflow-postgres:
     container_name: airflow_postgres
@@ -62,6 +68,8 @@ services:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
     volumes:
       - ./mlflow:/mlflow/mlruns
+      - shared-model-volume:/shared_model  
 
 volumes:
   postgres-db-volume:
+  shared-model-volume:  
