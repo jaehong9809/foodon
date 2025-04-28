@@ -92,10 +92,13 @@ fun CalendarScreen(
         currentYearMonth = baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
 
+        val isSameMonth = currentYearMonth == baseYearMonth
+
+        // 해당 월의 기본 선택 날짜 세팅
+        viewModel.selectDate(if (isSameMonth) today else currentYearMonth.atDay(1))
+
         // 추천 탭일 경우에만 배경 설정을 위해 selectedWeekIndex 계산
         if (calendarType == CalendarType.RECOMMENDATION) {
-            val isSameMonth = currentYearMonth.month == baseYearMonth.month
-
             selectedWeekIndex = if (isSameMonth) {
                 (selectedDate.dayOfMonth - 1) / 7 + 1
             } else {
