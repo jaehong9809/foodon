@@ -1,5 +1,8 @@
 package com.foodon.foodon.meal.domain;
 
+import com.foodon.foodon.food.domain.FoodType;
+import com.foodon.foodon.meal.dto.MealCreateRequest;
+import com.foodon.foodon.meal.dto.MealItemInfo;
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,21 +24,17 @@ public class MealItem {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meal_id", nullable = false)
     private Meal meal;
 
-    private Long publicFoodId;
+    private FoodType foodType;
 
-    private Long customFoodId;
+    private Long foodId;
 
     @Column(precision = 2, scale = 1)
     private BigDecimal quantity;
 
-    private BoundingBox boundingBox; // 사진상에서의 위치
+    private Position position; // 사진상에서의 위치
 
     @Column(nullable = false)
     @ColumnDefault(value = "false")
@@ -44,6 +43,43 @@ public class MealItem {
     @Column(nullable = false)
     @ColumnDefault(value = "false")
     private boolean isRecommended = false;
+
+    private MealItem(
+            Meal meal,
+            FoodType foodType,
+            Long foodId,
+            BigDecimal quantity,
+            Position position,
+            boolean isRecommended
+    ) {
+
+        this.meal = meal;
+        this.foodType = foodType;
+        this.foodId = foodId;
+        this.quantity = quantity;
+        this.position = position;
+        this.isRecommended = isRecommended;
+    }
+
+    public static MealItem createMealItem(
+            Meal meal,
+            MealItemInfo mealItemInfo,
+            Position position,
+            boolean isRecommended
+    ) {
+
+        MealItem mealItem = new MealItem(
+                meal,
+                mealItemInfo.type(),
+                mealItemInfo.foodId(),
+                mealItemInfo.quantity(),
+                position,
+                isRecommended
+        );
+
+        meal.addMealItem(mealItem);
+        return mealItem;
+    }
 
 
 }

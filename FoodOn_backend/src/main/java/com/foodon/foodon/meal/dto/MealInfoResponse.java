@@ -8,7 +8,7 @@ public record MealInfoResponse(
         int totalCarbs,
         int totalProtein,
         int totalFat,
-        List<MealItemInfoResponse> mealItems
+        List<MealItemInfo> mealItems
 ) {
 
     public static MealInfoResponse from(
@@ -17,7 +17,7 @@ public record MealInfoResponse(
             int totalCarbs,
             int totalProtein,
             int totalFat,
-            List<MealItemInfoResponse> mealItems
+            List<MealItemInfo> mealItems
     ) {
 
         return new MealInfoResponse(
