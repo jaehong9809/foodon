@@ -1,6 +1,7 @@
 package com.swallaby.foodon.core.di
 
 import com.swallaby.foodon.data.calendar.remote.repository.CalendarRepositoryImpl
+import com.swallaby.foodon.data.auth.remote.repository.AuthRepositoryImpl
 import com.swallaby.foodon.data.food.remote.repository.FoodRemoteRepositoryImpl
 import com.swallaby.foodon.data.user.remote.repository.UserRemoteRepositoryImpl
 import com.swallaby.foodon.domain.calendar.repository.CalendarRepository
@@ -26,13 +27,19 @@ internal abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCalendarRemoteRepository(
-        calendarRepositoryImpl: CalendarRepositoryImpl,
+        calendarRepositoryImpl: CalendarRepositoryImpl
     ): CalendarRepository
 
     @Binds
     @Singleton
     abstract fun bindFoodRemoteRepository(
-        foodRepositoryImpl: FoodRemoteRepositoryImpl,
+        foodRepositoryImpl: FoodRemoteRepositoryImpl
     ): FoodRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRemoteRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepositoryImpl
 
 }
