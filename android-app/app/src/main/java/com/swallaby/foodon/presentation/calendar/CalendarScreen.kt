@@ -94,6 +94,19 @@ fun CalendarScreen(
         0 // 현재 달이 아니면 1주차로 설정
     }
 
+    // selectedWeekIndex 계산을 selectedDate가 바뀔 때만 한 번만 수행
+//    var selectedWeekIndex by remember { mutableIntStateOf(0) }
+//
+//    LaunchedEffect(selectedWeekIndex) {
+//        val isSameMonth = selectedDate.month == baseYearMonth.month
+//
+//        if (isSameMonth) {
+//            selectedWeekIndex = (selectedDate.dayOfMonth - 1) / 7 + 1 // 현재 날짜의 주차 계산
+//        } else {
+//            0
+//        }
+//    }
+
     // 캘린더 정보
     LaunchedEffect(pagerState.currentPage, selectedTabIndex) {
         currentYearMonth = baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())
@@ -175,11 +188,13 @@ fun CalendarScreen(
                     weekCount = weekCount,
                     selectedWeekIndex = selectedWeekIndex,
                     onTabChanged = { selectedTabIndex = it },
-                    onWeeklyTabChanged = { weekIdx ->
+                    onWeeklyTabChanged = { weekIndex ->
                         viewModel.fetchRecommendFoods(
                             yearMonth = currentYearMonth.toString(),
-                            week = (weekIdx + 1)
+                            week = (weekIndex + 1)
                         )
+
+                        selectedWeekIndex = weekIndex
                     }
                 )
             }
