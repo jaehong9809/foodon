@@ -24,6 +24,7 @@ fun CalendarBody(
     yearMonth: YearMonth,
     selectedDate: LocalDate?,
     today: LocalDate,
+    selectedWeekIndex: Int,
     onDateSelected: (LocalDate) -> Unit
 ) {
     val firstDayOfMonth = yearMonth.atDay(1)
@@ -64,6 +65,7 @@ fun CalendarBody(
                                 type = type,
                                 date = date,
                                 today = today,
+                                selectedWeekIndex = selectedWeekIndex,
                                 isSelected = selectedDate == date,
                                 onClick = { onDateSelected(date) }
                             )

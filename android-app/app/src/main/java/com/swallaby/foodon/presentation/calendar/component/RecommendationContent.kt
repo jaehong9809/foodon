@@ -22,20 +22,21 @@ import com.swallaby.foodon.domain.calendar.model.RecommendFood
 
 @Composable
 fun RecommendationContent(
-    weeksInCurrentMonth: Int,
+    weekCount: Int,
+    selectedWeekIndex: Int,
     recommendFoods: List<RecommendFood> = emptyList(),
     onWeeklyTabChanged: (Int) -> Unit
 ) {
     var selectedWeek by remember { mutableIntStateOf(0) }
 
     // 달이 바뀔 때마다 선택된 week 초기화
-    LaunchedEffect(weeksInCurrentMonth) {
-        selectedWeek = 0
+    LaunchedEffect(weekCount) {
+        selectedWeek = selectedWeekIndex
     }
 
     Column {
         WeekTabBar(
-            weeks = (1..weeksInCurrentMonth).map { stringResource(R.string.tab_weekly, it) },
+            weeks = (1..weekCount).map { stringResource(R.string.tab_weekly, it) },
             selectedIndex = selectedWeek,
             onTabSelected = {
                 selectedWeek = it
@@ -69,5 +70,5 @@ fun RecommendationContent(
 @Preview(showBackground = true)
 @Composable
 fun RecommendationPreview() {
-    RecommendationContent(weeksInCurrentMonth = 4, onWeeklyTabChanged = {})
+    RecommendationContent(weekCount = 4, selectedWeekIndex = 0, onWeeklyTabChanged = {})
 }

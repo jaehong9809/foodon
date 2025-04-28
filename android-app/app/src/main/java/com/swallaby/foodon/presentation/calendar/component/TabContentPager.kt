@@ -27,6 +27,7 @@ fun TabContentPager(
     userWeight: ResultState<UserWeight>,
     recommendFoods: ResultState<List<RecommendFood>>,
     weekCount: Int,
+    selectedWeekIndex: Int,
     onTabChanged: (Int) -> Unit,
     onWeeklyTabChanged: (Int) -> Unit
 ) {
@@ -57,7 +58,8 @@ fun TabContentPager(
                 }
                 2 -> recommendFoods.takeIf { it is ResultState.Success }?.let {
                     RecommendationContent(
-                        weeksInCurrentMonth = weekCount,
+                        weekCount = weekCount,
+                        selectedWeekIndex = selectedWeekIndex,
                         recommendFoods = (it as ResultState.Success).data,
                         onWeeklyTabChanged = {
                             onWeeklyTabChanged(it)

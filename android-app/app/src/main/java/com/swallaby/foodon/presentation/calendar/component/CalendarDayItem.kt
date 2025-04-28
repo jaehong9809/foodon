@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.calendar.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -35,7 +37,10 @@ import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.WeekFields
+import java.util.Locale
 
 @Composable
 fun CalendarDayItem(
@@ -43,6 +48,7 @@ fun CalendarDayItem(
     type: CalendarType = CalendarType.MEAL,
     date: LocalDate,
     today: LocalDate,
+    selectedWeekIndex: Int,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -51,6 +57,12 @@ fun CalendarDayItem(
 
     val recommendationImageUrl = (calendarItem as? CalendarItem.Recommendation)?.data?.thumbnailImage
     val hasRecommendationImage = recommendationImageUrl?.isNotBlank() == true
+
+    // 선택된 주의 첫 번째 날과 마지막 날을 판단하기 위해 날짜를 주 번호로 변환
+    val weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfYear())
+    val isInSelectedWeek = weekOfYear == selectedWeekIndex
+
+    Log.d("CalendarBayItem", "$weekOfYear $isInSelectedWeek")
 
     Column(
         modifier = Modifier
@@ -80,6 +92,37 @@ fun CalendarDayItem(
             } else if (type == CalendarType.RECOMMENDATION) {
                 recommendationImageUrl?.takeIf { it.isNotBlank() }?.let { imageUrl ->
                     RecommendationFoodImage(imageUrl)
+                }
+
+                val isFirstDayOfWeek = date.dayOfWeek == DayOfWeek.SUNDAY
+                val isLastDayOfWeek = date.dayOfWeek == DayOfWeek.SATURDAY
+
+                if (isInSelectedWeek) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .then(
+                                // 조건에 맞는 둥글기 적용
+                                when {
+                                    isFirstDayOfWeek -> Modifier
+                                        .background(
+                                            color = WB500.copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(topStart = 100.dp, bottomStart = 100.dp)
+                                        )
+                                    isLastDayOfWeek -> Modifier
+                                        .background(
+                                            color = WB500.copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(topEnd = 100.dp, bottomEnd = 100.dp)
+                                        )
+                                    else -> Modifier
+                                        .background(
+                                            color = WB500.copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(0.dp)
+                                        )
+                                }
+                            )
+                            .padding(8.dp)
+                    )
                 }
             }
 
