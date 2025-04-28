@@ -43,6 +43,7 @@ public class MealService {
     private final MealDetectAiClient mealDetectAiClient;
     private final S3ImageService s3ImageService;
 
+
     public MealInfoResponse uploadAndDetect(MultipartFile multipartFile) {
         String imageUrl = s3ImageService.upload(multipartFile);
         MealDetectAiResponse detectedItems = mealDetectAiClient.detect(imageUrl);
@@ -109,7 +110,7 @@ public class MealService {
     }
 
     @Transactional
-    public void createMeal(
+    public void saveMeal(
             MealCreateRequest request,
             Member member
     ) {

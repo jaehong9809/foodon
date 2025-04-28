@@ -34,12 +34,12 @@ public class MealController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<Void>> createMeal(
+    public ResponseEntity<Response<Void>> saveMeal(
             @RequestBody MealCreateRequest request,
             @AuthMember Member member
     ) {
 
-        mealService.createMeal(request, member);
+        mealService.saveMeal(request, member);
         return ResponseUtil.success();
     }
 
