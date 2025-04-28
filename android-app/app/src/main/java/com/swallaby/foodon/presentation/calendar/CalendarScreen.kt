@@ -86,31 +86,22 @@ fun CalendarScreen(
     val weekCount = rememberWeekCount(currentYearMonth, today)
 
     var selectedWeekIndex by remember { mutableIntStateOf(0) }
-    val isSameMonth = selectedDate.month == currentYearMonth.month
-
-    selectedWeekIndex = if (isSameMonth) {
-        (selectedDate.dayOfMonth - 1) / 7 + 1 // 현재 날짜의 주차 계산
-    } else {
-        0 // 현재 달이 아니면 1주차로 설정
-    }
-
-    // selectedWeekIndex 계산을 selectedDate가 바뀔 때만 한 번만 수행
-//    var selectedWeekIndex by remember { mutableIntStateOf(0) }
-//
-//    LaunchedEffect(selectedWeekIndex) {
-//        val isSameMonth = selectedDate.month == baseYearMonth.month
-//
-//        if (isSameMonth) {
-//            selectedWeekIndex = (selectedDate.dayOfMonth - 1) / 7 + 1 // 현재 날짜의 주차 계산
-//        } else {
-//            0
-//        }
-//    }
 
     // 캘린더 정보
     LaunchedEffect(pagerState.currentPage, selectedTabIndex) {
         currentYearMonth = baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
+
+        // 추천 탭일 경우에만 배경 설정을 위해 selectedWeekIndex 계산
+        if (calendarType == CalendarType.RECOMMENDATION) {
+            val isSameMonth = currentYearMonth.month == baseYearMonth.month
+
+            selectedWeekIndex = if (isSameMonth) {
+                (selectedDate.dayOfMonth - 1) / 7 + 1
+            } else {
+                0
+            }
+        }
     }
 
     // 하단 콘텐츠 정보
