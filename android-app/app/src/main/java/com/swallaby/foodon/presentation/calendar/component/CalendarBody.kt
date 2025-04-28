@@ -114,7 +114,7 @@ private fun CalendarDayBox(
             Box(
                 modifier = Modifier
                     .then(
-                        if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
+                        if (type == CalendarType.RECOMMENDATION) {
                             Modifier.height(41.dp)
                         } else {
                             Modifier
