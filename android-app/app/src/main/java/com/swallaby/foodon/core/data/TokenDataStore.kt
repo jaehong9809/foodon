@@ -15,7 +15,7 @@ class TokenDataStore @Inject constructor(
     private val dataStore = context.dataStore
 
     companion object {
-        private val Context.dataStore by preferencesDataStore("jwt_prefs")
+        private val Context.dataStore by preferencesDataStore("token_prefs")
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     }
