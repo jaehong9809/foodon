@@ -29,7 +29,7 @@ public class MealController {
     @Operation(summary = "식단 사진 업로드하기")
     public ResponseEntity<Response<MealInfoResponse>> uploadAndDetectMeal(
             @RequestPart("image") MultipartFile multipartFile,
-            @AuthMember Member member
+            @Parameter(hidden = true) @AuthMember Member member
     ) {
 
         MealInfoResponse result = mealService.uploadAndDetect(multipartFile);
