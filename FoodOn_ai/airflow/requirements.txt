@@ -1,4 +1,7 @@
-pandas
-scikit-learn
 mlflow
+torch
+torchvision
+scikit-learn
+pandas
 requests
+protobuf<5.0.0
