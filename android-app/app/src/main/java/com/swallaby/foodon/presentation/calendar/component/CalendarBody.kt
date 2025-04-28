@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.util.DateUtil.getDateShape
@@ -56,80 +55,55 @@ fun CalendarBody(
                         val shape = getDateShape(dayOfWeekFromDate, day, daysInMonth, isSelectedWeek)
 
                         // 캘린더 안에 내용
-                        CalendarDayBox(
-                            modifier = Modifier.weight(1f),
-                            date = date,
-                            calendarItem = calendarItem,
-                            type = type,
-                            isSelected = selectedDate == date,
-                            today = today,
-                            shape = shape,
-                            isSelectedWeek = isSelectedWeek,
-                            onDateSelected = onDateSelected
-                        )
+                        Box(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = if (type == CalendarType.RECOMMENDATION) 68.dp else 82.dp),
+                                contentAlignment = Alignment.TopCenter
+                            ) {
+                                if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(41.dp)
+                                            .background(
+                                                color = WB500.copy(alpha = 0.1f),
+                                                shape = shape
+                                            )
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .then(
+                                            if (type == CalendarType.RECOMMENDATION) {
+                                                Modifier.height(41.dp)
+                                            } else {
+                                                Modifier
+                                            }
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CalendarDayItem(
+                                        calendarItem = calendarItem,
+                                        type = type,
+                                        date = date,
+                                        today = today,
+                                        isSelected = selectedDate == date,
+                                        onClick = { onDateSelected(date) }
+                                    )
+                                }
+                            }
+                        }
 
                         dayCounter++
                     } else {
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CalendarDayBox(
-    modifier: Modifier = Modifier,
-    date: LocalDate,
-    calendarItem: CalendarItem?,
-    type: CalendarType,
-    isSelected: Boolean,
-    today: LocalDate,
-    shape: Shape,
-    isSelectedWeek: Boolean,
-    onDateSelected: (LocalDate) -> Unit
-) {
-    Box(
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = if (type == CalendarType.RECOMMENDATION) 68.dp else 82.dp),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(41.dp)
-                        .background(
-                            color = WB500.copy(alpha = 0.1f),
-                            shape = shape
-                        )
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .then(
-                        if (type == CalendarType.RECOMMENDATION) {
-                            Modifier.height(41.dp)
-                        } else {
-                            Modifier
-                        }
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                CalendarDayItem(
-                    calendarItem = calendarItem,
-                    type = type,
-                    date = date,
-                    today = today,
-                    isSelected = isSelected,
-                    onClick = { onDateSelected(date) }
-                )
             }
         }
     }
