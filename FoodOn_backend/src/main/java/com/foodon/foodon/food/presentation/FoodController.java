@@ -33,9 +33,7 @@ public class FoodController {
             @RequestParam(name = "type") String type,
             @AuthMember Member member
     ){
-
-        return null;
-
-
+        FoodInfoResponse result = foodService.getFood(foodId, type, member);
+        return ResponseUtil.success(result);
     }
 }

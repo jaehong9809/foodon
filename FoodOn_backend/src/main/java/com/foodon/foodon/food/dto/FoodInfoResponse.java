@@ -1,5 +1,6 @@
 package com.foodon.foodon.food.dto;
 
+import com.foodon.foodon.food.domain.FoodInfo;
 import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.food.domain.Unit;
 import com.foodon.foodon.meal.dto.NutrientInfo;
@@ -11,4 +12,13 @@ public record FoodInfoResponse(
         Unit unit,
         NutrientInfo nutrientInfo
 ) {
+    public static FoodInfoResponse from(FoodInfo foodInfo) {
+        return new FoodInfoResponse(
+                foodInfo.getFoodType(),
+                foodInfo.getId(),
+                foodInfo.getName(),
+                foodInfo.getUnit(),
+                NutrientInfo.of(foodInfo.getNutrient())
+        );
+    }
 }

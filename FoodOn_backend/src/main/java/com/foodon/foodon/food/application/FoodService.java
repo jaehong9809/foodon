@@ -1,11 +1,15 @@
 package com.foodon.foodon.food.application;
 
 import com.foodon.foodon.food.domain.CustomFood;
+import com.foodon.foodon.food.domain.Food;
+import com.foodon.foodon.food.domain.FoodInfo;
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
 import com.foodon.foodon.food.dto.FoodInfoResponse;
 import com.foodon.foodon.food.exception.FoodErrorCode;
 import com.foodon.foodon.food.exception.FoodException;
+import com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
 import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
+import com.foodon.foodon.food.exception.FoodException.FoodNotFoundException;
 import com.foodon.foodon.food.repository.CustomFoodRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.member.domain.Member;
@@ -13,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.foodon.foodon.food.exception.FoodErrorCode.CONFLICT_CUSTOM_FOOD;
+import static com.foodon.foodon.food.exception.FoodErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,9 +52,31 @@ public class FoodService {
             String type,
             Member member
     ) {
+        FoodInfo foodInfo = findFoodInfoByIdAndType(foodId, type, member);
 
-        return null;
+        return FoodInfoResponse.from(foodInfo);
+    }
 
+    private FoodInfo findFoodInfoByIdAndType(
+            Long foodId,
+            String type,
+            Member member
+    ) {
+        return switch (type.toLowerCase()) {
+            case "public" -> findPublicFoodById(foodId);
+            case "custom" -> findCustomFoodByIdAndMember(foodId, member);
+            default -> throw new FoodBadRequestException(ILLEGAL_FOOD_TYPE);
+        };
+    }
+
+    private Food findPublicFoodById(Long foodId) {
+        return foodRepository.findById(foodId)
+                .orElseThrow(() -> new FoodNotFoundException(NOT_FOUND_PUBLIC_FOOD));
+    }
+
+    private CustomFood findCustomFoodByIdAndMember(Long foodId, Member member) {
+        return customFoodRepository.findByIdAndMember(foodId, member)
+                .orElseThrow(() -> new FoodNotFoundException(NOT_FOUND_CUSTOM_FOOD));
     }
 
 }
