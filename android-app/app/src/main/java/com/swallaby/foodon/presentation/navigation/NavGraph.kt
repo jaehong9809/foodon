@@ -22,7 +22,7 @@ fun NavGraph(
             startDestination = NavRoutes.MainGraph.route,
             modifier = modifier
         ) {
-
+            loginGraph(navController)
             mainGraph(navController)
             calendarGraph(navController, calendarViewModel)
             foodGraph(navController)
