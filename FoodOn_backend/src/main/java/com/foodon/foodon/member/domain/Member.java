@@ -41,9 +41,9 @@ public class Member extends BaseTimeEntity {
 
     private int goalWeight;
 
-    private Long managementTypeId;
+    private Long nutrientPlanId;
 
-    private Long activityTypeId;
+    private Long activityLevelId;
 
     private Member (
             String nickname,
