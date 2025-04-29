@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.login.viewmodel
+package com.swallaby.foodon.presentation.user.viewmodel
 
 import com.swallaby.foodon.core.presentation.UiState
 import com.swallaby.foodon.core.result.ResultState
