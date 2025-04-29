@@ -37,8 +37,9 @@ public class IntakeLogService {
 
     private List<IntakeLog> findIntakeLogsByMonth(Member member, String date) {
         validateYearMonthFormat(date); // 날짜 요청 형식 검증
-        LocalDate startDate = LocalDate.parse(date + "-01");
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        YearMonth yearMonth = YearMonth.parse(date);
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
 
         return intakeLogRepository.findByMemberAndDateBetween(member, startDate, endDate);
     }
