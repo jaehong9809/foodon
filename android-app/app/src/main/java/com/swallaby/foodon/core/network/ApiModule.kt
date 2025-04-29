@@ -38,8 +38,7 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideMainApi(@NetworkModule.MainRetrofit retrofit: Retrofit)
-            : MainApi =
-        retrofit.create(MainApi::class.java)
-
+    fun provideMainApi(
+        @NetworkModule.MainRetrofit retrofit: Retrofit
+    ): MainApi = retrofit.create(MainApi::class.java)
 }
