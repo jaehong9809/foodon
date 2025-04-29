@@ -17,17 +17,13 @@ import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
 
 @Composable
 fun CalendarPager(
     pagerState: PagerState,
     calendarType: CalendarType,
-    currentYearMonth: YearMonth,
     calendarItemMap: Map<String, CalendarItem>,
     uiState: CalendarUiState,
-    today: LocalDate,
-    selectedWeekIndex: Int,
     onDateSelected: (LocalDate) -> Unit,
 ) {
     HorizontalPager(
@@ -41,12 +37,9 @@ fun CalendarPager(
             contentAlignment = Alignment.TopStart
         ) {
             CalendarBody(
-                calendarItemMap = calendarItemMap,
                 type = calendarType,
-                yearMonth = currentYearMonth,
-                selectedDate = uiState.selectedDate,
-                today = today,
-                selectedWeekIndex = selectedWeekIndex,
+                calendarItemMap = calendarItemMap,
+                uiState = uiState,
                 onDateSelected = onDateSelected
             )
 

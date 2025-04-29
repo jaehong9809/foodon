@@ -3,7 +3,13 @@ package com.swallaby.foodon.presentation.calendar.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +26,12 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.RoundedCircularProgress
-import com.swallaby.foodon.core.ui.theme.*
+import com.swallaby.foodon.core.ui.theme.G500
+import com.swallaby.foodon.core.ui.theme.G700
+import com.swallaby.foodon.core.ui.theme.G900
+import com.swallaby.foodon.core.ui.theme.MainBlack
+import com.swallaby.foodon.core.ui.theme.MainWhite
+import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
@@ -28,8 +39,8 @@ import org.threeten.bp.LocalDate
 
 @Composable
 fun CalendarDayItem(
-    calendarItem: CalendarItem?,
     type: CalendarType = CalendarType.MEAL,
+    calendarItem: CalendarItem?,
     date: LocalDate,
     today: LocalDate,
     isSelected: Boolean,

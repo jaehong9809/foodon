@@ -1,7 +1,15 @@
 package com.swallaby.foodon.presentation.calendar.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -10,19 +18,19 @@ import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.util.DateUtil.getDateShape
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
 
 @Composable
 fun CalendarBody(
-    calendarItemMap: Map<String, CalendarItem>,
     type: CalendarType = CalendarType.MEAL,
-    yearMonth: YearMonth,
-    selectedDate: LocalDate?,
-    today: LocalDate,
-    selectedWeekIndex: Int,
+    calendarItemMap: Map<String, CalendarItem>,
+    uiState: CalendarUiState,
     onDateSelected: (LocalDate) -> Unit
 ) {
+
+    val yearMonth = uiState.currentYearMonth
+
     val firstDayOfMonth = yearMonth.atDay(1)
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
     val daysInMonth = yearMonth.lengthOfMonth()
@@ -36,7 +44,7 @@ fun CalendarBody(
         var dayCounter = 1
 
         repeat(6) { week ->
-            val isSelectedWeek = week == selectedWeekIndex
+            val isSelectedWeek = week == uiState.selectedWeekIndex
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -88,11 +96,11 @@ fun CalendarBody(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CalendarDayItem(
-                                        calendarItem = calendarItem,
                                         type = type,
+                                        calendarItem = calendarItem,
                                         date = date,
-                                        today = today,
-                                        isSelected = selectedDate == date,
+                                        today = uiState.today,
+                                        isSelected = uiState.selectedDate == date,
                                         onClick = { onDateSelected(date) }
                                     )
                                 }

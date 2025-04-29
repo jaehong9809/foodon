@@ -21,16 +21,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun TabContentPager(
     modifier: Modifier = Modifier,
-    selectedTab: Int,
-    selectedMeal: CalendarItem?,
     uiState: CalendarUiState,
+    selectedMeal: CalendarItem?,
     weekCount: Int,
-    selectedWeekIndex: Int,
     onTabChanged: (Int) -> Unit,
     onWeeklyTabChanged: (Int) -> Unit
 ) {
 
-    val pagerState = rememberPagerState(initialPage = selectedTab, pageCount = { 3 })
+    val selectedTabIndex = uiState.selectedTabIndex
+
+    val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
     HorizontalPager(
@@ -57,7 +57,7 @@ fun TabContentPager(
                 2 -> uiState.recommendFoods.takeIf { it is ResultState.Success }?.let {
                     RecommendationContent(
                         weekCount = weekCount,
-                        selectedWeekIndex = selectedWeekIndex,
+                        selectedWeekIndex = uiState.selectedWeekIndex,
                         recommendFoods = (it as ResultState.Success).data,
                         onWeeklyTabChanged = {
                             onWeeklyTabChanged(it)
@@ -70,16 +70,16 @@ fun TabContentPager(
 
     // 스와이프하면 탭 변경
     LaunchedEffect(pagerState.currentPage) {
-        if (selectedTab != pagerState.currentPage) {
+        if (selectedTabIndex != pagerState.currentPage) {
             onTabChanged(pagerState.currentPage)
         }
     }
 
     // 탭 직접 변경 시 페이지도 이동
-    LaunchedEffect(selectedTab) {
-        if (selectedTab != pagerState.currentPage) {
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex != pagerState.currentPage) {
             scope.launch {
-                pagerState.scrollToPage(selectedTab)
+                pagerState.scrollToPage(selectedTabIndex)
             }
         }
     }
