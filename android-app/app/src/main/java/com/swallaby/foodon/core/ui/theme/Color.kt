@@ -56,6 +56,9 @@ val BG100 = Color(0xFFF3F4F8)
 val BG300 = Color(0xFFD6D8E1)
 val BGTab = Color(0xFFE9F2FF)
 val BGGreen = Color(0x1F11CA72)
+val BGProtein = Color(0xFF6CA9FF)
+val BGFat = Color(0xFFC6A2FF)
 
 /* Text Color */
 val TextGreen = Color(0xFF25A572)
+

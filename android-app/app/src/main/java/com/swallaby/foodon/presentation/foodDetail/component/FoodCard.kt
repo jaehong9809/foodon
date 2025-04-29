@@ -36,6 +36,7 @@ import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.domain.food.model.NutrientNameType
 
 @Composable
 fun FoodCard(
@@ -106,9 +107,18 @@ fun FoodCard(
                 Spacer(modifier.height(12.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    NutritionalSmallInfo(modifier)
-                    NutritionalSmallInfo(modifier)
-                    NutritionalSmallInfo(modifier)
+                    NutritionalSmallInfo(
+                        nutrientType = NutrientNameType.CARBOHYDRATE,
+                        number = 10
+                    )
+                    NutritionalSmallInfo(
+                        nutrientType = NutrientNameType.PROTEIN,
+                        number = 10
+                    )
+                    NutritionalSmallInfo(
+                        nutrientType = NutrientNameType.FAT,
+                        number = 10
+                    )
                 }
             }
             Image(

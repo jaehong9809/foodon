@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.domain.main.model.MealRecord
+import com.swallaby.foodon.domain.main.model.MealTimeType
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
@@ -37,8 +39,11 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(recordState = ResultState.Loading) }
 
         viewModelScope.launch {
-            val result = getMealRecordUseCase(day)
-            updateState { it.copy(recordState = result.toResultState()) }
+//            val result = getMealRecordUseCase(day)
+//            updateState { it.copy(recordState = result.toResultState()) }
+
+            val fakeData = createFakeMealRecord()
+            updateState { it.copy(recordState = ResultState.Success(fakeData)) }
         }
     }
 
@@ -58,6 +63,48 @@ class MainViewModel @Inject constructor(
             val result = getNutrientManageUseCase(day)
             updateState { it.copy(manageState = result.toResultState()) }
         }
+    }
+
+    private fun createFakeMealRecord(): List<MealRecord> {
+        return listOf(
+            MealRecord(
+                mealId = 1,
+                mealTimeType = MealTimeType.BREAKFAST,
+                mealTime = "08:00",
+                mealImageUrl = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+                mealItems = listOf(
+                    "쌀밥",
+                    "된장찌개",
+                    "김치",
+                    "쌀밥",
+                    "된장찌개",
+                    "김치",
+                    "쌀밥",
+                    "된장찌개",
+                    "김치",
+                    "쌀밥",
+                    "된장찌개",
+                    "김치",
+                ),
+                totalKcal = 1000,
+                totalCarbs = 10,
+                totalProtein = 5,
+                totalFat = 5
+            ),
+            MealRecord(
+                mealId = 1,
+                mealTimeType = MealTimeType.LUNCH,
+                mealTime = "08:00",
+                mealImageUrl = "",
+                mealItems = listOf(
+                    "쌀밥"
+                ),
+                totalKcal = 1000,
+                totalCarbs = 10,
+                totalProtein = 5,
+                totalFat = 5
+            )
+        )
     }
 
 }

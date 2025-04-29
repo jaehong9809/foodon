@@ -13,31 +13,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.domain.food.model.NutrientNameType
 
 @Composable
-fun NutritionalSmallInfo(modifier: Modifier = Modifier) {
+fun NutritionalSmallInfo(
+    modifier: Modifier = Modifier,
+    nutrientType: NutrientNameType,
+    number: Int
+) {
     Row {
         Box(
             modifier = modifier
                 .height(16.dp)
                 .aspectRatio(1f)
                 .background(
-                    color = Color.Blue, shape = RoundedCornerShape(2.dp)
+                    color = nutrientType.color, shape = RoundedCornerShape(2.dp)
                 ), contentAlignment = Alignment.Center
         ) {
-            Text("탄", style = SpoqaTypography.SpoqaBold9.copy(color = Color.White))
+            Text(nutrientType.shortName, style = SpoqaTypography.SpoqaBold9.copy(color = Color.White))
         }
+
         Spacer(modifier.width(4.dp))
-        Text("10g", style = SpoqaTypography.SpoqaMedium13.copy(color = G700))
+
+        Text(
+            stringResource(R.string.format_g, number),
+            style = SpoqaTypography.SpoqaMedium13.copy(color = G700)
+        )
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun NutritionalSmallInfoPreview() {
-    NutritionalSmallInfo()
+    NutritionalSmallInfo(nutrientType = NutrientNameType.CARBOHYDRATE, number = 10)
 }

@@ -4,16 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,14 +24,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.FloatingButton
+import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
+import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
+import org.threeten.bp.LocalDate
 
 @Composable
 fun MainScreen(
@@ -45,6 +48,10 @@ fun MainScreen(
     val selectedDate = uiState.selectedDate
     val currentYearMonth = uiState.currentYearMonth
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchRecordData(LocalDate.now().toString())
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingButton(
@@ -52,7 +59,7 @@ fun MainScreen(
                 icon = R.drawable.icon_ai_camera,
                 text = stringResource(R.string.btn_record)
             ) {
-                // TODO: 식사 기록 화면으로 이동
+                // TODO: 식사 기록 화면으로 이동 (카메라)
             }
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -75,6 +82,12 @@ fun MainScreen(
                 }
             )
 
+            HorizontalDivider(thickness = 8.dp, color = Bkg04)
+
+            MealRecordContent(recordState = uiState.recordState)
+
+
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -87,21 +100,6 @@ fun MainScreen(
                     Text(
                         modifier = Modifier.padding(16.dp),
                         text = "음식 화면 이동",
-                        color = MainWhite,
-                        style = Typography.displayLarge
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Box(modifier = Modifier
-                    .background(WB500)
-                    .clickable {
-                        navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(0))
-                    }) {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = "음식 정보 수정 화면 이동",
                         color = MainWhite,
                         style = Typography.displayLarge
                     )
