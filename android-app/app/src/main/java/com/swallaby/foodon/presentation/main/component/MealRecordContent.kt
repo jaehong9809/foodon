@@ -21,7 +21,8 @@ import com.swallaby.foodon.domain.main.model.MealRecord
 
 @Composable
 fun MealRecordContent(
-    recordState: ResultState<List<MealRecord>>
+    recordState: ResultState<List<MealRecord>>,
+    onMealClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(24.dp)
@@ -41,9 +42,7 @@ fun MealRecordContent(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     recordState.data.forEach { item ->
-                        MealRecordItem(meal = item) {
-                            // TODO: 식사 기록 수정 화면으로 이동
-                        }
+                        MealRecordItem(meal = item, onClick = onMealClick)
                     }
                 }
             }

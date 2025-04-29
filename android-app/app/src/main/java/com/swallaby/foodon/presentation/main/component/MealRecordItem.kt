@@ -45,7 +45,6 @@ import com.swallaby.foodon.presentation.foodDetail.component.NutritionalSmallInf
 
 @Composable
 fun MealRecordItem(
-    modifier: Modifier = Modifier,
     meal: MealRecord,
     onClick: (mealId: Long) -> Unit,
 ) {

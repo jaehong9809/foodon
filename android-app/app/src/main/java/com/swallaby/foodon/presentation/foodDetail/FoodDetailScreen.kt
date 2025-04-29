@@ -36,6 +36,7 @@ import com.swallaby.foodon.presentation.foodDetail.component.NutritionalIngredie
 @Composable
 fun FoodDetailScreen(
     modifier: Modifier = Modifier,
+    mealId: Long = 0,
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
 ) {
