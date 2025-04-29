@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,28 +31,13 @@ fun KakaoLoginButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Row(
+    Image(
+        painter = painterResource(id = R.drawable.kakao_login_large_wide),
+        contentDescription = "카카오 로그인 버튼",
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(KakaoYellow)
             .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 12.dp)
-            .height(48.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.kakao_login_large_wide),
-            contentDescription = "Kakao Logo",
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = stringResource(R.string.kakao_login),
-            color = MainBlack,
-            fontSize = 16.sp,
-            style = Typography.bodyLarge
-        )
-    }
+            .fillMaxWidth(0.8f)
+            .height(48.dp)
+    )
 }

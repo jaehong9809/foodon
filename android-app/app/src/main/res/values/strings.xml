@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">foodon</string>
+    <string name="app_name">foodOn</string>
 
     <!-- Error & Exception -->
     <string name="error_network">네트워크 연결을 확인해주세요.</string>
