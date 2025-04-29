@@ -15,15 +15,18 @@ interface CalendarApi {
     suspend fun getCalendarMeals(@Query(value = "date") date: String): BaseResponse<List<MealResponse>>
 
     @GET("calendar/weight")
-    suspend fun getCalendarWeights(date: String): BaseResponse<List<WeightResponse>>
+    suspend fun getCalendarWeights(@Query(value = "date") date: String): BaseResponse<List<WeightResponse>>
 
     @GET("calendar/recommendations")
-    suspend fun getCalendarRecommendations(date: String): BaseResponse<List<RecommendationResponse>>
+    suspend fun getCalendarRecommendations(@Query(value = "date") date: String): BaseResponse<List<RecommendationResponse>>
 
     @GET("members/profile/weight")
     suspend fun getUserWeight(): BaseResponse<UserWeightResponse>
 
     @GET("recommendations")
-    suspend fun getRecommendFoods(yearMonth: String, week: Int?): BaseResponse<List<RecommendFoodResponse>>
+    suspend fun getRecommendFoods(
+        @Query(value = "yearMonth") yearMonth: String,
+        @Query(value = "week") week: Int?
+    ): BaseResponse<List<RecommendFoodResponse>>
 
 }
