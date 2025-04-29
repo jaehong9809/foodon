@@ -66,7 +66,7 @@ fun CalendarScreen(
     val scope = rememberCoroutineScope()
 
     // 날짜와 연관된 데이터 관리
-    val calendarItems = (uiState.calendarState as? ResultState.Success)?.data.orEmpty()
+    val calendarItems = (uiState.calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val calendarItemMap by remember(calendarItems) {
         derivedStateOf {

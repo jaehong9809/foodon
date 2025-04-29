@@ -36,32 +36,32 @@ class MainViewModel @Inject constructor(
     }
 
     fun fetchRecordData(day: String) {
-        updateState { it.copy(recordState = ResultState.Loading) }
+        updateState { it.copy(recordResult = ResultState.Loading) }
 
         viewModelScope.launch {
 //            val result = getMealRecordUseCase(day)
 //            updateState { it.copy(recordState = result.toResultState()) }
 
             val fakeData = createFakeMealRecord()
-            updateState { it.copy(recordState = ResultState.Success(fakeData)) }
+            updateState { it.copy(recordResult = ResultState.Success(fakeData)) }
         }
     }
 
     fun fetchIntakeData(day: String) {
-        updateState { it.copy(intakeState = ResultState.Loading) }
+        updateState { it.copy(intakeResult = ResultState.Loading) }
 
         viewModelScope.launch {
             val result = getNutrientIntakeUseCase(day)
-            updateState { it.copy(intakeState = result.toResultState()) }
+            updateState { it.copy(intakeResult = result.toResultState()) }
         }
     }
 
     fun fetchManageData(day: String) {
-        updateState { it.copy(manageState = ResultState.Loading) }
+        updateState { it.copy(manageResult = ResultState.Loading) }
 
         viewModelScope.launch {
             val result = getNutrientManageUseCase(day)
-            updateState { it.copy(manageState = result.toResultState()) }
+            updateState { it.copy(manageResult = result.toResultState()) }
         }
     }
 

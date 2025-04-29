@@ -9,8 +9,8 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
 data class CalendarUiState(
-    val calendarState: ResultState<List<CalendarItem>> = ResultState.Loading,
-    val weightState: ResultState<UserWeight> = ResultState.Loading,
+    val calendarResult: ResultState<List<CalendarItem>> = ResultState.Loading,
+    val weightResult: ResultState<UserWeight> = ResultState.Loading,
     val recommendFoods: ResultState<List<RecommendFood>> = ResultState.Loading,
     val selectedDate: LocalDate = LocalDate.now(),
     val today: LocalDate = LocalDate.now(),

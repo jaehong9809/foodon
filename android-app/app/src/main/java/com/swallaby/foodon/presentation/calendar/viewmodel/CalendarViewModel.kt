@@ -50,7 +50,7 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun fetchCalendarData(type: CalendarType, date: String) {
-        updateState { it.copy(calendarState = ResultState.Loading) }
+        updateState { it.copy(calendarResult = ResultState.Loading) }
 
         Log.d("Calendar ViewModel", date)
 
@@ -62,20 +62,20 @@ class CalendarViewModel @Inject constructor(
             val fakeData: List<CalendarItem> = createFakeData(type)
 
             updateState {
-                it.copy(calendarState = ResultState.Success(fakeData))
+                it.copy(calendarResult = ResultState.Success(fakeData))
             }
         }
     }
 
     fun fetchUserWeight() {
-        updateState { it.copy(weightState = ResultState.Loading) }
+        updateState { it.copy(weightResult = ResultState.Loading) }
 
         viewModelScope.launch {
 //            val result = getUserWeightUseCase()
 //            updateState { it.copy(weightState = result.toResultState()) }
 
             val fakeData = UserWeight(1, 2)
-            updateState { it.copy(weightState = ResultState.Success(fakeData)) }
+            updateState { it.copy(weightResult = ResultState.Success(fakeData)) }
         }
     }
 
