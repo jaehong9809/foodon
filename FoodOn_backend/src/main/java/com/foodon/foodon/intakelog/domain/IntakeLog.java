@@ -1,11 +1,11 @@
-package com.foodon.foodon.intakeLog.domain;
+package com.foodon.foodon.intakelog.domain;
 
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -28,10 +28,19 @@ public class IntakeLog {
     @Column(nullable = false)
     private LocalDate date;
 
-    @Column(nullable = false)
-    private int goalKcal;
+    @Column(precision = 5, scale = 2, nullable = false)
+    private BigDecimal goalKcal;
 
-    @Column(nullable = false)
-    private int intakeKcal;
+    @Column(precision = 5, scale = 2, nullable = false)
+    private BigDecimal intakeKcal;
+
+    @Column(precision = 5, scale = 2, nullable = false)
+    private BigDecimal intakeCarbs;
+
+    @Column(precision = 5, scale = 2, nullable = false)
+    private BigDecimal intakeProtein;
+
+    @Column(precision = 5, scale = 2, nullable = false)
+    private BigDecimal intakeFat;
 
 }
