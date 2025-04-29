@@ -17,11 +17,11 @@ public class AuthController {
 
     private final KakaoAuthService kakaoAuthService;
 
-    @PostMapping("/kakao-login")
+    @PostMapping("/kakao")
     public ResponseEntity<KakaoLoginResponse> loginByKakao(
             @RequestBody KakaoLoginRequest request
     ) {
-        KakaoLoginResponse response = kakaoAuthService.loginByKakao(request);
+        KakaoLoginResponse response = kakaoAuthService.loginByKakao(request.accessToken());
         return ResponseEntity.ok(response);
     }
 }
