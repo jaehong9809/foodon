@@ -10,10 +10,10 @@ import org.threeten.bp.YearMonth
 
 data class CalendarUiState(
     val calendarState: ResultState<List<CalendarItem>> = ResultState.Loading,
-    val selectedDate: LocalDate = LocalDate.now(),
-    val today: LocalDate = LocalDate.now(),
     val weightState: ResultState<UserWeight> = ResultState.Loading,
     val recommendFoods: ResultState<List<RecommendFood>> = ResultState.Loading,
+    val selectedDate: LocalDate = LocalDate.now(),
+    val today: LocalDate = LocalDate.now(),
     val selectedTabIndex: Int = 0,
     val currentYearMonth: YearMonth = YearMonth.now(),
     val selectedWeekIndex: Int = 0

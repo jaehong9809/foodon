@@ -54,8 +54,7 @@ fun RecommendationContent(
             Spacer(modifier = Modifier.height(4.dp))
 
             Column(
-                modifier = Modifier
-                    .wrapContentHeight(),
+                modifier = Modifier.wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 recommendFoods.forEach { item ->

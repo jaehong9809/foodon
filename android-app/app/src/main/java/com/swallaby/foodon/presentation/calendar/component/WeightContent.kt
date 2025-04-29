@@ -80,7 +80,7 @@ fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = {
-                            // TODO: 현재 체중 수정
+                            // TODO: 현재 체중 수정 화면으로 이동
                         }
                     ),
                 painter = painterResource(id = R.drawable.icon_bg_pencil),
