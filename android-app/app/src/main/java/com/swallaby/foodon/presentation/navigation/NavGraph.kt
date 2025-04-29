@@ -6,6 +6,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
+import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 
 @Composable
 fun NavGraph(
@@ -15,6 +16,7 @@ fun NavGraph(
 
     NavControllerProvider(navController = navController) {
 
+        val mainViewModel: MainViewModel = hiltViewModel()
         val calendarViewModel: CalendarViewModel = hiltViewModel()
 
         NavHost(
@@ -23,7 +25,7 @@ fun NavGraph(
             modifier = modifier
         ) {
 
-            mainGraph(navController)
+            mainGraph(navController, mainViewModel)
             calendarGraph(navController, calendarViewModel)
             foodGraph(navController)
         }

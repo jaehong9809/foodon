@@ -7,18 +7,30 @@ import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 import javax.inject.Inject
 
+@HiltViewModel
 class MainViewModel @Inject constructor(
     private val getMealRecordUseCase: GetMealRecordUseCase,
     private val getNutrientIntakeUseCase: GetNutrientIntakeUseCase,
     private val getNutrientManageUseCase: GetNutrientManageUseCase,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
-    
+
     fun updateState(block: (MainUiState) -> MainUiState) {
         _uiState.update(block)
+    }
+
+    fun updateYearMonth(yearMonth: YearMonth) {
+        updateState { it.copy(currentYearMonth = yearMonth) }
+    }
+
+    fun selectDate(date: LocalDate) {
+        updateState { it.copy(selectedDate = date) }
     }
 
     fun fetchRecordData(day: String) {

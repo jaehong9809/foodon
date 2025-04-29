@@ -153,6 +153,7 @@ fun WeekTabBar(
 
             Box(
                 modifier = Modifier
+                    .height(36.dp)
                     .clip(RoundedCornerShape(100.dp))
                     .border(1.dp, borderColor, RoundedCornerShape(100.dp))
                     .background(backgroundColor)
@@ -161,7 +162,8 @@ fun WeekTabBar(
                         indication = null,
                         onClick = { onTabSelected(index) }
                     )
-                    .padding(horizontal = 12.dp, vertical = 7.dp)
+                    .padding(horizontal = 12.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = label,

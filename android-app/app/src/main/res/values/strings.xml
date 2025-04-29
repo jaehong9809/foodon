@@ -45,5 +45,7 @@
     <string name="food_amount">음식양</string>
     <string name="nutritional_ingredients">영양 성분</string>
 
+    <!-- main -->
+    <string name="main_today">오늘</string>
 
 </resources>
