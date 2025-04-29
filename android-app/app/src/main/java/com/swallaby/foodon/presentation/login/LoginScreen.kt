@@ -1,6 +1,6 @@
 package com.swallaby.foodon.presentation.login
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -9,14 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.user.UserApiClient
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.swallaby.foodon.presentation.login.component.KakaoLoginButton
+import com.swallaby.foodon.presentation.login.viewmodel.LoginViewModel
+
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
@@ -31,39 +33,21 @@ fun LoginScreen(
         ) {
             KakaoLoginButton(
                 onClick = {
-                    startKakaoLogin(context, onLoginSuccess)
+                    viewModel.startKakaoLogin(
+                        context = context,
+                        onSuccess = { accessToken ->
+                            onLoginSuccess(accessToken)
+                        },
+                        onFailure = { error ->
+                            Toast.makeText(context, "로그인에 실패했습니다: ${error.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(0.8f)
             )
         }
-    }
-}
-
-private fun startKakaoLogin(
-    context: android.content.Context,
-    onLoginSuccess: (String) -> Unit
-) {
-    val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-        when {
-            error != null -> {
-                Log.e("LoginScreen", "카카오 로그인 실패", error)
-            }
-            token != null -> {
-                Log.i("LoginScreen", "카카오 로그인 성공: ${token.accessToken}")
-                onLoginSuccess(token.accessToken)
-            }
-            else -> {
-                Log.e("LoginScreen", "카카오 로그인 실패: 알 수 없는 오류")
-            }
-        }
-    }
-
-    if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
-        UserApiClient.instance.loginWithKakaoTalk(context = context, callback = callback)
-    } else {
-        UserApiClient.instance.loginWithKakaoAccount(context = context, callback = callback)
     }
 }
 
