@@ -4,6 +4,8 @@ import com.foodon.foodon.intakeLog.domain.IntakeLog;
 
 import java.time.LocalDate;
 
+import static com.foodon.foodon.common.util.NutrientCalculator.toRoundedInt;
+
 public record IntakeInfoResponse(
         Long intakeLogId,
         LocalDate date,
@@ -14,8 +16,8 @@ public record IntakeInfoResponse(
         return new IntakeInfoResponse(
                 intakeLog.getId(),
                 intakeLog.getDate(),
-                intakeLog.getIntakeKcal(),
-                intakeLog.getGoalKcal()
+                toRoundedInt(intakeLog.getIntakeKcal()),
+                toRoundedInt(intakeLog.getGoalKcal())
         );
     }
 }

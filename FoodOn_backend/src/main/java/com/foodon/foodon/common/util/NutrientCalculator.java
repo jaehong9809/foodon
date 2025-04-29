@@ -1,4 +1,4 @@
-package com.foodon.foodon.meal.util;
+package com.foodon.foodon.common.util;
 
 import com.foodon.foodon.meal.dto.MealItemInfo;
 import com.foodon.foodon.meal.dto.NutrientInfo;
