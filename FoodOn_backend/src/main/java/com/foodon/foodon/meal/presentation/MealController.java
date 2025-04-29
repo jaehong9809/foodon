@@ -7,6 +7,8 @@ import com.foodon.foodon.meal.application.MealService;
 import com.foodon.foodon.meal.dto.MealCreateRequest;
 import com.foodon.foodon.meal.dto.MealInfoResponse;
 import com.foodon.foodon.member.domain.Member;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +26,10 @@ public class MealController {
             value = "/detect",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
+    @Operation(summary = "식단 사진 업로드하기")
     public ResponseEntity<Response<MealInfoResponse>> uploadAndDetectMeal(
             @RequestPart("image") MultipartFile multipartFile,
-            @AuthMember Member member
+            @Parameter(hidden = true) @AuthMember Member member
     ) {
 
         MealInfoResponse result = mealService.uploadAndDetect(multipartFile);
@@ -34,9 +37,10 @@ public class MealController {
     }
 
     @PostMapping
+    @Operation(summary = "식단 기록하기")
     public ResponseEntity<Response<Void>> saveMeal(
             @RequestBody MealCreateRequest request,
-            @AuthMember Member member
+            @Parameter(hidden = true) @AuthMember Member member
     ) {
 
         mealService.saveMeal(request, member);
