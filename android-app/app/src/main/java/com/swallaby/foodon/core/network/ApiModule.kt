@@ -2,6 +2,7 @@ package com.swallaby.foodon.core.network
 
 import com.swallaby.foodon.data.calendar.remote.api.CalendarApi
 import com.swallaby.foodon.data.food.remote.api.FoodApi
+import com.swallaby.foodon.data.main.remote.api.MainApi
 import com.swallaby.foodon.data.user.remote.api.UserApi
 import dagger.Module
 import dagger.Provides
@@ -34,5 +35,11 @@ object ApiModule {
     fun provideFoodApi(@NetworkModule.MainRetrofit retrofit: Retrofit)
             : FoodApi =
         retrofit.create(FoodApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMainApi(@NetworkModule.MainRetrofit retrofit: Retrofit)
+            : MainApi =
+        retrofit.create(MainApi::class.java)
 
 }
