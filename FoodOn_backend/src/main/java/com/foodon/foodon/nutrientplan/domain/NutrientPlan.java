@@ -20,6 +20,9 @@ public class NutrientPlan {
     @Column(nullable = false, name = "nutrient_plan_name", length = 50)
     private String name;
 
+    @Column(name = "nutrient_plan_description", length = 200)
+    private String description;
+
     @Column(nullable = false)
     private int carbsRatio;
 

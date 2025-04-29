@@ -19,8 +19,8 @@ public class ActivityLevel {
     @Column(name = "activity_level_id")
     private Long id;
 
-    @Column(nullable = false, name = "activity_level_name", length = 50)
-    private String name;
+    @Column(nullable = false, name = "activity_level_description", length = 50)
+    private String description;
 
     @Column(nullable = false, precision = 4, scale = 3)
     private BigDecimal value;
