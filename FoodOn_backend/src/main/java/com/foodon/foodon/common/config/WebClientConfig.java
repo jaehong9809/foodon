@@ -13,10 +13,21 @@ public class WebClientConfig {
     @Value("${meal-detect-ai-model.url}")
     private String mealDetectModelApiUrl;
 
+    @Value("${kakao.api.url}")
+    private String kakaoApiUrl;
+
     @Bean
     public WebClient mealDetectModelWebClient() {
         return WebClient.builder()
                 .baseUrl(mealDetectModelApiUrl)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
+
+    @Bean
+    public WebClient kakaoApiWebClient() {
+        return WebClient.builder()
+                .baseUrl(kakaoApiUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
