@@ -36,24 +36,27 @@ public class NutrientCalculator {
      */
     public static NutrientTarget calculateNutrientTarget(
             BigDecimal intakeKcal,
-            NutrientPlan managementType
+            NutrientPlan nutrientPlan
     ) {
-        BigDecimal goalCarbs = divide(
-                multiply(intakeKcal, BigDecimal.valueOf(managementType.getCarbsRatio())),
-                KCAL_PER_GRAM_CARBS
+        return new NutrientTarget(
+                calculateTargetGram(intakeKcal, nutrientPlan.getCarbsRatio(), KCAL_PER_GRAM_CARBS),
+                calculateTargetGram(intakeKcal, nutrientPlan.getProteinRatio(), KCAL_PER_GRAM_PROTEIN),
+                calculateTargetGram(intakeKcal, nutrientPlan.getFatRatio(), KCAL_PER_GRAM_FAT)
         );
+    }
 
-        BigDecimal goalProtein = divide(
-                multiply(intakeKcal, BigDecimal.valueOf(managementType.getProteinRatio())),
-                KCAL_PER_GRAM_PROTEIN
+    /**
+     * 총 섭취 칼로리 x 비율 ÷ 열량
+     */
+    private static BigDecimal calculateTargetGram(
+            BigDecimal intakeKcal,
+            double ratio,
+            BigDecimal kcalPerGram
+    ) {
+        return divide(
+                multiply(intakeKcal, BigDecimal.valueOf(ratio)),
+                kcalPerGram
         );
-
-        BigDecimal goalFat = divide(
-                multiply(intakeKcal, BigDecimal.valueOf(managementType.getFatRatio())),
-                KCAL_PER_GRAM_FAT
-        );
-
-        return new NutrientTarget(goalCarbs, goalProtein, goalFat);
     }
 
 }
