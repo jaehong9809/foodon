@@ -3,6 +3,7 @@ package com.swallaby.foodon.presentation.login
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,9 +17,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.presentation.login.component.KakaoLoginButton
 import com.swallaby.foodon.presentation.login.viewmodel.LoginViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
+import com.swallaby.foodon.core.ui.theme.Typography
 
 @Composable
 fun LoginScreen(
@@ -46,12 +49,21 @@ fun LoginScreen(
     }
 
     Scaffold { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
+                .padding(paddingValues)
+                .padding(horizontal = 32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = "FoodOn",
+                style = Typography.displayLarge,
+                color = MainWhite
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
             KakaoLoginButton(
                 onClick = {
                     if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
@@ -67,8 +79,8 @@ fun LoginScreen(
                     }
                 },
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
+                    .height(50.dp)
             )
         }
     }
