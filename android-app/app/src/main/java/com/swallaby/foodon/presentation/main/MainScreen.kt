@@ -100,6 +100,20 @@ fun MainScreen() {
                 style = Typography.displayLarge
             )
         }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Box(modifier = Modifier
+            .background(WB500)
+            .clickable {
+                navController.navigate(NavRoutes.LoginGraph.route)
+            }) {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "로그인 테스트",
+                color = MainWhite,
+                style = Typography.displayLarge
+            )
+        }
 
     }
 }
