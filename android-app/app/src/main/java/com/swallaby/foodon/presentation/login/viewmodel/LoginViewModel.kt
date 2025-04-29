@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
+import com.swallaby.foodon.core.data.TokenDataStore
 import com.swallaby.foodon.core.error.AppError
 import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.data.auth.remote.dto.response.KakaoLoginResponse
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginWithKakaoUseCase: LoginWithKakaoUseCase
+    private val loginWithKakaoUseCase: LoginWithKakaoUseCase,
+    private val tokenDataStore: TokenDataStore
 ) : ViewModel() {
 
     fun startKakaoLogin(
@@ -57,7 +59,10 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = loginWithKakaoUseCase(kakaoAccessToken)) {
                 is ApiResult.Success -> {
-                    // TODO: JWT 저장
+                    tokenDataStore.saveTokens(
+                        accessToken = result.data.accessToken,
+                        refreshToken = result.data.refreshToken
+                    )
                     Toast.makeText(context, "로그인 성공!", Toast.LENGTH_SHORT).show()
                     onSuccess()
                 }
