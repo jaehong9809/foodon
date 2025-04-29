@@ -39,7 +39,7 @@ import org.threeten.bp.LocalDate
 
 @Composable
 fun CalendarDayItem(
-    type: CalendarType = CalendarType.MEAL,
+    calendarType: CalendarType = CalendarType.MEAL,
     calendarItem: CalendarItem?,
     date: LocalDate,
     today: LocalDate,
@@ -62,10 +62,10 @@ fun CalendarDayItem(
     ) {
         Box(
             modifier = Modifier
-                .size(if (type == CalendarType.RECOMMENDATION) 41.dp else 30.dp),
+                .size(if (calendarType == CalendarType.RECOMMENDATION) 41.dp else 30.dp),
             contentAlignment = Alignment.Center
         ) {
-            when (type) {
+            when (calendarType) {
                 CalendarType.MEAL -> {
                     val progress = (calendarItem as? CalendarItem.Meal)?.data?.let { meal ->
                         if (meal.goalKcal > 0) (meal.intakeKcal.toFloat() / meal.goalKcal).coerceIn(0f, 1f)

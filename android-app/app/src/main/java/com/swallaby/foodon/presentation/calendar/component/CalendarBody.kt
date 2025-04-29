@@ -23,12 +23,12 @@ import org.threeten.bp.LocalDate
 
 @Composable
 fun CalendarBody(
-    type: CalendarType = CalendarType.MEAL,
     calendarItemMap: Map<String, CalendarItem>,
     uiState: CalendarUiState,
     onDateSelected: (LocalDate) -> Unit
 ) {
 
+    val calendarType = CalendarType.values()[uiState.selectedTabIndex]
     val yearMonth = uiState.currentYearMonth
 
     val firstDayOfMonth = yearMonth.atDay(1)
@@ -69,10 +69,10 @@ fun CalendarBody(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(min = if (type == CalendarType.RECOMMENDATION) 68.dp else 82.dp),
+                                    .heightIn(min = if (calendarType == CalendarType.RECOMMENDATION) 68.dp else 82.dp),
                                 contentAlignment = Alignment.TopCenter
                             ) {
-                                if (type == CalendarType.RECOMMENDATION && isSelectedWeek) {
+                                if (calendarType == CalendarType.RECOMMENDATION && isSelectedWeek) {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -87,7 +87,7 @@ fun CalendarBody(
                                 Box(
                                     modifier = Modifier
                                         .then(
-                                            if (type == CalendarType.RECOMMENDATION) {
+                                            if (calendarType == CalendarType.RECOMMENDATION) {
                                                 Modifier.height(41.dp)
                                             } else {
                                                 Modifier
@@ -96,7 +96,7 @@ fun CalendarBody(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CalendarDayItem(
-                                        type = type,
+                                        calendarType = calendarType,
                                         calendarItem = calendarItem,
                                         date = date,
                                         today = uiState.today,

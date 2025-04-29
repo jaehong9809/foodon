@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,16 +67,25 @@ fun CalendarScreen(
 
     // 날짜와 연관된 데이터 관리
     val calendarItems = (uiState.calendarState as? ResultState.Success)?.data.orEmpty()
-    val calendarItemMap = remember(calendarItems) {
-        calendarItems.associateBy {
-            when (it) {
-                is CalendarItem.Meal -> it.data.date
-                is CalendarItem.Weight -> it.data.date
-                is CalendarItem.Recommendation -> it.data.date
+
+    val calendarItemMap by remember(calendarItems) {
+        derivedStateOf {
+            calendarItems.associateBy {
+                when (it) {
+                    is CalendarItem.Meal -> it.data.date
+                    is CalendarItem.Weight -> it.data.date
+                    is CalendarItem.Recommendation -> it.data.date
+                }
             }
         }
     }
-    val selectedMeal = calendarItemMap[selectedDate.toString()]
+
+    val selectedMeal by remember(calendarItemMap, selectedDate) {
+        derivedStateOf {
+            calendarItemMap[selectedDate.toString()] as? CalendarItem.Meal
+        }
+    }
+
     val calendarType = CalendarType.values()[selectedTabIndex]
     val weekCount = rememberWeekCount(currentYearMonth, today)
 
@@ -132,7 +142,6 @@ fun CalendarScreen(
 
             CalendarPager(
                 pagerState = pagerState,
-                calendarType = calendarType,
                 calendarItemMap = calendarItemMap,
                 uiState = uiState,
                 onDateSelected = viewModel::selectDate
