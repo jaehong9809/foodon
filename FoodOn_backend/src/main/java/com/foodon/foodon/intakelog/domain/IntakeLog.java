@@ -1,8 +1,7 @@
-package com.foodon.foodon.intakeLog.domain;
+package com.foodon.foodon.intakelog.domain;
 
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -43,5 +42,5 @@ public class IntakeLog {
 
     @Column(precision = 5, scale = 2, nullable = false)
     private BigDecimal intakeFat;
-    
+
 }

@@ -1,4 +1,4 @@
-package com.foodon.foodon.intakeLog.exception;
+package com.foodon.foodon.intakelog.exception;
 
 import com.foodon.foodon.common.exception.ErrorCode;
 import com.foodon.foodon.common.exception.status.BadRequestException;
