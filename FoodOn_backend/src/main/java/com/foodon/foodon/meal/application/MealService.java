@@ -28,9 +28,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
+import static com.foodon.foodon.common.util.NutrientCalculator.sum;
 import static com.foodon.foodon.meal.exception.MealErrorCode.MEAL_ITEM_IS_NULL;
-import static com.foodon.foodon.meal.util.NutrientCalculator.sum;
-import static com.foodon.foodon.meal.util.NutrientCalculator.toRoundedInt;
 
 @Service
 @RequiredArgsConstructor
