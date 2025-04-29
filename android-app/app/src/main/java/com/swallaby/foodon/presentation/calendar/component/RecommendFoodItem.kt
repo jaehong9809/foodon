@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +36,8 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.TextGreen
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.core.util.StringUtil.formatKcal
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
 
 @Composable
 fun KcalBox(kcal: String) {
@@ -54,8 +57,7 @@ fun KcalBox(kcal: String) {
 
 @Composable
 fun RecommendFoodCompact(
-    foodName: String,
-    foodKcal: String
+    food: RecommendFood = RecommendFood()
 ) {
     Box(
         modifier = Modifier
@@ -69,14 +71,14 @@ fun RecommendFoodCompact(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = foodName,
+                text = food.name,
                 color = G900,
                 style = NotoTypography.NotoBold14,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            KcalBox(foodKcal)
+            KcalBox(formatKcal(food.kcal))
         }
 
     }
@@ -84,7 +86,9 @@ fun RecommendFoodCompact(
 }
 
 @Composable
-fun RecommendFoodDetail() {
+fun RecommendFoodDetail(
+    food: RecommendFood = RecommendFood()
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,41 +101,38 @@ fun RecommendFoodDetail() {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column{
-                // TODO: 각 음식 이름
                 Text(
-                    text = "병아리콩 커리",
+                    text = food.name,
                     color = G900,
                     style = NotoTypography.NotoBold14,
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // TODO: 각 음식의 칼로리
-                KcalBox("600")
+                KcalBox(formatKcal(food.kcal))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            // TODO: 음식 먹으면 좋은 점 리스트 (LazyColumn Scroll X)
-            val itemsList = listOf("포만감", "배고픔", "만족도")
 
             Column(
                 modifier = Modifier
                     .wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-
-                itemsList.forEach { item ->
+                food.effects.forEach { item ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
                             painter = painterResource(R.drawable.icon_red_arrow),
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.graphicsLayer(
+                                rotationZ = if (item.direct == "down") 180f else 0f
+                            )
                         )
 
                         Text(
-                            text = item,
+                            text = item.label,
                             color = G700,
                             style = NotoTypography.NotoMedium13,
                         )
@@ -149,7 +150,7 @@ fun RecommendFoodPreview() {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            RecommendFoodCompact("병아리콩 커리", "600")
+            RecommendFoodCompact()
 
             Spacer(modifier = Modifier.height(12.dp))
 

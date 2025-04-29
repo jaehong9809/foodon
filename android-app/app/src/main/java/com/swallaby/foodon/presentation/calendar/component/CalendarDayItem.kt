@@ -39,47 +39,51 @@ import org.threeten.bp.LocalDate
 
 @Composable
 fun CalendarDayItem(
+    calendarType: CalendarType = CalendarType.MEAL,
     calendarItem: CalendarItem?,
-    type: CalendarType = CalendarType.MEAL,
     date: LocalDate,
     today: LocalDate,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-
     val isFutureDay = date.isAfter(today)
-
-    val recommendationImageUrl = (calendarItem as? CalendarItem.Recommendation)?.data?.thumbnailImage
-    val hasRecommendationImage = recommendationImageUrl?.isNotBlank() == true
+    val recommendationImageUrl = (calendarItem as? CalendarItem.Recommendation)?.data?.thumbnailImage.orEmpty()
+    val hasRecommendationImage = recommendationImageUrl.isNotBlank()
 
     Column(
         modifier = Modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onClick,
-                enabled = !isFutureDay // 미래 날짜 선택 불가
+                enabled = !isFutureDay,
+                onClick = onClick
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Box(
+            modifier = Modifier
+                .size(if (calendarType == CalendarType.RECOMMENDATION) 41.dp else 30.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            when (calendarType) {
+                CalendarType.MEAL -> {
+                    val progress = (calendarItem as? CalendarItem.Meal)?.data?.let { meal ->
+                        if (meal.goalKcal > 0) (meal.intakeKcal.toFloat() / meal.goalKcal).coerceIn(0f, 1f)
+                        else 0f
+                    } ?: 0f
 
-        Box(contentAlignment = Alignment.Center) {
-            if (type == CalendarType.MEAL) {
-                val progress = (calendarItem as? CalendarItem.Meal)?.data?.let { meal ->
-                    if (meal.goalKcal > 0) {
-                        (meal.intakeKcal.toFloat() / meal.goalKcal).coerceIn(0f, 1f)
-                    } else {
-                        0f
+                    RoundedCircularProgress(
+                        progress = progress,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                CalendarType.RECOMMENDATION -> {
+                    if (hasRecommendationImage) {
+                        RecommendationFoodImage(recommendationImageUrl)
                     }
-                } ?: 0f
-
-                RoundedCircularProgress(
-                    progress = progress,
-                    modifier = Modifier.size(30.dp),
-                )
-            } else if (type == CalendarType.RECOMMENDATION) {
-                recommendationImageUrl?.takeIf { it.isNotBlank() }?.let { imageUrl ->
-                    RecommendationFoodImage(imageUrl)
+                }
+                else -> {
+                    Unit
                 }
             }
 
@@ -91,34 +95,7 @@ fun CalendarDayItem(
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // 하단 정보
-        when (calendarItem) {
-            is CalendarItem.Meal -> {
-                val meal = calendarItem.data
-
-                Text(
-                    text = "${meal.intakeKcal}",
-                    style = SpoqaTypography.SpoqaMedium11,
-                    color = G700
-                )
-            }
-
-            is CalendarItem.Weight -> {
-                val weight = calendarItem.data
-
-                WeightBox(
-                    text = stringResource(R.string.format_kg, weight.weight),
-                    fontStyle = SpoqaTypography.SpoqaMedium11,
-                    isSmall = true
-                )
-            }
-
-            else -> {
-                // 아무것도 안 띄움
-            }
-        }
+        DayBottomContent(calendarItem)
     }
 }
 
@@ -129,54 +106,76 @@ fun DayText(
     isFutureDay: Boolean,
     textColor: Color
 ) {
-
     val fontColor = when {
         isSelected -> MainWhite
         isFutureDay -> G500
         else -> textColor
     }
 
-    // 날짜 박스
     Box(
         modifier = Modifier
+            .defaultMinSize(minWidth = 24.dp, minHeight = 24.dp)
             .background(
                 color = if (isSelected) WB500 else Color.Transparent,
                 shape = CircleShape
-            )
-            .defaultMinSize(minHeight = 24.dp, minWidth = 24.dp),
+            ),
         contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier.padding(end = 1.dp, top = 0.5.dp, start = 0.5.dp)
-        ) {
-            Text(
-                text = "$day",
-                style = SpoqaTypography.SpoqaBold13,
-                color = fontColor,
-                modifier = Modifier.align(Alignment.Center)
-            )
+        Text(
+            text = "$day",
+            style = SpoqaTypography.SpoqaBold13,
+            color = fontColor,
+            modifier = Modifier.padding(horizontal = 1.dp, vertical = 0.5.dp)
+        )
+    }
+}
+
+@Composable
+fun DayBottomContent(calendarItem: CalendarItem?) {
+    calendarItem?.let {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        when (it) {
+            is CalendarItem.Meal -> {
+                Text(
+                    text = "${it.data.intakeKcal}",
+                    style = SpoqaTypography.SpoqaMedium11,
+                    color = G700
+                )
+            }
+            is CalendarItem.Weight -> {
+                WeightBox(
+                    text = stringResource(R.string.format_kg, it.data.weight),
+                    fontStyle = SpoqaTypography.SpoqaMedium11,
+                    isSmall = true
+                )
+            }
+            else -> {
+                Unit
+            }
         }
     }
-
 }
 
 @Composable
 fun RecommendationFoodImage(
-    imageUrl: String? = ""
+    imageUrl: String
 ) {
     Box(
         modifier = Modifier
             .size(32.dp)
+            .clip(CircleShape)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(imageUrl)
+                .crossfade(true)
                 .build(),
             contentDescription = "추천 음식 사진",
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape),
             contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .matchParentSize()
+                .clip(CircleShape)
         )
 
         Box(

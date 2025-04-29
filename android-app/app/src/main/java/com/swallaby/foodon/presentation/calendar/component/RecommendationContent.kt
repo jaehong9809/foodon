@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -17,18 +18,30 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.WeekTabBar
 import com.swallaby.foodon.core.ui.theme.Bkg04
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
 
-// TODO: 몇 주까지 있는지, 각 주의 추천 음식 리스트
 @Composable
-fun RecommendationContent() {
+fun RecommendationContent(
+    weekCount: Int,
+    selectedWeekIndex: Int,
+    recommendFoods: List<RecommendFood> = emptyList(),
+    onWeeklyTabChanged: (Int) -> Unit
+) {
     var selectedWeek by remember { mutableIntStateOf(0) }
 
+    // 달이 바뀔 때마다 선택된 week 초기화
+    LaunchedEffect(weekCount) {
+        selectedWeek = selectedWeekIndex
+    }
+
     Column {
-        // TODO: 현재 월의 주까지만 탭 보여주기
         WeekTabBar(
-            weeks = (1..5).map { stringResource(R.string.tab_weekly, it) },
+            weeks = (1..weekCount).map { stringResource(R.string.tab_weekly, it) },
             selectedIndex = selectedWeek,
-            onTabSelected = { selectedWeek = it }
+            onTabSelected = {
+                selectedWeek = it
+                onWeeklyTabChanged(selectedWeek)
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -40,16 +53,12 @@ fun RecommendationContent() {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // TODO: 추천 음식 리스트 (LazyColumn Scroll X)
-            val itemsList = listOf("두부 샐러드", "병아리콩 커리")
-
             Column(
-                modifier = Modifier
-                    .wrapContentHeight(),
+                modifier = Modifier.wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                itemsList.forEach { item ->
-                    RecommendFoodCompact(item, "600")
+                recommendFoods.forEach { item ->
+                    RecommendFoodCompact(item)
                 }
             }
 
@@ -60,5 +69,5 @@ fun RecommendationContent() {
 @Preview(showBackground = true)
 @Composable
 fun RecommendationPreview() {
-    RecommendationContent()
+    RecommendationContent(weekCount = 4, selectedWeekIndex = 0, onWeeklyTabChanged = {})
 }

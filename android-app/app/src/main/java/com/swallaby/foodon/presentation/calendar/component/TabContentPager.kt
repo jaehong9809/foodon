@@ -13,16 +13,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import kotlinx.coroutines.launch
 
 @Composable
 fun TabContentPager(
     modifier: Modifier = Modifier,
-    selectedTab: Int,
-    onTabChanged: (Int) -> Unit
+    uiState: CalendarUiState,
+    selectedMeal: CalendarItem?,
+    weekCount: Int,
+    onTabChanged: (Int) -> Unit,
+    onWeeklyTabChanged: (Int) -> Unit
 ) {
 
-    val pagerState = rememberPagerState(initialPage = selectedTab, pageCount = { 3 })
+    val selectedTabIndex = uiState.selectedTabIndex
+
+    val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
     HorizontalPager(
@@ -37,27 +45,41 @@ fun TabContentPager(
                 .padding(vertical = 16.dp, horizontal = 24.dp),
             contentAlignment = Alignment.TopStart
         ) {
-            // TODO: 각 화면에서 ViewModel 주입 받아서 데이터 사용
             when (page) {
-                0 -> MealContent()
-                1 -> WeightContent()
-                2 -> RecommendationContent()
+                0 -> {
+                    if (selectedMeal is CalendarItem.Meal) {
+                        MealContent(calendarMeal = selectedMeal.data)
+                    }
+                }
+                1 -> uiState.weightState.takeIf { it is ResultState.Success }?.let {
+                    WeightContent(userWeight = (it as ResultState.Success).data)
+                }
+                2 -> uiState.recommendFoods.takeIf { it is ResultState.Success }?.let {
+                    RecommendationContent(
+                        weekCount = weekCount,
+                        selectedWeekIndex = uiState.selectedWeekIndex,
+                        recommendFoods = (it as ResultState.Success).data,
+                        onWeeklyTabChanged = {
+                            onWeeklyTabChanged(it)
+                        }
+                    )
+                }
             }
         }
     }
 
     // 스와이프하면 탭 변경
     LaunchedEffect(pagerState.currentPage) {
-        if (selectedTab != pagerState.currentPage) {
+        if (selectedTabIndex != pagerState.currentPage) {
             onTabChanged(pagerState.currentPage)
         }
     }
 
     // 탭 직접 변경 시 페이지도 이동
-    LaunchedEffect(selectedTab) {
-        if (selectedTab != pagerState.currentPage) {
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex != pagerState.currentPage) {
             scope.launch {
-                pagerState.scrollToPage(selectedTab)
+                pagerState.scrollToPage(selectedTabIndex)
             }
         }
     }
