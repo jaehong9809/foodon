@@ -27,12 +27,12 @@ import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
-import com.swallaby.foodon.domain.food.model.NutrientNameType
+import com.swallaby.foodon.domain.food.model.Nutrition
 
 @Composable
 fun CalorieProgressBar(
     modifier: Modifier = Modifier,
-    nutrients: List<Pair<Float, NutrientNameType>> = emptyList(),
+    nutrients: List<Nutrition> = emptyList(),
     goal: Int = 0,
     consumed: Int = 0,
     strokeWidth: Dp = 12.dp
@@ -68,10 +68,10 @@ fun CalorieProgressBar(
 
             // 누적된 진행각
             var currentAngle = startAngle
-            nutrients.forEach { (ratio, nutrientType) ->
-                val segmentSweep = sweepAngle * ratio
+            nutrients.forEach { nutrient ->
+                val segmentSweep = sweepAngle * nutrient.ratio
                 drawArc(
-                    color = nutrientType.color,
+                    color = nutrient.nutritionType.color,
                     startAngle = currentAngle,
                     sweepAngle = segmentSweep,
                     useCenter = false,

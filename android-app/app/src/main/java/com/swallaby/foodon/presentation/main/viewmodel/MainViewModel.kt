@@ -6,6 +6,7 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
+import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
@@ -51,8 +52,11 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(intakeResult = ResultState.Loading) }
 
         viewModelScope.launch {
-            val result = getNutrientIntakeUseCase(day)
-            updateState { it.copy(intakeResult = result.toResultState()) }
+//            val result = getNutrientIntakeUseCase(day)
+//            updateState { it.copy(intakeResult = result.toResultState()) }
+
+            val fakeData = createFakeIntake()
+            updateState { it.copy(intakeResult = ResultState.Success(fakeData)) }
         }
     }
 
@@ -104,6 +108,19 @@ class MainViewModel @Inject constructor(
                 totalProtein = 5,
                 totalFat = 5
             )
+        )
+    }
+
+    private fun createFakeIntake(): NutrientIntake {
+        return NutrientIntake(
+            intakeKcal = 1000,
+            goalKcal = 1600,
+            intakeCarbs = 50,
+            targetCarbs = 100,
+            intakeProtein = 10,
+            targetProtein = 100,
+            intakeFat = 10,
+            targetFat = 100
         )
     }
 
