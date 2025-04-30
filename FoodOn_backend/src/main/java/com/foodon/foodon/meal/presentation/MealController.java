@@ -6,7 +6,9 @@ import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.meal.application.MealService;
 import com.foodon.foodon.meal.dto.MealCreateRequest;
 import com.foodon.foodon.meal.dto.MealInfoResponse;
+import com.foodon.foodon.meal.dto.MealSummaryResponse;
 import com.foodon.foodon.member.domain.Member;
+import com.foodon.foodon.member.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +36,6 @@ public class MealController {
             @RequestPart("image") MultipartFile multipartFile,
             @Parameter(hidden = true) @AuthMember Member member
     ) {
-
         MealInfoResponse result = mealService.uploadAndDetect(multipartFile);
         return ResponseUtil.success(result);
     }
@@ -42,9 +46,18 @@ public class MealController {
             @RequestBody MealCreateRequest request,
             @Parameter(hidden = true) @AuthMember Member member
     ) {
-
         mealService.saveMeal(request, member);
         return ResponseUtil.created();
+    }
+
+    @GetMapping("/{date}")
+    @Operation(summary = "식단 기록 조회")
+    public ResponseEntity<Response<List<MealSummaryResponse>>> getMealSummariesByDate(
+            @PathVariable(name = "date") LocalDate date,
+            @Parameter(hidden = true) @AuthMember Member member
+    ){
+        List<MealSummaryResponse> result = mealService.getMealSummariesByDate(date, member);
+        return ResponseUtil.success(result);
     }
 
 }
