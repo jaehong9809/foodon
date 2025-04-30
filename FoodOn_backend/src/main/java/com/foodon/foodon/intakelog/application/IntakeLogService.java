@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.foodon.foodon.common.util.NutrientCalculator.calculateNutrientTarget;
-import static com.foodon.foodon.intakelog.exception.IntakeLogErrorCode.ILLEGAL_DATE_FORMAT;
+import static com.foodon.foodon.intakelog.exception.IntakeLogErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +75,10 @@ public class IntakeLogService {
     private IntakeLog findIntakeLogByDate(Member member, LocalDate date) {
         return intakeLogRepository.findByMemberAndDate(member, date)
                 .orElseThrow(() -> new NoSuchElementException("해당 멤버와 날짜에 해당하는 섭취 기록이 없습니다, memberId = " + member.getId() + " date = " + date));
+    }
+
+    public IntakeSummaryResponse getIntakeLogByTargetDate(LocalDate date, Member member) {
+        return IntakeSummaryResponse.of(findIntakeLogByDate(member, date));
     }
 
 }
