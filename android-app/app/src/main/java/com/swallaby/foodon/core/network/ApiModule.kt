@@ -1,5 +1,6 @@
 package com.swallaby.foodon.core.network
 
+import com.swallaby.foodon.data.auth.remote.api.AuthApi
 import com.swallaby.foodon.data.calendar.remote.api.CalendarApi
 import com.swallaby.foodon.data.food.remote.api.FoodApi
 import com.swallaby.foodon.data.main.remote.api.MainApi
@@ -15,23 +16,30 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    private inline fun <reified T> createApi(retrofit: Retrofit): T =
-        retrofit.create(T::class.java)
+    @Provides
+    @Singleton
+    fun provideUserApi(
+        @NetworkModule.MainRetrofit retrofit: Retrofit
+    ): UserApi = retrofit.create(UserApi::class.java)
 
     @Provides
     @Singleton
-    fun provideUserApi(@NetworkModule.MainRetrofit retrofit: Retrofit): UserApi =
-        createApi(retrofit)
+    fun provideCalendarApi(
+        @NetworkModule.MainRetrofit retrofit: Retrofit
+    ): CalendarApi = retrofit.create(CalendarApi::class.java)
 
     @Provides
     @Singleton
-    fun provideCalendarApi(@NetworkModule.MainRetrofit retrofit: Retrofit): CalendarApi =
-        createApi(retrofit)
+    fun provideFoodApi(
+        @NetworkModule.MainRetrofit retrofit: Retrofit
+    ): FoodApi = retrofit.create(FoodApi::class.java)
 
     @Provides
     @Singleton
-    fun provideFoodApi(@NetworkModule.MainRetrofit retrofit: Retrofit): FoodApi =
-        createApi(retrofit)
+    fun provideAuthApi(
+        @NetworkModule.MainRetrofit retrofit: Retrofit
+    ): AuthApi = retrofit.create(AuthApi::class.java)
+
 
     @Provides
     @Singleton

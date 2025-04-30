@@ -1,7 +1,7 @@
 package com.swallaby.foodon.core.ui.theme
 
 import androidx.compose.material3.Typography
-import com.swallaby.foodon.core.ui.theme. font.NotoTypography
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
 val Typography = Typography(
     displayLarge = NotoTypography.NotoBold20,
