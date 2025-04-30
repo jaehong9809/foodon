@@ -22,6 +22,7 @@ import com.swallaby.foodon.core.ui.component.FloatingButton
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
+import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
@@ -73,6 +74,10 @@ fun MainScreen(
                     viewModel.selectDate(today)
                 }
             )
+
+            HorizontalDivider(thickness = 1.dp, color = Bkg04)
+
+            MainContentPager(uiState)
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
