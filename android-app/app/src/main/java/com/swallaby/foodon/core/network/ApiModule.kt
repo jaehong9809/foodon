@@ -40,7 +40,6 @@ object ApiModule {
         @NetworkModule.MainRetrofit retrofit: Retrofit
     ): AuthApi = retrofit.create(AuthApi::class.java)
 
-
     @Provides
     @Singleton
     fun provideMainApi(
