@@ -9,12 +9,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class KakaoApiClient {
 
-    @Qualifier("kakaoApiWebClient")
     private final WebClient kakaoApiWebClient;
+
+    public KakaoApiClient(@Qualifier("kakaoApiWebClient") WebClient kakaoApiWebClient) {
+        this.kakaoApiWebClient = kakaoApiWebClient;
+    }
 
     public KakaoUserInfoResponse getUserInfo(String kakaoAccessToken) {
         return kakaoApiWebClient.get()
