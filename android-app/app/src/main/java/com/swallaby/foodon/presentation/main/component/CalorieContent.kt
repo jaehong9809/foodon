@@ -19,7 +19,8 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.CalorieProgressBar
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.domain.food.model.NutrientNameType
+import com.swallaby.foodon.domain.food.model.Nutrition
+import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 
 @Composable
@@ -44,22 +45,24 @@ fun CalorieContent(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            val carbsRatio = 0.4f
-            val proteinRatio = 0.3f
-            val fatRatio = 0.1f
-
-            val nutrients = listOf(
-                carbsRatio to NutrientNameType.CARBOHYDRATE,
-                proteinRatio to NutrientNameType.PROTEIN,
-                fatRatio to NutrientNameType.FAT
-            )
-
             when (intakeResult) {
                 is ResultState.Success ->  {
+                    val calorie = intakeResult.data
+
+                    val carbsRatio = calorie.intakeCarbs.toFloat() * 4 / calorie.goalKcal
+                    val proteinRatio = calorie.intakeProtein.toFloat() * 4 / calorie.goalKcal
+                    val fatRatio = calorie.intakeFat.toFloat() * 9 / calorie.goalKcal
+
+                    val nutrients = listOf(
+                        Nutrition(NutritionType.CARBOHYDRATE, calorie.intakeCarbs, carbsRatio),
+                        Nutrition(NutritionType.PROTEIN, calorie.intakeProtein, proteinRatio),
+                        Nutrition(NutritionType.FAT, calorie.intakeFat, fatRatio),
+                    ).sortedByDescending { it.amount }
+
                     CalorieProgressBar(
                         nutrients = nutrients,
-                        consumed = intakeResult.data.intakeKcal,
-                        goal = intakeResult.data.goalKcal
+                        consumed = calorie.intakeKcal,
+                        goal = calorie.goalKcal
                     )
                 }
                 else -> {
