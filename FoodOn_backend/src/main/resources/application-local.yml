@@ -49,7 +49,16 @@ cloud:
 
 meal-detect-ai-model:
   url: https://ssafy/api/v1/ai/detect
-  
+
+server:
+  forward-headers-strategy: NATIVE
+  servlet:
+    context-path: /api/v1
+  encoding:
+    enabled: true
+    charset: UTF-8
+    force: true
+
 logging:
   level:
     root: INFO
