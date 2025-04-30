@@ -3,7 +3,6 @@ package com.foodon.foodon.common.util;
 import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.meal.dto.MealItemInfo;
 import com.foodon.foodon.meal.dto.NutrientInfo;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.function.Function;
 import static com.foodon.foodon.common.util.BigDecimalUtil.divide;
 import static com.foodon.foodon.common.util.BigDecimalUtil.multiply;
 
-@Component
+
 public class NutrientCalculator {
 
     private static final BigDecimal KCAL_PER_GRAM_CARBS = BigDecimal.valueOf(4);
