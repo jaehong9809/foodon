@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.login
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +23,8 @@ import com.swallaby.foodon.presentation.login.component.KakaoLoginButton
 import com.swallaby.foodon.presentation.login.viewmodel.LoginViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.core.ui.theme.Typography
+import com.swallaby.foodon.core.ui.theme.WB600
+import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun LoginScreen(
@@ -52,6 +55,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(WB600)
                 .padding(paddingValues)
                 .padding(horizontal = 32.dp),
             verticalArrangement = Arrangement.Center,
@@ -88,8 +92,8 @@ fun LoginScreen(
     LaunchedEffect(uiState.loginResult) {
         when (val result = uiState.loginResult) {
             is ResultState.Success -> {
-                navController.navigate("mainScreen") {
-                    popUpTo("loginScreen") { inclusive = true }
+                navController.navigate(NavRoutes.Main.route) {
+                    popUpTo(NavRoutes.Login.route) { inclusive = true }
                 }
             }
             is ResultState.Error -> {
