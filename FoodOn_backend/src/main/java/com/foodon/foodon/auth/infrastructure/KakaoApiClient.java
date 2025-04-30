@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class KakaoApiClient {
 
     private final WebClient kakaoApiWebClient;
+    private final String propertyKeys = "[\"kakao_account.profile\"]";
 
     public KakaoApiClient(@Qualifier("kakaoApiWebClient") WebClient kakaoApiWebClient) {
         this.kakaoApiWebClient = kakaoApiWebClient;
@@ -20,7 +21,11 @@ public class KakaoApiClient {
 
     public KakaoUserInfoResponse getUserInfo(String kakaoAccessToken) {
         return kakaoApiWebClient.get()
-                .uri("/v2/user/me")
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v2/user/me")
+                        .queryParam("property_keys", propertyKeys)
+                        .build()
+                )
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + kakaoAccessToken)
                 .retrieve()
                 .bodyToMono(KakaoUserInfoResponse.class)
