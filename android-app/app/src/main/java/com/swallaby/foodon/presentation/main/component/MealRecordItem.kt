@@ -127,24 +127,18 @@ fun MealRecordItem(
 
             Spacer(Modifier.height(8.dp))
 
+            val nutrients = listOf(
+                Nutrition(nutritionType = NutritionType.CARBOHYDRATE, amount = meal.totalCarbs),
+                Nutrition(nutritionType = NutritionType.PROTEIN, amount = meal.totalProtein),
+                Nutrition(nutritionType = NutritionType.FAT, amount = meal.totalFat),
+            )
+
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                NutritionalSmallInfo(
-                     nutrition = Nutrition(
-                         nutritionType = NutritionType.CARBOHYDRATE, amount = meal.totalCarbs, ratio = 0f
-                     )
-                )
-
-                NutritionalSmallInfo(
-                    nutrition = Nutrition(
-                        nutritionType = NutritionType.PROTEIN, amount = meal.totalProtein, ratio = 0f
+                nutrients.forEach { nutrient ->
+                    NutritionalSmallInfo(
+                        nutrition = nutrient
                     )
-                )
-
-                NutritionalSmallInfo(
-                    nutrition = Nutrition(
-                        nutritionType = NutritionType.FAT, amount = meal.totalFat, ratio = 0f
-                    )
-                )
+                }
             }
         }
 
