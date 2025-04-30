@@ -17,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 public class Nutrient {
 
-    @Column(precision = 5, scale = 2, nullable = false)
+    @Column(precision = 6, scale = 2, nullable = false)
     private BigDecimal kcal;
 
     @Column(precision = 5, scale = 2)
