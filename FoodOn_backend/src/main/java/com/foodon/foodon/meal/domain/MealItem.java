@@ -31,6 +31,8 @@ public class MealItem {
 
     private Long foodId;
 
+    private String foodName;
+
     @Column(precision = 2, scale = 1)
     private BigDecimal quantity;
 
@@ -48,14 +50,15 @@ public class MealItem {
             Meal meal,
             FoodType foodType,
             Long foodId,
+            String foodName,
             BigDecimal quantity,
             Position position,
             boolean isRecommended
     ) {
-
         this.meal = meal;
         this.foodType = foodType;
         this.foodId = foodId;
+        this.foodName = foodName;
         this.quantity = quantity;
         this.position = position;
         this.isRecommended = isRecommended;
@@ -67,11 +70,11 @@ public class MealItem {
             Position position,
             boolean isRecommended
     ) {
-
         MealItem mealItem = new MealItem(
                 meal,
                 mealItemInfo.type(),
                 mealItemInfo.foodId(),
+                mealItemInfo.foodName(),
                 mealItemInfo.quantity(),
                 position,
                 isRecommended

@@ -7,8 +7,6 @@ import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.domain.MealItem;
 import com.foodon.foodon.meal.domain.Position;
 import com.foodon.foodon.meal.dto.*;
-import com.foodon.foodon.meal.exception.MealErrorCode;
-import com.foodon.foodon.meal.exception.MealException;
 import com.foodon.foodon.meal.exception.MealException.MealBadRequestException;
 import com.foodon.foodon.meal.infrastructure.DetectedFoodInfo;
 import com.foodon.foodon.meal.infrastructure.MealDetectAiClient;
@@ -16,7 +14,6 @@ import com.foodon.foodon.meal.infrastructure.MealDetectAiResponse;
 import com.foodon.foodon.meal.repository.MealItemRepository;
 import com.foodon.foodon.meal.repository.MealRepository;
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.recommend.domain.RecommendFood;
 import com.foodon.foodon.recommend.repository.RecommendFoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,13 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
+import static com.foodon.foodon.common.util.NutrientCalculator.sum;
 import static com.foodon.foodon.meal.exception.MealErrorCode.MEAL_ITEM_IS_NULL;
-import static com.foodon.foodon.meal.util.NutrientCalculator.sum;
-import static com.foodon.foodon.meal.util.NutrientCalculator.toRoundedInt;
 
 @Service
 @RequiredArgsConstructor
@@ -159,6 +159,18 @@ public class MealService {
         return recommendFoodRepository
                 .findByMemberAndFoodTypeAndFoodId(member, mealItemInfo.type(), mealItemInfo.foodId())
                 .isPresent();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MealSummaryResponse> getMealSummariesByDate(
+            LocalDate date,
+            Member member
+    ) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        List<Meal> meals = mealRepository.findByMemberAndMealTimeBetween(member, startOfDay, endOfDay);
+
+        return meals.stream().map(MealSummaryResponse::of).toList();
     }
 
 }

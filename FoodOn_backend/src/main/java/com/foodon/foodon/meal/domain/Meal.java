@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -39,17 +40,17 @@ public class Meal {
     @Column(nullable = false)
     private LocalDateTime mealTime;
 
-    @Column(nullable = false)
-    private int totalKcal;
+    @Column(precision = 7, scale = 2, nullable = false)
+    private BigDecimal totalKcal;
 
-    @Column(nullable = false)
-    private int totalCarbs;
+    @Column(precision = 7, scale = 2, nullable = false)
+    private BigDecimal totalCarbs;
 
-    @Column(nullable = false)
-    private int totalProtein;
+    @Column(precision = 7, scale = 2, nullable = false)
+    private BigDecimal totalProtein;
 
-    @Column(nullable = false)
-    private int totalFat;
+    @Column(precision = 7, scale = 2, nullable = false)
+    private BigDecimal totalFat;
 
     private String mealImage;
 
@@ -63,10 +64,10 @@ public class Meal {
     private Meal(
             Member member,
             MealTimeType mealTimeType,
-            int totalKcal,
-            int totalCarbs,
-            int totalProtein,
-            int totalFat,
+            BigDecimal totalKcal,
+            BigDecimal totalCarbs,
+            BigDecimal totalProtein,
+            BigDecimal totalFat,
             LocalDateTime mealTime,
             String mealImage
     ) {
