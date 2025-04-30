@@ -13,7 +13,7 @@ interface MainApi {
     suspend fun getMealRecord(@Query("day") day: String): BaseResponse<List<MealRecordResponse>>
 
     @GET("nutrient/intake")
-    suspend fun getNutrientIntake(@Query("day") day: String): BaseResponse<List<NutrientIntakeResponse>>
+    suspend fun getNutrientIntake(@Query("day") day: String): BaseResponse<NutrientIntakeResponse>
 
     @GET("nutrient/manage")
     suspend fun getNutrientManage(@Query("day") day: String): BaseResponse<List<NutrientManageResponse>>

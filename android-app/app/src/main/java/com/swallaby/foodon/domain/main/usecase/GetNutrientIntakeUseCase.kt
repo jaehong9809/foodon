@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetNutrientIntakeUseCase @Inject constructor(
     private val repository: MainRepository
 ) {
-    suspend operator fun invoke(day: String): ApiResult<List<NutrientIntake>> {
+    suspend operator fun invoke(day: String): ApiResult<NutrientIntake> {
         return repository.getNutrientIntake(day)
     }
 }

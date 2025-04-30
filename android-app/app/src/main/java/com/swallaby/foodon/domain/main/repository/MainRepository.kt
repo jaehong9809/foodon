@@ -9,7 +9,7 @@ interface MainRepository {
 
     suspend fun getMealRecord(day: String): ApiResult<List<MealRecord>>
 
-    suspend fun getNutrientIntake(day: String): ApiResult<List<NutrientIntake>>
+    suspend fun getNutrientIntake(day: String): ApiResult<NutrientIntake>
 
     suspend fun getNutrientManage(day: String): ApiResult<List<NutrientManage>>
 
