@@ -28,19 +28,19 @@ public class IntakeLog {
     @Column(nullable = false)
     private LocalDate date;
 
-    @Column(precision = 5, scale = 2, nullable = false)
+    @Column(precision = 7, scale = 2, nullable = false)
     private BigDecimal goalKcal;
 
-    @Column(precision = 5, scale = 2, nullable = false)
+    @Column(precision = 7, scale = 2, nullable = false)
     private BigDecimal intakeKcal;
 
-    @Column(precision = 5, scale = 2, nullable = false)
+    @Column(precision = 6, scale = 2, nullable = false)
     private BigDecimal intakeCarbs;
 
-    @Column(precision = 5, scale = 2, nullable = false)
+    @Column(precision = 6, scale = 2, nullable = false)
     private BigDecimal intakeProtein;
 
-    @Column(precision = 5, scale = 2, nullable = false)
+    @Column(precision = 6, scale = 2, nullable = false)
     private BigDecimal intakeFat;
 
 }
