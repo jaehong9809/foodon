@@ -22,7 +22,9 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "meals")
+@Table(name = "meals", indexes = {
+        @Index(name = "idx_meal_member_mealtime", columnList = "member_id, meal_time")
+})
 public class Meal {
 
     @Id
