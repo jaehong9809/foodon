@@ -2,25 +2,25 @@ package com.swallaby.foodon.domain.food.model
 
 
 data class MealNutrientWithType(
-    override val alcohol: Int,
-    override val caffeine: Int,
-    override val carbs: Int,
-    override val cholesterol: Int,
-    override val fat: Int,
-    override val fattyAcid: Int,
-    override val fiber: Int,
-    override val foodId: Long,
-    override val foodName: String,
-    override val kalium: Int,
-    override val kcal: Int,
-    override val protein: Int,
-    override val saturatedFat: Int,
-    override val sodium: Int,
-    override val sugar: Int,
-    override val transFat: Int,
-    override val unit: String,
-    override val unsaturatedFat: Int,
-    val type: String,
+    override val alcohol: Int = 0,
+    override val caffeine: Int = 0,
+    override val carbs: Int = 0,
+    override val cholesterol: Int = 0,
+    override val fat: Int = 0,
+    override val fattyAcid: Int = 0,
+    override val fiber: Int = 0,
+    override val foodId: Long = 0,
+    override val foodName: String = "",
+    override val kalium: Int = 0,
+    override val kcal: Int = 0,
+    override val protein: Int = 0,
+    override val saturatedFat: Int = 0,
+    override val sodium: Int = 0,
+    override val sugar: Int = 0,
+    override val transFat: Int = 0,
+    override val unit: String = "",
+    override val unsaturatedFat: Int = 0,
+    val type: String = "",
 ) : BaseMealNutrient(
     alcohol,
     caffeine,
@@ -41,3 +41,19 @@ data class MealNutrientWithType(
     unit,
     unsaturatedFat
 )
+
+fun MealNutrientWithType.toNutrient(): List<Nutrition> {
+    val nutritionMap = mapOf(
+        NutritionType.CARBOHYDRATE to carbs,
+        NutritionType.PROTEIN to protein,
+        NutritionType.FAT to fat,
+        NutritionType.CHOLESTEROL to cholesterol,
+        NutritionType.SODIUM to sodium,
+    )
+
+    return nutritionMap.map { (type, amount) ->
+        Nutrition(
+            nutritionType = type, amount = amount, ratio = 0f  // 필요하다면 여기서 계산 로직 추가
+        )
+    }
+}

@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodDetail.component
+package com.swallaby.foodon.presentation.mealDetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

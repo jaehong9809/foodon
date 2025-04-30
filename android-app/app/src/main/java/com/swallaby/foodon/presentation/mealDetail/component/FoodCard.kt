@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodDetail.component
+package com.swallaby.foodon.presentation.mealDetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -36,13 +37,19 @@ import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.domain.food.model.NutrientNameType
+import com.swallaby.foodon.core.util.StringUtil
+import com.swallaby.foodon.domain.food.model.MealNutrientWithType
+import com.swallaby.foodon.domain.food.model.Nutrition
+import com.swallaby.foodon.domain.food.model.toNutrient
 
 @Composable
 fun FoodCard(
     modifier: Modifier = Modifier,
+    food: MealNutrientWithType,
     onClick: (foodId: Long) -> Unit,
 ) {
+    val nutrients: List<Nutrition> = food.toNutrient()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,14 +78,14 @@ fun FoodCard(
                     Spacer(modifier.width(12.dp))
                     Column {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically, modifier =
-                            modifier.clickable(interactionSource = remember { MutableInteractionSource() },
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = modifier.clickable(interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
                                 // todo foodId 추가
                                 onClick = { onClick(0) })
                         ) {
                             Text(
-                                text = "바질 피자",
+                                text = food.foodName,
                                 style = NotoTypography.NotoMedium16.copy(color = G900)
                             )
                             Spacer(modifier.width(8.dp))
@@ -92,13 +99,20 @@ fun FoodCard(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("1조각", style = SpoqaTypography.SpoqaMedium13.copy(color = G750))
+                            Text(
+                                food.unit, style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
+                            )
                             Box(
                                 modifier = Modifier
                                     .size(4.dp)
                                     .background(Color(0xFFD9D9D9), shape = CircleShape)
                             )
-                            Text("100kal", style = SpoqaTypography.SpoqaMedium13.copy(color = G750))
+                            Text(
+                                text = stringResource(
+                                    R.string.format_kcal, StringUtil.formatKcal(food.kcal)
+                                ),
+                                style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
+                            )
                         }
 
                     }
@@ -107,18 +121,11 @@ fun FoodCard(
                 Spacer(modifier.height(12.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    NutritionalSmallInfo(
-                        nutrientType = NutrientNameType.CARBOHYDRATE,
-                        number = 10
-                    )
-                    NutritionalSmallInfo(
-                        nutrientType = NutrientNameType.PROTEIN,
-                        number = 10
-                    )
-                    NutritionalSmallInfo(
-                        nutrientType = NutrientNameType.FAT,
-                        number = 10
-                    )
+                    repeat(nutrients.size) { index ->
+                        NutritionalSmallInfo(
+                            modifier = modifier, nutrition = nutrients[index]
+                        )
+                    }
                 }
             }
             Image(
@@ -134,5 +141,5 @@ fun FoodCard(
 @Preview
 @Composable
 fun FoodCardPreview() {
-    FoodCard(onClick = {})
+    FoodCard(onClick = {}, food = MealNutrientWithType())
 }
