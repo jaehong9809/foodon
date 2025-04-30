@@ -1,16 +1,19 @@
 package com.swallaby.foodon.domain.food.model
 
 import androidx.compose.ui.graphics.Color
+import com.swallaby.foodon.core.ui.theme.BGFat
+import com.swallaby.foodon.core.ui.theme.BGProtein
+import com.swallaby.foodon.core.ui.theme.WB500
 
 enum class NutritionType(val displayName: String, val color: Color) {
     CARBOHYDRATE(
-        displayName = "탄수화물", color = Color(0xFF2581FF)
+        displayName = "탄수화물", color = WB500
     ),
     PROTEIN(
-        displayName = "단백질", color = Color(0xFF6CA9FF)
+        displayName = "단백질", color = BGProtein
     ),
     FAT(
-        displayName = "지방", color = Color(0xFFC6A2FF)
+        displayName = "지방", color = BGFat
     ),
     CHOLESTEROL(
         // todo 색 변경

@@ -1,5 +1,5 @@
 package com.swallaby.foodon.domain.main.model
 
-enum class NutrientType {
+enum class NutrientManageType {
     ESSENTIAL, LIMITED
 }

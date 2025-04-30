@@ -76,7 +76,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MealDetailScreen(
     modifier: Modifier = Modifier,
-    mealId: Long,
+    mealId: Long = 0,
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
 ) {

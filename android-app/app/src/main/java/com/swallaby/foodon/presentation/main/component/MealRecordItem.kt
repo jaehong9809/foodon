@@ -38,10 +38,11 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
-import com.swallaby.foodon.domain.food.model.NutrientNameType
+import com.swallaby.foodon.domain.food.model.Nutrition
+import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
-import com.swallaby.foodon.presentation.foodDetail.component.NutritionalSmallInfo
+import com.swallaby.foodon.presentation.mealDetail.component.NutritionalSmallInfo
 
 @Composable
 fun MealRecordItem(
@@ -128,16 +129,21 @@ fun MealRecordItem(
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 NutritionalSmallInfo(
-                    nutrientType = NutrientNameType.CARBOHYDRATE,
-                    number = meal.totalCarbs
+                     nutrition = Nutrition(
+                         nutritionType = NutritionType.CARBOHYDRATE, amount = meal.totalCarbs, ratio = 0f
+                     )
                 )
+
                 NutritionalSmallInfo(
-                    nutrientType = NutrientNameType.PROTEIN,
-                    number = meal.totalProtein
+                    nutrition = Nutrition(
+                        nutritionType = NutritionType.PROTEIN, amount = meal.totalProtein, ratio = 0f
+                    )
                 )
+
                 NutritionalSmallInfo(
-                    nutrientType = NutrientNameType.FAT,
-                    number = meal.totalFat
+                    nutrition = Nutrition(
+                        nutritionType = NutritionType.FAT, amount = meal.totalFat, ratio = 0f
+                    )
                 )
             }
         }

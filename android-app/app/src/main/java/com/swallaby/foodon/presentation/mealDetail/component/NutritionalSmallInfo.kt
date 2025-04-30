@@ -12,10 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.G700
+import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
 import com.swallaby.foodon.domain.food.model.Nutrition
@@ -37,7 +37,7 @@ fun NutritionalSmallInfo(
         ) {
             Text(
                 nutrition.nutritionType.displayName.slice(IntRange(0, 0)),
-                style = SpoqaTypography.SpoqaBold9.copy(color = Color.White)
+                style = SpoqaTypography.SpoqaBold9.copy(color = MainWhite)
             )
         }
         Spacer(modifier.width(4.dp))
