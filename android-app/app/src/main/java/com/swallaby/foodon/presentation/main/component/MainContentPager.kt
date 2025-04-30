@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +15,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,25 +30,21 @@ fun MainContentPager(
     val selectedTabIndex = 0
 
     val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { 4 })
-    val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 24.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HorizontalPager(
             state = pagerState,
-            contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(383.dp)
         ) { page ->
             when (page) {
                 0 -> CalorieContent(uiState.intakeResult)
-                1 -> Text("Page 2")
-                2 -> Text("Page 3")
+                1 -> NutrientManageContent()
+                2 -> RecommendFoodContent()
                 3 -> Text("Page 4")
             }
         }
@@ -72,5 +66,6 @@ fun MainContentPager(
             }
         }
 
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
