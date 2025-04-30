@@ -34,21 +34,17 @@ fun FoodThumbnailList(modifier: Modifier = Modifier) {
             .padding(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = true)
-        FoodThumbnail(modifier, isSelected = false)
+        FoodThumbnail(modifier, isSelected = true, foodName = "피자")
+        FoodThumbnail(modifier, isSelected = false, foodName = "레드와인")
     }
 }
 
 @Composable
-private fun FoodThumbnail(modifier: Modifier, isSelected: Boolean = false) {
+private fun FoodThumbnail(
+    modifier: Modifier,
+    foodName: String,
+    isSelected: Boolean = false,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier
@@ -68,7 +64,10 @@ private fun FoodThumbnail(modifier: Modifier, isSelected: Boolean = false) {
                     .clip(shape = RoundedCornerShape(10.dp))
             )
         }
-        Text("피자", style = NotoTypography.NotoBold14.copy(color = if (isSelected) WB500 else G900))
+        Text(
+            foodName,
+            style = NotoTypography.NotoBold14.copy(color = if (isSelected) WB500 else G900)
+        )
     }
 }
 

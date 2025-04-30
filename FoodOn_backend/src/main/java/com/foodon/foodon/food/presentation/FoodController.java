@@ -7,6 +7,8 @@ import com.foodon.foodon.food.application.FoodService;
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
 import com.foodon.foodon.food.dto.FoodInfoResponse;
 import com.foodon.foodon.member.domain.Member;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,19 +21,21 @@ public class FoodController {
     private final FoodService foodService;
 
     @PostMapping("/custom")
+    @Operation(summary = "음식 등록하기")
     public ResponseEntity<Response<Void>> saveCustomFood(
             @RequestBody CustomFoodCreateRequest request,
-            @AuthMember Member member
+            @Parameter(hidden = true) @AuthMember Member member
     ){
         foodService.saveCustomFood(request, member);
         return ResponseUtil.created();
     }
 
     @GetMapping("/{foodId}")
+    @Operation(summary = "선택한 음식 정보 조회하기")
     public ResponseEntity<Response<FoodInfoResponse>> getFood(
             @PathVariable(name = "foodId") Long foodId,
             @RequestParam(name = "type") String type,
-            @AuthMember Member member
+            @Parameter(hidden = true) @AuthMember Member member
     ){
         FoodInfoResponse result = foodService.getFood(foodId, type, member);
         return ResponseUtil.success(result);

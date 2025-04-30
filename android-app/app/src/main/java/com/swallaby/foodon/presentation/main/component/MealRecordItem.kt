@@ -38,10 +38,11 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
-import com.swallaby.foodon.domain.food.model.NutrientNameType
+import com.swallaby.foodon.domain.food.model.Nutrition
+import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
-import com.swallaby.foodon.presentation.foodDetail.component.NutritionalSmallInfo
+import com.swallaby.foodon.presentation.mealDetail.component.NutritionalSmallInfo
 
 @Composable
 fun MealRecordItem(
@@ -126,19 +127,18 @@ fun MealRecordItem(
 
             Spacer(Modifier.height(8.dp))
 
+            val nutrients = listOf(
+                Nutrition(nutritionType = NutritionType.CARBOHYDRATE, amount = meal.totalCarbs),
+                Nutrition(nutritionType = NutritionType.PROTEIN, amount = meal.totalProtein),
+                Nutrition(nutritionType = NutritionType.FAT, amount = meal.totalFat),
+            )
+
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                NutritionalSmallInfo(
-                    nutrientType = NutrientNameType.CARBOHYDRATE,
-                    number = meal.totalCarbs
-                )
-                NutritionalSmallInfo(
-                    nutrientType = NutrientNameType.PROTEIN,
-                    number = meal.totalProtein
-                )
-                NutritionalSmallInfo(
-                    nutrientType = NutrientNameType.FAT,
-                    number = meal.totalFat
-                )
+                nutrients.forEach { nutrient ->
+                    NutritionalSmallInfo(
+                        nutrition = nutrient
+                    )
+                }
             }
         }
 

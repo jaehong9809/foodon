@@ -24,5 +24,8 @@ sealed class NavRoutes(val route: String) {
         object FoodRecord : NavRoutes("food_record")
     }
 
+    /* Login */
+    object LoginGraph : NavRoutes("login_graph")
+    object Login : NavRoutes("login")
 
 }

@@ -1,17 +1,23 @@
 package com.swallaby.foodon.presentation.main
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,13 +27,15 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.FloatingButton
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
+import com.swallaby.foodon.core.ui.theme.MainWhite
+import com.swallaby.foodon.core.ui.theme.WB500
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
 import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
-import org.threeten.bp.LocalDate
 
 @Composable
 fun MainScreen(
@@ -42,7 +50,7 @@ fun MainScreen(
     val currentYearMonth = uiState.currentYearMonth
 
     LaunchedEffect(Unit) {
-        viewModel.fetchRecordData(LocalDate.now().toString())
+        viewModel.fetchRecordData(selectedDate.toString())
     }
 
     Scaffold(
@@ -83,6 +91,24 @@ fun MainScreen(
 
             MealRecordContent(recordState = uiState.recordResult) { mealId ->
                 navController.navigate(NavRoutes.FoodGraph.FoodDetail.createRoute(mealId))
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(modifier = Modifier
+                    .background(WB500)
+                    .clickable {
+                        navController.navigate(NavRoutes.LoginGraph.route)
+                    }) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = "로그인 테스트",
+                        color = MainWhite,
+                        style = NotoTypography.NotoMedium20
+                    )
+                }
             }
 
         }

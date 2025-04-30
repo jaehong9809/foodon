@@ -33,9 +33,9 @@ public class JwtUtil {
     // ---------- * 토큰 생성 * ---------- //
 
     public MemberTokens createMemberToken(String subject) {
-        String refreshToken = createToken("", refreshTokenExpiry);
         String accessToken = createToken(subject, accessTokenExpiry);
-        return new MemberTokens(refreshToken, accessToken);
+        String refreshToken = createToken("", refreshTokenExpiry);
+        return new MemberTokens(accessToken, refreshToken);
     }
 
     private String createToken(String subject, Long expiredMs) {

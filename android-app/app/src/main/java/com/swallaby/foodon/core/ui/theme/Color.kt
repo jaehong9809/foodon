@@ -62,3 +62,5 @@ val BGFat = Color(0xFFC6A2FF)
 /* Text Color */
 val TextGreen = Color(0xFF25A572)
 
+/* Kakao Color */
+val KakaoYellow = Color(0xFFFEE500)

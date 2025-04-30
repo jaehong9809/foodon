@@ -6,10 +6,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.swallaby.foodon.presentation.foodDetail.FoodDetailScreen
+import com.swallaby.foodon.presentation.mealDetail.MealDetailScreen
 import com.swallaby.foodon.presentation.foodEdit.FoodEditScreen
 
-fun NavGraphBuilder.foodGraph(navController: NavHostController) {
+fun NavGraphBuilder.mealGraph(navController: NavHostController) {
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
@@ -24,7 +24,7 @@ fun NavGraphBuilder.foodGraph(navController: NavHostController) {
         ) {
             val mealId = it.arguments?.getLong("mealId") ?: 0
 
-            FoodDetailScreen(
+            MealDetailScreen(
                 mealId = mealId,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = {
