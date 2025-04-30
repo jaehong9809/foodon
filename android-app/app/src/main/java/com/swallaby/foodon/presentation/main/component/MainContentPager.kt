@@ -39,10 +39,10 @@ fun MainContentPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(383.dp)
+                .height(375.dp)
         ) { page ->
             when (page) {
-                0 -> CalorieContent(uiState.intakeResult)
+                0 -> NutrientIntakeContent(uiState.intakeResult)
                 1 -> NutrientManageContent()
                 2 -> RecommendFoodContent()
                 3 -> Text("Page 4")

@@ -1,7 +1,6 @@
 package com.swallaby.foodon.presentation.main.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +23,7 @@ import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 
 @Composable
-fun CalorieContent(
+fun NutrientIntakeContent(
     intakeResult: ResultState<NutrientIntake>
 ) {
 
@@ -41,9 +40,9 @@ fun CalorieContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
+        Column (
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (intakeResult) {
                 is ResultState.Success ->  {
@@ -64,6 +63,8 @@ fun CalorieContent(
                         consumed = calorie.intakeKcal,
                         goal = calorie.goalKcal
                     )
+
+                    IntakeDetail(calorie)
                 }
                 else -> {
                     CalorieProgressBar()
