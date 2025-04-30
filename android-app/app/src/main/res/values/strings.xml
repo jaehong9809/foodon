@@ -63,6 +63,7 @@
     <string name="main_nutrient_manage_good_title">몸에 꼭 필요한 영양소</string>
     <string name="main_nutrient_manage_bad_title">몸에 부담을 줄 수 있는 영양소</string>
     <string name="main_kcal_unit">kcal</string>
+    <string name="main_pager_kcal_unit">/%skcal</string>
 
     <!-- Kakao Login -->
     <string name="kakao_login">카카오톡으로 로그인</string>
