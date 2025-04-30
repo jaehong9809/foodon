@@ -43,4 +43,12 @@ public class IntakeLogController {
         return ResponseUtil.success(result);
     }
 
+    @GetMapping("/target/{date}")
+    public ResponseEntity<Response<IntakeSummaryResponse>> getIntakeLogByTargetDate(
+        @PathVariable(name = "date") LocalDate date,
+        @Parameter(hidden = true) @AuthMember Member member
+    ) {
+        IntakeSummaryResponse result = intakeLogService.getIntakeLogByTargetDate(date, member);
+        return ResponseUtil.success(result);
+    }
 }
