@@ -18,8 +18,8 @@ class MainRepositoryImpl @Inject constructor(
         api.getMealRecord(day).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
-    override suspend fun getNutrientIntake(day: String): ApiResult<List<NutrientIntake>> = safeApiCall {
-        api.getNutrientIntake(day).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getNutrientIntake(day: String): ApiResult<NutrientIntake> = safeApiCall {
+        api.getNutrientIntake(day).getOrThrow { it.toDomain() }
     }
 
     override suspend fun getNutrientManage(day: String): ApiResult<List<NutrientManage>> = safeApiCall {
