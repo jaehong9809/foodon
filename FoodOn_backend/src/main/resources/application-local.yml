@@ -49,6 +49,10 @@ cloud:
 
 meal-detect-ai-model:
   url: https://ssafy/api/v1/ai/detect
+
+kakao:
+  api:
+    url: https://kapi.kakao.com
   
 logging:
   level:

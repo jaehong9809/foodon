@@ -1,21 +1,16 @@
 package com.foodon.foodon.auth.dto.response;
 
-import com.foodon.foodon.member.dto.MemberDto;
-
 public record KakaoLoginResponse(
-        String refreshToken,
         String accessToken,
-        MemberDto member
+        String refreshToken
 ) {
     public static KakaoLoginResponse of(
-            String refreshToken,
             String accessToken,
-            MemberDto memberDto
+            String refreshToken
     ) {
         return new KakaoLoginResponse(
-                refreshToken,
                 accessToken,
-                memberDto
+                refreshToken
         );
     }
 }
