@@ -4,14 +4,14 @@ import com.foodon.foodon.auth.domain.OauthAccount;
 import com.foodon.foodon.auth.domain.OauthProvider;
 import com.foodon.foodon.auth.dto.MemberTokens;
 import com.foodon.foodon.auth.domain.RefreshToken;
-import com.foodon.foodon.auth.dto.request.KakaoLoginRequest;
 import com.foodon.foodon.auth.dto.response.KakaoLoginResponse;
+import com.foodon.foodon.auth.dto.response.KakaoUserInfoResponse;
 import com.foodon.foodon.auth.exception.AuthErrorCode;
+import com.foodon.foodon.auth.infrastructure.KakaoApiClient;
 import com.foodon.foodon.auth.repository.OauthAccountRepository;
 import com.foodon.foodon.auth.repository.RefreshTokenRepository;
 import com.foodon.foodon.auth.util.JwtUtil;
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.member.dto.MemberDto;
 import com.foodon.foodon.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,68 +20,64 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.foodon.foodon.auth.exception.AuthException.AuthUnauthorizedException;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoAuthService {
 
+    private final KakaoApiClient kakaoApiClient;
     private final MemberRepository memberRepository;
     private final OauthAccountRepository oauthAccountRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public KakaoLoginResponse loginByKakao(KakaoLoginRequest request) {
-        Member member = findOrCreateMember(request);
+    public KakaoLoginResponse loginByKakao(String kakaoAccessToken) {
+        KakaoUserInfoResponse kakaoUser = kakaoApiClient.getUserInfo(kakaoAccessToken);
+        Member member = findOrCreateMember(kakaoUser);
         MemberTokens tokens = issueTokensFor(member);
-        return buildLoginResponse(member, tokens);
+
+        return buildLoginResponse(tokens);
     }
 
-    private Member findOrCreateMember(KakaoLoginRequest request) {
+    private Member findOrCreateMember(KakaoUserInfoResponse kakaoUser) {
         return oauthAccountRepository
-                .findByProviderIdAndProvider(request.kakaoId().toString(), OauthProvider.KAKAO)
+                .findByProviderIdAndProvider(kakaoUser.id().toString(), OauthProvider.KAKAO)
                 .map(account -> memberRepository.findById(account.getMemberId())
-                        .orElseThrow(() -> {
-                            log.warn(
-                                    "Oauth 계정이 존재하지만 Member 정보 없음. accountId={}, memberId={}",
-                                    account.getId(), account.getMemberId()
-                            );
-                            return new AuthUnauthorizedException(AuthErrorCode.CORRUPTED_OAUTH_LINK);
-                        })
-                )
-                .orElseGet(() -> createMemberAndLinkOauth(request));
+                        .orElseThrow(() -> new AuthUnauthorizedException(AuthErrorCode.CORRUPTED_OAUTH_LINK)))
+                .orElseGet(() -> createMemberAndLinkOauth(kakaoUser));
     }
 
-    private Member createMemberAndLinkOauth(KakaoLoginRequest request) {
+    private Member createMemberAndLinkOauth(KakaoUserInfoResponse kakaoUser) {
         Member newMember = memberRepository.save(
                 Member.createMember(
-                    request.nickname(),
-                    request.email(),
-                    request.profileImgUrl()
+                        kakaoUser.kakaoAccount().profile().nickname(),
+                        kakaoUser.kakaoAccount().email(),
+                        kakaoUser.kakaoAccount().profile().profileImageUrl()
                 )
         );
 
         OauthAccount oauthAccount = OauthAccount.of(
-                request.kakaoId().toString(),
+                kakaoUser.id().toString(),
                 OauthProvider.KAKAO,
                 newMember.getId()
         );
         oauthAccountRepository.save(oauthAccount);
+
         return newMember;
     }
 
     private MemberTokens issueTokensFor(Member member) {
-        MemberTokens tokens = jwtUtil.createMemberToken(String.valueOf(member.getId()));
+        MemberTokens tokens = jwtUtil.createMemberToken(Long.toString(member.getId()));
         refreshTokenRepository.save(new RefreshToken(member.getId(), tokens.refreshToken()));
         return tokens;
     }
 
-    private KakaoLoginResponse buildLoginResponse(Member member, MemberTokens tokens) {
+    private KakaoLoginResponse buildLoginResponse(MemberTokens tokens) {
         return KakaoLoginResponse.of(
-                tokens.refreshToken(),
                 tokens.accessToken(),
-                MemberDto.from(member)
+                tokens.refreshToken()
         );
     }
 }
+

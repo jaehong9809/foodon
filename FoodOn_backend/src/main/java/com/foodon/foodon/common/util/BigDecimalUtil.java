@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-@Component
+
 public class BigDecimalUtil {
 
     private static final int DEFAULT_SCALE = 2;

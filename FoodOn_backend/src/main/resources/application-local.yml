@@ -59,6 +59,10 @@ server:
     charset: UTF-8
     force: true
 
+kakao:
+  api:
+    url: https://kapi.kakao.com
+  
 logging:
   level:
     root: INFO
