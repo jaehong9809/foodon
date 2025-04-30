@@ -51,6 +51,7 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         viewModel.fetchRecordData(selectedDate.toString())
+        viewModel.fetchIntakeData(selectedDate.toString())
     }
 
     Scaffold(
