@@ -29,6 +29,8 @@ accompanist = "0.34.0"
 
 threetenabp = "1.4.9"
 
+kakao-sdk = "2.21.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -81,6 +83,10 @@ accompanist-pager = { group = "com.google.accompanist", name = "accompanist-page
 accompanist-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanist" }
 
 threetenabp = { group = "com.jakewharton.threetenabp", name = "threetenabp", version.ref = "threetenabp" }
+
+# Kakao
+kakao-user = { module = "com.kakao.sdk:v2-user", version.ref = "kakao-sdk" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
