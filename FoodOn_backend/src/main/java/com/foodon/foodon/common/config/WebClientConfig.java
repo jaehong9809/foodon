@@ -22,7 +22,7 @@ public class WebClientConfig {
     public WebClient mealDetectModelWebClient() {
         return WebClient.builder()
                 .baseUrl(mealDetectModelApiUrl)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
