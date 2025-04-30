@@ -120,7 +120,6 @@ fun MealRecordItem(
                             .height(80.dp)
                             .width(80.dp)
                             .clip(shape = RoundedCornerShape(6.dp))
-                            .background(BG100)
                     )
                 }
             }
