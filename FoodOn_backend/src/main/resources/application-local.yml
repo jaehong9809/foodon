@@ -5,6 +5,10 @@ spring:
   config:
     import: optional:file:.env.local[.properties]
 
+  servlet:
+    multipart:
+      max-file-size: 10MB       # 파일 1개당 최대 크기
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DATASOURCE_URL}
@@ -48,7 +52,7 @@ cloud:
       secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
 
 meal-detect-ai-model:
-  url: https://ssafy/api/v1/ai/detect
+  url: http://k12s203.p.ssafy.io:8000/ai/detect
 
 server:
   forward-headers-strategy: NATIVE
