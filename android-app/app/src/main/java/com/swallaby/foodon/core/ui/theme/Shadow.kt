@@ -18,12 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 fun Modifier.innerShadow(
-    shape: Shape,
-    color: Color,
-    blur: Dp,
-    offsetY: Dp,
-    offsetX: Dp,
-    spread: Dp
+    shape: Shape, color: Color, blur: Dp, offsetY: Dp, offsetX: Dp, spread: Dp
 ) = drawWithContent {
     drawContent()
 
@@ -46,8 +41,10 @@ fun Modifier.innerShadow(
         }
         paint.color = Color.Companion.Black
 
-        val spreadOffsetX = offsetX.toPx() + if (offsetX.toPx() < 0) -spread.toPx() else spread.toPx()
-        val spreadOffsetY = offsetY.toPx() + if (offsetY.toPx() < 0) -spread.toPx() else spread.toPx()
+        val spreadOffsetX =
+            offsetX.toPx() + if (offsetX.toPx() < 0) -spread.toPx() else spread.toPx()
+        val spreadOffsetY =
+            offsetY.toPx() + if (offsetY.toPx() < 0) -spread.toPx() else spread.toPx()
 
         canvas.translate(spreadOffsetX, spreadOffsetY)
         canvas.drawOutline(shadowOutline, paint)
@@ -84,3 +81,14 @@ fun Modifier.dropShadow(
         canvas.restore()
     }
 }
+
+fun Modifier.uiCardShadow() = this.then(
+    Modifier.dropShadow(
+        offsetX = 2.dp,
+        offsetY = 2.dp,
+        blur = 12.dp,
+        spread = 0.dp,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
+        color = Color(0xFF555555).copy(alpha = .08f)
+    )
+)

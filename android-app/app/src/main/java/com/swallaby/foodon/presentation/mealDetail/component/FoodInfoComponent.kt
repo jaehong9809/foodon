@@ -23,6 +23,7 @@ fun FoodInfoComponent(
     modifier: Modifier = Modifier,
     foods: List<MealNutrientWithType> = emptyList(),
     onClick: (foodId: Long) -> Unit,
+    onDelete: (foodId: Long) -> Unit
 ) {
 
     Column(
@@ -38,7 +39,7 @@ fun FoodInfoComponent(
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             repeat(foods.size) { index ->
                 FoodCard(
-                    food = foods[index], onClick = onClick
+                    food = foods[index], onClick = onClick, onDelete = onDelete,
                 )
             }
         }
@@ -50,5 +51,5 @@ fun FoodInfoComponent(
 @Preview
 @Composable
 fun FoodInfoComponentPreview() {
-    FoodInfoComponent(onClick = {})
+    FoodInfoComponent(onClick = {}, onDelete = {})
 }

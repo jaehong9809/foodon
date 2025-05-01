@@ -14,6 +14,13 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
         composable(NavRoutes.FoodGraph.FoodDetail.route) {
+            MealDetailScreen(
+                onBackClick = { navController.popBackStack() },
+                onFoodClick = {
+                    navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
+                },
+                onFoodDeleteClick = {}
+            )
             MealDetailScreen(onBackClick = { navController.popBackStack() }, onFoodClick = {
                 navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
             })
