@@ -68,7 +68,7 @@ fun NutrientManageContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(36.dp))
 
         when (manageResult) {
             is ResultState.Success -> {
@@ -85,18 +85,18 @@ fun NutrientManageContent(
 fun NutrientGrid(items: List<NutrientManage>) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(30.dp)
     ) {
         for (rowItems in items.chunked(3)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 rowItems.forEach {
                     NutrientManageItem(modifier = Modifier.weight(1f), it)
                 }
             }
-            Spacer(modifier = Modifier.height(30.dp))
         }
     }
 }
