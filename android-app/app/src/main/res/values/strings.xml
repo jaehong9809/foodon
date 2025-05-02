@@ -62,6 +62,8 @@
     <string name="main_nutrient_manage_bad_title">몸에 부담을 줄 수 있는 영양소</string>
     <string name="main_kcal_unit">kcal</string>
     <string name="main_pager_kcal_unit">/%skcal</string>
+    <string name="main_pager_good_nutrient_range">%s - %s%s</string>
+    <string name="main_pager_bad_nutrient_range">%s%s 이하</string>
 
     <!-- Kakao Login -->
     <string name="kakao_login">카카오톡으로 로그인</string>

@@ -1,6 +1,8 @@
 package com.swallaby.foodon.core.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,12 +31,15 @@ fun CommonBox(
             .wrapContentWidth()
             .height(height)
             .background(color = bgColor, shape = RoundedCornerShape(4.dp))
-            .padding(horizontal = horizontalPadding)
+            .padding(horizontal = horizontalPadding),
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = content,
-            color = textColor,
-            style = textStyle,
-        )
+        Box(modifier = Modifier.padding(bottom = 2.dp)) {
+            Text(
+                text = content,
+                color = textColor,
+                style = textStyle
+            )
+        }
     }
 }

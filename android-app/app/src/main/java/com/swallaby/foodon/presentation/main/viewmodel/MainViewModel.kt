@@ -133,7 +133,7 @@ class MainViewModel @Inject constructor(
         return listOf(
             NutrientManage(
                 nutrientName = "당류",
-                nutrientType = NutrientManageType.ESSENTIAL,
+                manageType = NutrientManageType.ESSENTIAL,
                 unit = "g",
                 intake = 10,
                 minRecommend = 0,
@@ -142,7 +142,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "나트륨",
-                nutrientType = NutrientManageType.LIMITED,
+                manageType = NutrientManageType.LIMITED,
                 unit = "mg",
                 intake = 4000,
                 minRecommend = 0,
@@ -151,7 +151,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "포화지방",
-                nutrientType = NutrientManageType.LIMITED,
+                manageType = NutrientManageType.LIMITED,
                 unit = "g",
                 intake = 100,
                 minRecommend = 0,
@@ -160,7 +160,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "트랜스지방",
-                nutrientType = NutrientManageType.ESSENTIAL,
+                manageType = NutrientManageType.ESSENTIAL,
                 unit = "g",
                 intake = 10,
                 minRecommend = 0,
@@ -169,7 +169,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "카페인",
-                nutrientType = NutrientManageType.ESSENTIAL,
+                manageType = NutrientManageType.ESSENTIAL,
                 unit = "mg",
                 intake = 400,
                 minRecommend = 0,
@@ -178,7 +178,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "알코올",
-                nutrientType = NutrientManageType.LIMITED,
+                manageType = NutrientManageType.LIMITED,
                 unit = "g",
                 intake = 100,
                 minRecommend = 0,
