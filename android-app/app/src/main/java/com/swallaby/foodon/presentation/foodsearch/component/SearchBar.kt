@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.Bkg04
+import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G500
 import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.Typography
@@ -49,7 +51,6 @@ fun SearchBar(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // ✅ 내용부 (44.dp)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -99,6 +100,12 @@ fun SearchBar(
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
+
+    HorizontalDivider(
+        color = Border02,
+        thickness = 1.dp,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 
@@ -108,19 +115,17 @@ fun SearchBar(
 fun SearchBarPreview() {
     var query by remember { mutableStateOf("햄버거") }
 
-    MaterialTheme {
-        SearchBar(
-            query = query,
-            onQueryChange = { query = it },
-            onClearClick = { query = "" },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    bottom = 12.dp
-                )
-        )
-    }
+    SearchBar(
+        query = query,
+        onQueryChange = { query = it },
+        onClearClick = { query = "" },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 24.dp,
+                end = 24.dp,
+                bottom = 12.dp
+            )
+    )
 }
 
