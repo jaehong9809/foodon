@@ -77,7 +77,7 @@ fun MealRecordItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        MealTypeBox(meal.mealTimeType.korean)
+                        MealTypeBox(meal.mealTimeType.typeName)
                         MealTypeBox(meal.mealTime)
                     }
 

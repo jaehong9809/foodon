@@ -3,10 +3,12 @@ package com.swallaby.foodon.presentation.main.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
-import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
+import com.swallaby.foodon.domain.main.model.NutrientManage
+import com.swallaby.foodon.domain.main.model.NutrientManageType
+import com.swallaby.foodon.domain.main.model.NutrientStatus
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
@@ -64,8 +66,11 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(manageResult = ResultState.Loading) }
 
         viewModelScope.launch {
-            val result = getNutrientManageUseCase(day)
-            updateState { it.copy(manageResult = result.toResultState()) }
+//            val result = getNutrientManageUseCase(day)
+//            updateState { it.copy(manageResult = result.toResultState()) }
+
+            val fakeData = createFakeManage()
+            updateState { it.copy(manageResult = ResultState.Success(fakeData)) }
         }
     }
 
@@ -121,6 +126,65 @@ class MainViewModel @Inject constructor(
             targetProtein = 100,
             intakeFat = 10,
             targetFat = 100
+        )
+    }
+
+    private fun createFakeManage(): List<NutrientManage> {
+        return listOf(
+            NutrientManage(
+                nutrientName = "당류",
+                nutrientType = NutrientManageType.ESSENTIAL,
+                unit = "g",
+                intake = 10,
+                minRecommend = 0,
+                maxRecommend = 50,
+                status = NutrientStatus.DANGER
+            ),
+            NutrientManage(
+                nutrientName = "나트륨",
+                nutrientType = NutrientManageType.LIMITED,
+                unit = "mg",
+                intake = 4000,
+                minRecommend = 0,
+                maxRecommend = 5000,
+                status = NutrientStatus.LACK
+            ),
+            NutrientManage(
+                nutrientName = "포화지방",
+                nutrientType = NutrientManageType.LIMITED,
+                unit = "g",
+                intake = 100,
+                minRecommend = 0,
+                maxRecommend = 20,
+                status = NutrientStatus.CAUTION
+            ),
+            NutrientManage(
+                nutrientName = "트랜스지방",
+                nutrientType = NutrientManageType.ESSENTIAL,
+                unit = "g",
+                intake = 10,
+                minRecommend = 0,
+                maxRecommend = 2,
+                status = NutrientStatus.CAUTION
+            ),
+            NutrientManage(
+                nutrientName = "카페인",
+                nutrientType = NutrientManageType.ESSENTIAL,
+                unit = "mg",
+                intake = 400,
+                minRecommend = 0,
+                maxRecommend = 400,
+                status = NutrientStatus.NORMAL
+            ),
+            NutrientManage(
+                nutrientName = "알코올",
+                nutrientType = NutrientManageType.LIMITED,
+                unit = "g",
+                intake = 100,
+                minRecommend = 0,
+                maxRecommend = 30,
+                status = NutrientStatus.CAUTION
+            )
         )
     }
 

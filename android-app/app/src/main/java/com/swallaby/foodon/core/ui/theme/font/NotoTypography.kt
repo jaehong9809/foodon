@@ -69,6 +69,14 @@ object NotoTypography {
         letterSpacing = (-0.5).sp
     )
 
+    val NotoMedium12 = TextStyle(
+        fontFamily = NotoWithSpoqaFallback,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 21.sp,
+        letterSpacing = (-0.5).sp
+    )
+
     val NotoNormal16 = TextStyle(
         fontFamily = NotoWithSpoqaFallback,
         fontWeight = FontWeight.Normal,

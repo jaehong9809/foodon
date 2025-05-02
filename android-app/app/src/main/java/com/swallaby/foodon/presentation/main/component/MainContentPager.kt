@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -43,7 +42,7 @@ fun MainContentPager(
         ) { page ->
             when (page) {
                 0 -> NutrientIntakeContent(uiState.intakeResult)
-                1 -> NutrientManageContent()
+                1 -> NutrientManageContent(uiState.manageResult)
                 2 -> RecommendFoodContent()
                 3 -> Text("Page 4")
             }
@@ -51,12 +50,11 @@ fun MainContentPager(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(horizontalArrangement = Arrangement.Center) {
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             repeat(pagerState.pageCount) { index ->
                 val isSelected = pagerState.currentPage == index
                 Box(
                     modifier = Modifier
-                        .padding(4.dp)
                         .size(8.dp)
                         .background(
                             color = if (isSelected) WB500 else BG300,
