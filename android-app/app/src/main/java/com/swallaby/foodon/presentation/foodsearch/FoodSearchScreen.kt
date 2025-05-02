@@ -36,7 +36,6 @@ fun FoodSearchScreen(
         ) {
             // TODO: 뒤로 가기 버튼 로직 체크 (PopStack 체크)
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
         SearchBar(
             query = query,
