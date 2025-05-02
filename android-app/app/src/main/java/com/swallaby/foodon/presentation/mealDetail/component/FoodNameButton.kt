@@ -57,7 +57,7 @@ fun FoodNameButton(modifier: Modifier = Modifier) {
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun FoodNameButtonPreview() {
     FoodNameButton()

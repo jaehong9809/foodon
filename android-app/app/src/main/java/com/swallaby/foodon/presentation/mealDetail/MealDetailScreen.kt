@@ -97,19 +97,9 @@ fun MealDetailScreen(
                 placeholder = painterResource(R.drawable.icon_search) // 로딩 중 표시할 이미지
             )
 
-            // 시간 휠 피커
-//            TimeWheelPicker()
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                ScrollPicker()
-//            }
-
-//            WheelTimePickerDemo()
-            ScrollTimePicker()
-
             // todo icon_time 의 크기가 피그마와 일치하지 않음
             //  피그마보다 좀 더 작음
-            NutritionalIngredientsComponent(
-                modifier = modifier,
+            NutritionalIngredientsComponent(modifier = modifier,
                 mealType = MealType.BREAKFAST,
                 mealTime = "12:00",
                 totalCarbs = 50,
@@ -178,6 +168,7 @@ fun MealDetailScreen(
                         )
                     }
                 }
+                ScrollTimePicker()
 
                 CommonWideButton(
                     modifier = Modifier.padding(horizontal = 24.dp),
@@ -219,8 +210,7 @@ fun dismissModalBottomSheet(
 @Composable
 fun FoodDetailScreenPreview() {
     FoodonTheme {
-        MealDetailScreen(
-            modifier = Modifier,
+        MealDetailScreen(modifier = Modifier,
             onBackClick = {},
             onFoodClick = {},
             onFoodDeleteClick = {})

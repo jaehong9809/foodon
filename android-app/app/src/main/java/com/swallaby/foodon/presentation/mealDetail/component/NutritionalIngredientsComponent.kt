@@ -17,12 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-//import androidx.compose.material.DropdownMenu
-//import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -147,7 +144,6 @@ private fun MealTime(
     onMealTypeClick: () -> Unit = {},
     onTimeClick: () -> Unit,
 ) {
-
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
     Row(modifier = modifier.fillMaxWidth()) {
@@ -182,27 +178,27 @@ private fun MealTime(
                 MealType.values().forEachIndexed { index, item ->
                     DropdownMenuItem(
                         contentPadding = PaddingValues(
-                        horizontal = 12.dp, vertical = 0.dp
-                    ), modifier = modifier
+                            horizontal = 12.dp, vertical = 0.dp
+                        ), modifier = modifier
                             .width(200.dp)
                             .height(48.dp), onClick = {
-                        expanded = false
-                        onMealTypeClick()
-                        selectedIndex = index
-                    }, text = {
-                        Text(
-                            text = item.displayName,
-                            style = NotoTypography.NotoNormal16.copy(color = G900)
-                        )
-                    }, trailingIcon = {
-                        if (selectedIndex == index) {
-                            Icon(
-                                painter = painterResource(R.drawable.icon_check),
-                                contentDescription = "check",
-                                tint = WB500,
+                            expanded = false
+                            onMealTypeClick()
+                            selectedIndex = index
+                        }, text = {
+                            Text(
+                                text = item.displayName,
+                                style = NotoTypography.NotoNormal16.copy(color = G900)
                             )
-                        }
-                    })
+                        }, trailingIcon = {
+                            if (selectedIndex == index) {
+                                Icon(
+                                    painter = painterResource(R.drawable.icon_check),
+                                    contentDescription = "check",
+                                    tint = WB500,
+                                )
+                            }
+                        })
 //                {
 //                    Row(
 //                        modifier = modifier.fillMaxWidth(),
@@ -222,7 +218,7 @@ private fun MealTime(
 //                }
                     // 마지막 아이템이 아닐 경우에만 구분선 추가
                     if (index < MealType.values().size - 1) {
-                        Divider(
+                        HorizontalDivider(
                             color = Border02
                         )
                     }
