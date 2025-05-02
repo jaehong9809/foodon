@@ -77,7 +77,7 @@ public class MealService {
         Map<String, Food> foodMap = foods.stream()
                 .collect(Collectors.toMap(Food::getName, Function.identity()));
 
-        return detectedItems.foods().stream()
+        return detectedItems.food().stream()
                 .map(foodInfo -> toMealItemInfoResponse(foodMap, foodInfo))
                 .collect(Collectors.toList());
     }
@@ -104,7 +104,7 @@ public class MealService {
     }
 
     public Set<String> extractFoodNameFrom(MealDetectAiResponse detectedItems) {
-        return detectedItems.foods().stream()
+        return detectedItems.food().stream()
                 .map(DetectedFoodInfo::name)
                 .collect(Collectors.toSet());
     }

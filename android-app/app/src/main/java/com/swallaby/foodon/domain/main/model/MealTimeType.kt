@@ -13,4 +13,5 @@ enum class MealTimeType(val korean: String) {
             return values().firstOrNull { it.korean == korean } ?: BREAKFAST
         }
     }
+
 }

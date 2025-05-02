@@ -5,7 +5,7 @@ import com.swallaby.foodon.domain.main.model.MealTimeType
 
 data class MealRecordResponse(
     val mealId: Long = 0,
-    val mealTimeType: String = "",
+    val mealTimeType: MealTimeType = MealTimeType.BREAKFAST,
     val mealTime: String = "",
     val mealImageUrl: String = "",
     val mealItems: List<String> = emptyList(),
@@ -18,7 +18,7 @@ data class MealRecordResponse(
 fun MealRecordResponse.toDomain(): MealRecord {
     return MealRecord(
         mealId = this.mealId,
-        mealTimeType = MealTimeType.fromKorean(this.mealTimeType),
+        mealTimeType = this.mealTimeType,
         mealTime = this.mealTime,
         mealImageUrl = this.mealImageUrl,
         mealItems = this.mealItems,

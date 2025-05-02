@@ -35,8 +35,6 @@ public class Member extends BaseTimeEntity {
 
     private Gender gender;
 
-    private int weight;
-
     private int height;
 
     private int goalWeight;
