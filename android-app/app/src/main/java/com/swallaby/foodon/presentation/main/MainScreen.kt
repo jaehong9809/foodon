@@ -30,7 +30,9 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
+import com.swallaby.foodon.presentation.main.component.MainCalendarPager
 import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
@@ -88,6 +90,10 @@ fun MainScreen(
                     viewModel.selectDate(today)
                 }
             )
+
+            WeeklyLabel()
+
+            MainCalendarPager()
 
             HorizontalDivider(thickness = 1.dp, color = Bkg04)
 
