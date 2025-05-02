@@ -35,7 +35,7 @@ public class MemberController {
 	@Operation(summary = "특정 달 기록 체중 목록 조회")
 	public ResponseEntity<Response<List<WeightRecordResponse>>> getWeightCalendar(
 		@PathVariable YearMonth yearMonth,
-		@AuthMember Member member
+		@Parameter(hidden = true) @AuthMember Member member
 	) {
 		List<WeightRecordResponse> result = memberService.getWeightRecordCalendar(yearMonth, member);
 		return ResponseUtil.success(result);
@@ -44,7 +44,7 @@ public class MemberController {
 	@GetMapping("/profile/weight")
 	@Operation(summary = "목표 체중 현재 체중 조회")
 	public ResponseEntity<Response<WeightProfileResponse>> getWeightProfile(
-		@AuthMember Member member
+		@Parameter(hidden = true) @AuthMember Member member
 	) {
 		WeightProfileResponse result = memberService.getWeightProfile(member);
 		return ResponseUtil.success(result);
