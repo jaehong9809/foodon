@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.mealDetail.component
+package com.swallaby.foodon.presentation.mealdetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,7 +47,6 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
-import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.ui.theme.uiCardShadow
@@ -64,7 +61,7 @@ fun FoodCard(
     modifier: Modifier = Modifier,
     food: MealNutrientWithType,
     onClick: (foodId: Long) -> Unit,
-    onDelete: (foodId: Long) -> Unit
+    onDelete: (foodId: Long) -> Unit,
 ) {
     val nutrients: List<Nutrition> = food.toNutrient()
     var showDeletePopup by remember { mutableStateOf(false) }
@@ -155,7 +152,7 @@ fun FoodCard(
             Box {
                 Box(
                     modifier = modifier
-                         .padding(end = 2.dp)
+                        .padding(end = 2.dp)
                         .size(32.dp)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
@@ -170,7 +167,8 @@ fun FoodCard(
                                 coordinates.positionInWindow().y.roundToInt()
                             )
                             iconSize = coordinates.size
-                        }, contentAlignment = Alignment.Center) {
+                        }, contentAlignment = Alignment.Center
+                ) {
                     Image(
                         painter = painterResource(R.drawable.icon_vertical_more),
                         contentDescription = "more"
@@ -188,7 +186,7 @@ fun FoodCard(
                                 parentBounds: IntRect,
                                 windowSize: IntSize,
                                 layoutDirection: LayoutDirection,
-                                popupContentSize: IntSize
+                                popupContentSize: IntSize,
                             ): IntOffset {
                                 // 팝업의 너비와 높이
                                 val popupWidthPx = popupContentSize.width

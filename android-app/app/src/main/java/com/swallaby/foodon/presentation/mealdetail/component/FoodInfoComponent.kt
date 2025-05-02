@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.mealDetail.component
+package com.swallaby.foodon.presentation.mealdetail.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +23,7 @@ fun FoodInfoComponent(
     modifier: Modifier = Modifier,
     foods: List<MealNutrientWithType> = emptyList(),
     onClick: (foodId: Long) -> Unit,
-    onDelete: (foodId: Long) -> Unit
+    onDelete: (foodId: Long) -> Unit,
 ) {
 
     Column(

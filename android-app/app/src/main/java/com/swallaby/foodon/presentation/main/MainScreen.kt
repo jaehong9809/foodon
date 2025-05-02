@@ -39,6 +39,7 @@ import com.swallaby.foodon.presentation.navigation.NavRoutes
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
+    onRecordClick: () -> Unit = {},
 ) {
 
     val navController = LocalNavController.current
@@ -60,6 +61,7 @@ fun MainScreen(
                 text = stringResource(R.string.btn_record)
             ) {
                 // TODO: 식사 기록 화면으로 이동 (카메라)
+                onRecordClick()
             }
         },
         floatingActionButtonPosition = FabPosition.End,

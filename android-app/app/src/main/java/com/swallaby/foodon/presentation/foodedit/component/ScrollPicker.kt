@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodEdit.component
+package com.swallaby.foodon.presentation.foodedit.component
 
 import android.util.Log
 import androidx.compose.foundation.background

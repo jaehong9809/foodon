@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.mealDetail.viewmodel
+package com.swallaby.foodon.presentation.mealdetail.viewmodel
 
 import com.swallaby.foodon.core.presentation.UiState
 import com.swallaby.foodon.core.result.ResultState

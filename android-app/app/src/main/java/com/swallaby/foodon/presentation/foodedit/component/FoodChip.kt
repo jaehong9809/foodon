@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodEdit.component
+package com.swallaby.foodon.presentation.foodedit.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border

@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.mealDetail
+package com.swallaby.foodon.presentation.mealdetail
 
 
 import android.util.Log
@@ -45,9 +45,9 @@ import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.domain.food.model.MealNutrientWithType
 import com.swallaby.foodon.domain.food.model.MealType
-import com.swallaby.foodon.presentation.foodEdit.component.ScrollTimePicker
-import com.swallaby.foodon.presentation.mealDetail.component.FoodInfoComponent
-import com.swallaby.foodon.presentation.mealDetail.component.NutritionalIngredientsComponent
+import com.swallaby.foodon.presentation.foodedit.component.ScrollTimePicker
+import com.swallaby.foodon.presentation.mealdetail.component.FoodInfoComponent
+import com.swallaby.foodon.presentation.mealdetail.component.NutritionalIngredientsComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
