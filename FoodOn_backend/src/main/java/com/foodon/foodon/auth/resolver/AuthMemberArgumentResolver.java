@@ -46,7 +46,7 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
             throw new AuthUnauthorizedException(AuthErrorCode.UNAUTHORIZED_ACCESS);
         }
 
-        String refreshToken = extractRefreshToken(request);
+        //String refreshToken = extractRefreshToken(request);
         String accessToken = extractAccessToken(request);
 
         if (jwtUtil.isAccessTokenValid(accessToken)) {
