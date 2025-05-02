@@ -10,7 +10,7 @@ import org.threeten.bp.YearMonth
 
 data class MainUiState(
     val recordResult: ResultState<List<MealRecord>> = ResultState.Loading,
-    val intakeResult: ResultState<List<NutrientIntake>> = ResultState.Loading,
+    val intakeResult: ResultState<NutrientIntake> = ResultState.Loading,
     val manageResult: ResultState<List<NutrientManage>> = ResultState.Loading,
     val currentYearMonth: YearMonth = YearMonth.now(),
     val selectedDate: LocalDate = LocalDate.now(),

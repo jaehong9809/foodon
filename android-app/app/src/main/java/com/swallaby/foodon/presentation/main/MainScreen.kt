@@ -31,6 +31,7 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
+import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
@@ -50,6 +51,8 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         viewModel.fetchRecordData(selectedDate.toString())
+        viewModel.fetchIntakeData(selectedDate.toString())
+        viewModel.fetchManageData(selectedDate.toString())
     }
 
     Scaffold(
@@ -81,6 +84,10 @@ fun MainScreen(
                     viewModel.selectDate(today)
                 }
             )
+
+            HorizontalDivider(thickness = 1.dp, color = Bkg04)
+
+            MainContentPager(uiState)
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
