@@ -40,7 +40,7 @@ fun CalendarPager(
                 onDateSelected = onDateSelected
             )
 
-            if (uiState.calendarState is ResultState.Loading) {
+            if (uiState.calendarResult is ResultState.Loading) {
                 LoadingProgress()
             }
         }

@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodDetail.component
+package com.swallaby.foodon.presentation.mealDetail.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +16,15 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.domain.food.model.MealNutrientWithType
 
 @Composable
 fun FoodInfoComponent(
     modifier: Modifier = Modifier,
+    foods: List<MealNutrientWithType> = emptyList(),
     onClick: (foodId: Long) -> Unit,
 ) {
+
     Column(
         modifier = modifier
             .background(color = Color.White)
@@ -33,14 +36,12 @@ fun FoodInfoComponent(
         )
         Spacer(modifier = modifier.height(24.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FoodCard(
-                onClick = onClick
-            )
-            FoodCard(
-                onClick = onClick
-            )
+            repeat(foods.size) { index ->
+                FoodCard(
+                    food = foods[index], onClick = onClick
+                )
+            }
         }
-
     }
 
 }

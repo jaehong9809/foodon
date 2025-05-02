@@ -37,26 +37,22 @@ fun CommonWideButton(
     isEnabled: Boolean = true,
     onClick: () -> Unit,
 ) {
-    Box(
-        modifier = modifier
-            .padding(vertical = 16.dp)
-            .fillMaxWidth()
-            .height(52.dp)
-            .clickable(
-                enabled = isEnabled,
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { onClick() }
-            )
-            .background(if (isEnabled) WB500 else Bkg04,
-                shape = RoundedCornerShape(8.dp)),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = modifier
+        .padding(vertical = 16.dp)
+        .fillMaxWidth()
+        .height(52.dp)
+        .clickable(enabled = isEnabled,
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = { onClick() })
+        .background(
+            if (isEnabled) WB500 else Bkg04, shape = RoundedCornerShape(8.dp)
+        ), contentAlignment = Alignment.Center) {
         text?.let {
             Text(
                 modifier = modifier,
                 text = it,
-                style =  NotoTypography.NotoMedium16,
+                style = NotoTypography.NotoMedium16,
                 color = if (isEnabled) MainWhite else G000,
                 textAlign = TextAlign.Center
             )
@@ -70,26 +66,19 @@ fun CancelWideButton(
     text: String? = null,
     onClick: () -> Unit,
 ) {
-    Box(
-        modifier = modifier
-            .padding(vertical = 16.dp)
-            .fillMaxWidth()
-            .height(52.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { onClick() }
-            )
-            .border(1.dp, Border025, shape = RoundedCornerShape(8.dp))
-            .background(MainWhite, shape = RoundedCornerShape(8.dp)),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = modifier
+        .padding(vertical = 16.dp)
+        .fillMaxWidth()
+        .height(52.dp)
+        .clickable(interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = { onClick() })
+        .border(1.dp, Border025, shape = RoundedCornerShape(8.dp))
+        .background(MainWhite, shape = RoundedCornerShape(8.dp)),
+        contentAlignment = Alignment.Center) {
         text?.let {
             Text(
-                modifier = Modifier,
-                text = it,
-                style = NotoTypography.NotoMedium16,
-                color = G800
+                modifier = Modifier, text = it, style = NotoTypography.NotoMedium16, color = G800
             )
         }
     }
@@ -97,19 +86,16 @@ fun CancelWideButton(
 
 // 음식 수정 버튼
 @Composable
-fun UpdateFoodButton() {
-    Row {
+fun UpdateFoodButton(modifier: Modifier = Modifier, ) {
+    Row(modifier = modifier) {
         CancelWideButton(
-            modifier = Modifier.weight(1f),
-            text = "삭제"
+            modifier = Modifier.weight(1f), text = "삭제"
         ) {}
 
         Spacer(modifier = Modifier.width(8.dp))
 
         CommonWideButton(
-            modifier = Modifier.weight(2f),
-            text = "수정 완료",
-            isEnabled = true
+            modifier = Modifier.weight(2f), text = "수정 완료", isEnabled = true
         ) {}
     }
 }

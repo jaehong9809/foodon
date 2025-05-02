@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodDetail.component
+package com.swallaby.foodon.presentation.mealDetail.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -29,5 +29,7 @@ fun PercentageBar(
 @Preview
 @Composable
 fun PercentageBarPreview() {
-    PercentageBar()
+    PercentageBar(
+        percentage = .5f
+    )
 }

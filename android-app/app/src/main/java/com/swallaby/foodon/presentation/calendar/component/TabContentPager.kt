@@ -51,7 +51,7 @@ fun TabContentPager(
                         MealContent(calendarMeal = selectedMeal.data)
                     }
                 }
-                1 -> uiState.weightState.takeIf { it is ResultState.Success }?.let {
+                1 -> uiState.weightResult.takeIf { it is ResultState.Success }?.let {
                     WeightContent(userWeight = (it as ResultState.Success).data)
                 }
                 2 -> uiState.recommendFoods.takeIf { it is ResultState.Success }?.let {

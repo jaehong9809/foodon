@@ -13,10 +13,15 @@ sealed class NavRoutes(val route: String) {
 
     /* Food */
     object FoodGraph : NavRoutes("food_graph") {
-        object FoodDetail : NavRoutes("food_detail")
+        object FoodDetail : NavRoutes("food_detail/{mealId}") {
+            fun createRoute(mealId: Long) = "food_detail/$mealId"
+        }
+
         object FoodEdit : NavRoutes("food_edit/{foodId}") {
             fun createRoute(foodId: Long) = "food_edit/$foodId"
         }
+
+        object FoodRecord : NavRoutes("food_record")
     }
 
     /* Login */

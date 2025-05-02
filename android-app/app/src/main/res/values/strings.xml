@@ -7,6 +7,13 @@
     <string name="error_unauthorized">로그인이 필요합니다.</string>
     <string name="error_unknown">알 수 없는 오류가 발생했습니다.</string>
 
+    <!-- Format -->
+    <string name="format_kcal">%skcal</string>
+    <string name="format_kg">%dkg</string>
+    <string name="format_nutrition_kg">%skg</string>
+    <string name="format_nutrition_g">%sg</string>
+    <string name="format_calendar_date">%d년 %d월</string>
+
     <!-- button -->
     <string name="btn_next">다음</string>
     <string name="btn_confirm">확인</string>
@@ -33,17 +40,26 @@
     <string name="tab_content_title_goal_weight">목표 체중</string>
     <string name="tab_content_title_cur_weight">현재 체중</string>
     <string name="tab_content_title_recommend">이 주의 추천 음식</string>
-    <string name="format_kcal">%skcal</string>
-    <string name="format_kg">%dkg</string>
-    <string name="format_calendar_date">%d년 %d월</string>
+
     <string name="tab_meal_bottom">단위 : kcal</string>
     <string name="tab_weight_bottom">체중 변화(kg)</string>
 
-    <!-- food-->
+    <!-- food -->
     <string name="total_intake">전체 섭취량</string>
     <string name="food_info_check">음식 정보를 확인해 보세요!</string>
     <string name="food_amount">음식양</string>
     <string name="nutritional_ingredients">영양 성분</string>
+    <string name="format_g">%dg</string>
+
+    <!-- main -->
+    <string name="main_today">오늘</string>
+    <string name="main_meal_record_title">식사 기록</string>
+    <string name="main_meal_record_empty">기록된 식단이 없습니다.</string>
+    <string name="main_nutrient_intake_title">오늘 섭취량</string>
+    <string name="main_nutrient_manage_title">관리 영양소</string>
+    <string name="main_nutrient_manage_good_title">몸에 꼭 필요한 영양소</string>
+    <string name="main_nutrient_manage_bad_title">몸에 부담을 줄 수 있는 영양소</string>
+    <string name="main_kcal_unit">kcal</string>
 
     <!-- Kakao Login -->
     <string name="kakao_login">카카오톡으로 로그인</string>

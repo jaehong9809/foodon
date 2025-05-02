@@ -1,8 +1,9 @@
 package com.swallaby.foodon.core.network
 
-import com.swallaby.foodon.data.calendar.remote.api.CalendarApi
 import com.swallaby.foodon.data.auth.remote.api.AuthApi
+import com.swallaby.foodon.data.calendar.remote.api.CalendarApi
 import com.swallaby.foodon.data.food.remote.api.FoodApi
+import com.swallaby.foodon.data.main.remote.api.MainApi
 import com.swallaby.foodon.data.user.remote.api.UserApi
 import dagger.Module
 import dagger.Provides
@@ -10,7 +11,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
-
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,7 +28,6 @@ object ApiModule {
         @NetworkModule.MainRetrofit retrofit: Retrofit
     ): CalendarApi = retrofit.create(CalendarApi::class.java)
 
-
     @Provides
     @Singleton
     fun provideFoodApi(
@@ -41,4 +40,9 @@ object ApiModule {
         @NetworkModule.MainRetrofit retrofit: Retrofit
     ): AuthApi = retrofit.create(AuthApi::class.java)
 
+    @Provides
+    @Singleton
+    fun provideMainApi(
+        @NetworkModule.MainRetrofit retrofit: Retrofit
+    ): MainApi = retrofit.create(MainApi::class.java)
 }

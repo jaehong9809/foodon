@@ -2,19 +2,35 @@ package com.swallaby.foodon.presentation.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.swallaby.foodon.presentation.foodDetail.FoodDetailScreen
+import com.swallaby.foodon.presentation.mealDetail.MealDetailScreen
 import com.swallaby.foodon.presentation.foodEdit.FoodEditScreen
 
-fun NavGraphBuilder.foodGraph(navController: NavHostController) {
+fun NavGraphBuilder.mealGraph(navController: NavHostController) {
     navigation(
-        startDestination = NavRoutes.FoodGraph.FoodDetail.route, route = NavRoutes.FoodGraph.route
+        startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
-        composable(NavRoutes.FoodGraph.FoodDetail.route) {
-            FoodDetailScreen(onBackClick = { navController.popBackStack() }, onFoodClick = {
-                navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
-            })
+
+        composable(NavRoutes.FoodGraph.FoodRecord.route) {
+            // TODO: 식사 기록 카메라 화면
+        }
+
+        composable(
+            route = NavRoutes.FoodGraph.FoodDetail.route,
+            arguments = listOf(navArgument("mealId") { type = NavType.LongType })
+        ) {
+            val mealId = it.arguments?.getLong("mealId") ?: 0
+
+            MealDetailScreen(
+                mealId = mealId,
+                onBackClick = { navController.popBackStack() },
+                onFoodClick = {
+                    navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
+                }
+            )
         }
 
         composable(NavRoutes.FoodGraph.FoodEdit.route) {

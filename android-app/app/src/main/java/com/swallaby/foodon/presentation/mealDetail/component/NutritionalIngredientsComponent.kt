@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodDetail.component
+package com.swallaby.foodon.presentation.mealDetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,19 +30,32 @@ import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography.SpoqaBold24
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography.SpoqaMedium16
-import java.text.NumberFormat
-import java.util.Locale
+import com.swallaby.foodon.core.util.StringUtil
+import com.swallaby.foodon.domain.food.model.MealType
+import com.swallaby.foodon.domain.food.model.Nutrition
+import com.swallaby.foodon.domain.food.model.NutritionType
 
-enum class MealType(val displayName: String) {
-    BREAKFAST("아침 식사"), LUNCH("점심 식사"), DINNER("저녁 식사"), SNACK("간식");
-}
 
 @Composable
 fun NutritionalIngredientsComponent(
     modifier: Modifier,
     mealType: MealType,
     mealTime: String,
+    totalCarbs: Int,
+    totalFat: Int,
+    totalKcal: Int,
+    totalProtein: Int,
+    onMealTypeClick: () -> Unit = {},
+    onTimeClick: () -> Unit = {},
 ) {
+    val totalNutrition = totalCarbs + totalProtein + totalFat
+
+    val nutritions = listOf(
+        Nutrition(NutritionType.CARBOHYDRATE, totalCarbs, totalCarbs.toFloat() / totalNutrition),
+        Nutrition(NutritionType.PROTEIN, totalProtein, totalProtein.toFloat() / totalNutrition),
+        Nutrition(NutritionType.FAT, totalFat, totalFat.toFloat() / totalNutrition),
+    ).sortedByDescending { it.amount }
+
     Box(
         modifier = modifier
             .background(color = Color.White)
@@ -51,43 +64,13 @@ fun NutritionalIngredientsComponent(
             .padding(24.dp),
     ) {
         Column {
-            Row(modifier = modifier.fillMaxWidth()) {
-                DropButton(
-                    modifier = modifier
-                        .wrapContentWidth()
-                        .height(32.dp),
-                    onClick = {},
-                    text = mealType.displayName,
-                    suffixIcon = {
-                        Image(
-                            painter = painterResource(R.drawable.icon_down_chevron),
-                            contentDescription = "down_chevron"
-                        )
-                    },
-                )
-                Spacer(modifier = modifier.width(6.dp))
-                DropButton(
-                    modifier = modifier
-                        .wrapContentWidth()
-                        .height(32.dp),
-                    onClick = {},
-                    text = mealTime,
-                    prefixIcon = {
-                        Image(
-                            modifier = modifier.size(12.dp),
-                            painter = painterResource(R.drawable.icon_time),
-                            contentDescription = "time"
-                        )
-                    },
-                    suffixIcon = {
-                        Image(
-                            painter = painterResource(R.drawable.icon_down_chevron),
-                            contentDescription = "down_chevron"
-                        )
-                    },
-
-                    )
-            }
+            MealTime(
+                modifier,
+                mealType,
+                mealTime,
+                onMealTypeClick = onMealTypeClick,
+                onTimeClick = onTimeClick
+            )
             Spacer(modifier.height(24.dp))
             Row(
                 modifier = modifier.fillMaxWidth(),
@@ -99,12 +82,11 @@ fun NutritionalIngredientsComponent(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        NumberFormat.getNumberInstance(Locale.KOREA).format(1000),
+                        text = StringUtil.formatKcal(totalKcal),
                         style = SpoqaBold24.copy(color = G900)
                     )
                     Spacer(modifier = modifier.width(2.dp))
                     Text("kal", style = SpoqaMedium16.copy(color = G700))
-
                 }
             }
             Spacer(modifier.height(16.dp))
@@ -116,24 +98,74 @@ fun NutritionalIngredientsComponent(
                     .padding(16.dp)
             ) {
                 Column(modifier = modifier.fillMaxWidth()) {
-                    NutritionalIngredientPercentage(modifier = modifier)
+                    NutritionalIngredientPercentage(
+                        modifier = modifier, nutritions = nutritions,
+                    )
                     Spacer(modifier = modifier.height(16.dp))
                     Row(
                         modifier = modifier
                             .fillMaxWidth()
                             .wrapContentHeight(),
                     ) {
-                        NutritionalMediumInfo(modifier.weight(1f))
-                        NutritionalMediumInfo(modifier.weight(1f))
-                        NutritionalMediumInfo(modifier.weight(1f))
+                        repeat(nutritions.size, action = { index ->
+                            NutritionalMediumInfo(
+                                modifier = modifier.weight(1f),
+                                nutritionType = nutritions[index].nutritionType,
+                                amount = nutritions[index].amount
+                            )
+                        })
                     }
                 }
             }
 
         }
-
     }
+}
 
+@Composable
+private fun MealTime(
+    modifier: Modifier,
+    mealType: MealType,
+    mealTime: String,
+    onMealTypeClick: () -> Unit = {},
+    onTimeClick: () -> Unit,
+) {
+    Row(modifier = modifier.fillMaxWidth()) {
+        DropButton(
+            modifier = modifier
+                .wrapContentWidth()
+                .height(32.dp),
+            onClick = onMealTypeClick,
+            text = mealType.displayName,
+            suffixIcon = {
+                Image(
+                    painter = painterResource(R.drawable.icon_down_chevron),
+                    contentDescription = "down_chevron"
+                )
+            },
+        )
+        Spacer(modifier = modifier.width(6.dp))
+        DropButton(
+            modifier = modifier
+                .wrapContentWidth()
+                .height(32.dp),
+            onClick = onTimeClick,
+            text = mealTime,
+            prefixIcon = {
+                Image(
+                    modifier = modifier.size(12.dp),
+                    painter = painterResource(R.drawable.icon_time),
+                    contentDescription = "time"
+                )
+            },
+            suffixIcon = {
+                Image(
+                    painter = painterResource(R.drawable.icon_down_chevron),
+                    contentDescription = "down_chevron"
+                )
+            },
+        )
+    }
 }
 
 
@@ -144,5 +176,9 @@ fun NutritionalIngredientsComponentPreview() {
         modifier = Modifier,
         mealType = MealType.BREAKFAST,
         mealTime = "12:00",
+        totalCarbs = 100,
+        totalFat = 100,
+        totalKcal = 100,
+        totalProtein = 100
     )
 }
