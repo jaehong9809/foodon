@@ -16,6 +16,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +68,7 @@ fun Picker(
     val listScrollCount = if (isLoop) Integer.MAX_VALUE else items.size
     val listScrollMiddle = listScrollCount / 2
     val listStartIndex =
-        if (isLoop) listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex else 0
+        if (isLoop) listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex else startIndex
     val wheelHeight = itemHeightDp * visibleItemsCount
 
     fun getItem(index: Int) = items[index % items.size]
@@ -128,7 +129,6 @@ fun Picker(
     }
 }
 
-
 @Composable
 private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
 
@@ -140,6 +140,40 @@ fun ScrollTimePicker(
     initTimeIndex: Int = 0,
     onTimeChanged: (String) -> Unit,
 ) {
+    val amPmPickerState =
+        rememberPickerState(if (initAmPmIndex == 0) PeriodType.AM.displayName else PeriodType.PM.displayName)
+    val hourPickerState = rememberPickerState((initHourIndex + 1).toString() + "시")
+    val minPickerState = rememberPickerState(initTimeIndex.toString().padStart(2, '0') + "분")
+
+    // 상태에서 포맷팅된 시간 문자열 파생
+    val selectedTime by remember(
+        amPmPickerState.selectedItem, hourPickerState.selectedItem, minPickerState.selectedItem
+    ) {
+        derivedStateOf {
+            // "1시", "2시" 등에서 시간 추출
+            val hour = hourPickerState.selectedItem.replace("시", "").toIntOrNull() ?: 0
+
+            // "00분", "01분" 등에서 분 추출
+            val minute = minPickerState.selectedItem.replace("분", "").toIntOrNull() ?: 0
+
+            // 오후인 경우 24시간 형식으로 변환
+            val hour24 =
+                if (amPmPickerState.selectedItem == PeriodType.PM.displayName && hour < 12) {
+                    hour + 12
+                } else if (amPmPickerState.selectedItem == PeriodType.AM.displayName && hour == 12) {
+                    0 // 오전 12시는 24시간 형식에서 00:00
+                } else {
+                    hour
+                }
+
+            // "HH:mm" 형식으로 포맷팅
+            String.format("%02d:%02d", hour24, minute)
+        }
+    }
+
+    LaunchedEffect(selectedTime) {
+        onTimeChanged(selectedTime)
+    }
 
     val formatHour = stringResource(R.string.format_hour)
     val formatMin = stringResource(R.string.format_min)
@@ -152,13 +186,7 @@ fun ScrollTimePicker(
         }
     }
 
-    val amPmPickerState =
-        rememberPickerState(if (initAmPmIndex == 0) PeriodType.AM.displayName else PeriodType.PM.displayName)
-    val hourPickerState = rememberPickerState((initHourIndex + 1).toString() + "시")
-    val minPickerState = rememberPickerState(initTimeIndex.toString().padStart(2, '0') + "분")
 
-    val parseHour = hourPickerState.selectedItem.dropLast(1)
-    val parseMin = minPickerState.selectedItem.dropLast(1)
     Box(modifier = modifier.padding(horizontal = 24.dp)) {
         Box(
             modifier = modifier
@@ -168,34 +196,22 @@ fun ScrollTimePicker(
                 .align(Alignment.Center)
         )
         Row {
-            Picker(state = amPmPickerState,
+            Picker(
+                state = amPmPickerState,
                 items = amPmValues,
                 visibleItemsCount = 5,
                 modifier = modifier.weight(1f),
                 textStyle = SpoqaTypography.SpoqaBold18,
                 isLoop = false,
                 startIndex = initAmPmIndex,
-                onChanged = { value ->
-                    lateinit var newTime: String
-                    if (value == "오전") {
-                        newTime = "${parseHour.toInt()}:${parseMin.toInt()}"
-                    } else {
-                        newTime = "${parseHour.toInt() + 12}:${parseMin.toInt()}"
-                    }
-                    Log.d("Picker", "newTime: $newTime")
-
-                    onTimeChanged(newTime)
-                }
             )
-            Picker(state = hourPickerState,
+            Picker(
+                state = hourPickerState,
                 items = hourValues,
                 visibleItemsCount = 5,
                 modifier = modifier.weight(1f),
                 startIndex = initHourIndex,
                 textStyle = SpoqaTypography.SpoqaBold18,
-                onChanged = { value ->
-//                    onTimeChanged(newTime)
-                }
             )
             Picker(
                 state = minPickerState,
@@ -204,10 +220,6 @@ fun ScrollTimePicker(
                 modifier = modifier.weight(1f),
                 startIndex = initTimeIndex,
                 textStyle = SpoqaTypography.SpoqaBold18,
-//                onChanged = { value ->
-//
-////                    onTimeChanged(newTime)
-//                }
             )
 
         }

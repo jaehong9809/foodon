@@ -64,15 +64,9 @@ fun MealDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
-    onFoodDeleteClick: (foodId: Long) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val now = LocalDateTime.now()
-    Log.d("Picker", "now: $now")
-
-
-    val foods = createDummyMealInfo()
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -122,13 +116,14 @@ fun MealDetailScreen(
 
                     // todo icon_time 의 크기가 피그마와 일치하지 않음
                     //  피그마보다 좀 더 작음
-                    NutritionalIngredientsComponent(modifier = modifier,
+                    NutritionalIngredientsComponent(
+                        modifier = modifier,
                         mealType = uiState.mealType,
                         mealTime = uiState.mealTime,
-                        totalCarbs = 19,
-                        totalFat = 200,
-                        totalKcal = 100,
-                        totalProtein = 70,
+                        totalCarbs = mealInfo.totalCarbs,
+                        totalFat = mealInfo.totalFat,
+                        totalKcal = mealInfo.totalKcal,
+                        totalProtein = mealInfo.totalProtein,
                         onMealTypeClick = viewModel::updateMealType,
                         onTimeClick = {
                             scope.launch {
@@ -141,7 +136,9 @@ fun MealDetailScreen(
                             .background(Bkg04)
                     )
                     FoodInfoComponent(
-                        onClick = onFoodClick, foods = foods.mealItems, onDelete = onFoodDeleteClick
+                        onClick = onFoodClick,
+                        foods = mealInfo.mealItems,
+                        onDelete = viewModel::deleteFood
                     )
                 }
 
@@ -168,9 +165,9 @@ fun MealDetailScreen(
                     var selectedTime by remember { mutableStateOf("08:00") }
                     val times = uiState.mealTime.split(":")
 
-                    val selectedAmPm by remember { mutableStateOf(if (times[0].toInt() < 12) 0 else 1) }
-                    val selectedHour by remember { mutableStateOf(times[0].toInt() % 12 - 1) }
-                    val selectedMin by remember { mutableStateOf(times[1].toInt()) }
+                    val selectedAmPmIndex by remember { mutableStateOf(if (times[0].toInt() < 12) 0 else 1) }
+                    val selectedHourIndex by remember { mutableStateOf(times[0].toInt() % 12 - 1) }
+                    val selectedMinIndex by remember { mutableStateOf(times[1].toInt()) }
 
                     Column(
                         modifier = modifier
@@ -198,9 +195,10 @@ fun MealDetailScreen(
                                 )
                             }
                         }
-                        ScrollTimePicker(initTimeIndex = selectedMin,
-                            initHourIndex = selectedHour,
-                            initAmPmIndex = selectedAmPm,
+                        ScrollTimePicker(
+                            initTimeIndex = selectedMinIndex,
+                            initHourIndex = selectedHourIndex,
+                            initAmPmIndex = selectedAmPmIndex,
                             onTimeChanged = {
                                 selectedTime = it
                             })
@@ -213,7 +211,6 @@ fun MealDetailScreen(
                                     scope = scope,
                                     sheetState = sheetState,
                                     callback = {
-                                        Log.d("Picker", "selectedTime: $selectedTime")
                                         viewModel.updateMealTime(selectedTime)
                                         showBottomSheet = false
                                     },
@@ -256,101 +253,7 @@ fun FoodDetailScreenPreview() {
             modifier = Modifier,
             onBackClick = {},
             onFoodClick = {},
-            onFoodDeleteClick = {},
         )
     }
 }
 
-fun createDummyMealInfo(): MealInfo = MealInfo(
-    imageUrl = "https://example.com/breakfast.jpg",
-    mealTime = "2025-05-02 07:30",
-    mealTimeType = "BREAKFAST",
-    totalCarbs = 45,
-    totalFat = 15,
-    totalProtein = 20,
-    totalKcal = 390,
-    mealItems = listOf(
-        MealItem(
-            type = "PUBLIC",
-            foodId = 1001,
-            foodName = "계란 프라이",
-            unit = "개",
-            quantity = 2,
-            nutrientInfo = NutrientInfo(
-                kcal = 140,
-                protein = 12,
-                fat = 10,
-                carbs = 2,
-                sugar = 0,
-                fiber = 0,
-                sodium = 140,
-                cholesterol = 370,
-                potassium = 120,
-                saturatedFat = 3,
-                unsaturatedFat = 7,
-                transFat = 0,
-                fattyAcid = 5,
-                alcohol = 0
-            ),
-            position = listOf(
-                Position(
-                    height = 120.0, width = 130.0, x = 50, y = 100
-                )
-            )
-        ), MealItem(
-            type = "PUBLIC",
-            foodId = 1002,
-            foodName = "토스트",
-            unit = "조각",
-            quantity = 2,
-            nutrientInfo = NutrientInfo(
-                kcal = 180,
-                protein = 6,
-                fat = 3,
-                carbs = 32,
-                sugar = 3,
-                fiber = 2,
-                sodium = 200,
-                cholesterol = 0,
-                potassium = 70,
-                saturatedFat = 1,
-                unsaturatedFat = 2,
-                transFat = 0,
-                fattyAcid = 1,
-                alcohol = 0
-            ),
-            position = listOf(
-                Position(
-                    height = 80.0, width = 150.0, x = 200, y = 120
-                )
-            )
-        ), MealItem(
-            type = "PUBLIC",
-            foodId = 1003,
-            foodName = "오렌지 주스",
-            unit = "ml",
-            quantity = 250,
-            nutrientInfo = NutrientInfo(
-                kcal = 70,
-                protein = 2,
-                fat = 2,
-                carbs = 11,
-                sugar = 9,
-                fiber = 1,
-                sodium = 5,
-                cholesterol = 0,
-                potassium = 450,
-                saturatedFat = 0,
-                unsaturatedFat = 2,
-                transFat = 0,
-                fattyAcid = 0,
-                alcohol = 0
-            ),
-            position = listOf(
-                Position(
-                    height = 150.0, width = 70.0, x = 400, y = 80
-                )
-            )
-        )
-    )
-)

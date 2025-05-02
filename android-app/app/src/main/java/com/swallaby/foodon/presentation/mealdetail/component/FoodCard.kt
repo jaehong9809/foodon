@@ -101,7 +101,8 @@ fun FoodCard(
                     Column {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = modifier.clickable(interactionSource = remember { MutableInteractionSource() },
+                            modifier = modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
                                 // todo foodId 추가
                                 onClick = { onClick(0) })
@@ -155,7 +156,8 @@ fun FoodCard(
                     modifier = modifier
                         .padding(end = 2.dp)
                         .size(32.dp)
-                        .clickable(interactionSource = remember { MutableInteractionSource() },
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                             onClick = {
                                 if (!showDeletePopup) showDeletePopup = true
@@ -216,7 +218,8 @@ fun FoodCard(
                         }
                     }
 
-                    Popup(popupPositionProvider = popupPositionProvider,
+                    Popup(
+                        popupPositionProvider = popupPositionProvider,
                         onDismissRequest = { showDeletePopup = false }) {
                         Box(
                             modifier = Modifier
@@ -236,7 +239,7 @@ fun FoodCard(
                         ) {
                             Text(
                                 modifier = Modifier.padding(horizontal = 12.dp),
-                                text = "삭제",
+                                text = stringResource(R.string.btn_delete),
                                 style = NotoTypography.NotoNormal16.copy(color = G900)
                             )
                         }

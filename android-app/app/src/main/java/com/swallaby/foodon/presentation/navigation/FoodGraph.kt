@@ -27,7 +27,6 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
                 onFoodClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
                 },
-                onFoodDeleteClick = {},
             )
         }
 
