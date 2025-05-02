@@ -56,7 +56,7 @@ class CalendarViewModel @Inject constructor(
 
         viewModelScope.launch {
 //            val result = getCalendarUseCase(type, date)
-//            updateState { it.copy(calendarState = result.toResultState()) }
+//            updateState { it.copy(calendarResult = result.toResultState()) }
 
             // TODO: 서버 연동 시 삭제
             val fakeData: List<CalendarItem> = createFakeData(type)

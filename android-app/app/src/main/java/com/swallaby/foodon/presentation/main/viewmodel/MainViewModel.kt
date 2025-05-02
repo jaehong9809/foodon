@@ -3,8 +3,12 @@ package com.swallaby.foodon.presentation.main.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.domain.calendar.model.CalendarMeal
+import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.model.Effect
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
@@ -28,6 +32,7 @@ class MainViewModel @Inject constructor(
     private val getNutrientIntakeUseCase: GetNutrientIntakeUseCase,
     private val getNutrientManageUseCase: GetNutrientManageUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
+    private val getCalendarUseCase: GetCalendarUseCase,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
 
     fun updateState(block: (MainUiState) -> MainUiState) {
@@ -40,6 +45,21 @@ class MainViewModel @Inject constructor(
 
     fun selectDate(date: LocalDate) {
         updateState { it.copy(selectedDate = date) }
+    }
+
+    fun fetchCalendarData(date: String) {
+        updateState { it.copy(calendarResult = ResultState.Loading) }
+
+        viewModelScope.launch {
+//            val result = getCalendarUseCase(CalendarType.MEAL, date)
+//            updateState { it.copy(calendarResult = result.toResultState()) }
+
+            val fakeData: List<CalendarItem> = createFakeData()
+
+            updateState {
+                it.copy(calendarResult = ResultState.Success(fakeData))
+            }
+        }
     }
 
     fun fetchRecordData(date: String) {
@@ -91,6 +111,29 @@ class MainViewModel @Inject constructor(
                 it.copy(recommendMealResult = ResultState.Success(fakeData))
             }
         }
+    }
+
+    private fun createFakeData(): List<CalendarItem> {
+        return listOf(
+        CalendarItem.Meal(
+            data = CalendarMeal(
+                calendarType = CalendarType.MEAL,
+                intakeLogId = 1L,
+                date = "2025-05-01",
+                intakeKcal = 1800,
+                goalKcal = 2000
+            )
+        ),
+        CalendarItem.Meal(
+            data = CalendarMeal(
+                calendarType = CalendarType.MEAL,
+                intakeLogId = 2L,
+                date = "2025-05-05",
+                intakeKcal = 1950,
+                goalKcal = 2000
+            )
+        )
+        )
     }
 
     private fun createFakeMealRecord(): List<MealRecord> {
