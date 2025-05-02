@@ -15,7 +15,7 @@ public enum ImageExtension {
     JPEG(".jpeg", "ffd8ffe"),
     JPG(".jpg", "ffd8ffe"),
     JFIF(".jfif", "ffd8ffe"),
-    PNG(".png", "89504E47"),
+    PNG(".png", "89504e47"),
     ;
 
     private final String extension;
