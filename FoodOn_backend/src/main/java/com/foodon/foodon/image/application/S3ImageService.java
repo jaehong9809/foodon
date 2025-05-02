@@ -1,26 +1,29 @@
 package com.foodon.foodon.image.application;
 
-import com.foodon.foodon.image.domain.ImageExtension;
+import com.foodon.foodon.image.domain.ImageFormat;
 import com.foodon.foodon.image.domain.S3Client;
 import com.foodon.foodon.image.domain.UploadFile;
-import com.foodon.foodon.image.exception.ImageException.ImageBadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-
-import static com.foodon.foodon.image.exception.ImageErrorCode.ILLEGAL_IMAGE_FORMAT;
-import static com.foodon.foodon.image.exception.ImageErrorCode.IMAGE_IS_NULL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @RequiredArgsConstructor
 public class S3ImageService implements ImageService {
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     @Value("${cloud.aws.s3.upload-path}")
-    private String uploadPath;
+    private String s3UploadPath;
 
     @Value("${cloud.aws.s3.base-url}")
     private String baseUrl;
@@ -30,59 +33,45 @@ public class S3ImageService implements ImageService {
     @Override
     public String upload(MultipartFile multipartFile) {
 
-        validateImageFileFormat(multipartFile);
+        ImageFormat.validate(multipartFile);
 
         try {
             UploadFile uploadFile = UploadFile.from(multipartFile);
             s3Client.upload(uploadFile);
             return getImageUrl(uploadFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("S3 업로드에 실패했습니다.", e);
         }
     }
 
-    private void validateImageFileFormat(MultipartFile multipartFile) {
-        if(multipartFile == null || multipartFile.isEmpty()) {
-            throw new ImageBadRequestException(IMAGE_IS_NULL);
-        }
-
-        if(!isValidImage(multipartFile)) {
-            throw new ImageBadRequestException(ILLEGAL_IMAGE_FORMAT);
-        }
-    }
-
-    /*
-        파일 확장자 변조 방지하기 위한 이미지 파일 유효성 체크
-     */
-    private boolean isValidImage(MultipartFile multipartFile) {
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            byte[] headerBytes = new byte[4];
-            if (inputStream.read(headerBytes) == -1) return false;
-
-            String hex = bytesToHex(headerBytes);
-            return hex.startsWith(getSignature(multipartFile.getOriginalFilename()));
+    public String upload(String imageFileName) {
+        try {
+            Path filePath = Paths.get(uploadDir, imageFileName);
+            File file = filePath.toFile();
+            if (!file.exists()) {
+                throw new FileNotFoundException("해당 파일명의 파일이 존재하지 않습니다: " + imageFileName);
+            }
+            s3Client.upload(file);
+            Files.delete(file.toPath());
+            return getImageUrl(file);
         } catch (IOException e) {
-            return false;
+            throw new RuntimeException("S3 업로드에 실패했습니다.", e);
         }
     }
 
-    private String getSignature(String origFileName) {
-        return ImageExtension.from(origFileName).getSignature();
+    private String getImageUrl(File file) {
+        return getImageUrl(file.getName());
     }
 
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : bytes) {
-            hexString.append(String.format("%02x", b));
-        }
-        return hexString.toString().toLowerCase();
+    private String getImageUrl(UploadFile uploadFile){
+        return getImageUrl(uploadFile);
     }
 
-    private String getImageUrl(UploadFile uploadFile) {
+    private String getImageUrl(String fileName) {
         return baseUrl + String.join(
                 "/",
-                uploadPath,
-                uploadFile.getOriginalFilename()
+                s3UploadPath,
+                fileName
         );
     }
 

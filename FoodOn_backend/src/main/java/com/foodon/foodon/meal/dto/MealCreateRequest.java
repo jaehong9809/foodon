@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record MealCreateRequest(
-        String imageUrl,
+        String imageFileName,
         BigDecimal totalKcal,
         BigDecimal totalCarbs,
         BigDecimal totalProtein,

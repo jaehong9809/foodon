@@ -1,10 +1,8 @@
 package com.foodon.foodon.meal.domain;
 
 import com.foodon.foodon.meal.dto.MealCreateRequest;
-import com.foodon.foodon.meal.dto.MealItemInfo;
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -12,7 +10,6 @@ import org.hibernate.annotations.ColumnDefault;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +70,6 @@ public class Meal {
             LocalDateTime mealTime,
             String mealImage
     ) {
-
         this.member = member;
         this.mealTimeType = mealTimeType;
         this.totalKcal = totalKcal;
@@ -86,9 +82,9 @@ public class Meal {
 
     public static Meal createMeal(
             Member member,
+            String imageUrl,
             MealCreateRequest request
     ) {
-
         return new Meal(
                 member,
                 request.mealTimeType(),
@@ -97,7 +93,7 @@ public class Meal {
                 request.totalProtein(),
                 request.totalFat(),
                 LocalDate.now().atTime(parse(request.mealTime())),
-                request.imageUrl()
+                imageUrl
         );
     }
 
