@@ -108,7 +108,7 @@ fun RecommendReason(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 reasons.forEach { content ->
-                    Box(modifier = Modifier.padding(bottom = 2.dp)) {
+                    Box(modifier = Modifier.padding(bottom = 3.dp)) {
                         Text(
                             text = content,
                             color = G700,
