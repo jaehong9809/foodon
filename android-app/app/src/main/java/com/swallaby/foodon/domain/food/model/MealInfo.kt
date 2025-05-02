@@ -8,5 +8,5 @@ data class MealInfo(
     val totalFat: Int = 0,
     val totalKcal: Int = 0,
     val totalProtein: Int = 0,
-    val mealItems: List<MealItem>,
+    val mealItems: List<MealItem> = emptyList(),
 )

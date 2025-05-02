@@ -19,7 +19,7 @@ fun NavGraphBuilder.mainGraph(
         composable(NavRoutes.Main.route) {
             MainScreen(mainViewModel, onRecordClick = {
                 // todo 나중에 record 화면으로 수정
-                navController.navigate(NavRoutes.FoodGraph.FoodDetail.createRoute(0))
+                navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
             })
         }
 

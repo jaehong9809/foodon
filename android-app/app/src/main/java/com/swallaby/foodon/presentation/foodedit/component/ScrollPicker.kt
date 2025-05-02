@@ -41,11 +41,13 @@ import com.swallaby.foodon.domain.food.model.PeriodType
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-@Composable
-fun rememberPickerState() = remember { PickerState() }
+class PickerState(initialSelectedItem: String = "") {
+    var selectedItem by mutableStateOf(initialSelectedItem)
+}
 
-class PickerState {
-    var selectedItem by mutableStateOf("")
+@Composable
+fun rememberPickerState(initialSelectedItem: String = ""): PickerState {
+    return remember { PickerState(initialSelectedItem) }
 }
 
 @Composable
@@ -59,7 +61,7 @@ fun Picker(
     itemHeightDp: Dp = 48.dp,
     textStyle: TextStyle = LocalTextStyle.current,
     isLoop: Boolean = true,
-    onChanged: (String) -> Unit,
+//    onChanged: (String) -> Unit,
 ) {
     val visibleItemsMiddle = visibleItemsCount / 2
     val listScrollCount = if (isLoop) Integer.MAX_VALUE else items.size
@@ -93,7 +95,7 @@ fun Picker(
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }.map { index -> getItem(index + visibleItemsMiddle) }
             .distinctUntilChanged().collect { item ->
-                onChanged(item)
+//                onChanged(item)
                 state.selectedItem = item
             }
     }
@@ -142,18 +144,21 @@ fun ScrollTimePicker(
     val formatHour = stringResource(R.string.format_hour)
     val formatMin = stringResource(R.string.format_min)
 
-
     val amPmValues = remember { PeriodType.values().map { it.displayName } }
     val hourValues = remember { (1..12).map { String.format(formatHour, it.toString()) } }
-    val timeValues = remember {
+    val minValues = remember {
         (0..59).map {
             String.format(formatMin, it.toString().padStart(2, '0'))
         }
     }
 
-    val amPmPickerState = rememberPickerState()
-    val hourPickerState = rememberPickerState()
-    val timePickerState = rememberPickerState()
+    val amPmPickerState =
+        rememberPickerState(if (initAmPmIndex == 0) PeriodType.AM.displayName else PeriodType.PM.displayName)
+    val hourPickerState = rememberPickerState((initHourIndex + 1).toString() + "시")
+    val minPickerState = rememberPickerState(initTimeIndex.toString().padStart(2, '0') + "분")
+
+    val parseHour = hourPickerState.selectedItem.dropLast(1)
+    val parseMin = minPickerState.selectedItem.dropLast(1)
     Box(modifier = modifier.padding(horizontal = 24.dp)) {
         Box(
             modifier = modifier
@@ -171,11 +176,17 @@ fun ScrollTimePicker(
                 isLoop = false,
                 startIndex = initAmPmIndex,
                 onChanged = { value ->
-                    Log.d("Picker", "value: $value")
-                    val newTime =
-                        "$value ${hourPickerState.selectedItem}:${timePickerState.selectedItem}"
+                    lateinit var newTime: String
+                    if (value == "오전") {
+                        newTime = "${parseHour.toInt()}:${parseMin.toInt()}"
+                    } else {
+                        newTime = "${parseHour.toInt() + 12}:${parseMin.toInt()}"
+                    }
+                    Log.d("Picker", "newTime: $newTime")
+
                     onTimeChanged(newTime)
-                })
+                }
+            )
             Picker(state = hourPickerState,
                 items = hourValues,
                 visibleItemsCount = 5,
@@ -183,17 +194,22 @@ fun ScrollTimePicker(
                 startIndex = initHourIndex,
                 textStyle = SpoqaTypography.SpoqaBold18,
                 onChanged = { value ->
-
-                })
-            Picker(state = timePickerState,
-                items = timeValues,
+//                    onTimeChanged(newTime)
+                }
+            )
+            Picker(
+                state = minPickerState,
+                items = minValues,
                 visibleItemsCount = 5,
                 modifier = modifier.weight(1f),
                 startIndex = initTimeIndex,
                 textStyle = SpoqaTypography.SpoqaBold18,
-                onChanged = { value ->
+//                onChanged = { value ->
+//
+////                    onTimeChanged(newTime)
+//                }
+            )
 
-                })
         }
 
         Box(

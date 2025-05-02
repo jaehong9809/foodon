@@ -6,7 +6,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.YearMonth
+import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.WeekFields
 
 object DateUtil {
@@ -31,28 +33,30 @@ object DateUtil {
     }
 
     @Composable
-    fun getDateShape(dayOfWeekFromDate: Int, day: Int, daysInMonth: Int, isSelectedWeek: Boolean): RoundedCornerShape {
+    fun getDateShape(
+        dayOfWeekFromDate: Int,
+        day: Int,
+        daysInMonth: Int,
+        isSelectedWeek: Boolean,
+    ): RoundedCornerShape {
         return if (isSelectedWeek) {
             when {
                 (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> {
                     RoundedCornerShape(100.dp) // 하루만 있는 경우
                 }
+
                 dayOfWeekFromDate == 0 || day == 1 -> { // Sunday 또는 월 첫째날
                     RoundedCornerShape(
-                        topStart = 100.dp,
-                        bottomStart = 100.dp,
-                        topEnd = 0.dp,
-                        bottomEnd = 0.dp
+                        topStart = 100.dp, bottomStart = 100.dp, topEnd = 0.dp, bottomEnd = 0.dp
                     )
                 }
+
                 dayOfWeekFromDate == 6 || day == daysInMonth -> { // Saturday 또는 월 마지막날
                     RoundedCornerShape(
-                        topStart = 0.dp,
-                        bottomStart = 0.dp,
-                        topEnd = 100.dp,
-                        bottomEnd = 100.dp
+                        topStart = 0.dp, bottomStart = 0.dp, topEnd = 100.dp, bottomEnd = 100.dp
                     )
                 }
+
                 else -> {
                     RoundedCornerShape(0.dp)
                 }
@@ -60,5 +64,10 @@ object DateUtil {
         } else {
             RoundedCornerShape(0.dp)
         }
+    }
+
+    fun formatTimeToHHmm(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return dateTime.format(formatter)
     }
 }

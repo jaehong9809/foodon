@@ -59,7 +59,7 @@ fun NutritionalIngredientsComponent(
     totalFat: Int,
     totalKcal: Int,
     totalProtein: Int,
-    onMealTypeClick: () -> Unit = {},
+    onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit = {},
 ) {
     val totalNutrition = totalCarbs + totalProtein + totalFat
@@ -141,11 +141,10 @@ private fun MealTime(
     modifier: Modifier,
     mealType: MealType,
     mealTime: String,
-    onMealTypeClick: () -> Unit = {},
+    onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(0) }
     Row(modifier = modifier.fillMaxWidth()) {
         Box {
             DropButton(
@@ -164,41 +163,38 @@ private fun MealTime(
                 },
             )
             // 드롭다운 메뉴
-            DropdownMenu(
-                modifier = modifier
+            DropdownMenu(modifier = modifier
 //                    .clip(RoundedCornerShape(10.dp))
-                    .border(
-                        shape = RoundedCornerShape(10.dp), color = Border02, width = 1.dp
-                    )
-                    // DropdownMenu 의 기본 Vertical Padding 8.dp 를 0.dp 로 변경
-                    .crop(vertical = 8.dp)
-                    .background(color = Color.White, shape = RoundedCornerShape(10.dp)),
+                .border(
+                    shape = RoundedCornerShape(10.dp), color = Border02, width = 1.dp
+                )
+                // DropdownMenu 의 기본 Vertical Padding 8.dp 를 0.dp 로 변경
+                .crop(vertical = 8.dp)
+                .background(color = Color.White, shape = RoundedCornerShape(10.dp)),
                 expanded = expanded,
                 onDismissRequest = { expanded = false }) {
                 MealType.values().forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        contentPadding = PaddingValues(
-                            horizontal = 12.dp, vertical = 0.dp
-                        ), modifier = modifier
-                            .width(200.dp)
-                            .height(48.dp), onClick = {
-                            expanded = false
-                            onMealTypeClick()
-                            selectedIndex = index
-                        }, text = {
-                            Text(
-                                text = item.displayName,
-                                style = NotoTypography.NotoNormal16.copy(color = G900)
+                    DropdownMenuItem(contentPadding = PaddingValues(
+                        horizontal = 12.dp, vertical = 0.dp
+                    ), modifier = modifier
+                        .width(200.dp)
+                        .height(48.dp), onClick = {
+                        expanded = false
+                        onMealTypeClick(item)
+                    }, text = {
+                        Text(
+                            text = item.displayName,
+                            style = NotoTypography.NotoNormal16.copy(color = G900)
+                        )
+                    }, trailingIcon = {
+                        if (mealType == item) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_check),
+                                contentDescription = "check",
+                                tint = WB500,
                             )
-                        }, trailingIcon = {
-                            if (selectedIndex == index) {
-                                Icon(
-                                    painter = painterResource(R.drawable.icon_check),
-                                    contentDescription = "check",
-                                    tint = WB500,
-                                )
-                            }
-                        })
+                        }
+                    })
 //                {
 //                    Row(
 //                        modifier = modifier.fillMaxWidth(),
