@@ -2,6 +2,7 @@ package com.swallaby.foodon.presentation.foodsearch.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,55 +44,63 @@ fun SearchBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp)
-            .background(
-                color = Bkg04,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(horizontal = 8.dp),
-        contentAlignment = Alignment.CenterStart
+            .height(56.dp) // 전체 높이는 그대로
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.icon_search_food),
-                contentDescription = "Search Icon",
-                tint = G500,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Box(modifier = Modifier.weight(1f)) {
-                if (query.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.enter_food_name),
-                        color = G500,
-                        style = Typography.bodyMedium
+            // ✅ 내용부 (44.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .background(
+                        color = Bkg04,
+                        shape = RoundedCornerShape(8.dp)
                     )
-                }
-                BasicTextField(
-                    value = query,
-                    onValueChange = onQueryChange,
-                    singleLine = true,
-                    textStyle = Typography.bodyMedium.copy(color = MainBlack),
-                    modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_search_food),
+                    contentDescription = "Search Icon",
+                    tint = G500,
+                    modifier = Modifier.size(20.dp)
                 )
-            }
+                Spacer(modifier = Modifier.width(8.dp))
 
-            if (query.isNotEmpty()) {
-                IconButton(onClick = onClearClick) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_search_close),
-                        contentDescription = "Clear Icon",
-                        modifier = Modifier.size(20.dp)
+                Box(modifier = Modifier.weight(1f)) {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.enter_food_name),
+                            color = G500,
+                            style = Typography.bodyMedium
+                        )
+                    }
+                    BasicTextField(
+                        value = query,
+                        onValueChange = onQueryChange,
+                        singleLine = true,
+                        textStyle = Typography.bodyMedium.copy(color = MainBlack),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
+
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = onClearClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_search_close),
+                            contentDescription = "Clear Icon",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
+
 
 
 @Preview(showBackground = true)
