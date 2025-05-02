@@ -23,11 +23,14 @@ public class Food implements FoodInfo {
     @Column(name = "food_name", nullable = false, length = 100)
     private String name;
 
+    @Column(length = 100)
+    private String category;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FoodType foodType = PUBLIC;
 
-    @Column(precision = 5, scale = 2)
+    @Column(precision = 7, scale = 2)
     private BigDecimal servingSize;
 
     @Enumerated(EnumType.STRING)

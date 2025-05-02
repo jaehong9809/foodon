@@ -32,6 +32,9 @@ public class CustomFood extends BaseTimeEntity implements FoodInfo {
     @Column(name = "food_name", nullable = false, length = 100)
     private String name;
 
+    @Column(length = 100)
+    private String category;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FoodType foodType = CUSTOM;

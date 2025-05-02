@@ -17,47 +17,50 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 public class Nutrient {
 
-    @Column(precision = 6, scale = 2, nullable = false)
+    @Column(precision = 7, scale = 2, nullable = false)
     private BigDecimal kcal;
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal carbs;
+    private BigDecimal carbs; // 탄수화물
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal protein;
+    private BigDecimal protein; // 단백질
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal fat;
+    private BigDecimal fat; // 지방
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal sugar;
+    private BigDecimal sugar; // 당류
 
-    @Column(precision = 5, scale = 2)
+    @Column(precision = 7, scale = 2)
     private BigDecimal sodium; // 나트륨
 
-    @Column(precision = 5, scale = 2)
-    private BigDecimal fiber;
+    @Column(precision = 6, scale = 2)
+    private BigDecimal fiber; // 식이섬유
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal saturatedFat;
+    private BigDecimal saturatedFat; // 포화지방산
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal unsaturatedFat;
+    private BigDecimal unsaturatedFat; // 불포화지방산
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal transFat;
+    private BigDecimal transFat; // 트랜스지방산
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal fattyAcid;
+    private BigDecimal fattyAcid; // 지방산
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal cholesterol;
+    private BigDecimal cholesterol; // 콜레스테롤
 
-    @Column(precision = 5, scale = 2)
+    @Column(precision = 7, scale = 2)
     private BigDecimal potassium; // 칼륨
 
     @Column(precision = 5, scale = 2)
-    private BigDecimal alcohol;
+    private BigDecimal caffeine;
+
+    @Column(precision = 5, scale = 2)
+    private BigDecimal alcohol; // 알코올
 
     public static Nutrient of(
         NutrientInfo nutrientInfo
