@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.domain.WeightRecord;
+import com.foodon.foodon.member.dto.WeightProfileResponse;
 import com.foodon.foodon.member.dto.WeightRecordResponse;
 import com.foodon.foodon.member.repository.MemberRepository;
 import com.foodon.foodon.member.repository.WeightRecordRepository;
@@ -38,4 +39,18 @@ public class MemberService {
 			.map(WeightRecordResponse::of)
 			.collect(Collectors.toList());
 	}
+
+	public WeightProfileResponse getWeightProfile(Member member) {
+		return new WeightProfileResponse(
+			member.getGoalWeight(),
+			getCurrentWeightOrDefault(member)
+		);
+	}
+
+	private int getCurrentWeightOrDefault(Member member) {
+		return weightRecordRepository.findTopByMemberOrderByIdDesc(member)
+			.map(WeightRecord::getWeight)
+			.orElse(0);
+	}
+
 }
