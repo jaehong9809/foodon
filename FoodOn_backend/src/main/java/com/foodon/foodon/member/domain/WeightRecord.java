@@ -43,4 +43,11 @@ public class WeightRecord {
 	@Column(updatable = false)
 	private LocalDateTime recordedAt;
 
+	public static WeightRecord of(Member member, int weight) {
+		WeightRecord record = new WeightRecord();
+		record.member = member;
+		record.weight = weight;
+		return record;
+	}
+
 }

@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.domain.WeightRecord;
 import com.foodon.foodon.member.dto.WeightProfileResponse;
 import com.foodon.foodon.member.dto.WeightRecordResponse;
+import com.foodon.foodon.member.dto.WeightUpdateRequest;
+import com.foodon.foodon.member.exception.MemberErrorCode;
+import com.foodon.foodon.member.exception.MemberException;
 import com.foodon.foodon.member.repository.MemberRepository;
 import com.foodon.foodon.member.repository.WeightRecordRepository;
 
@@ -53,4 +57,17 @@ public class MemberService {
 			.orElse(0);
 	}
 
+	@Transactional
+	public void updateCurrentWeight(Member member, WeightUpdateRequest weightUpdateRequest) {
+		int weight = validateWeight(weightUpdateRequest);
+		weightRecordRepository.save(WeightRecord.of(member, weight));
+	}
+
+	private int validateWeight(WeightUpdateRequest weightUpdateRequest) {
+		int weight = weightUpdateRequest.weight();
+		if(weight<1){
+			throw new MemberException.MemberBadRequestException(MemberErrorCode.INVALID_WEIGHT_BELOW_MINIMUM);
+		}
+		return weight;
+	}
 }
