@@ -14,6 +14,7 @@ import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.member.application.MemberService;
 import com.foodon.foodon.member.domain.Member;
+import com.foodon.foodon.member.dto.WeightProfileResponse;
 import com.foodon.foodon.member.dto.WeightRecordResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +34,15 @@ public class MemberController {
 		@AuthMember Member member
 	) {
 		List<WeightRecordResponse> result = memberService.getWeightRecordCalendar(yearMonth, member);
+		return ResponseUtil.success(result);
+	}
+
+	@GetMapping("/profile/weight")
+	@Operation(summary = "목표 체중 현재 체중 조회")
+	public ResponseEntity<Response<WeightProfileResponse>> getWeightProfile(
+		@AuthMember Member member
+	) {
+		WeightProfileResponse result = memberService.getWeightProfile(member);
 		return ResponseUtil.success(result);
 	}
 
