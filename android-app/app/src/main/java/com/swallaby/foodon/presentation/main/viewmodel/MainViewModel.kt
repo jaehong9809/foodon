@@ -3,6 +3,9 @@ package com.swallaby.foodon.presentation.main.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.calendar.model.Effect
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
@@ -24,6 +27,7 @@ class MainViewModel @Inject constructor(
     private val getMealRecordUseCase: GetMealRecordUseCase,
     private val getNutrientIntakeUseCase: GetNutrientIntakeUseCase,
     private val getNutrientManageUseCase: GetNutrientManageUseCase,
+    private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
 
     fun updateState(block: (MainUiState) -> MainUiState) {
@@ -71,6 +75,21 @@ class MainViewModel @Inject constructor(
 
             val fakeData = createFakeManage()
             updateState { it.copy(manageResult = ResultState.Success(fakeData)) }
+        }
+    }
+
+    fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
+        updateState { it.copy(recommendMealResult = ResultState.Loading) }
+
+        viewModelScope.launch {
+//            val result = getRecommendFoodUseCase(yearMonth, week)
+//            updateState { it.copy(recommendMealResult = result.toResultState()) }
+
+            val fakeData = createFakeRecommendFoods()
+
+            updateState {
+                it.copy(recommendMealResult = ResultState.Success(fakeData))
+            }
         }
     }
 
@@ -184,6 +203,31 @@ class MainViewModel @Inject constructor(
                 minRecommend = 0,
                 maxRecommend = 30,
                 status = NutrientStatus.CAUTION
+            )
+        )
+    }
+
+    private fun createFakeRecommendFoods(): List<RecommendFood> {
+        return listOf(
+            RecommendFood(
+                foodRecommendId = 1,
+                name = "고구마",
+                kcal = 120,
+                reason = "에너지원으로 좋아서 추천합니다.",
+                effects = listOf(
+                    Effect(label = "혈당 조절"),
+                    Effect(label = "소화 촉진")
+                )
+            ),
+            RecommendFood(
+                foodRecommendId = 2,
+                name = "닭가슴살",
+                kcal = 165,
+                reason = "단백질 섭취를 위해 추천합니다.",
+                effects = listOf(
+                    Effect(label = "근육 생성"),
+                    Effect(label = "포만감 증가")
+                )
             )
         )
     }

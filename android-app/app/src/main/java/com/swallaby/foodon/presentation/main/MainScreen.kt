@@ -53,6 +53,10 @@ fun MainScreen(
         viewModel.fetchRecordData(selectedDate.toString())
         viewModel.fetchIntakeData(selectedDate.toString())
         viewModel.fetchManageData(selectedDate.toString())
+        viewModel.fetchRecommendFoods(
+            yearMonth = currentYearMonth.toString(),
+            week = 1
+        )
     }
 
     Scaffold(

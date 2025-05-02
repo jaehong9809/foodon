@@ -64,6 +64,8 @@
     <string name="main_pager_kcal_unit">/%skcal</string>
     <string name="main_pager_good_nutrient_range">%s - %s%s</string>
     <string name="main_pager_bad_nutrient_range">%s%s 이하</string>
+    <string name="main_food_recommend_title">이번 주, 이 음식 어때요?</string>
+    <string name="main_food_recommend_content">지난주 식단 기록을 분석해 추천해드렸어요</string>
 
     <!-- Kakao Login -->
     <string name="kakao_login">카카오톡으로 로그인</string>
