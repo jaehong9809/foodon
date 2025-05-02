@@ -50,6 +50,7 @@
     <string name="enter_food_name">음식명을 입력해 주세요</string>
     <string name="search_food">음식 찾기</string>
     <string name="recent_register_food">최근 등록한 음식</string>
+    <string name="no_food_found">찾으시는 음식이 없나요?</string>
 
     <!-- Kakao Login -->
     <string name="kakao_login">카카오톡으로 로그인</string>
