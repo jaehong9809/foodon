@@ -3,6 +3,8 @@ package com.foodon.foodon.member.presentation;
 import java.time.YearMonth;
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -54,7 +56,7 @@ public class MemberController {
 	@Operation(summary = "현재 체중 업데이트")
 	public ResponseEntity<Response<WeightProfileResponse>> updateCurrentWeight(
 		@Parameter(hidden = true) @AuthMember Member member,
-		@RequestBody WeightUpdateRequest weightUpdateRequest
+		@Valid @RequestBody WeightUpdateRequest weightUpdateRequest
 	) {
 		memberService.updateCurrentWeight(member, weightUpdateRequest);
 		return ResponseUtil.success();

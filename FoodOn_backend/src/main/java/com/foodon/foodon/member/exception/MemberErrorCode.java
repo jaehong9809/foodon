@@ -13,7 +13,6 @@ public enum MemberErrorCode {
     FORBIDDEN_MEMBER_STATUS("30005", "회원 정보를 볼 수 없습니다."),
     MEMBER_NOT_FOUND("30006", "존재하지 않는 회원입니다."),
     ILLEGAL_SOCIAL_ACCOUNT_ALREADY_EXISTS("30007", "해당 소셜 계정과 연동된 계정이 이미 존재합니다."),
-    INVALID_WEIGHT_BELOW_MINIMUM("30008", "체중은 1 이상이어야 합니다.")
     ;
 
     private final String code;

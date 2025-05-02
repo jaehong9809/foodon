@@ -13,8 +13,6 @@ import com.foodon.foodon.member.domain.WeightRecord;
 import com.foodon.foodon.member.dto.WeightProfileResponse;
 import com.foodon.foodon.member.dto.WeightRecordResponse;
 import com.foodon.foodon.member.dto.WeightUpdateRequest;
-import com.foodon.foodon.member.exception.MemberErrorCode;
-import com.foodon.foodon.member.exception.MemberException;
 import com.foodon.foodon.member.repository.MemberRepository;
 import com.foodon.foodon.member.repository.WeightRecordRepository;
 
@@ -59,15 +57,8 @@ public class MemberService {
 
 	@Transactional
 	public void updateCurrentWeight(Member member, WeightUpdateRequest weightUpdateRequest) {
-		int weight = validateWeight(weightUpdateRequest);
+		int weight = weightUpdateRequest.weight();
 		weightRecordRepository.save(WeightRecord.of(member, weight));
 	}
 
-	private int validateWeight(WeightUpdateRequest weightUpdateRequest) {
-		int weight = weightUpdateRequest.weight();
-		if(weight<1){
-			throw new MemberException.MemberBadRequestException(MemberErrorCode.INVALID_WEIGHT_BELOW_MINIMUM);
-		}
-		return weight;
-	}
 }
