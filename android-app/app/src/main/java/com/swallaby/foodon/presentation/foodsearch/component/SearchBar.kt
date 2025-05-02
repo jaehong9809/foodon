@@ -30,7 +30,6 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.G500
 import com.swallaby.foodon.core.ui.theme.MainBlack
-import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.Typography
 
 
@@ -86,7 +85,6 @@ fun SearchBar(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_search_close),
                         contentDescription = "Clear Icon",
-                        tint = MainWhite,
                         modifier = Modifier.size(20.dp)
                     )
                 }
