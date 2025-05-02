@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.ui.component.CommonBox
 import com.swallaby.foodon.core.ui.theme.BGGreen
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
@@ -35,25 +35,8 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.TextGreen
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
-
-@Composable
-fun KcalBox(kcal: String) {
-    Column(
-        modifier = Modifier
-            .wrapContentSize()
-            .background(color = BGGreen, shape = RoundedCornerShape(4.dp))
-            .padding(4.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.format_kcal, kcal),
-            color = TextGreen,
-            style = SpoqaTypography.SpoqaMedium12,
-        )
-    }
-}
 
 @Composable
 fun RecommendFoodCompact(
@@ -78,7 +61,13 @@ fun RecommendFoodCompact(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            KcalBox(formatKcal(food.kcal))
+            CommonBox(
+                content = stringResource(R.string.format_kcal, formatKcal(food.kcal)),
+                bgColor = BGGreen,
+                textColor = TextGreen,
+                horizontalPadding = 4.dp,
+                height = 20.dp
+            )
         }
 
     }
@@ -109,7 +98,13 @@ fun RecommendFoodDetail(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                KcalBox(formatKcal(food.kcal))
+                CommonBox(
+                    content = stringResource(R.string.format_kcal, formatKcal(food.kcal)),
+                    bgColor = BGGreen,
+                    textColor = TextGreen,
+                    horizontalPadding = 4.dp,
+                    height = 20.dp
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
