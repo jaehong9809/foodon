@@ -16,12 +16,12 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.domain.food.model.MealNutrientWithType
+import com.swallaby.foodon.domain.food.model.MealItem
 
 @Composable
 fun FoodInfoComponent(
     modifier: Modifier = Modifier,
-    foods: List<MealNutrientWithType> = emptyList(),
+    foods: List<MealItem> = emptyList(),
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
 ) {

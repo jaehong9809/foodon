@@ -13,29 +13,22 @@ import retrofit2.http.Query
 
 interface FoodApi {
     @Multipart
-    @POST(POST_FOOD_IMAGE)
+    @POST("/image")
     suspend fun postFoodImage(
         @Part image: MultipartBody.Part,
     ): BaseResponse<MealInfoResponse>
 
-    @POST(POST_FOOD_HISTORY)
+    @POST("/meals")
     suspend fun postFoodHistory(
         @Body request: MealInfoRequest,
     ): BaseResponse<Unit>
 
-    @POST(POST_FOOD)
+    @POST("/custom")
     suspend fun postFood(): BaseResponse<MealInfoResponse>
 
-    @GET(GET_FOOD)
+    @GET("/foods/{foodId}")
     suspend fun getFood(
         @Query("foodId") foodId: Long,
     ): BaseResponse<MealInfoResponse>
 
-
-    companion object {
-        private const val POST_FOOD_IMAGE = "/image"
-        private const val POST_FOOD_HISTORY = "/meals"
-        private const val POST_FOOD = "/custom"
-        private const val GET_FOOD = "/foods/{foodId}"
-    }
 }

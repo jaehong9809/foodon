@@ -43,13 +43,17 @@ import com.swallaby.foodon.core.ui.component.BackIconImage
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
-import com.swallaby.foodon.domain.food.model.MealNutrientWithType
+import com.swallaby.foodon.domain.food.model.MealInfo
+import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.MealType
+import com.swallaby.foodon.domain.food.model.NutrientInfo
+import com.swallaby.foodon.domain.food.model.Position
 import com.swallaby.foodon.presentation.foodedit.component.ScrollTimePicker
 import com.swallaby.foodon.presentation.mealdetail.component.FoodInfoComponent
 import com.swallaby.foodon.presentation.mealdetail.component.NutritionalIngredientsComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,11 +63,17 @@ fun MealDetailScreen(
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
     onFoodDeleteClick: (foodId: Long) -> Unit,
+) {
 
-    ) {
 
+    val now = LocalDateTime.now()
+    Log.d("Picker", "now: $now")
+    var selectedTime by remember { mutableStateOf("08:00") }
+    val selectedAmPm by remember { mutableStateOf(if (now.hour < 12) 0 else 1) }
+    val selectedHour by remember { mutableStateOf(now.hour % 12 - 1) }
+    val selectedMin by remember { mutableStateOf(now.minute) }
 
-    val foods = createDummyMealNutrients()
+    val foods = createDummyMealInfo()
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -101,7 +111,7 @@ fun MealDetailScreen(
             //  피그마보다 좀 더 작음
             NutritionalIngredientsComponent(modifier = modifier,
                 mealType = MealType.BREAKFAST,
-                mealTime = "12:00",
+                mealTime = selectedTime,
                 totalCarbs = 50,
                 totalFat = 200,
                 totalKcal = 100,
@@ -119,7 +129,11 @@ fun MealDetailScreen(
                     .height(8.dp)
                     .background(Bkg04)
             )
-            FoodInfoComponent(onClick = onFoodClick, foods = foods, onDelete = onFoodDeleteClick)
+            FoodInfoComponent(
+                onClick = onFoodClick,
+                foods = foods.mealItems,
+                onDelete = onFoodDeleteClick
+            )
         }
 
         CommonWideButton(modifier.padding(horizontal = 24.dp), text = "기록 완료", onClick = {})
@@ -142,6 +156,8 @@ fun MealDetailScreen(
         ModalBottomSheet(dragHandle = null, sheetState = sheetState, onDismissRequest = {
             showBottomSheet = false
         }) {
+
+
             Column(
                 modifier = modifier
                     .wrapContentHeight()
@@ -168,7 +184,12 @@ fun MealDetailScreen(
                         )
                     }
                 }
-                ScrollTimePicker()
+                ScrollTimePicker(initTimeIndex = selectedMin,
+                    initHourIndex = selectedHour,
+                    initAmPmIndex = selectedAmPm,
+                    onTimeChanged = {
+                        selectedTime = it
+                    })
 
                 CommonWideButton(
                     modifier = Modifier.padding(horizontal = 24.dp),
@@ -178,6 +199,7 @@ fun MealDetailScreen(
                             scope = scope,
                             sheetState = sheetState,
                             callback = {
+                                Log.d("Picker", "selectedTime: $selectedTime")
                                 showBottomSheet = false
                             },
                         )
@@ -217,209 +239,96 @@ fun FoodDetailScreenPreview() {
     }
 }
 
-private fun createDummyMealNutrients(): List<MealNutrientWithType> {
-    return listOf(
-        MealNutrientWithType(
+fun createDummyMealInfo(): MealInfo = MealInfo(
+    imageUrl = "https://example.com/breakfast.jpg",
+    mealTime = "2025-05-02 07:30",
+    mealTimeType = "BREAKFAST",
+    totalCarbs = 45,
+    totalFat = 15,
+    totalProtein = 20,
+    totalKcal = 390,
+    mealItems = listOf(
+        MealItem(
+            type = "PUBLIC",
             foodId = 1001,
-            foodName = "구운 닭 가슴살",
-            kcal = 165,
-            carbs = 0,
-            protein = 31,
-            fat = 3,
-            fiber = 0,
-            sugar = 0,
-            sodium = 74,
-            cholesterol = 85,
-            saturatedFat = 1,
-            unsaturatedFat = 2,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 256,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "100g",
-            type = "LUNCH"
-        ), MealNutrientWithType(
+            foodName = "계란 프라이",
+            unit = "개",
+            quantity = 2,
+            nutrientInfo = NutrientInfo(
+                kcal = 140,
+                protein = 12,
+                fat = 10,
+                carbs = 2,
+                sugar = 0,
+                fiber = 0,
+                sodium = 140,
+                cholesterol = 370,
+                potassium = 120,
+                saturatedFat = 3,
+                unsaturatedFat = 7,
+                transFat = 0,
+                fattyAcid = 5,
+                alcohol = 0
+            ),
+            position = listOf(
+                Position(
+                    height = 120.0, width = 130.0, x = 50, y = 100
+                )
+            )
+        ), MealItem(
+            type = "PUBLIC",
             foodId = 1002,
-            foodName = "현미밥",
-            kcal = 130,
-            carbs = 28,
-            protein = 3,
-            fat = 1,
-            fiber = 2,
-            sugar = 0,
-            sodium = 5,
-            cholesterol = 0,
-            saturatedFat = 0,
-            unsaturatedFat = 1,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 80,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "100g",
-            type = "LUNCH"
-        ), MealNutrientWithType(
+            foodName = "토스트",
+            unit = "조각",
+            quantity = 2,
+            nutrientInfo = NutrientInfo(
+                kcal = 180,
+                protein = 6,
+                fat = 3,
+                carbs = 32,
+                sugar = 3,
+                fiber = 2,
+                sodium = 200,
+                cholesterol = 0,
+                potassium = 70,
+                saturatedFat = 1,
+                unsaturatedFat = 2,
+                transFat = 0,
+                fattyAcid = 1,
+                alcohol = 0
+            ),
+            position = listOf(
+                Position(
+                    height = 80.0, width = 150.0, x = 200, y = 120
+                )
+            )
+        ), MealItem(
+            type = "PUBLIC",
             foodId = 1003,
-            foodName = "삶은 계란",
-            kcal = 78,
-            carbs = 1,
-            protein = 6,
-            fat = 5,
-            fiber = 0,
-            sugar = 0,
-            sodium = 62,
-            cholesterol = 212,
-            saturatedFat = 2,
-            unsaturatedFat = 3,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 63,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "개(50g)",
-            type = "BREAKFAST"
-        ), MealNutrientWithType(
-            foodId = 1004,
-            foodName = "아보카도",
-            kcal = 160,
-            carbs = 9,
-            protein = 2,
-            fat = 15,
-            fiber = 7,
-            sugar = 1,
-            sodium = 7,
-            cholesterol = 0,
-            saturatedFat = 2,
-            unsaturatedFat = 13,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 485,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "개(100g)",
-            type = "BREAKFAST"
-        ), MealNutrientWithType(
-            foodId = 1005,
-            foodName = "연어 스테이크",
-            kcal = 208,
-            carbs = 0,
-            protein = 20,
-            fat = 13,
-            fiber = 0,
-            sugar = 0,
-            sodium = 59,
-            cholesterol = 55,
-            saturatedFat = 3,
-            unsaturatedFat = 10,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 380,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "100g",
-            type = "DINNER"
-        ), MealNutrientWithType(
-            foodId = 1006,
-            foodName = "그릭 요거트",
-            kcal = 97,
-            carbs = 4,
-            protein = 10,
-            fat = 5,
-            fiber = 0,
-            sugar = 4,
-            sodium = 36,
-            cholesterol = 17,
-            saturatedFat = 3,
-            unsaturatedFat = 2,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 141,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "100g",
-            type = "SNACK"
-        ), MealNutrientWithType(
-            foodId = 1007,
-            foodName = "블루베리",
-            kcal = 57,
-            carbs = 14,
-            protein = 1,
-            fat = 0,
-            fiber = 2,
-            sugar = 10,
-            sodium = 1,
-            cholesterol = 0,
-            saturatedFat = 0,
-            unsaturatedFat = 0,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 77,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "100g",
-            type = "SNACK"
-        ), MealNutrientWithType(
-            foodId = 1008,
-            foodName = "시금치 샐러드",
-            kcal = 23,
-            carbs = 4,
-            protein = 3,
-            fat = 0,
-            fiber = 2,
-            sugar = 0,
-            sodium = 79,
-            cholesterol = 0,
-            saturatedFat = 0,
-            unsaturatedFat = 0,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 558,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "100g",
-            type = "DINNER"
-        ), MealNutrientWithType(
-            foodId = 1009,
-            foodName = "바나나",
-            kcal = 89,
-            carbs = 23,
-            protein = 1,
-            fat = 0,
-            fiber = 3,
-            sugar = 12,
-            sodium = 1,
-            cholesterol = 0,
-            saturatedFat = 0,
-            unsaturatedFat = 0,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 358,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "개(100g)",
-            type = "SNACK"
-        ), MealNutrientWithType(
-            foodId = 1010,
-            foodName = "토마토 스파게티",
-            kcal = 158,
-            carbs = 31,
-            protein = 5,
-            fat = 2,
-            fiber = 2,
-            sugar = 5,
-            sodium = 227,
-            cholesterol = 0,
-            saturatedFat = 0,
-            unsaturatedFat = 2,
-            transFat = 0,
-            fattyAcid = 0,
-            kalium = 290,
-            caffeine = 0,
-            alcohol = 0,
-            unit = "100g",
-            type = "DINNER"
+            foodName = "오렌지 주스",
+            unit = "ml",
+            quantity = 250,
+            nutrientInfo = NutrientInfo(
+                kcal = 70,
+                protein = 2,
+                fat = 2,
+                carbs = 11,
+                sugar = 9,
+                fiber = 1,
+                sodium = 5,
+                cholesterol = 0,
+                potassium = 450,
+                saturatedFat = 0,
+                unsaturatedFat = 2,
+                transFat = 0,
+                fattyAcid = 0,
+                alcohol = 0
+            ),
+            position = listOf(
+                Position(
+                    height = 150.0, width = 70.0, x = 400, y = 80
+                )
+            )
         )
     )
-}
-
+)

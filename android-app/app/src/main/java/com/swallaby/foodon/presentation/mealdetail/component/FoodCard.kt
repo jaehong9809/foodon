@@ -51,7 +51,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.ui.theme.uiCardShadow
 import com.swallaby.foodon.core.util.StringUtil
-import com.swallaby.foodon.domain.food.model.MealNutrientWithType
+import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.toNutrient
 import kotlin.math.roundToInt
@@ -59,11 +59,11 @@ import kotlin.math.roundToInt
 @Composable
 fun FoodCard(
     modifier: Modifier = Modifier,
-    food: MealNutrientWithType,
+    food: MealItem,
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
 ) {
-    val nutrients: List<Nutrition> = food.toNutrient()
+    val nutrients: List<Nutrition> = food.nutrientInfo.toNutrient()
     var showDeletePopup by remember { mutableStateOf(false) }
     val density = LocalDensity.current
 
@@ -87,6 +87,7 @@ fun FoodCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // todo position 으로 수정
                     AsyncImage(
                         model = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
                         contentDescription = "음식 사진",
@@ -100,8 +101,7 @@ fun FoodCard(
                     Column {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = modifier.clickable(
-                                interactionSource = remember { MutableInteractionSource() },
+                            modifier = modifier.clickable(interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
                                 // todo foodId 추가
                                 onClick = { onClick(0) })
@@ -131,7 +131,8 @@ fun FoodCard(
                             )
                             Text(
                                 text = stringResource(
-                                    R.string.format_kcal, StringUtil.formatKcal(food.kcal)
+                                    R.string.format_kcal,
+                                    StringUtil.formatKcal(food.nutrientInfo.kcal)
                                 ), style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
                             )
                         }
@@ -154,8 +155,7 @@ fun FoodCard(
                     modifier = modifier
                         .padding(end = 2.dp)
                         .size(32.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
+                        .clickable(interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                             onClick = {
                                 if (!showDeletePopup) showDeletePopup = true
@@ -216,8 +216,7 @@ fun FoodCard(
                         }
                     }
 
-                    Popup(
-                        popupPositionProvider = popupPositionProvider,
+                    Popup(popupPositionProvider = popupPositionProvider,
                         onDismissRequest = { showDeletePopup = false }) {
                         Box(
                             modifier = Modifier
@@ -252,5 +251,5 @@ fun FoodCard(
 @Preview(showBackground = true)
 @Composable
 fun FoodCardPreview() {
-    FoodCard(onClick = {}, food = MealNutrientWithType(), onDelete = {})
+    FoodCard(onClick = {}, food = MealItem(), onDelete = {})
 }

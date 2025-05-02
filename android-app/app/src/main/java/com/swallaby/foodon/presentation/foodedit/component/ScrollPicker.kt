@@ -59,6 +59,7 @@ fun Picker(
     itemHeightDp: Dp = 48.dp,
     textStyle: TextStyle = LocalTextStyle.current,
     isLoop: Boolean = true,
+    onChanged: (String) -> Unit,
 ) {
     val visibleItemsMiddle = visibleItemsCount / 2
     val listScrollCount = if (isLoop) Integer.MAX_VALUE else items.size
@@ -91,7 +92,10 @@ fun Picker(
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }.map { index -> getItem(index + visibleItemsMiddle) }
-            .distinctUntilChanged().collect { item -> state.selectedItem = item }
+            .distinctUntilChanged().collect { item ->
+                onChanged(item)
+                state.selectedItem = item
+            }
     }
 
     Box(modifier = modifier.height(pickerHeight)) {
@@ -112,9 +116,8 @@ fun Picker(
                         text = getItem(index),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = if (state.selectedItem == getItem(index)) textStyle.copy(color = G900) else textStyle.copy(
-                            color = G400
-                        ),
+                        style = if (state.selectedItem == getItem(index)) textStyle.copy(color = G900)
+                        else textStyle.copy(color = G400),
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -128,7 +131,13 @@ fun Picker(
 private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
 
 @Composable
-fun ScrollTimePicker(modifier: Modifier = Modifier) {
+fun ScrollTimePicker(
+    modifier: Modifier = Modifier,
+    initAmPmIndex: Int = 0,
+    initHourIndex: Int = 0,
+    initTimeIndex: Int = 0,
+    onTimeChanged: (String) -> Unit,
+) {
 
     val formatHour = stringResource(R.string.format_hour)
     val formatMin = stringResource(R.string.format_min)
@@ -154,28 +163,37 @@ fun ScrollTimePicker(modifier: Modifier = Modifier) {
                 .align(Alignment.Center)
         )
         Row {
-            Picker(
-                state = amPmPickerState,
+            Picker(state = amPmPickerState,
                 items = amPmValues,
                 visibleItemsCount = 5,
                 modifier = modifier.weight(1f),
                 textStyle = SpoqaTypography.SpoqaBold18,
-                isLoop = false
-            )
-            Picker(
-                state = hourPickerState,
+                isLoop = false,
+                startIndex = initAmPmIndex,
+                onChanged = { value ->
+                    Log.d("Picker", "value: $value")
+                    val newTime =
+                        "$value ${hourPickerState.selectedItem}:${timePickerState.selectedItem}"
+                    onTimeChanged(newTime)
+                })
+            Picker(state = hourPickerState,
                 items = hourValues,
                 visibleItemsCount = 5,
                 modifier = modifier.weight(1f),
+                startIndex = initHourIndex,
                 textStyle = SpoqaTypography.SpoqaBold18,
-            )
-            Picker(
-                state = timePickerState,
+                onChanged = { value ->
+
+                })
+            Picker(state = timePickerState,
                 items = timeValues,
                 visibleItemsCount = 5,
                 modifier = modifier.weight(1f),
+                startIndex = initTimeIndex,
                 textStyle = SpoqaTypography.SpoqaBold18,
-            )
+                onChanged = { value ->
+
+                })
         }
 
         Box(
