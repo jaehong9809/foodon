@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.theme.MainWhite
+import com.swallaby.foodon.presentation.foodsearch.component.RecentFoodChips
 import com.swallaby.foodon.presentation.foodsearch.component.SearchBar
 
 @Composable
@@ -25,6 +26,9 @@ fun FoodSearchScreen(
 
 ){
     var query by remember { mutableStateOf("") }
+    var fakeRecentFoods by remember {
+        mutableStateOf(listOf("피자", "샐러드", "밥", "김치", "김치볶음밥"))
+    }
 
     Column(
         modifier = Modifier
@@ -41,13 +45,19 @@ fun FoodSearchScreen(
             query = query,
             onQueryChange = { query = it },
             onClearClick = { query = "" },
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 24.dp)
         )
 
-        // TODO: 이후에 최근 등록한 음식 Chips 화면 이어서
+        RecentFoodChips(
+            recentFoods = fakeRecentFoods,
+            onChipClick = { clickedFood ->
+                query = clickedFood
+            },
+            onChipRemove = { removedFood ->
+                fakeRecentFoods = fakeRecentFoods - removedFood
+            }
+        )
     }
-
-
 }
 
 @Preview
