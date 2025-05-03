@@ -16,20 +16,26 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.theme.MainWhite
+import com.swallaby.foodon.domain.food.model.Food
+import com.swallaby.foodon.presentation.foodsearch.component.FoodRegisterBottomSheet
 import com.swallaby.foodon.presentation.foodsearch.component.RecentFoodChips
 import com.swallaby.foodon.presentation.foodsearch.component.SearchBar
+import com.swallaby.foodon.presentation.foodsearch.component.SearchResultList
 
 @Composable
 fun FoodSearchScreen(
-
-){
-    var query by remember { mutableStateOf("") }
-    var fakeRecentFoods by remember {
-        mutableStateOf(listOf("피자", "샐러드", "밥", "김치", "김치볶음밥"))
-    }
-
+    query: String,
+    recentFoods: List<String>,
+    searchResults: List<Food>,
+    onQueryChange: (String) -> Unit,
+    onClearClick: () -> Unit,
+    onChipClick: (String) -> Unit,
+    onChipRemove: (String) -> Unit,
+    onSearchResultClick: (Food) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MainWhite)
     ) {
@@ -41,25 +47,52 @@ fun FoodSearchScreen(
 
         SearchBar(
             query = query,
-            onQueryChange = { query = it },
-            onClearClick = { query = "" },
+            onQueryChange = onQueryChange,
+            onClearClick = onClearClick,
             modifier = Modifier.padding(horizontal = 24.dp)
         )
 
         RecentFoodChips(
-            recentFoods = fakeRecentFoods,
-            onChipClick = { clickedFood ->
-                query = clickedFood
-            },
-            onChipRemove = { removedFood ->
-                fakeRecentFoods = fakeRecentFoods - removedFood
-            }
+            recentFoods = recentFoods,
+            onChipClick = onChipClick,
+            onChipRemove = onChipRemove
+        )
+
+        SearchResultList(
+            searchResults = searchResults,
+            onClick = onSearchResultClick
         )
     }
 }
 
+
 @Preview
 @Composable
 fun FoodSearchScreenPreview() {
-    FoodSearchScreen()
+    var query by remember { mutableStateOf("") }
+    var recentFoods by remember {
+        mutableStateOf(listOf("피자", "샐러드", "밥", "김치", "김치볶음밥"))
+    }
+    val foodItems = listOf(
+        Food("햄버거", "1회분", 200, true),
+        Food("햄버거", "1회분", 200, false)
+    )
+
+    var isBottomSheetVisible by remember { mutableStateOf(true) }
+    var selectedFoodName by remember { mutableStateOf("연어 샐러드") }
+
+    FoodSearchScreen(
+        query = query,
+        recentFoods = recentFoods,
+        searchResults = foodItems,
+        onQueryChange = { query = it },
+        onClearClick = { query = "" },
+        onChipClick = { clickedFood ->
+            query = clickedFood
+        },
+        onChipRemove = { removedFood ->
+            recentFoods = recentFoods - removedFood
+        },
+        onSearchResultClick = {},
+    )
 }
