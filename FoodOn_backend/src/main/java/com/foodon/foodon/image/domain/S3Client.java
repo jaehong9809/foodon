@@ -41,6 +41,14 @@ public class S3Client {
         }
     }
 
+    public void upload(File file) throws IOException {
+        amazonS3.putObject(new PutObjectRequest(
+                bucket,
+                getKey(file.getName()),
+                file
+        ));
+    }
+
     private String getKey(String originalFilename) {
         return String.join(
                 "/",

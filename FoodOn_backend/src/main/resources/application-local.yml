@@ -52,7 +52,10 @@ cloud:
       secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
 
 meal-detect-ai-model:
-  url: http://k12s203.p.ssafy.io:8000/ai/detect
+  url: http://k12s203.p.ssafy.io:8000/ai/detect2
+
+file:
+  upload-dir: ${java.io.tmpdir}/files/
 
 server:
   forward-headers-strategy: NATIVE
@@ -66,7 +69,7 @@ server:
 kakao:
   api:
     url: https://kapi.kakao.com
-  
+
 logging:
   level:
     root: INFO

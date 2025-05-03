@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(
         name = "recommend_foods",
         indexes = {
-                @Index(name = "idx_member_food_type_food_id", columnList = "member, foodType, foodId")
+                @Index(name = "idx_member_type_id_created", columnList = "member_id, food_type, food_id, created_at")
         }
 )
 public class RecommendFood extends BaseTimeEntity {
