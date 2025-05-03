@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G700
-import com.swallaby.foodon.core.ui.theme.MainBlack
+import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
@@ -61,14 +61,14 @@ fun SearchResultItem(
     ) {
         Text(
             text = foodItem.name,
-            style = Typography.titleMedium,
-            color = MainBlack
+            style = Typography.titleLarge,
+            color = G900
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "${foodItem.servingUnit} • ${foodItem.kcal}kcal",
-            style = Typography.bodySmall,
+            style = Typography.titleMedium,
             color = G700
         )
         Spacer(modifier = Modifier.height(8.dp))
