@@ -17,7 +17,7 @@ data class NutrientManageResponse(
 fun NutrientManageResponse.toDomain(): NutrientManage {
     return NutrientManage(
         nutrientName = this.nutrientName,
-        nutrientType = this.nutrientType,
+        manageType = this.nutrientType,
         unit = this.unit,
         intake = this.intake,
         minRecommend = this.minRecommend,

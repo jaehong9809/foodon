@@ -61,4 +61,28 @@ object DateUtil {
             RoundedCornerShape(0.dp)
         }
     }
+
+    fun calculateWeeksOfMonth(yearMonth: YearMonth): List<List<LocalDate?>> {
+        val firstDayOfMonth = yearMonth.atDay(1)
+        val lastDayOfMonth = yearMonth.atEndOfMonth()
+
+        // 주의 시작일을 가장 가까운 이전 일요일로 조정
+        val startOfWeek = firstDayOfMonth.minusDays((firstDayOfMonth.dayOfWeek.value % 7).toLong())
+
+        val weeks = mutableListOf<List<LocalDate?>>()
+        var current = startOfWeek
+
+        while (current <= lastDayOfMonth || weeks.size < 6) {
+            val week = (0..6).map {
+                val date = current.plusDays(it.toLong())
+                if (date.month == yearMonth.month) date else null
+            }
+            weeks.add(week)
+            current = current.plusDays(7)
+        }
+
+        return weeks
+    }
+
+
 }

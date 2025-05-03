@@ -1,5 +1,7 @@
 package com.swallaby.foodon.presentation.main.component
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -24,11 +27,15 @@ import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.main.model.NutrientManage
+import com.swallaby.foodon.presentation.navigation.LocalNavController
+import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun NutrientManageContent(
     manageResult: ResultState<List<NutrientManage>>
 ) {
+
+    val navController = LocalNavController.current
 
     Column(
         modifier = Modifier.fillMaxSize().padding(top = 24.dp, start = 24.dp, end = 24.dp),
@@ -47,6 +54,14 @@ fun NutrientManageContent(
             )
 
             Row(
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {
+                            navController.navigate(NavRoutes.NutrientDetail.route)
+                        }
+                    ),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -94,7 +109,7 @@ fun NutrientGrid(items: List<NutrientManage>) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 rowItems.forEach {
-                    NutrientManageItem(modifier = Modifier.weight(1f), it)
+                    NutrientManageSummaryItem(modifier = Modifier.weight(1f), it)
                 }
             }
         }

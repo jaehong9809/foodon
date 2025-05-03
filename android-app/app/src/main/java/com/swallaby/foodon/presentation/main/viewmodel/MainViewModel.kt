@@ -3,6 +3,13 @@ package com.swallaby.foodon.presentation.main.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.domain.calendar.model.CalendarMeal
+import com.swallaby.foodon.domain.calendar.model.CalendarType
+import com.swallaby.foodon.domain.calendar.model.Effect
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
+import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
@@ -24,6 +31,8 @@ class MainViewModel @Inject constructor(
     private val getMealRecordUseCase: GetMealRecordUseCase,
     private val getNutrientIntakeUseCase: GetNutrientIntakeUseCase,
     private val getNutrientManageUseCase: GetNutrientManageUseCase,
+    private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
+    private val getCalendarUseCase: GetCalendarUseCase,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
 
     fun updateState(block: (MainUiState) -> MainUiState) {
@@ -38,11 +47,26 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(selectedDate = date) }
     }
 
-    fun fetchRecordData(day: String) {
+    fun fetchCalendarData(date: String) {
+        updateState { it.copy(calendarResult = ResultState.Loading) }
+
+        viewModelScope.launch {
+//            val result = getCalendarUseCase(CalendarType.MEAL, date)
+//            updateState { it.copy(calendarResult = result.toResultState()) }
+
+            val fakeData: List<CalendarItem> = createFakeData()
+
+            updateState {
+                it.copy(calendarResult = ResultState.Success(fakeData))
+            }
+        }
+    }
+
+    fun fetchRecordData(date: String) {
         updateState { it.copy(recordResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getMealRecordUseCase(day)
+//            val result = getMealRecordUseCase(date)
 //            updateState { it.copy(recordState = result.toResultState()) }
 
             val fakeData = createFakeMealRecord()
@@ -50,11 +74,11 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchIntakeData(day: String) {
+    fun fetchIntakeData(date: String) {
         updateState { it.copy(intakeResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getNutrientIntakeUseCase(day)
+//            val result = getNutrientIntakeUseCase(date)
 //            updateState { it.copy(intakeResult = result.toResultState()) }
 
             val fakeData = createFakeIntake()
@@ -62,16 +86,54 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchManageData(day: String) {
+    fun fetchManageData(date: String) {
         updateState { it.copy(manageResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getNutrientManageUseCase(day)
+//            val result = getNutrientManageUseCase(date)
 //            updateState { it.copy(manageResult = result.toResultState()) }
 
             val fakeData = createFakeManage()
             updateState { it.copy(manageResult = ResultState.Success(fakeData)) }
         }
+    }
+
+    fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
+        updateState { it.copy(recommendMealResult = ResultState.Loading) }
+
+        viewModelScope.launch {
+//            val result = getRecommendFoodUseCase(yearMonth, week)
+//            updateState { it.copy(recommendMealResult = result.toResultState()) }
+
+            val fakeData = createFakeRecommendFoods()
+
+            updateState {
+                it.copy(recommendMealResult = ResultState.Success(fakeData))
+            }
+        }
+    }
+
+    private fun createFakeData(): List<CalendarItem> {
+        return listOf(
+        CalendarItem.Meal(
+            data = CalendarMeal(
+                calendarType = CalendarType.MEAL,
+                intakeLogId = 1L,
+                date = "2025-05-01",
+                intakeKcal = 1800,
+                goalKcal = 2000
+            )
+        ),
+        CalendarItem.Meal(
+            data = CalendarMeal(
+                calendarType = CalendarType.MEAL,
+                intakeLogId = 2L,
+                date = "2025-05-05",
+                intakeKcal = 1950,
+                goalKcal = 2000
+            )
+        )
+        )
     }
 
     private fun createFakeMealRecord(): List<MealRecord> {
@@ -133,7 +195,7 @@ class MainViewModel @Inject constructor(
         return listOf(
             NutrientManage(
                 nutrientName = "당류",
-                nutrientType = NutrientManageType.ESSENTIAL,
+                manageType = NutrientManageType.ESSENTIAL,
                 unit = "g",
                 intake = 10,
                 minRecommend = 0,
@@ -142,7 +204,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "나트륨",
-                nutrientType = NutrientManageType.LIMITED,
+                manageType = NutrientManageType.LIMITED,
                 unit = "mg",
                 intake = 4000,
                 minRecommend = 0,
@@ -151,7 +213,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "포화지방",
-                nutrientType = NutrientManageType.LIMITED,
+                manageType = NutrientManageType.LIMITED,
                 unit = "g",
                 intake = 100,
                 minRecommend = 0,
@@ -160,7 +222,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "트랜스지방",
-                nutrientType = NutrientManageType.ESSENTIAL,
+                manageType = NutrientManageType.ESSENTIAL,
                 unit = "g",
                 intake = 10,
                 minRecommend = 0,
@@ -169,7 +231,7 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "카페인",
-                nutrientType = NutrientManageType.ESSENTIAL,
+                manageType = NutrientManageType.ESSENTIAL,
                 unit = "mg",
                 intake = 400,
                 minRecommend = 0,
@@ -178,12 +240,37 @@ class MainViewModel @Inject constructor(
             ),
             NutrientManage(
                 nutrientName = "알코올",
-                nutrientType = NutrientManageType.LIMITED,
+                manageType = NutrientManageType.LIMITED,
                 unit = "g",
                 intake = 100,
                 minRecommend = 0,
                 maxRecommend = 30,
                 status = NutrientStatus.CAUTION
+            )
+        )
+    }
+
+    private fun createFakeRecommendFoods(): List<RecommendFood> {
+        return listOf(
+            RecommendFood(
+                foodRecommendId = 1,
+                name = "고구마",
+                kcal = 120,
+                reason = "에너지원으로 좋아서 추천합니다.",
+                effects = listOf(
+                    Effect(label = "혈당 조절"),
+                    Effect(label = "소화 촉진")
+                )
+            ),
+            RecommendFood(
+                foodRecommendId = 2,
+                name = "닭가슴살",
+                kcal = 165,
+                reason = "단백질 섭취를 위해 추천합니다.",
+                effects = listOf(
+                    Effect(label = "근육 생성"),
+                    Effect(label = "포만감 증가")
+                )
             )
         )
     }
