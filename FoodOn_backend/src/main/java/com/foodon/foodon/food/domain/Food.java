@@ -1,34 +1,36 @@
 package com.foodon.foodon.food.domain;
 
+import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
+import com.foodon.foodon.meal.domain.MealItem;
+import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.foodon.foodon.food.domain.FoodType.PUBLIC;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "foods")
-public class Food implements FoodInfo {
+public class Food {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id")
     private Long id;
 
-    @Column(name = "food_name", nullable = false, length = 100)
+    private Long memberId; // 커스텀
+
+    @Column(name = "food_name", unique = true, nullable = false, length = 100)
     private String name;
 
     @Column(length = 100)
     private String category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private FoodType foodType = PUBLIC;
 
     @Column(precision = 7, scale = 2)
     private BigDecimal servingSize;
@@ -37,7 +39,29 @@ public class Food implements FoodInfo {
     @Column(nullable = false)
     private Unit unit;
 
-    @Embedded
-    private Nutrient nutrient;
+
+    private Food(
+            Long memberId,
+            String name,
+            BigDecimal servingSize,
+            Unit unit
+    ){
+        this.memberId = memberId;
+        this.name = name;
+        this.servingSize = servingSize;
+        this.unit = unit;
+    }
+
+    public static Food createCustomFoodByMember(
+        CustomFoodCreateRequest request,
+        Member member
+    ) {
+        return new Food(
+                member.getId(),
+                request.foodName(),
+                request.servingSize(),
+                request.unit()
+        );
+    }
 
 }
