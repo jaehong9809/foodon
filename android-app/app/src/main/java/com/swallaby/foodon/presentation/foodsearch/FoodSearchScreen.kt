@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.foodsearch
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,7 +19,7 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.domain.food.model.Food
-import com.swallaby.foodon.presentation.foodsearch.component.FoodRegisterBottomSheet
+import com.swallaby.foodon.presentation.foodsearch.component.FoodRegisterBottomBanner
 import com.swallaby.foodon.presentation.foodsearch.component.RecentFoodChips
 import com.swallaby.foodon.presentation.foodsearch.component.SearchBar
 import com.swallaby.foodon.presentation.foodsearch.component.SearchResultList
@@ -32,35 +34,51 @@ fun FoodSearchScreen(
     onChipClick: (String) -> Unit,
     onChipRemove: (String) -> Unit,
     onSearchResultClick: (Food) -> Unit,
+    showBanner: Boolean = false,
+    bannerFoodName: String = "",
+    onBannerRegisterClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(MainWhite)
     ) {
-        CommonBackTopBar(
-            title = stringResource(R.string.search_food)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            // TODO: 뒤로 가기 버튼 로직 체크 (PopStack 체크)
+            CommonBackTopBar(
+                title = stringResource(R.string.search_food)
+            ) {
+                // TODO: 뒤로 가기 버튼 로직 체크 (PopStack 체크)
+            }
+
+            SearchBar(
+                query = query,
+                onQueryChange = onQueryChange,
+                onClearClick = onClearClick,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            RecentFoodChips(
+                recentFoods = recentFoods,
+                onChipClick = onChipClick,
+                onChipRemove = onChipRemove
+            )
+
+            SearchResultList(
+                searchResults = searchResults,
+                onClick = onSearchResultClick
+            )
         }
 
-        SearchBar(
-            query = query,
-            onQueryChange = onQueryChange,
-            onClearClick = onClearClick,
-            modifier = Modifier.padding(horizontal = 24.dp)
-        )
-
-        RecentFoodChips(
-            recentFoods = recentFoods,
-            onChipClick = onChipClick,
-            onChipRemove = onChipRemove
-        )
-
-        SearchResultList(
-            searchResults = searchResults,
-            onClick = onSearchResultClick
+        // TODO: showBanner T/F 값으로 조건 체크 후 하단 배너 띄우기
+        FoodRegisterBottomBanner(
+            foodName = bannerFoodName,
+            onRegisterClick = onBannerRegisterClick,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
         )
     }
 }
@@ -94,5 +112,6 @@ fun FoodSearchScreenPreview() {
             recentFoods = recentFoods - removedFood
         },
         onSearchResultClick = {},
+        bannerFoodName = "연어 샐러드"
     )
 }
