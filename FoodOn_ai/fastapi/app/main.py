@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from .router import detect
+from .router import detect, detect_yolo
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -11,6 +11,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(root_path="/ai", lifespan=lifespan)
 
 app.include_router(detect.router)
+app.include_router(detect_yolo.router)
 
 @app.get("/")
 def read_root():
