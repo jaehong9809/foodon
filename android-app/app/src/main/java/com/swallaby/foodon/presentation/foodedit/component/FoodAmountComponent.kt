@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodEdit.component
+package com.swallaby.foodon.presentation.foodedit.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +21,7 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.presentation.mealDetail.component.DropButton
+import com.swallaby.foodon.presentation.mealdetail.component.DropButton
 
 @Composable
 fun FoodAmountComponent(modifier: Modifier = Modifier) {

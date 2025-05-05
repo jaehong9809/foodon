@@ -42,7 +42,7 @@ import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.MealTimeType
-import com.swallaby.foodon.presentation.mealDetail.component.NutritionalSmallInfo
+import com.swallaby.foodon.presentation.mealdetail.component.NutritionalSmallInfo
 
 @Composable
 fun MealRecordItem(
@@ -147,7 +147,7 @@ fun MealRecordItem(
 
 @Composable
 fun MealTypeBox(
-    text: String
+    text: String,
 ) {
     Box(
         modifier = Modifier

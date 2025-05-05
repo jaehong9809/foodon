@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.mealDetail.component
+package com.swallaby.foodon.presentation.mealdetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -57,7 +57,7 @@ fun FoodNameButton(modifier: Modifier = Modifier) {
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun FoodNameButtonPreview() {
     FoodNameButton()

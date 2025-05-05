@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodEdit
+package com.swallaby.foodon.presentation.foodedit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -44,10 +44,10 @@ import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
-import com.swallaby.foodon.presentation.foodEdit.component.FoodAmountComponent
-import com.swallaby.foodon.presentation.foodEdit.component.FoodChip
-import com.swallaby.foodon.presentation.foodEdit.component.FoodThumbnailList
-import com.swallaby.foodon.presentation.foodEdit.component.SearchChip
+import com.swallaby.foodon.presentation.foodedit.component.FoodAmountComponent
+import com.swallaby.foodon.presentation.foodedit.component.FoodChip
+import com.swallaby.foodon.presentation.foodedit.component.FoodThumbnailList
+import com.swallaby.foodon.presentation.foodedit.component.SearchChip
 
 @Composable
 fun FoodEditScreen(
