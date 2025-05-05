@@ -2,6 +2,8 @@ package com.swallaby.foodon.core.network
 
 import com.swallaby.foodon.BuildConfig
 import android.content.Context
+import com.swallaby.foodon.core.data.TokenDataStore
+import com.swallaby.foodon.core.network.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,8 +26,15 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideAuthInterceptor(
+        tokenDataStore: TokenDataStore
+    ): AuthInterceptor = AuthInterceptor(tokenDataStore)
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        authInterceptor: AuthInterceptor
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -33,7 +42,8 @@ object NetworkModule {
 
         return OkHttpClient.Builder()
             .retryOnConnectionFailure(true)
-            .addInterceptor(loggingInterceptor) // 추후 AuthInterceptor 추가
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
             .build()
     }
 
