@@ -7,10 +7,10 @@ import com.swallaby.foodon.domain.main.model.NutrientManage
 
 interface MainRepository {
 
-    suspend fun getMealRecord(day: String): ApiResult<List<MealRecord>>
+    suspend fun getMealRecord(date: String): ApiResult<List<MealRecord>>
 
-    suspend fun getNutrientIntake(day: String): ApiResult<List<NutrientIntake>>
+    suspend fun getNutrientIntake(date: String): ApiResult<NutrientIntake>
 
-    suspend fun getNutrientManage(day: String): ApiResult<List<NutrientManage>>
+    suspend fun getNutrientManage(date: String): ApiResult<List<NutrientManage>>
 
 }

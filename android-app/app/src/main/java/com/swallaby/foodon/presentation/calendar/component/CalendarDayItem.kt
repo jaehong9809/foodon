@@ -33,6 +33,7 @@ import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.core.util.StringUtil.formatKcal
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import org.threeten.bp.LocalDate
@@ -138,7 +139,7 @@ fun DayBottomContent(calendarItem: CalendarItem?) {
         when (it) {
             is CalendarItem.Meal -> {
                 Text(
-                    text = "${it.data.intakeKcal}",
+                    text = formatKcal(it.data.intakeKcal),
                     style = SpoqaTypography.SpoqaMedium11,
                     color = G700
                 )

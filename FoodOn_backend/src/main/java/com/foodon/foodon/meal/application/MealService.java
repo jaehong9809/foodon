@@ -2,6 +2,7 @@ package com.foodon.foodon.meal.application;
 
 import com.foodon.foodon.food.domain.Food;
 import com.foodon.foodon.food.repository.FoodRepository;
+import com.foodon.foodon.image.application.LocalImageService;
 import com.foodon.foodon.image.application.S3ImageService;
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.domain.MealItem;
@@ -42,13 +43,14 @@ public class MealService {
     private final FoodRepository foodRepository;
     private final MealDetectAiClient mealDetectAiClient;
     private final S3ImageService s3ImageService;
+    private final LocalImageService localImageService;
 
 
     public MealInfoResponse uploadAndDetect(MultipartFile multipartFile) {
-        String imageUrl = s3ImageService.upload(multipartFile);
-        MealDetectAiResponse detectedItems = mealDetectAiClient.detect(imageUrl);
+        String imageFileName = localImageService.upload(multipartFile);
+        MealDetectAiResponse detectedItems = mealDetectAiClient.detect(multipartFile);
 
-        return convertToMealInfoResponse(imageUrl, detectedItems);
+        return convertToMealInfoResponse(imageFileName, detectedItems);
     }
 
     private MealInfoResponse convertToMealInfoResponse(
@@ -79,6 +81,7 @@ public class MealService {
 
         return detectedItems.food().stream()
                 .map(foodInfo -> toMealItemInfoResponse(foodMap, foodInfo))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -114,7 +117,8 @@ public class MealService {
             MealCreateRequest request,
             Member member
     ) {
-        Meal meal = Meal.createMeal(member, request);
+        String imageUrl = s3ImageService.upload(request.imageFileName());
+        Meal meal = Meal.createMeal(member, imageUrl, request);
         addMealItemsToMeal(member, meal, request.mealItems());
         mealRepository.save(meal);
 
@@ -143,7 +147,7 @@ public class MealService {
         }
 
         List<PositionInfo> positions = mealItemInfo.positions();
-        boolean isRecommended = isRecommendMealItem(member, mealItemInfo);
+        boolean isRecommended = isThisWeekRecommendMealItem(member, mealItemInfo);
         positions.forEach(positionInfo -> MealItem.createMealItem(
                 meal,
                 mealItemInfo,
@@ -152,13 +156,12 @@ public class MealService {
         ));
     }
 
-    private boolean isRecommendMealItem(
+    private boolean isThisWeekRecommendMealItem(
             Member member,
             MealItemInfo mealItemInfo
     ) {
         return recommendFoodRepository
-                .findByMemberAndFoodTypeAndFoodId(member, mealItemInfo.type(), mealItemInfo.foodId())
-                .isPresent();
+                .existsThisWeekRecommend(member, mealItemInfo.type(), mealItemInfo.foodId());
     }
 
     @Transactional(readOnly = true)

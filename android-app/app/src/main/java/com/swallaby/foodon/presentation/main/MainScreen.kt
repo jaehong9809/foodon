@@ -16,7 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,13 +26,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.FloatingButton
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
+import com.swallaby.foodon.presentation.main.component.MainCalendarPager
+import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
@@ -49,8 +56,25 @@ fun MainScreen(
     val selectedDate = uiState.selectedDate
     val currentYearMonth = uiState.currentYearMonth
 
+    val calendarItems = (uiState.calendarResult as? ResultState.Success)?.data.orEmpty()
+
+    val mealItemMap by remember(calendarItems) {
+        derivedStateOf {
+            calendarItems
+                .filterIsInstance<CalendarItem.Meal>()
+                .associateBy { it.data.date }
+        }
+    }
+
     LaunchedEffect(Unit) {
+        viewModel.fetchCalendarData(currentYearMonth.toString())
         viewModel.fetchRecordData(selectedDate.toString())
+        viewModel.fetchIntakeData(selectedDate.toString())
+        viewModel.fetchManageData(selectedDate.toString())
+        viewModel.fetchRecommendFoods(
+            yearMonth = currentYearMonth.toString(),
+            week = 1
+        )
     }
 
     Scaffold(
@@ -83,6 +107,18 @@ fun MainScreen(
                     viewModel.selectDate(today)
                 }
             )
+
+            WeeklyLabel()
+
+            MainCalendarPager(
+                mealItemMap = mealItemMap,
+                uiState = uiState,
+                onDateSelected = viewModel::selectDate
+            )
+
+            HorizontalDivider(thickness = 1.dp, color = Bkg04)
+
+            MainContentPager(uiState)
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 

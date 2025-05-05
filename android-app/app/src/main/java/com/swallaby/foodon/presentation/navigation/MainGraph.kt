@@ -24,7 +24,10 @@ fun NavGraphBuilder.mainGraph(
         }
 
         composable(NavRoutes.NutrientDetail.route) {
-            NutrientDetailScreen(onBackClick = { navController.popBackStack() })
+            NutrientDetailScreen(
+                viewModel = mainViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 

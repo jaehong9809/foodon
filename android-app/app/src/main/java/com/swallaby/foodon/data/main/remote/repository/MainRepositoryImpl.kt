@@ -14,16 +14,16 @@ import javax.inject.Inject
 class MainRepositoryImpl @Inject constructor(
     private val api: MainApi
 ): MainRepository {
-    override suspend fun getMealRecord(day: String): ApiResult<List<MealRecord>> = safeApiCall {
-        api.getMealRecord(day).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getMealRecord(date: String): ApiResult<List<MealRecord>> = safeApiCall {
+        api.getMealRecord(date).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
-    override suspend fun getNutrientIntake(day: String): ApiResult<List<NutrientIntake>> = safeApiCall {
-        api.getNutrientIntake(day).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getNutrientIntake(date: String): ApiResult<NutrientIntake> = safeApiCall {
+        api.getNutrientIntake(date).getOrThrow { it.toDomain() }
     }
 
-    override suspend fun getNutrientManage(day: String): ApiResult<List<NutrientManage>> = safeApiCall {
-        api.getNutrientManage(day).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getNutrientManage(date: String): ApiResult<List<NutrientManage>> = safeApiCall {
+        api.getNutrientManage(date).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
 }
