@@ -41,10 +41,10 @@ fun MainContentPager(
                 .height(375.dp) // 고정 길이 사용
         ) { page ->
             when (page) {
-                0 -> NutrientIntakeContent(uiState.intakeResult)
+                0 -> NutrientIntakeContent(uiState)
                 1 -> NutrientManageContent(uiState.manageResult)
                 2 -> RecommendFoodContent(uiState.recommendMealResult)
-                3 -> Text("Page 4")
+                3 -> Text("목표 관리 페이지")
             }
         }
 

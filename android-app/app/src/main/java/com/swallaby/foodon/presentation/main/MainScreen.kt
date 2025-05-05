@@ -95,6 +95,13 @@ fun MainScreen(
         viewModel.fetchManageData(selectedDate.toString())
     }
 
+    LaunchedEffect(pagerState.currentPage) {
+        viewModel.fetchRecommendFoods(
+            yearMonth = currentYearMonth.toString(),
+            week = (pagerState.currentPage) + 1
+        )
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingButton(
@@ -145,7 +152,7 @@ fun MainScreen(
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
-            MealRecordContent(recordState = uiState.recordResult) { mealId ->
+            MealRecordContent(uiState = uiState) { mealId ->
                 navController.navigate(NavRoutes.FoodGraph.FoodDetail.createRoute(mealId))
             }
 
