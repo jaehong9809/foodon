@@ -133,6 +133,7 @@ fun MealDetailScreen(
                     Spacer(
                         modifier
                             .height(8.dp)
+                            .fillMaxWidth()
                             .background(Bkg04)
                     )
                     FoodInfoComponent(
