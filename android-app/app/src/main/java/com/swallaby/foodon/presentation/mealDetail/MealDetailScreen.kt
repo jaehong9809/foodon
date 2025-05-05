@@ -80,6 +80,9 @@ fun MealDetailScreen(
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
 ) {
+
+    // TODO: mealId가 0이 아니면 식사기록 상세 API 호출 필요 (서버에도 API 추가 필요)
+
     val foods = createDummyMealNutrients()
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(

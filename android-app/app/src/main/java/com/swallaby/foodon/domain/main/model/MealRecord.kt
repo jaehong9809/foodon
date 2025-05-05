@@ -4,7 +4,7 @@ data class MealRecord(
     val mealId: Long = 0,
     val mealTimeType: MealTimeType = MealTimeType.BREAKFAST,
     val mealTime: String = "",
-    val mealImageUrl: String = "",
+    val imageUrl: String = "",
     val mealItems: List<String> = emptyList(),
     val totalKcal: Int = 0,
     val totalCarbs: Int = 0,

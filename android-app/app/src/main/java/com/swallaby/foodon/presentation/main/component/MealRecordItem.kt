@@ -110,11 +110,11 @@ fun MealRecordItem(
 
                 }
 
-                if (meal.mealImageUrl.isNotBlank()) {
+                if (meal.imageUrl.isNotBlank()) {
                     Spacer(Modifier.width(16.dp))
 
                     AsyncImage(
-                        model = meal.mealImageUrl,
+                        model = meal.imageUrl,
                         contentDescription = "음식 사진",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -170,7 +170,7 @@ fun MealRecordItemPreview() {
         mealId = 1,
         mealTimeType = MealTimeType.BREAKFAST,
         mealTime = "08:00",
-        mealImageUrl = "",
+        imageUrl = "",
         mealItems = listOf(
             "쌀밥",
             "된장찌개",

@@ -18,11 +18,11 @@ interface CalendarApi {
     @GET("members/weights/calendar/{date}")
     suspend fun getCalendarWeights(@Path("date") date: String): BaseResponse<List<WeightResponse>>
 
-    @GET("calendar/recommendations")
-    suspend fun getCalendarRecommendations(@Query(value = "date") date: String): BaseResponse<List<RecommendationResponse>>
-
     @GET("members/profile/weight")
     suspend fun getUserWeight(): BaseResponse<UserWeightResponse>
+
+    @GET("calendar/recommendations")
+    suspend fun getCalendarRecommendations(@Query(value = "date") date: String): BaseResponse<List<RecommendationResponse>>
 
     @GET("recommendations")
     suspend fun getRecommendFoods(
