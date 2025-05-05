@@ -202,11 +202,11 @@ fun MealDetailScreen(
                             modifier = Modifier.padding(horizontal = 24.dp),
                             text = "확인",
                             onClick = {
+                                viewModel.updateMealTime(selectedTime)
                                 dismissModalBottomSheet(
                                     scope = scope,
                                     sheetState = sheetState,
                                     callback = {
-                                        viewModel.updateMealTime(selectedTime)
                                         showBottomSheet = false
                                     },
                                 )
