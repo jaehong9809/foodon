@@ -18,9 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.G000
@@ -37,17 +39,20 @@ fun CommonWideButton(
     isEnabled: Boolean = true,
     onClick: () -> Unit,
 ) {
-    Box(modifier = modifier
-        .padding(vertical = 16.dp)
-        .fillMaxWidth()
-        .height(52.dp)
-        .clickable(enabled = isEnabled,
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = { onClick() })
-        .background(
-            if (isEnabled) WB500 else Bkg04, shape = RoundedCornerShape(8.dp)
-        ), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier
+            .padding(vertical = 16.dp)
+            .fillMaxWidth()
+            .height(52.dp)
+            .clickable(
+                enabled = isEnabled,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = { onClick() })
+            .background(
+                if (isEnabled) WB500 else Bkg04, shape = RoundedCornerShape(8.dp)
+            ), contentAlignment = Alignment.Center
+    ) {
         text?.let {
             Text(
                 modifier = modifier,
@@ -66,16 +71,19 @@ fun CancelWideButton(
     text: String? = null,
     onClick: () -> Unit,
 ) {
-    Box(modifier = modifier
-        .padding(vertical = 16.dp)
-        .fillMaxWidth()
-        .height(52.dp)
-        .clickable(interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = { onClick() })
-        .border(1.dp, Border025, shape = RoundedCornerShape(8.dp))
-        .background(MainWhite, shape = RoundedCornerShape(8.dp)),
-        contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier
+            .padding(vertical = 16.dp)
+            .fillMaxWidth()
+            .height(52.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = { onClick() })
+            .border(1.dp, Border025, shape = RoundedCornerShape(8.dp))
+            .background(MainWhite, shape = RoundedCornerShape(8.dp)),
+        contentAlignment = Alignment.Center
+    ) {
         text?.let {
             Text(
                 modifier = Modifier, text = it, style = NotoTypography.NotoMedium16, color = G800
@@ -86,17 +94,24 @@ fun CancelWideButton(
 
 // 음식 수정 버튼
 @Composable
-fun UpdateFoodButton(modifier: Modifier = Modifier, ) {
+fun UpdateFoodButton(
+    modifier: Modifier = Modifier, onDeleteClick: () -> Unit = {}, onUpdateClick: () -> Unit = {}
+) {
     Row(modifier = modifier) {
         CancelWideButton(
-            modifier = Modifier.weight(1f), text = "삭제"
-        ) {}
+            modifier = Modifier.weight(1f),
+            text = stringResource(R.string.btn_delete),
+            onClick = onDeleteClick,
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
         CommonWideButton(
-            modifier = Modifier.weight(2f), text = "수정 완료", isEnabled = true
-        ) {}
+            modifier = Modifier.weight(2f),
+            text = stringResource(R.string.btn_update),
+            isEnabled = true,
+            onClick = onUpdateClick,
+        )
     }
 }
 

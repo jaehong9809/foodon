@@ -29,9 +29,6 @@ fun NutritionalMediumInfo(
     amount: Int = 0,
 ) {
     val childModifier = Modifier
-    val formatAmount = NumberFormat.getNumberInstance().format(
-        amount
-    )
 
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
