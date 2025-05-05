@@ -21,10 +21,14 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.presentation.mealdetail.component.DropButton
 
 @Composable
-fun FoodAmountComponent(modifier: Modifier = Modifier) {
+fun FoodAmountComponent(
+    modifier: Modifier = Modifier,
+    food: MealItem
+) {
     Column(modifier = modifier.padding(24.dp)) {
         Column {
             Text(
@@ -41,7 +45,7 @@ fun FoodAmountComponent(modifier: Modifier = Modifier) {
                         .height(48.dp)
                         .weight(1f),
 
-                    onClick = {}, text = "조각",
+                    onClick = {}, text = food.unit,
                     contentModifier = modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     contentAlignment = Arrangement.SpaceBetween,
@@ -57,7 +61,7 @@ fun FoodAmountComponent(modifier: Modifier = Modifier) {
                     modifier = modifier
                         .height(48.dp)
                         .weight(1f),
-                    onClick = {}, text = "1 ½",
+                    onClick = {}, text = food.quantity.toString(),// "1 ½",
                     contentModifier = modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     contentAlignment = Arrangement.SpaceBetween,
@@ -78,5 +82,5 @@ fun FoodAmountComponent(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun FoodAmountComponentPreview(modifier: Modifier = Modifier) {
-    FoodAmountComponent()
+    FoodAmountComponent(food = MealItem())
 }

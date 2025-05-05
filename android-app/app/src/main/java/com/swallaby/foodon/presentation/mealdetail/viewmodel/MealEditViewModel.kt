@@ -12,35 +12,94 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-
 @HiltViewModel
 class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(MealEditUiState()) {
     init {
+        Log.d(TAG, "Initializing MealEditViewModel")
         _uiState.update {
             it.copy(mealEditState = ResultState.Success(createDummyMealInfo()))
         }
     }
 
     fun updateMealType(mealType: MealType) {
+        Log.d(TAG, "Updating meal type: $mealType")
         _uiState.update { it.copy(mealType = mealType) }
     }
 
     fun updateMealTime(mealTime: String) {
+        Log.d(TAG, "Updating meal time: $mealTime")
         _uiState.update { it.copy(mealTime = mealTime) }
     }
 
+    fun updateFood(food: MealItem) {
+        Log.d(TAG, "Updating food: ${food.foodId}")
+        val currentState = _uiState.value.mealEditState
+        if (currentState is ResultState.Success) {
+            val mealInfo = currentState.data
+            val updatedItems = mealInfo.mealItems.map {
+                if (it.foodId == food.foodId) food else it
+            }
+
+            _uiState.update {
+                it.copy(
+                    mealEditState = ResultState.Success(
+                        mealInfo.copy(
+                            mealItems = updatedItems,
+                            totalCarbs = calculateTotalCarbs(updatedItems),
+                            totalFat = calculateTotalFat(updatedItems),
+                            totalKcal = calculateTotalKcal(updatedItems),
+                            totalProtein = calculateTotalProtein(updatedItems)
+                        )
+                    )
+                )
+            }
+            Log.d(TAG, "Food update complete: ${food.foodId}")
+        } else {
+            Log.e(TAG, "Cannot update food: Invalid state")
+        }
+    }
+
     fun deleteFood(foodId: Long) {
-        Log.d("MealEditViewModel", "deleteFood: $foodId")
+        Log.d(TAG, "Deleting food: $foodId")
         val currentState = _uiState.value.mealEditState
         if (currentState is ResultState.Success) {
             val mealInfo = currentState.data
             val updatedItems = mealInfo.mealItems.filterNot { it.foodId == foodId }
-            val updatedMealInfo = mealInfo.copy(mealItems = updatedItems)
+
+            val updatedMealInfo = mealInfo.copy(
+                mealItems = updatedItems,
+                totalCarbs = calculateTotalCarbs(updatedItems),
+                totalFat = calculateTotalFat(updatedItems),
+                totalKcal = calculateTotalKcal(updatedItems),
+                totalProtein = calculateTotalProtein(updatedItems)
+            )
+
             _uiState.update { it.copy(mealEditState = ResultState.Success(updatedMealInfo)) }
+            Log.d(TAG, "Food deletion complete: $foodId")
+        } else {
+            Log.e(TAG, "Cannot delete food: Invalid state")
         }
-        Log.d("MealEditViewModel", "deleteFood complete: $foodId")
     }
 
+    private fun calculateTotalCarbs(items: List<MealItem>): Int {
+        return items.sumOf { it.nutrientInfo.carbs }
+    }
+
+    private fun calculateTotalFat(items: List<MealItem>): Int {
+        return items.sumOf { it.nutrientInfo.fat }
+    }
+
+    private fun calculateTotalKcal(items: List<MealItem>): Int {
+        return items.sumOf { it.nutrientInfo.kcal }
+    }
+
+    private fun calculateTotalProtein(items: List<MealItem>): Int {
+        return items.sumOf { it.nutrientInfo.protein }
+    }
+
+    companion object {
+        private const val TAG = "MealEditViewModel"
+    }
 }
 
 fun createDummyMealInfo(): MealInfo = MealInfo(

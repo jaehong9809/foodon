@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.foodedit
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,14 +22,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.component.UpdateFoodButton
 import com.swallaby.foodon.core.ui.theme.BG100
@@ -44,18 +52,47 @@ import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
+import com.swallaby.foodon.domain.food.model.MealItem
+import com.swallaby.foodon.domain.food.model.NutrientConverter
+import com.swallaby.foodon.domain.food.model.NutrientItem
+import com.swallaby.foodon.domain.food.model.NutrientType
 import com.swallaby.foodon.presentation.foodedit.component.FoodAmountComponent
 import com.swallaby.foodon.presentation.foodedit.component.FoodChip
 import com.swallaby.foodon.presentation.foodedit.component.FoodThumbnailList
 import com.swallaby.foodon.presentation.foodedit.component.SearchChip
+import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditUiState
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 
 @Composable
 fun FoodEditScreen(
     modifier: Modifier = Modifier,
+    viewModel: FoodEditViewModel,
     onBackClick: () -> Unit,
     foodId: Long = 0,
+    onFoodDeleteClick: () -> Unit = {},
+    onFoodUpdateClick: () -> Unit = {},
+    onNutritionEditClick: () -> Unit = {},
 ) {
+
     val scrollState = rememberScrollState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val mealInfo = (uiState.foodEditState as ResultState.Success).data
+    val food = mealInfo.mealItems.find { item ->
+        item.foodId == foodId
+    }!!
+
+    // food.nutrientInfo 대신 uiState 자체를 의존성으로 설정
+    var nutrientInfo by remember(uiState) {
+        Log.d("Screen", "FoodEditScreen Update viewModel ${uiState}")
+        mutableStateOf(NutrientConverter.convertToHierarchy(food.nutrientInfo))
+    }
+
+
+    Log.d("Screen", "FoodEditScreen ViewModel identity: ${System.identityHashCode(viewModel)}")
+    Log.d("Screen", "FoodEditScreen Food.nutrientInfo: ${food.nutrientInfo}")
+
+
     Column {
         CommonBackTopBar(
             title = stringResource(R.string.top_bar_food_info_update), onBackClick = onBackClick
@@ -69,19 +106,30 @@ fun FoodEditScreen(
             HorizontalDivider(
                 modifier = modifier.padding(horizontal = 24.dp), thickness = 1.dp, color = Border02
             )
-            FoodSearch()
+            FoodSearch(
+                foodName = food.foodName
+            )
             Spacer(
                 modifier = modifier
                     .height(8.dp)
+                    .fillMaxWidth()
                     .background(color = Bkg04)
             )
-            FoodAmountComponent()
-            NutritionComponent(modifier)
+            FoodAmountComponent(
+                food = food,
+            )
+            NutritionComponent(
+                modifier = modifier,
+                nutrientInfo = nutrientInfo,
+                onNutritionEditClick = onNutritionEditClick
+            )
         }
         UpdateFoodButton(
             modifier = modifier.padding(
                 horizontal = 24.dp
-            )
+            ),
+            onDeleteClick = onFoodDeleteClick,
+            onUpdateClick = onFoodUpdateClick,
         )
     }
 
@@ -89,51 +137,51 @@ fun FoodEditScreen(
 }
 
 @Composable
-fun NutritionComponent(modifier: Modifier = Modifier) {
+fun NutritionComponent(
+    modifier: Modifier = Modifier,
+    nutrientInfo: List<NutrientItem>,
+    onNutritionEditClick: () -> Unit = {},
+) {
     Column(modifier.padding(horizontal = 24.dp)) {
         Text(
             stringResource(R.string.nutritional_ingredients),
             style = NotoTypography.NotoBold18.copy(color = G900)
         )
-        ParentNutritionInfo(
-            nutritionName = "열량",
-            amount = stringResource(R.string.format_kcal, StringUtil.formatKcal(1000)),
-            amountColor = WB500,
-        )
-        ParentNutritionInfo(
-            nutritionName = "탄수화물", amount = StringUtil.formatNutrition(100), hasChild = true
-        )
-        ChildNutritionInfo(
-            nutritionName = "당류",
-            amount = StringUtil.formatNutrition(10),
-        )
-        ParentNutritionInfo(
-            nutritionName = "단백질", amount = StringUtil.formatNutrition(50), hasChild = true
-        )
-        ParentNutritionInfo(
-            nutritionName = "지방",
-            amount = StringUtil.formatNutrition(50),
-        )
-        ChildNutritionInfo(
-            nutritionName = "포화지방",
-            amount = StringUtil.formatNutrition(10),
-        )
-        ChildNutritionInfo(
-            nutritionName = "트랜스지방",
-            amount = StringUtil.formatNutrition(10),
-        )
-        ParentNutritionInfo(
-            nutritionName = "콜레스테롤",
-            amount = StringUtil.formatNutrition(10),
-        )
-        ParentNutritionInfo(
-            nutritionName = "나트륨",
-            amount = StringUtil.formatNutrition(10),
-        )
+        repeat(nutrientInfo.size) { index ->
+            val childItems = nutrientInfo[index].childItems
+
+            when (nutrientInfo[index].nutrientType) {
+                NutrientType.KCAL -> {
+                    ParentNutritionInfo(
+                        nutritionName = nutrientInfo[index].name,
+                        amount = stringResource(
+                            R.string.format_kcal, StringUtil.formatKcal(nutrientInfo[index].value)
+                        ),
+                        amountColor = WB500,
+                    )
+                }
+
+                else -> {
+                    ParentNutritionInfo(
+                        nutritionName = nutrientInfo[index].name,
+                        amount = StringUtil.formatNutrition(nutrientInfo[index].value),
+                        hasChild = childItems.isNotEmpty()
+                    )
+                }
+            }
+
+            repeat(childItems.size) { childIndex ->
+                ChildNutritionInfo(
+                    nutritionName = childItems[childIndex].name,
+                    amount = StringUtil.formatNutrition(childItems[childIndex].value),
+                )
+
+            }
+        }
 
         Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             TextButton(
-                onClick = {},
+                onClick = onNutritionEditClick,
                 modifier = modifier
                     .height(48.dp)
                     .background(color = BG100, shape = RoundedCornerShape(8.dp)),
@@ -209,14 +257,16 @@ private fun ChildNutritionInfo(
 }
 
 @Composable
-fun FoodSearch(modifier: Modifier = Modifier) {
+fun FoodSearch(
+    modifier: Modifier = Modifier, foodName: String
+) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier.padding(top = 16.dp, bottom = 24.dp)) {
         Row(
             modifier = modifier.padding(horizontal = 24.dp)
         ) {
             Text(
-                "피자", style = NotoTypography.NotoBold14.copy(color = G900)
+                foodName, style = NotoTypography.NotoBold14.copy(color = G900)
             )
             Text("가 아닌가요?", style = NotoTypography.NotoBold14.copy(color = G500))
         }
@@ -240,6 +290,6 @@ fun FoodSearch(modifier: Modifier = Modifier) {
 @Composable
 fun FoodEditScreenPreview() {
     FoodonTheme {
-        FoodEditScreen(onBackClick = {})
+        FoodEditScreen(onBackClick = {}, viewModel = FoodEditViewModel())
     }
 }
