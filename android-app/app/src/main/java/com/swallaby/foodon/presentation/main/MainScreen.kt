@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.main
 
-import android.R.attr.data
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
