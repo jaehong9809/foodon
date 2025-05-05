@@ -163,22 +163,23 @@ private fun MealTime(
                 },
             )
             // 드롭다운 메뉴
-            DropdownMenu(modifier = modifier
-//                    .clip(RoundedCornerShape(10.dp))
-                .border(
-                    shape = RoundedCornerShape(10.dp), color = Border02, width = 1.dp
-                )
-                // DropdownMenu 의 기본 Vertical Padding 8.dp 를 0.dp 로 변경
-                .crop(vertical = 8.dp)
-                .background(color = Color.White, shape = RoundedCornerShape(10.dp)),
+            DropdownMenu(
+                modifier = modifier
+                    .border(
+                        shape = RoundedCornerShape(10.dp), color = Border02, width = 1.dp
+                    )
+                    // DropdownMenu 의 기본 Vertical Padding 8.dp 를 0.dp 로 변경
+                    .crop(vertical = 8.dp)
+                    .background(color = Color.White, shape = RoundedCornerShape(10.dp)),
                 expanded = expanded,
                 onDismissRequest = { expanded = false }) {
                 MealType.values().forEachIndexed { index, item ->
-                    DropdownMenuItem(contentPadding = PaddingValues(
+                    DropdownMenuItem(
+                        contentPadding = PaddingValues(
                         horizontal = 12.dp, vertical = 0.dp
                     ), modifier = modifier
-                        .width(200.dp)
-                        .height(48.dp), onClick = {
+                            .width(200.dp)
+                            .height(48.dp), onClick = {
                         expanded = false
                         onMealTypeClick(item)
                     }, text = {
@@ -195,23 +196,6 @@ private fun MealTime(
                             )
                         }
                     })
-//                {
-//                    Row(
-//                        modifier = modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        Text(
-//                            text = item.displayName,
-//                            style = NotoTypography.NotoNormal16.copy(color = G900)
-//                        )
-//
-//                        Icon(
-//                            painter = painterResource(R.drawable.icon_check),
-//                            contentDescription = "check",
-//                            tint = WB500,
-//                        )
-//                    }
-//                }
                     // 마지막 아이템이 아닐 경우에만 구분선 추가
                     if (index < MealType.values().size - 1) {
                         HorizontalDivider(
