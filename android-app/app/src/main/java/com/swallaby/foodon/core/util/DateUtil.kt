@@ -88,5 +88,10 @@ object DateUtil {
         return weeks
     }
 
+    fun formatTimeToHHmm(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return dateTime.format(formatter)
+    }
+
 
 }
