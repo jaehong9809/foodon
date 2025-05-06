@@ -32,8 +32,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
             Member member
     ) {
         FoodInfo foodInfo = queryFactory
-                .select(
-                        Projections.fields(
+                .select(Projections.fields(
                                 FoodInfo.class,
                                 food.id,
                                 food.name,
@@ -48,8 +47,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 .fetchOne();
 
         List<NutrientInfo> nutrients = queryFactory
-                .select(
-                        Projections.fields(
+                .select(Projections.fields(
                                 NutrientInfo.class,
                                 foodNutrient.foodId,
                                 foodNutrient.id.as("foodNutrientId"),
@@ -76,10 +74,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
     @Override
     public List<FoodWithNutrientInfo> findFoodInfoWithNutrientByNameIn(Set<String> foodNames) {
-
         List<FoodInfo> foods = queryFactory
-                .select(
-                        Projections.fields(
+                .select(Projections.fields(
                                 FoodInfo.class,
                                 food.id,
                                 food.name,
@@ -96,8 +92,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
         List<Long> foodIds = foods.stream().map(FoodInfo::id).toList();
 
         List<NutrientInfo> nutrientList = queryFactory
-                .select(
-                        Projections.fields(
+                .select(Projections.fields(
                                 NutrientInfo.class,
                                 foodNutrient.foodId,
                                 foodNutrient.id.as("foodNutrientId"),
@@ -115,7 +110,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
         return foods.stream()
                 .map(food -> new FoodWithNutrientInfo(
-                        FoodType.PUBLIC,  // 필요 시 매핑 로직으로 조정
+                        FoodType.PUBLIC,
                         food.id(),
                         food.name(),
                         food.unit(),
