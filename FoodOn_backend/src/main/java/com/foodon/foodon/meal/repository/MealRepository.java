@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface MealRepository extends JpaRepository<Meal, Long> {
+public interface MealRepository extends JpaRepository<Meal, Long>, MealRepositoryCustom {
 
     @Query("""
         select m from Meal m
