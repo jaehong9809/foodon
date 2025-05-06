@@ -1,7 +1,7 @@
 package com.foodon.foodon.common.util;
 
-import com.foodon.foodon.food.dto.NutrientInfo;
-import com.foodon.foodon.meal.dto.MealNutrientInfo;
+import com.foodon.foodon.food.domain.NutrientUnit;
+import com.foodon.foodon.meal.dto.NutrientProfile;
 import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.meal.dto.MealItemInfo;
 
@@ -24,7 +24,7 @@ public class NutrientCalculator {
      */
     public static BigDecimal sumTotalIntake(
             List<MealItemInfo> items,
-            Function<MealNutrientInfo, BigDecimal> nutrientGetter
+            Function<NutrientProfile, BigDecimal> nutrientGetter
     ) {
         return items.stream()
                 .map(item -> {
@@ -61,6 +61,22 @@ public class NutrientCalculator {
                 multiply(intakeKcal, BigDecimal.valueOf(ratio)),
                 kcalPerGram
         );
+    }
+
+    public static BigDecimal convertToMilligram(BigDecimal value, NutrientUnit unit) {
+        if (value == null) return BigDecimal.ZERO;
+
+        return unit.equals(NutrientUnit.GRAM)
+                ? multiply(value, BigDecimal.valueOf(1000))
+                : value;
+    }
+
+    public static BigDecimal convertToGram(BigDecimal value, NutrientUnit unit) {
+        if (value == null) return BigDecimal.ZERO;
+
+        return unit.equals(NutrientUnit.MILLIGRAM)
+                ? divide(value, BigDecimal.valueOf(1000))
+                : value;
     }
 
 }
