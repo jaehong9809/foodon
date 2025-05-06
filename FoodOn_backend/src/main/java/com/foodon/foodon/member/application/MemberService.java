@@ -5,6 +5,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.foodon.foodon.member.dto.ProfileRegisterRequest;
 import org.springframework.stereotype.Service;
 
 import com.foodon.foodon.member.domain.Member;
@@ -15,6 +16,7 @@ import com.foodon.foodon.member.repository.MemberRepository;
 import com.foodon.foodon.member.repository.WeightRecordRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,21 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final WeightRecordRepository weightRecordRepository;
+
+	@Transactional
+	public void registerProfile(
+			ProfileRegisterRequest request,
+			Member member
+	) {
+		member.updateProfile(
+				request.gender(),
+				request.height(),
+				request.weight(),
+				request.managementType(),
+				request.activityType()
+		);
+		member.markProfileUpdated();
+	}
 
 	public List<WeightRecordResponse> getWeightRecordCalendar(
 		YearMonth yearMonth,
