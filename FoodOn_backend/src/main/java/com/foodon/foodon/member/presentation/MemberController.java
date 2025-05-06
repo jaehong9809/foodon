@@ -3,11 +3,12 @@ package com.foodon.foodon.member.presentation;
 import java.time.YearMonth;
 import java.util.List;
 
+import com.foodon.foodon.member.dto.ProfileRegisterRequest;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.foodon.foodon.auth.annotation.AuthMember;
 import com.foodon.foodon.common.dto.Response;
@@ -44,6 +45,16 @@ public class MemberController {
 	) {
 		WeightProfileResponse result = memberService.getWeightProfile(member);
 		return ResponseUtil.success(result);
+	}
+
+	@PostMapping("/profile")
+	@Operation(summary = "가입한 사용자 정보 등록 (키, 체중 등)")
+	public ResponseEntity<Response<Void>> registerProfile(
+			@Valid @RequestBody ProfileRegisterRequest request,
+			@Parameter(hidden = true) @AuthMember Member member
+	){
+		memberService.registerProfile(request, member);
+		return ResponseUtil.success();
 	}
 
 }
