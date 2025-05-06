@@ -1,9 +1,9 @@
 package com.foodon.foodon.meal.application;
 
 import com.foodon.foodon.common.util.NutrientCalculator;
-import com.foodon.foodon.food.domain.Food;
 import com.foodon.foodon.food.domain.NutrientType;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.image.application.LocalImageService;
 import com.foodon.foodon.image.application.S3ImageService;
@@ -28,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -63,10 +62,10 @@ public class MealService {
             MealDetectAiResponse detectedItems
     ) {
         List<MealItemInfo> mealItems = getMealItemsInfoList(detectedItems);
-        int totalKcal = toRoundedInt(sumTotalIntake(mealItems, MealNutrientInfo::kcal));
-        int totalCarbs = toRoundedInt(sumTotalIntake(mealItems, MealNutrientInfo::carbs));
-        int totalProtein = toRoundedInt(sumTotalIntake(mealItems, MealNutrientInfo::protein));
-        int totalFat = toRoundedInt(sumTotalIntake(mealItems, MealNutrientInfo::fat));
+        int totalKcal = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::kcal));
+        int totalCarbs = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::carbs));
+        int totalProtein = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::protein));
+        int totalFat = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::fat));
 
         return MealInfoResponse.from(
                 imageUrl,
@@ -107,8 +106,20 @@ public class MealService {
         return MealItemInfo.from(
                 matchedFood,
                 BigDecimal.valueOf(foodInfo.count()),
-                foodInfo.positions()
+                foodInfo.positions(),
+                convertToTypedValueMap(matchedFood.nutrients())
         );
+    }
+
+    /**
+     * [영양소타입 : 값] 으로 매핑
+     */
+    private Map<NutrientType, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
+        return nutrients.stream()
+                .collect(Collectors.toMap(
+                        info -> NutrientType.from(info.nutrientType()),
+                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                ));
     }
 
     public Set<String> extractFoodNameFrom(MealDetectAiResponse detectedItems) {

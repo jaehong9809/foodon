@@ -1,19 +1,20 @@
 package com.foodon.foodon.food.application;
 
-import com.foodon.foodon.food.domain.Food;
-import com.foodon.foodon.food.domain.FoodNutrient;
+import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
-import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.food.repository.FoodNutrientRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
+import com.foodon.foodon.meal.dto.NutrientProfile;
 import com.foodon.foodon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
 import static com.foodon.foodon.food.exception.FoodErrorCode.ILLEGAL_NUTRIENT_ID;
@@ -31,7 +32,6 @@ public class FoodService {
             CustomFoodCreateRequest request,
             Member member
     ) {
-        validateNutrientIds(request.nutrients());
         Food food = Food.createCustomFoodByMember(request, member);
         foodRepository.save(food);
         registerFoodNutrients(request.nutrients(), food);
@@ -40,28 +40,32 @@ public class FoodService {
     }
 
     private void registerFoodNutrients(
-            List<CustomFoodCreateRequest.NutrientInfo> nutrients,
+            NutrientProfile nutrients,
             Food food
     ) {
-        for(CustomFoodCreateRequest.NutrientInfo nutrientInfo : nutrients) {
+        List<Nutrient> nutrientList = nutrientRepository.findAll();
+        Map<NutrientType, Long> nutrientIdMap = convertToTypeIdMap(nutrientList);
+
+        nutrients.toMap().forEach((type, value) -> {
+            if (value == null) {
+                return;
+            }
+
             FoodNutrient foodNutrient = FoodNutrient.createFoodNutrient(
                     food.getId(),
-                    nutrientInfo.id(),
-                    nutrientInfo.value()
+                    nutrientIdMap.get(type),
+                    value
             );
             foodNutrientRepository.save(foodNutrient);
-        }
+        });
     }
 
-    private void validateNutrientIds(
-            List<CustomFoodCreateRequest.NutrientInfo> nutrients
-    ) {
-        List<Long> nutrientIds = nutrients.stream()
-                .map(CustomFoodCreateRequest.NutrientInfo::id).distinct().toList();
-
-        if(nutrientRepository.findExistingIds(nutrientIds).size() != nutrientIds.size()) {
-            throw new FoodBadRequestException(ILLEGAL_NUTRIENT_ID);
-        }
+    private Map<NutrientType, Long> convertToTypeIdMap(List<Nutrient> nutrientList) {
+        return nutrientList.stream()
+                .collect(Collectors.toMap(
+                        nutrient -> NutrientType.from(nutrient.getType()),
+                        Nutrient::getId
+                ));
     }
 
     public FoodWithNutrientInfo getFood(
