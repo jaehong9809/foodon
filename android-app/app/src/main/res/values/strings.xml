@@ -48,6 +48,8 @@
     <string name="tab_weight_bottom">체중 변화(kg)</string>
 
     <!-- food -->
+    <string name="select_gallery">앨범 선택</string>
+    <string name="food_search">음식 검색</string>
     <string name="total_intake">전체 섭취량</string>
     <string name="food_info_check">음식 정보를 확인해 보세요!</string>
     <string name="food_amount">음식양</string>
