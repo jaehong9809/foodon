@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static com.foodon.foodon.food.domain.HealthEffect.UNKNOWN;
+import static com.foodon.foodon.food.domain.RestrictionType.NONE;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -26,7 +27,7 @@ public class Nutrient {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RestrictionType restrictionType;
+    private RestrictionType restrictionType = NONE;
 
     private Double restrictionMin;
 
