@@ -1,5 +1,7 @@
 package com.swallaby.foodon.presentation.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -14,6 +16,7 @@ import androidx.navigation.navigation
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
+import com.swallaby.foodon.presentation.foodrecord.FoodRecordScreen
 import com.swallaby.foodon.presentation.mealdetail.MealDetailScreen
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.nutritionedit.NutritionEditScreen
@@ -22,8 +25,11 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
-        composable(NavRoutes.FoodGraph.FoodRecord.route) {
-            // TODO: 식사 기록 카메라 화면
+        composable(
+            NavRoutes.FoodGraph.FoodRecord.route,
+            exitTransition = { ExitTransition.None }
+        ) {
+            FoodRecordScreen()
         }
 
         composable(
