@@ -1,6 +1,6 @@
 package com.foodon.foodon.intakelog.dto;
 
-import com.foodon.foodon.common.util.NutrientTarget;
+import com.foodon.foodon.common.util.NutrientGoal2;
 import com.foodon.foodon.intakelog.domain.IntakeLog;
 
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ public record IntakeDetailResponse(
         int goalFat
 ) {
     public static IntakeDetailResponse from(
-            NutrientTarget nutrientTarget,
+            NutrientGoal2 nutrientTarget,
             IntakeLog intakeLog
     ) {
 

@@ -1,5 +1,7 @@
 package com.foodon.foodon.intakelog.domain;
 
+import com.foodon.foodon.common.util.BigDecimalUtil;
+import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import static com.foodon.foodon.common.util.BigDecimalUtil.add;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -42,5 +45,35 @@ public class IntakeLog {
 
     @Column(precision = 6, scale = 2, nullable = false)
     private BigDecimal intakeFat;
+
+
+    private IntakeLog(
+            Member member,
+            LocalDate date,
+            BigDecimal goalKcal
+    ){
+        this.member = member;
+        this.date = date;
+        this.goalKcal = goalKcal;
+    }
+
+    public static IntakeLog createIntakeLogOfMember(
+            Member member,
+            LocalDate date,
+            BigDecimal goalKcal
+    ){
+        return new IntakeLog(
+                member,
+                date,
+                goalKcal
+        );
+    }
+
+    public void updateIntakeFromMeal(Meal meal){
+        this.intakeKcal = add(this.intakeKcal, BigDecimal.ONE);
+        this.intakeCarbs = add(this.intakeCarbs, meal.getTotalCarbs());
+        this.intakeProtein = add(this.intakeProtein, meal.getTotalProtein());
+        this.intakeFat = add(this.intakeFat, meal.getTotalFat());
+    }
 
 }
