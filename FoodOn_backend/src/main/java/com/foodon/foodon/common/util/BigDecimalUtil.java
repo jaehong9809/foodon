@@ -25,6 +25,10 @@ public class BigDecimalUtil {
         return safe(a).divide(b, DEFAULT_SCALE, RoundingMode.HALF_UP);
     }
 
+    public static BigDecimal add(BigDecimal a, BigDecimal b) {
+        return safe(a).add(safe(b));
+    }
+
     // 반올림하여 정수형 변환
     public static int toRoundedInt(BigDecimal value) {
         return value.setScale(0, RoundingMode.HALF_UP).intValue();
