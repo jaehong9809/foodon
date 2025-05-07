@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,14 +35,6 @@ public class Member extends BaseTimeEntity {
     private LocalDate birthday;
 
     private Gender gender;
-
-    private int height;
-
-    private int goalWeight;
-
-    private Long nutrientPlanId;
-
-    private Long activityLevelId;
 
     private Member (
             String nickname,
@@ -73,10 +66,10 @@ public class Member extends BaseTimeEntity {
             Long activityLevelId
     ) {
         this.gender = gender;
-        this.height = height;
-        this.goalWeight = goalWeight;
-        this.nutrientPlanId = nutrientPlanId;
-        this.activityLevelId = activityLevelId;
+    }
+
+    public int getAge(){
+        return Period.between(birthday, LocalDate.now()).getYears();
     }
 
     public void markProfileUpdated() {
