@@ -7,9 +7,10 @@ import com.swallaby.foodon.domain.food.model.Food
 import com.swallaby.foodon.domain.food.repository.FoodSearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 
-class FoodSearchLocalRepositoryImpl(
+class FoodSearchLocalRepositoryImpl @Inject constructor(
     private val foodSearchDao: FoodSearchDao
 ) : FoodSearchRepository {
 
