@@ -48,4 +48,38 @@ public class MemberStatus {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    private MemberStatus(
+            Long memberId,
+            int height,
+            int weight,
+            int goalWeight,
+            Long nutrientPlanId,
+            Long activityLevelId
+    ){
+        this.memberId = memberId;
+        this.height = height;
+        this.weight = weight;
+        this.goalWeight = goalWeight;
+        this.nutrientPlanId = nutrientPlanId;
+        this.activityLevelId = activityLevelId;
+    }
+
+
+    public static MemberStatus copyFrom(
+            MemberStatus memberStatus
+    ) {
+        return new MemberStatus(
+                memberStatus.getMemberId(),
+                memberStatus.getHeight(),
+                memberStatus.getWeight(),
+                memberStatus.getGoalWeight(),
+                memberStatus.getNutrientPlanId(),
+                memberStatus.getActivityLevelId()
+        );
+    }
+
+    public void changeWeight(int weight){
+        this.weight = weight;
+    }
+
 }

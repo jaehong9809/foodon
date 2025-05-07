@@ -3,29 +3,29 @@ package com.foodon.foodon.member.application;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import com.foodon.foodon.member.domain.MemberStatus;
 import com.foodon.foodon.member.dto.ProfileRegisterRequest;
+import com.foodon.foodon.member.repository.MemberStatusRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.member.domain.WeightRecord;
 import com.foodon.foodon.member.dto.WeightProfileResponse;
 import com.foodon.foodon.member.dto.WeightRecordResponse;
 import com.foodon.foodon.member.dto.WeightUpdateRequest;
 import com.foodon.foodon.member.repository.MemberRepository;
-import com.foodon.foodon.member.repository.WeightRecordRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
 	private final MemberRepository memberRepository;
-	private final WeightRecordRepository weightRecordRepository;
+	private final MemberStatusRepository memberStatusRepository;
 
 	@Transactional
 	public void registerProfile(
@@ -49,33 +49,36 @@ public class MemberService {
 		LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
 		LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
-		List<WeightRecord> records = weightRecordRepository.findByMemberAndRecordedAtBetween(member, start, end);
-		return convertToResponse(records);
+		List<MemberStatus> memberStatuses = memberStatusRepository.findByMemberIdAndCreatedAtBetween(member.getId(), start, end);
+		return convertToResponse(memberStatuses);
 	}
 
-	private List<WeightRecordResponse> convertToResponse(List<WeightRecord> records) {
-		return records.stream()
+	private List<WeightRecordResponse> convertToResponse(List<MemberStatus> memberStatuses) {
+		return memberStatuses.stream()
 			.map(WeightRecordResponse::of)
 			.collect(Collectors.toList());
 	}
 
 	public WeightProfileResponse getWeightProfile(Member member) {
-		return new WeightProfileResponse(
-			member.getGoalWeight(),
-			getCurrentWeightOrDefault(member)
-		);
-	}
+		MemberStatus memberStatus = getCurrentMemberStatus(member.getId());
 
-	private int getCurrentWeightOrDefault(Member member) {
-		return weightRecordRepository.findTopByMemberOrderByIdDesc(member)
-			.map(WeightRecord::getWeight)
-			.orElse(0);
+		return new WeightProfileResponse(
+			memberStatus.getGoalWeight(),
+			memberStatus.getWeight()
+		);
 	}
 
 	@Transactional
 	public void updateCurrentWeight(Member member, WeightUpdateRequest weightUpdateRequest) {
 		int weight = weightUpdateRequest.weight();
-		weightRecordRepository.save(WeightRecord.of(member, weight));
+		MemberStatus memberStatus = MemberStatus.copyFrom(getCurrentMemberStatus(member.getId()));
+		memberStatus.changeWeight(weight);
+		memberStatusRepository.save(memberStatus);
+	}
+
+	private MemberStatus getCurrentMemberStatus(Long memberId){
+		return memberStatusRepository.findTopByMemberIdOrderByIdDesc(memberId)
+				.orElseThrow(() -> new NoSuchElementException("해당 ID의 회원 상태가 존재하지 않습니다. memberId = " + memberId));
 	}
 
 }
