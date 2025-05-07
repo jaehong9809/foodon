@@ -3,7 +3,6 @@ package com.foodon.foodon.recommend.repository;
 import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.recommend.domain.QRecommendFood;
-import com.foodon.foodon.recommend.domain.RecommendFood;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static com.foodon.foodon.recommend.domain.QRecommendFood.recommendFood;
 
@@ -22,7 +20,11 @@ public class RecommendFoodRepositoryCustomImpl implements RecommendFoodRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public boolean existsThisWeekRecommend(Member member, FoodType foodType, Long foodId) {
+    public boolean existsThisWeekRecommend(
+            Member member,
+            FoodType foodType,
+            Long foodId
+    ) {
         LocalDateTime startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
         LocalDateTime endOfWeek = startOfWeek.plusWeeks(1);
 

@@ -53,7 +53,7 @@ cloud:
       secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
 
 meal-detect-ai-model:
-  url: http://k12s203.p.ssafy.io:8000/ai/detect2
+  url: http://k12s203.p.ssafy.io:8000/ai/detect-yolo2
 
 file:
   upload-dir: ${java.io.tmpdir}/files/

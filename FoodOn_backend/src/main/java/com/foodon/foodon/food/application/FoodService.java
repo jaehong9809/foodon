@@ -1,82 +1,92 @@
 package com.foodon.foodon.food.application;
 
-import com.foodon.foodon.food.domain.CustomFood;
-import com.foodon.foodon.food.domain.Food;
-import com.foodon.foodon.food.domain.FoodInfo;
+import com.foodon.foodon.common.util.NutrientCalculator;
+import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
-import com.foodon.foodon.food.dto.FoodInfoResponse;
-import com.foodon.foodon.food.exception.FoodErrorCode;
-import com.foodon.foodon.food.exception.FoodException;
-import com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
-import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
-import com.foodon.foodon.food.exception.FoodException.FoodNotFoundException;
-import com.foodon.foodon.food.repository.CustomFoodRepository;
+import com.foodon.foodon.food.dto.FoodDetailInfoResponse;
+import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.NutrientInfo;
+import com.foodon.foodon.food.repository.FoodNutrientRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
+import com.foodon.foodon.food.repository.NutrientRepository;
+import com.foodon.foodon.meal.dto.NutrientProfile;
 import com.foodon.foodon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.foodon.foodon.food.exception.FoodErrorCode.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
+import static com.foodon.foodon.food.exception.FoodErrorCode.ILLEGAL_NUTRIENT_ID;
 
 @Service
 @RequiredArgsConstructor
 public class FoodService {
 
     private final FoodRepository foodRepository;
-    private final CustomFoodRepository customFoodRepository;
+    private final FoodNutrientRepository foodNutrientRepository;
+    private final NutrientRepository nutrientRepository;
 
     @Transactional
     public long saveCustomFood(
             CustomFoodCreateRequest request,
             Member member
     ) {
-        validateDuplicateCustomFood(request.foodName(), member);
-        CustomFood customFood = CustomFood.createCustomFoodOfMember(request, member);
-        customFoodRepository.save(customFood);
+        Food food = Food.createCustomFoodByMember(request, member);
+        foodRepository.save(food);
+        registerFoodNutrients(request.nutrients(), food);
 
-        return customFood.getId();
+        return food.getId();
     }
 
-    private void validateDuplicateCustomFood(
-            String foodName,
-            Member member
+    private void registerFoodNutrients(
+            NutrientProfile nutrients,
+            Food food
     ) {
-        if(customFoodRepository.existsByMemberAndName(member, foodName)) {
-            throw new FoodConflictException(CONFLICT_CUSTOM_FOOD);
-        }
+        List<Nutrient> nutrientList = nutrientRepository.findAll();
+        Map<NutrientType, Long> nutrientIdMap = convertToTypeIdMap(nutrientList);
+
+        nutrients.toMap().forEach((type, value) -> {
+            if (value == null) {
+                return;
+            }
+
+            FoodNutrient foodNutrient = FoodNutrient.createFoodNutrient(
+                    food.getId(),
+                    nutrientIdMap.get(type),
+                    value
+            );
+            foodNutrientRepository.save(foodNutrient);
+        });
     }
 
-    public FoodInfoResponse getFood(
+    private Map<NutrientType, Long> convertToTypeIdMap(List<Nutrient> nutrientList) {
+        return nutrientList.stream()
+                .collect(Collectors.toMap(
+                        nutrient -> NutrientType.from(nutrient.getType()),
+                        Nutrient::getId
+                ));
+    }
+
+    public FoodDetailInfoResponse getFood(
             Long foodId,
-            String type,
+            FoodType type,
             Member member
     ) {
-        FoodInfo foodInfo = findFoodInfoByIdAndType(foodId, type, member);
-
-        return FoodInfoResponse.from(foodInfo);
+        FoodWithNutrientInfo food = foodRepository.findFoodInfoWithNutrientByIdAndType(foodId, type, member);
+        return FoodDetailInfoResponse.from(food, convertToTypedValueMap(food.nutrients()));
     }
 
-    private FoodInfo findFoodInfoByIdAndType(
-            Long foodId,
-            String type,
-            Member member
-    ) {
-        return switch (type.toLowerCase()) {
-            case "public" -> findPublicFoodById(foodId);
-            case "custom" -> findCustomFoodByIdAndMember(foodId, member);
-            default -> throw new FoodBadRequestException(ILLEGAL_FOOD_TYPE);
-        };
-    }
-
-    private Food findPublicFoodById(Long foodId) {
-        return foodRepository.findById(foodId)
-                .orElseThrow(() -> new FoodNotFoundException(NOT_FOUND_PUBLIC_FOOD));
-    }
-
-    private CustomFood findCustomFoodByIdAndMember(Long foodId, Member member) {
-        return customFoodRepository.findByIdAndMember(foodId, member)
-                .orElseThrow(() -> new FoodNotFoundException(NOT_FOUND_CUSTOM_FOOD));
+    private Map<NutrientType, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
+        return nutrients.stream()
+                .collect(Collectors.toMap(
+                        info -> NutrientType.from(info.nutrientType()),
+                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                ));
     }
 
 }
