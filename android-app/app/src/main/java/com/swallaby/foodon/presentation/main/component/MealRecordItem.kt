@@ -38,10 +38,10 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
+import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.MealRecord
-import com.swallaby.foodon.domain.main.model.MealTimeType
 import com.swallaby.foodon.presentation.mealdetail.component.NutritionalSmallInfo
 
 @Composable
@@ -77,7 +77,7 @@ fun MealRecordItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        MealTypeBox(meal.mealTimeType.typeName)
+                        MealTypeBox(meal.mealTimeType.displayName)
                         MealTypeBox(meal.mealTime)
                     }
 
@@ -168,7 +168,7 @@ fun MealTypeBox(
 fun MealRecordItemPreview() {
     MealRecordItem(meal = MealRecord(
         mealId = 1,
-        mealTimeType = MealTimeType.BREAKFAST,
+        mealTimeType = MealType.BREAKFAST,
         mealTime = "08:00",
         imageUrl = "",
         mealItems = listOf(

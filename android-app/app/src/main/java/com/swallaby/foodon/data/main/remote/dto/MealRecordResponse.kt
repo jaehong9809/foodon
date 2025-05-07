@@ -1,11 +1,11 @@
 package com.swallaby.foodon.data.main.remote.dto
 
+import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.domain.main.model.MealRecord
-import com.swallaby.foodon.domain.main.model.MealTimeType
 
 data class MealRecordResponse(
     val mealId: Long = 0,
-    val mealTimeType: MealTimeType = MealTimeType.BREAKFAST,
+    val mealTimeType: MealType = MealType.BREAKFAST,
     val mealTime: String = "",
     val imageUrl: String = "",
     val mealItems: List<String> = emptyList(),

@@ -1,8 +1,10 @@
 package com.swallaby.foodon.domain.main.model
 
+import com.swallaby.foodon.domain.food.model.MealType
+
 data class MealRecord(
     val mealId: Long = 0,
-    val mealTimeType: MealTimeType = MealTimeType.BREAKFAST,
+    val mealTimeType: MealType = MealType.BREAKFAST,
     val mealTime: String = "",
     val imageUrl: String = "",
     val mealItems: List<String> = emptyList(),
