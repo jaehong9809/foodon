@@ -40,7 +40,9 @@ fun NutrientManageContent(
     val manageItems = (manageResult as? ResultState.Success)?.data.orEmpty()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(top = 24.dp, start = 24.dp, end = 24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 24.dp, start = 24.dp, end = 24.dp),
         verticalArrangement = Arrangement.Top
     ) {
 
@@ -87,13 +89,13 @@ fun NutrientManageContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(36.dp))
-
         if (manageItems.isEmpty()) {
             EmptyContentText(
-                modifier = Modifier.weight(1f),
-                emptyText = stringResource(R.string.main_nutrient_manage_empty))
+                emptyText = stringResource(R.string.main_nutrient_manage_empty),
+                icon = R.drawable.icon_manage_empty
+            )
         } else {
+            Spacer(modifier = Modifier.height(36.dp))
             NutrientGrid(manageItems)
         }
     }
