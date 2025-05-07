@@ -261,23 +261,12 @@ fun CameraAppScreen(
         }
 
         is ResultState.Success -> {
-//            // 성공 시 UI 표시
-//            val data = uiState.mealRecordState.data
-//            Log.d("CAMERA", "Success: $data")
-//            data?.let {
-//                Log.d("CAMERA", "onNavigateToMealDetail: $data")
-//                LaunchedEffect(Unit) {
-//                    initMealInfo(it.copy(imageUri = selectedImageUri))
-//                    onNavigateToMealDetail()
-//                }
-//            }
         }
 
         is ResultState.Error -> {
             // 에러 시 UI 표시
             val messageRes = uiState.mealRecordState.messageRes
             Toast.makeText(context, stringResource(messageRes), Toast.LENGTH_SHORT).show()
-
         }
     }
 
