@@ -17,18 +17,25 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.domain.main.model.MealRecord
+import com.swallaby.foodon.core.util.DateUtil.formatDate
+import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
 fun MealRecordContent(
-    recordState: ResultState<List<MealRecord>>,
+    uiState: MainUiState,
     onMealClick: (Long) -> Unit
 ) {
+
+    val today = uiState.today
+    val selectedDate = uiState.selectedDate
+    val recordState = uiState.recordResult
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(24.dp)
     ) {
         Text(
-            text = stringResource(R.string.main_meal_record_title),
+            text = if (selectedDate != today) stringResource(R.string.main_meal_record_date_title, formatDate(selectedDate))
+                else stringResource(R.string.main_meal_record_today_title),
             color = G900,
             style = NotoTypography.NotoBold18
         )
@@ -48,7 +55,7 @@ fun MealRecordContent(
             }
             else -> {
                 Text(
-                    text = stringResource(R.string.main_meal_record_title),
+                    text = stringResource(R.string.main_meal_record_empty),
                     color = G900,
                     style = NotoTypography.NotoBold20,
                     textAlign = TextAlign.Center

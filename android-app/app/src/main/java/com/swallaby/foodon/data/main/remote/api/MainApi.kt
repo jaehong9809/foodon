@@ -17,6 +17,6 @@ interface MainApi {
     suspend fun getNutrientIntake(@Path("date") date: String): BaseResponse<NutrientIntakeResponse>
 
     @GET("nutrient/manage")
-    suspend fun getNutrientManage(@Query("day") date: String): BaseResponse<List<NutrientManageResponse>>
+    suspend fun getNutrientManage(@Query("date") date: String): BaseResponse<List<NutrientManageResponse>>
 
 }

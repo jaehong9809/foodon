@@ -38,10 +38,10 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
+import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.MealRecord
-import com.swallaby.foodon.domain.main.model.MealTimeType
 import com.swallaby.foodon.presentation.mealdetail.component.NutritionalSmallInfo
 
 @Composable
@@ -77,7 +77,7 @@ fun MealRecordItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        MealTypeBox(meal.mealTimeType.typeName)
+                        MealTypeBox(meal.mealTimeType.displayName)
                         MealTypeBox(meal.mealTime)
                     }
 
@@ -110,11 +110,11 @@ fun MealRecordItem(
 
                 }
 
-                if (meal.mealImageUrl.isNotBlank()) {
+                if (meal.imageUrl.isNotBlank()) {
                     Spacer(Modifier.width(16.dp))
 
                     AsyncImage(
-                        model = meal.mealImageUrl,
+                        model = meal.imageUrl,
                         contentDescription = "음식 사진",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -168,9 +168,9 @@ fun MealTypeBox(
 fun MealRecordItemPreview() {
     MealRecordItem(meal = MealRecord(
         mealId = 1,
-        mealTimeType = MealTimeType.BREAKFAST,
+        mealTimeType = MealType.BREAKFAST,
         mealTime = "08:00",
-        mealImageUrl = "",
+        imageUrl = "",
         mealItems = listOf(
             "쌀밥",
             "된장찌개",

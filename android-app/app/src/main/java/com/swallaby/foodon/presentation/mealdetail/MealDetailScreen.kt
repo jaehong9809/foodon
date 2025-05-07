@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.mealdetail
 
-
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,17 +44,12 @@ import com.swallaby.foodon.core.ui.component.BackIconImage
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
-import com.swallaby.foodon.domain.food.model.MealInfo
-import com.swallaby.foodon.domain.food.model.MealItem
-import com.swallaby.foodon.domain.food.model.NutrientInfo
-import com.swallaby.foodon.domain.food.model.Position
 import com.swallaby.foodon.presentation.foodedit.component.ScrollTimePicker
 import com.swallaby.foodon.presentation.mealdetail.component.FoodInfoComponent
 import com.swallaby.foodon.presentation.mealdetail.component.NutritionalIngredientsComponent
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
