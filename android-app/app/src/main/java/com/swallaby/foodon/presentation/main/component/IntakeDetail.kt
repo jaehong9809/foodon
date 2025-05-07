@@ -41,9 +41,9 @@ fun IntakeDetail(
             .padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        IntakeItem(NutritionType.CARBOHYDRATE, intake.intakeCarbs, intake.targetCarbs)
-        IntakeItem(NutritionType.PROTEIN, intake.intakeProtein, intake.targetProtein)
-        IntakeItem(NutritionType.FAT, intake.intakeFat, intake.targetFat)
+        IntakeItem(NutritionType.CARBOHYDRATE, intake.intakeCarbs, intake.goalCarbs)
+        IntakeItem(NutritionType.PROTEIN, intake.intakeProtein, intake.goalProtein)
+        IntakeItem(NutritionType.FAT, intake.intakeFat, intake.goalFat)
     }
 }
 

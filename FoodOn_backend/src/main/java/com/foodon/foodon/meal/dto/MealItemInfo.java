@@ -1,11 +1,13 @@
 package com.foodon.foodon.meal.dto;
 
-import com.foodon.foodon.food.domain.FoodType;
-import com.foodon.foodon.food.domain.Food;
+import com.foodon.foodon.food.domain.NutrientType;
 import com.foodon.foodon.food.domain.Unit;
+import com.foodon.foodon.food.domain.FoodType;
+import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public record MealItemInfo(
         FoodType type,
@@ -13,23 +15,24 @@ public record MealItemInfo(
         String foodName,
         Unit unit,
         BigDecimal quantity,
-        NutrientInfo nutrientInfo,
+        NutrientProfile nutrientInfo,
         List<PositionInfo> positions
 ) {
 
     public static MealItemInfo from(
-            Food food,
+            FoodWithNutrientInfo food,
             BigDecimal quantity,
-            List<PositionInfo> positions
+            List<PositionInfo> positions,
+            Map<NutrientType, BigDecimal> nutrientMap
     ) {
 
         return new MealItemInfo(
-                food.getFoodType(),
-                food.getId(),
-                food.getName(),
-                food.getUnit(),
+                food.type(),
+                food.foodId(),
+                food.foodName(),
+                food.unit(),
                 quantity,
-                NutrientInfo.of(food.getNutrient()),
+                NutrientProfile.from(nutrientMap),
                 positions
         );
     }

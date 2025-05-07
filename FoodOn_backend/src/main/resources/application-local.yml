@@ -35,6 +35,7 @@ spring:
       secret-key: ${JWT_SECRET_KEY}
       access-token-expiry: ${JWT_ACCESS_TOKEN_EXPIRY}
       refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY}
+      super-token-expiry: 2592000000   # 30일 기한: 30 * 24 * 60 * 60 * 1000
 
 cloud:
   aws:
@@ -52,7 +53,7 @@ cloud:
       secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET_KEY}
 
 meal-detect-ai-model:
-  url: http://k12s203.p.ssafy.io:8000/ai/detect2
+  url: http://k12s203.p.ssafy.io:8000/ai/detect-yolo2
 
 file:
   upload-dir: ${java.io.tmpdir}/files/

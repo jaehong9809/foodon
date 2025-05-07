@@ -1,6 +1,9 @@
 package com.foodon.foodon.meal.application;
 
-import com.foodon.foodon.food.domain.Food;
+import com.foodon.foodon.common.util.NutrientCalculator;
+import com.foodon.foodon.food.domain.NutrientType;
+import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.image.application.LocalImageService;
 import com.foodon.foodon.image.application.S3ImageService;
@@ -17,6 +20,7 @@ import com.foodon.foodon.meal.repository.MealRepository;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.recommend.repository.RecommendFoodRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,15 +28,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
-import static com.foodon.foodon.common.util.NutrientCalculator.sum;
+import static com.foodon.foodon.common.util.NutrientCalculator.sumTotalIntake;
 import static com.foodon.foodon.meal.exception.MealErrorCode.MEAL_ITEM_IS_NULL;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MealService {
@@ -57,11 +61,11 @@ public class MealService {
             String imageUrl,
             MealDetectAiResponse detectedItems
     ) {
-        List<MealItemInfo> mealItems = getMealItemInfo(detectedItems);
-        int totalKcal = toRoundedInt(sum(mealItems, NutrientInfo::kcal));
-        int totalCarbs = toRoundedInt(sum(mealItems, NutrientInfo::carbs));
-        int totalProtein = toRoundedInt(sum(mealItems, NutrientInfo::protein));
-        int totalFat = toRoundedInt(sum(mealItems, NutrientInfo::fat));
+        List<MealItemInfo> mealItems = getMealItemsInfoList(detectedItems);
+        int totalKcal = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::kcal));
+        int totalCarbs = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::carbs));
+        int totalProtein = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::protein));
+        int totalFat = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::fat));
 
         return MealInfoResponse.from(
                 imageUrl,
@@ -73,37 +77,49 @@ public class MealService {
         );
     }
 
-    private List<MealItemInfo> getMealItemInfo(MealDetectAiResponse detectedItems) {
+    private List<MealItemInfo> getMealItemsInfoList(MealDetectAiResponse detectedItems) {
         Set<String> detectedFoodNames = extractFoodNameFrom(detectedItems);
-        Set<Food> foods = foodRepository.findByNameIn(detectedFoodNames);
-        Map<String, Food> foodMap = foods.stream()
-                .collect(Collectors.toMap(Food::getName, Function.identity()));
+        Map<String, FoodWithNutrientInfo> foodMap = mapToFoodByName(detectedFoodNames);
 
         return detectedItems.food().stream()
-                .map(foodInfo -> toMealItemInfoResponse(foodMap, foodInfo))
+                .map(foodInfo -> convertToMealItemInfoResponse(foodMap, foodInfo))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private MealItemInfo toMealItemInfoResponse(
-            Map<String, Food> foodMap,
+    private Map<String, FoodWithNutrientInfo> mapToFoodByName(Set<String> detectedFoodNames) {
+        List<FoodWithNutrientInfo> foods = foodRepository.findFoodInfoWithNutrientByNameIn(detectedFoodNames);
+        return foods.stream()
+                .collect(Collectors.toMap(FoodWithNutrientInfo::foodName, Function.identity()));
+    }
+
+    private MealItemInfo convertToMealItemInfoResponse(
+            Map<String, FoodWithNutrientInfo> foodMap,
             DetectedFoodInfo foodInfo
     ) {
-        Food food = findMatchedFood(foodMap, foodInfo.name());
+        FoodWithNutrientInfo matchedFood = foodMap.get(foodInfo.name());
+        if(Objects.isNull(matchedFood)) {
+            log.info("AI가 인식한 음식명 '{}' 이(가) DB에서 매칭되는 것이 없습니다.", foodInfo.name());
+            return null;
+        }
 
         return MealItemInfo.from(
-                food,
+                matchedFood,
                 BigDecimal.valueOf(foodInfo.count()),
-                foodInfo.positions()
+                foodInfo.positions(),
+                convertToTypedValueMap(matchedFood.nutrients())
         );
     }
 
-    private Food findMatchedFood(
-            Map<String, Food> foodMap,
-            String foodName
-    ) {
-        return Optional.ofNullable(foodMap.get(foodName))
-                .orElseThrow(() -> new NoSuchElementException("해당 이름의 음식이 존재하지 않습니다. name = " + foodName));
+    /**
+     * [영양소타입 : 값] 으로 매핑
+     */
+    private Map<NutrientType, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
+        return nutrients.stream()
+                .collect(Collectors.toMap(
+                        info -> NutrientType.from(info.nutrientType()),
+                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                ));
     }
 
     public Set<String> extractFoodNameFrom(MealDetectAiResponse detectedItems) {
@@ -170,7 +186,7 @@ public class MealService {
             Member member
     ) {
         LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
         List<Meal> meals = mealRepository.findByMemberAndMealTimeBetween(member, startOfDay, endOfDay);
 
         return meals.stream().map(MealSummaryResponse::of).toList();
