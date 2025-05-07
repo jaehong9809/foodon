@@ -1,5 +1,7 @@
 package com.foodon.foodon.common.exception;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.stream.Collectors;
 
 import com.foodon.foodon.common.dto.Response;
@@ -13,7 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -86,6 +88,32 @@ public class GlobalExceptionHandler {
                 Collectors.joining(", "),
                 msg -> msg.isEmpty() ? "Validation failed" : msg
             ));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Response<Void>> handleTypeMismatchException(
+        MethodArgumentTypeMismatchException exception,
+        HttpServletRequest request
+    ) {
+        Class<?> requiredType = exception.getRequiredType();
+
+        if (requiredType == YearMonth.class || requiredType == LocalDate.class) {
+            String errorMessage = "잘못된 날짜 형식입니다.";
+
+            log.warn(
+                LOG_FORMAT,
+                request.getMethod(),
+                request.getRequestURI(),
+                exception.getClass().getSimpleName(),
+                HttpStatus.BAD_REQUEST.value(),
+                errorMessage
+            );
+            exception.printStackTrace();
+
+            return  ResponseUtil.failure(exception, errorMessage);
+        }
+
+        throw exception;
     }
 
 }
