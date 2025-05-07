@@ -1,8 +1,7 @@
 package com.foodon.foodon.common.util;
 
 import com.foodon.foodon.activitylevel.domain.ActivityLevel;
-import com.foodon.foodon.intakelog.domain.IntakeLog;
-import com.foodon.foodon.intakelog.domain.QIntakeLog;
+import com.foodon.foodon.member.domain.Gender;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.domain.MemberStatus;
 import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
@@ -10,8 +9,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 
-import static com.foodon.foodon.common.util.BigDecimalUtil.divide;
-import static com.foodon.foodon.common.util.BigDecimalUtil.multiply;
+import static com.foodon.foodon.common.util.BigDecimalUtil.*;
 
 @Getter
 public class NutrientGoal {
@@ -19,6 +17,7 @@ public class NutrientGoal {
     private static final BigDecimal KCAL_PER_GRAM_CARBS = BigDecimal.valueOf(4);
     private static final BigDecimal KCAL_PER_GRAM_PROTEIN = BigDecimal.valueOf(4);
     private static final BigDecimal KCAL_PER_GRAM_FAT = BigDecimal.valueOf(9);
+    private static final int TARGET_DAYS = 90; // 목표 일수는 현재 고정
 
     private final BigDecimal goalKcal;
     private final BigDecimal goalCarbs;
@@ -38,15 +37,25 @@ public class NutrientGoal {
     }
 
     public static NutrientGoal from(
-            IntakeLog intakeLog,
+            BigDecimal goalKcal,
             NutrientPlan nutrientPlan
     ) {
         return new NutrientGoal(
-                intakeLog.getGoalKcal(),
-                calculateGoalCarbs(intakeLog.getGoalKcal(), nutrientPlan),
-                calculateGoalProtein(intakeLog.getGoalKcal(),nutrientPlan),
-                calculateGoalFat(intakeLog.getGoalKcal(),nutrientPlan)
+                goalKcal,
+                calculateGoalCarbs(goalKcal, nutrientPlan),
+                calculateGoalProtein(goalKcal,nutrientPlan),
+                calculateGoalFat(goalKcal,nutrientPlan)
         );
+    }
+
+    public static NutrientGoal from(
+            Member member,
+            MemberStatus memberStatus,
+            ActivityLevel activityLevel,
+            NutrientPlan nutrientPlan
+    ) {
+        BigDecimal goalKcal = calculateGoalKcal(member, memberStatus, activityLevel);
+        return from(goalKcal, nutrientPlan);
     }
 
     /**
@@ -54,11 +63,41 @@ public class NutrientGoal {
      */
     public static BigDecimal calculateGoalKcal(
             Member member,
-            MemberStatus status,
-            ActivityLevel activityLevel,
+            MemberStatus memberStatus,
+            ActivityLevel activityLevel
     ){
+        double bm = calculateBM(
+                member.getAge(),
+                member.getGender(),
+                memberStatus.getHeight(),
+                memberStatus.getWeight()
+        );
 
+        double tdee = bm * activityLevel.getValue();
 
+        double dailyAdjustment = 0.0;
+        int deltaWeight = memberStatus.getGoalWeight() - memberStatus.getWeight();
+
+        if(Math.abs(deltaWeight) >= 0.5) { // 체중 유지라고 판단 시 오차 0.5 는 허용하도록 함
+            dailyAdjustment = (double) (7700 * deltaWeight) / TARGET_DAYS;
+        }
+
+        return add(BigDecimal.valueOf(tdee), BigDecimal.valueOf(dailyAdjustment));
+    }
+
+    /**
+     * 성별에 따른 기초대사량 계산
+     */
+    private static double calculateBM(
+            int age,
+            Gender gender,
+            int weight,
+            int height
+    ) {
+        return switch (gender) {
+            case MALE -> 10 * weight + 6.25 * height - 5 * age + 5;
+            case FEMALE -> 10 * weight + 6.25 * height - 5 * age - 161;
+        };
     }
 
     /**
