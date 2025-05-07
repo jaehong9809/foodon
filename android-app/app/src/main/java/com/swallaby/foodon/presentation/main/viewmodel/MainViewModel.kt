@@ -10,11 +10,11 @@ import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.food.model.MealType
+import com.swallaby.foodon.domain.main.model.ManageStatus
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.domain.main.model.NutrientManageType
-import com.swallaby.foodon.domain.main.model.NutrientStatus
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
@@ -165,7 +165,7 @@ class MainViewModel @Inject constructor(
                 intake = 10,
                 minRecommend = 0,
                 maxRecommend = 50,
-                status = NutrientStatus.DANGER
+                status = ManageStatus.DANGER
             ),
             NutrientManage(
                 nutrientName = "나트륨",
@@ -174,7 +174,7 @@ class MainViewModel @Inject constructor(
                 intake = 4000,
                 minRecommend = 0,
                 maxRecommend = 5000,
-                status = NutrientStatus.LACK
+                status = ManageStatus.LACK
             ),
             NutrientManage(
                 nutrientName = "포화지방",
@@ -183,7 +183,7 @@ class MainViewModel @Inject constructor(
                 intake = 100,
                 minRecommend = 0,
                 maxRecommend = 20,
-                status = NutrientStatus.CAUTION
+                status = ManageStatus.CAUTION
             ),
             NutrientManage(
                 nutrientName = "트랜스지방",
@@ -192,7 +192,7 @@ class MainViewModel @Inject constructor(
                 intake = 10,
                 minRecommend = 0,
                 maxRecommend = 2,
-                status = NutrientStatus.CAUTION
+                status = ManageStatus.CAUTION
             ),
             NutrientManage(
                 nutrientName = "카페인",
@@ -201,7 +201,7 @@ class MainViewModel @Inject constructor(
                 intake = 400,
                 minRecommend = 0,
                 maxRecommend = 400,
-                status = NutrientStatus.NORMAL
+                status = ManageStatus.NORMAL
             ),
             NutrientManage(
                 nutrientName = "알코올",
@@ -210,7 +210,7 @@ class MainViewModel @Inject constructor(
                 intake = 100,
                 minRecommend = 0,
                 maxRecommend = 30,
-                status = NutrientStatus.CAUTION
+                status = ManageStatus.CAUTION
             )
         )
     }

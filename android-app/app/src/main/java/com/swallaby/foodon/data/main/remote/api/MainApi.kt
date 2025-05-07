@@ -6,7 +6,6 @@ import com.swallaby.foodon.data.main.remote.dto.NutrientIntakeResponse
 import com.swallaby.foodon.data.main.remote.dto.NutrientManageResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface MainApi {
 
@@ -16,7 +15,7 @@ interface MainApi {
     @GET("intake/{date}")
     suspend fun getNutrientIntake(@Path("date") date: String): BaseResponse<NutrientIntakeResponse>
 
-    @GET("nutrient/manage")
-    suspend fun getNutrientManage(@Query("date") date: String): BaseResponse<List<NutrientManageResponse>>
+    @GET("manage-nutrient/{date}")
+    suspend fun getNutrientManage(@Path("date") date: String): BaseResponse<List<NutrientManageResponse>>
 
 }
