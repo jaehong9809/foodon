@@ -24,11 +24,11 @@ public class NutrientPlan {
     private String description;
 
     @Column(nullable = false)
-    private int carbsRatio;
+    private double carbsRatio;
 
     @Column(nullable = false)
-    private int proteinRatio;
+    private double proteinRatio;
 
     @Column(nullable = false)
-    private int fatRatio;
+    private double fatRatio;
 }
