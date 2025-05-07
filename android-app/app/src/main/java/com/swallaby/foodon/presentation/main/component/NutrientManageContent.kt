@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.ui.component.EmptyContentText
 import com.swallaby.foodon.core.ui.theme.G500
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
@@ -36,6 +37,7 @@ fun NutrientManageContent(
 ) {
 
     val navController = LocalNavController.current
+    val manageItems = (manageResult as? ResultState.Success)?.data.orEmpty()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(top = 24.dp, start = 24.dp, end = 24.dp),
@@ -53,45 +55,47 @@ fun NutrientManageContent(
                 style = NotoTypography.NotoBold18
             )
 
-            Row(
-                modifier = Modifier
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = {
-                            navController.navigate(NavRoutes.NutrientDetail.route)
-                        }
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier.padding(bottom = 2.dp)
+            if (manageItems.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {
+                                navController.navigate(NavRoutes.NutrientDetail.route)
+                            }
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = stringResource(R.string.main_nutrient_manage_detail_title),
-                        color = G700,
-                        style = NotoTypography.NotoMedium16
+                    Box(
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.main_nutrient_manage_detail_title),
+                            color = G700,
+                            style = NotoTypography.NotoMedium16
+                        )
+                    }
+
+                    Icon(
+                        painter = painterResource(R.drawable.icon_right_chevron),
+                        contentDescription = null,
+                        tint = G500
                     )
                 }
-
-                Icon(
-                    painter = painterResource(R.drawable.icon_right_chevron),
-                    contentDescription = null,
-                    tint = G500
-                )
             }
         }
 
         Spacer(modifier = Modifier.height(36.dp))
 
-        when (manageResult) {
-            is ResultState.Success -> {
-                NutrientGrid(manageResult.data)
-            }
-            else -> {}
+        if (manageItems.isEmpty()) {
+            EmptyContentText(
+                modifier = Modifier.weight(1f),
+                emptyText = stringResource(R.string.main_nutrient_manage_empty))
+        } else {
+            NutrientGrid(manageItems)
         }
-
     }
 
 }
