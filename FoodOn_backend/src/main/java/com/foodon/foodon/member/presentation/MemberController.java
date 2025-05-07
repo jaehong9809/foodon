@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.foodon.foodon.member.dto.ProfileRegisterRequest;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,6 @@ import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.dto.WeightProfileResponse;
 import com.foodon.foodon.member.dto.WeightRecordResponse;
 import com.foodon.foodon.member.dto.WeightUpdateRequest;
-
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
