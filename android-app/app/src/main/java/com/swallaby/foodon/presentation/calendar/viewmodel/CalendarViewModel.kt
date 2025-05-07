@@ -1,9 +1,9 @@
 package com.swallaby.foodon.presentation.calendar.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarMeal
 import com.swallaby.foodon.domain.calendar.model.CalendarRecommendation
@@ -11,7 +11,6 @@ import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.model.CalendarWeight
 import com.swallaby.foodon.domain.calendar.model.Effect
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
-import com.swallaby.foodon.domain.calendar.model.UserWeight
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
@@ -52,13 +51,10 @@ class CalendarViewModel @Inject constructor(
     fun fetchCalendarData(type: CalendarType, date: String) {
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
-        Log.d("Calendar ViewModel", date)
-
         viewModelScope.launch {
 //            val result = getCalendarUseCase(type, date)
 //            updateState { it.copy(calendarResult = result.toResultState()) }
 
-            // TODO: 서버 연동 시 삭제
             val fakeData: List<CalendarItem> = createFakeData(type)
 
             updateState {
@@ -71,18 +67,13 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(weightResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getUserWeightUseCase()
-//            updateState { it.copy(weightState = result.toResultState()) }
-
-            val fakeData = UserWeight(1, 2)
-            updateState { it.copy(weightResult = ResultState.Success(fakeData)) }
+            val result = getUserWeightUseCase()
+            updateState { it.copy(weightResult = result.toResultState()) }
         }
     }
 
     fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
-
-        Log.d("Calendar ViewModel", "$yearMonth $week")
 
         viewModelScope.launch {
 //            val result = getRecommendFoodUseCase(yearMonth, week)

@@ -84,8 +84,7 @@ fun MainScreen(
         viewModel.fetchCalendarData(currentYearMonth.toString())
 
         viewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
-            week = 1
+            yearMonth = currentYearMonth.toString()
         )
     }
 
