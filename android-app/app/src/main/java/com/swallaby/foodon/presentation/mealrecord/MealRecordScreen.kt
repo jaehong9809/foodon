@@ -1,13 +1,15 @@
-package com.swallaby.foodon.presentation.foodrecord
+package com.swallaby.foodon.presentation.mealrecord
 
 import android.Manifest
 import android.content.ContentValues
-import android.content.Intent
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -31,6 +33,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -44,10 +47,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,25 +62,57 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.BG100
 import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import coil.compose.AsyncImage
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
+import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
+import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
+import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
-fun FoodRecordScreen(modifier: Modifier = Modifier) {
+fun MealRecordScreen(
+    modifier: Modifier = Modifier,
+    recordViewModel: MealRecordViewModel,
+    editViewModel: MealEditViewModel,
+    onBackClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onNavigateToMealDetail: () -> Unit,
+) {
+    val uiState by recordViewModel.uiState.collectAsStateWithLifecycle()
+
+    // 이벤트 수집
+    LaunchedEffect(Unit) {
+        recordViewModel.events.collect { event ->
+            when (event) {
+                is MealRecordEvent.NavigateToDetail -> {
+                    // 이벤트에서 데이터 꺼내서 사용
+                    editViewModel.initMeal(event.mealInfo)
+                    onNavigateToMealDetail()
+                }
+            }
+        }
+    }
+
     WithPermission(
         modifier = modifier, permission = Manifest.permission.CAMERA
     ) {
-        CameraAppScreen(modifier = modifier)
+        CameraAppScreen(
+            modifier = modifier,
+            uiState = uiState,
+            onBackClick = onBackClick,
+            uploadMealImage = recordViewModel::uploadMealImage,
+            onSearchClick = onSearchClick,
+        )
     }
 }
 
@@ -85,7 +122,7 @@ fun ImagePreview(
     imageUri: Uri?,
     onClose: () -> Unit,
     contentDescription: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -122,31 +159,28 @@ fun ActionButton(
     iconResId: Int,
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.clickable(
+        horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.clickable(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
             onClick = onClick
         )
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .size(40.dp)
                 .background(BG100, shape = CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                painter = painterResource(iconResId),
-                contentDescription = text
+                painter = painterResource(iconResId), contentDescription = text
             )
         }
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = modifier.height(4.dp))
         Text(
-            text,
-            style = NotoTypography.NotoMedium13.copy(color = G750)
+            text, style = NotoTypography.NotoMedium13.copy(color = G750)
         )
     }
 }
@@ -155,7 +189,7 @@ fun ActionButton(
 @Composable
 fun CaptureButton(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -180,10 +214,16 @@ fun CaptureButton(
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CameraAppScreen(modifier: Modifier = Modifier) {
-    // 찍은 사진의 URI를 저장할 변수
-    var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
+fun CameraAppScreen(
+    modifier: Modifier = Modifier,
+    uiState: MealRecordUiState,
+    onBackClick: () -> Unit,
+    uploadMealImage: (uri: Uri, context: Context) -> Unit,
+    onSearchClick: () -> Unit,
+) {
+    val context = LocalContext.current
 
     // 선택된 이미지 URI를 저장할 변수
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -194,6 +234,7 @@ fun CameraAppScreen(modifier: Modifier = Modifier) {
     ) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
+            uploadMealImage(it, context)
             Log.d("GALLERY", "Selected image: $it")
         }
     }
@@ -205,7 +246,41 @@ fun CameraAppScreen(modifier: Modifier = Modifier) {
         ImageCapture.Builder().setFlashMode(flashMode).build()
     }
 
-    val localContext = LocalContext.current
+    when (uiState.mealRecordState) {
+        is ResultState.Loading -> {
+            // 로딩 중 UI 표시
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .pointerInteropFilter { event ->
+                        true
+                    }, contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is ResultState.Success -> {
+//            // 성공 시 UI 표시
+//            val data = uiState.mealRecordState.data
+//            Log.d("CAMERA", "Success: $data")
+//            data?.let {
+//                Log.d("CAMERA", "onNavigateToMealDetail: $data")
+//                LaunchedEffect(Unit) {
+//                    initMealInfo(it.copy(imageUri = selectedImageUri))
+//                    onNavigateToMealDetail()
+//                }
+//            }
+        }
+
+        is ResultState.Error -> {
+            // 에러 시 UI 표시
+            val messageRes = uiState.mealRecordState.messageRes
+            Toast.makeText(context, stringResource(messageRes), Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         // 상단 버튼 행
@@ -215,7 +290,7 @@ fun CameraAppScreen(modifier: Modifier = Modifier) {
                 .height(52.dp),
             horizontalArrangement = Arrangement.Absolute.SpaceBetween
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onBackClick) {
                 Icon(painter = painterResource(R.drawable.icon_close), contentDescription = "close")
             }
             IconButton(onClick = {
@@ -234,13 +309,6 @@ fun CameraAppScreen(modifier: Modifier = Modifier) {
 
         // 카메라 프리뷰 또는 선택된/찍은 사진 표시
         when {
-            capturedImageUri != null -> {
-                ImagePreview(
-                    imageUri = capturedImageUri,
-                    onClose = { capturedImageUri = null },
-                    contentDescription = "Captured Image"
-                )
-            }
             selectedImageUri != null -> {
                 ImagePreview(
                     imageUri = selectedImageUri,
@@ -248,6 +316,7 @@ fun CameraAppScreen(modifier: Modifier = Modifier) {
                     contentDescription = "Selected Image"
                 )
             }
+
             else -> {
                 CameraPreview(
                     lensFacing = lensFacing,
@@ -266,66 +335,61 @@ fun CameraAppScreen(modifier: Modifier = Modifier) {
         ) {
             // 앨범 선택 버튼
             Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
-                ActionButton(
-                    iconResId = R.drawable.icon_gallery,
+                ActionButton(iconResId = R.drawable.icon_gallery,
                     text = stringResource(R.string.select_gallery),
-                    onClick = { galleryLauncher.launch("image/*") }
-                )
+                    onClick = { galleryLauncher.launch("image/*") })
             }
 
             // 촬영 버튼
-            CaptureButton(
-                onClick = {
-                    // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
-                    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                    val filename = "FOODON_$timestamp.jpg"
+            CaptureButton(onClick = {
+                // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
+                val timestamp =
+                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val filename = "FOODON_$timestamp.jpg"
 
-                    // 갤러리에 저장될 파일 생성
-                    val contentValues = ContentValues().apply {
-                        put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/FoodOn")
-                        }
+                // 갤러리에 저장될 파일 생성
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/FoodOn")
                     }
+                }
 
-                    val outputOptions = ImageCapture.OutputFileOptions.Builder(
-                        localContext.contentResolver,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        contentValues
-                    ).build()
+                val outputOptions = ImageCapture.OutputFileOptions.Builder(
+                    context.contentResolver,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                ).build()
 
-                    imageCaptureUseCase.takePicture(
-                        outputOptions,
-                        ContextCompat.getMainExecutor(localContext),
-                        object : ImageCapture.OnImageSavedCallback {
-                            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                                outputFileResults.savedUri?.let { uri ->
-                                    Log.d("CAMERA", "Saved image to gallery: $uri")
-                                    capturedImageUri = uri // 찍은 사진의 URI 저장
-                                }
-                            }
-
-                            override fun onError(exception: ImageCaptureException) {
-                                Log.e("CAMERA", "Error saving image", exception)
-                                // 에러 메시지 표시
-                                Toast.makeText(
-                                    localContext,
-                                    "사진 저장 실패: ${exception.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                imageCaptureUseCase.takePicture(outputOptions,
+                    ContextCompat.getMainExecutor(context),
+                    object : ImageCapture.OnImageSavedCallback {
+                        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                            outputFileResults.savedUri?.let { uri ->
+                                Log.d("CAMERA", "Saved image to gallery: $uri")
+                                selectedImageUri = uri // 찍은 사진의 URI 저장
+                                uploadMealImage(uri, context)
                             }
                         }
-                    )
-                }
-            )
+
+                        override fun onError(exception: ImageCaptureException) {
+                            Log.e("CAMERA", "Error saving image", exception)
+                            // 에러 메시지 표시
+                            Toast.makeText(
+                                context, "사진 저장 실패: ${exception.message}", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+
+            })
 
             // 음식 검색 버튼
             Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
                 ActionButton(
                     iconResId = R.drawable.icon_search,
                     text = stringResource(R.string.food_search),
-                    onClick = { /* 음식 검색 기능 구현 */ }
+                    onClick = onSearchClick
                 )
             }
         }
@@ -337,7 +401,7 @@ fun CameraPreview(
     modifier: Modifier = Modifier,
     lensFacing: Int,
     zoomLevel: Float,
-    imageCaptureUseCase: ImageCapture
+    imageCaptureUseCase: ImageCapture,
 ) {
     val previewUseCase = remember { androidx.camera.core.Preview.Builder().build() }
 
@@ -378,23 +442,26 @@ fun CameraPreview(
         }
     }
 
-    AndroidView(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .clip(RectangleShape), // 1:1 비율에 맞게 clip
+    AndroidView(modifier = modifier
+        .fillMaxWidth()
+        .aspectRatio(1f)
+        .clip(RectangleShape), // 1:1 비율에 맞게 clip
         factory = { context ->
             PreviewView(context).also {
                 it.scaleType = PreviewView.ScaleType.FILL_CENTER
                 previewUseCase.surfaceProvider = it.surfaceProvider
                 rebindCameraProvider()
             }
-        }
-    )
+        })
 }
 
 @Preview(showBackground = true)
 @Composable
 fun CameraScreenPreview() {
-    CameraAppScreen()
+    CameraAppScreen(
+        uiState = MealRecordUiState(),
+        onBackClick = {},
+        uploadMealImage = { _, _ -> },
+        onSearchClick = {},
+    )
 }

@@ -14,10 +14,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(MealEditUiState()) {
-    init {
+    private var isInitialized = false
+
+    fun initMeal(mealInfo: MealInfo) {
         Log.d(TAG, "Initializing MealEditViewModel")
-        _uiState.update {
-            it.copy(mealEditState = ResultState.Success(createDummyMealInfo()))
+        if (!isInitialized) {
+            _uiState.update {
+                it.copy(mealEditState = ResultState.Success(mealInfo))
+            }
+            isInitialized = true
         }
     }
 
@@ -103,7 +108,7 @@ class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(M
 }
 
 fun createDummyMealInfo(): MealInfo = MealInfo(
-    imageUrl = "https://example.com/breakfast.jpg",
+    imageFileName = "https://example.com/breakfast.jpg",
     mealTime = "2025-05-02 07:30",
     mealTimeType = "BREAKFAST",
     totalCarbs = 45,

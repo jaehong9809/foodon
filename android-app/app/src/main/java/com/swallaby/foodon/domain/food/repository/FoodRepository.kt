@@ -6,7 +6,7 @@ import com.swallaby.foodon.domain.food.model.MealInfo
 import okhttp3.MultipartBody
 
 interface FoodRepository {
-    suspend fun postFoodImage(
+    suspend fun postMealImage(
         image: MultipartBody.Part,
     ): ApiResult<MealInfo>
 

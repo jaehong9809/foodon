@@ -91,8 +91,7 @@ fun MealDetailScreen(
                         .verticalScroll(scrollState)
                 ) {
                     AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740")
+                        model = ImageRequest.Builder(LocalContext.current).data(mealInfo.imageUri)
                             .crossfade(true).listener(onError = { _, result ->
                                 Log.e("ImageLoading", "Error loading image: ${result.throwable}")
                             }, onSuccess = { _, _ ->
@@ -110,8 +109,7 @@ fun MealDetailScreen(
 
                     // todo icon_time 의 크기가 피그마와 일치하지 않음
                     //  피그마보다 좀 더 작음
-                    NutritionalIngredientsComponent(
-                        modifier = modifier,
+                    NutritionalIngredientsComponent(modifier = modifier,
                         mealType = uiState.mealType,
                         mealTime = uiState.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
@@ -190,8 +188,7 @@ fun MealDetailScreen(
                                 )
                             }
                         }
-                        ScrollTimePicker(
-                            initTimeIndex = selectedMinIndex,
+                        ScrollTimePicker(initTimeIndex = selectedMinIndex,
                             initHourIndex = selectedHourIndex,
                             initAmPmIndex = selectedAmPmIndex,
                             onTimeChanged = {

@@ -15,7 +15,7 @@ import javax.inject.Inject
 class FoodRemoteRepositoryImpl @Inject constructor(
     private val foodApi: FoodApi,
 ) : FoodRepository {
-    override suspend fun postFoodImage(image: MultipartBody.Part): ApiResult<MealInfo> =
+    override suspend fun postMealImage(image: MultipartBody.Part): ApiResult<MealInfo> =
         safeApiCall {
             foodApi.postFoodImage(image).getOrThrow { it.toDomain() }
         }

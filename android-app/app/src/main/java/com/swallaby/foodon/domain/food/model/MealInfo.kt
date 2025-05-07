@@ -1,7 +1,10 @@
 package com.swallaby.foodon.domain.food.model
 
+import android.net.Uri
+
 data class MealInfo(
-    val imageUrl: String = "",
+    val imageUri: Uri? = null,
+    val imageFileName: String = "",
     val mealTime: String = "",
     val mealTimeType: String = "",
     val totalCarbs: Int = 0,

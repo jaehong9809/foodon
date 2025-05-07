@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.foodrecord
+package com.swallaby.foodon.presentation.mealrecord
 
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -18,7 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun PermissionRequiredScreen(modifier: Modifier = Modifier, permission: String, onPermissionGranted: () -> Unit) {
+fun PermissionRequiredScreen(
+    modifier: Modifier = Modifier,
+    permission: String,
+    onPermissionGranted: () -> Unit,
+) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -41,17 +45,18 @@ fun PermissionRequiredScreen(modifier: Modifier = Modifier, permission: String, 
 fun WithPermission(
     modifier: Modifier = Modifier,
     permission: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
     var permissionGranted by remember {
-        mutableStateOf (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
+        mutableStateOf(context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
     }
 
     if (!permissionGranted) {
-        PermissionRequiredScreen(modifier = modifier, permission = permission) { permissionGranted = true }
-    }
-    else {
+        PermissionRequiredScreen(modifier = modifier, permission = permission) {
+            permissionGranted = true
+        }
+    } else {
         Surface(modifier = modifier) {
             content()
         }
