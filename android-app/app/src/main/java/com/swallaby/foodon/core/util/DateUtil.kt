@@ -6,7 +6,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.WeekFields
@@ -88,14 +87,14 @@ object DateUtil {
         return weeks
     }
 
-    fun formatTimeToHHmm(dateTime: LocalDateTime): String {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        return dateTime.format(formatter)
-    }
-
     fun formatDate(localDate: LocalDate): String {
         val outputFormatter = DateTimeFormatter.ofPattern("M월 d일")
         return localDate.format(outputFormatter)
+    }
+
+    fun formatTimeToHHmm(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return dateTime.format(formatter)
     }
 
 
