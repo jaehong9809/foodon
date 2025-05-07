@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
@@ -19,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,6 +35,7 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.calculateWeeksOfMonth
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
@@ -42,6 +45,7 @@ import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(
@@ -52,7 +56,6 @@ fun MainScreen(
     val navController = LocalNavController.current
     val uiState by viewModel.uiState.collectAsState()
 
-    val today = uiState.today
     val selectedDate = uiState.selectedDate
     val currentYearMonth = uiState.currentYearMonth
 
@@ -66,14 +69,36 @@ fun MainScreen(
         }
     }
 
+    val weeksInMonth = remember(uiState.currentYearMonth) {
+        calculateWeeksOfMonth(uiState.currentYearMonth)
+    }
+
+    val initialPage = weeksInMonth.indexOfFirst { week ->
+        uiState.today in week
+    }.coerceAtLeast(0)
+
+    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { weeksInMonth.size })
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         viewModel.fetchCalendarData(currentYearMonth.toString())
-        viewModel.fetchRecordData(selectedDate.toString())
-        viewModel.fetchIntakeData(selectedDate.toString())
-        viewModel.fetchManageData(selectedDate.toString())
+
         viewModel.fetchRecommendFoods(
             yearMonth = currentYearMonth.toString(),
             week = 1
+        )
+    }
+
+    LaunchedEffect(selectedDate) {
+        viewModel.fetchRecordData(selectedDate.toString())
+        viewModel.fetchIntakeData(selectedDate.toString())
+        viewModel.fetchManageData(selectedDate.toString())
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        viewModel.fetchRecommendFoods(
+            yearMonth = currentYearMonth.toString(),
+            week = (pagerState.currentPage) + 1
         )
     }
 
@@ -84,7 +109,6 @@ fun MainScreen(
                 icon = R.drawable.icon_ai_camera,
                 text = stringResource(R.string.btn_record)
             ) {
-                // TODO: 식사 기록 화면으로 이동 (카메라)
                 onRecordClick()
             }
         },
@@ -104,13 +128,19 @@ fun MainScreen(
                     navController.navigate(NavRoutes.Calendar.route)
                 },
                 onTodayClick = {
-                    viewModel.selectDate(today)
+                    viewModel.selectDate(uiState.today)
+
+                    scope.launch {
+                        pagerState.scrollToPage(initialPage)
+                    }
                 }
             )
 
             WeeklyLabel()
 
             MainCalendarPager(
+                pagerState = pagerState,
+                weeksInMonth = weeksInMonth,
                 mealItemMap = mealItemMap,
                 uiState = uiState,
                 onDateSelected = viewModel::selectDate
@@ -122,7 +152,7 @@ fun MainScreen(
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
-            MealRecordContent(recordState = uiState.recordResult) { mealId ->
+            MealRecordContent(uiState = uiState) { mealId ->
                 navController.navigate(NavRoutes.FoodGraph.MealDetail)
             }
 

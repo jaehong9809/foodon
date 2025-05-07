@@ -10,8 +10,8 @@ import com.swallaby.foodon.domain.calendar.model.Effect
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
+import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.domain.main.model.MealRecord
-import com.swallaby.foodon.domain.main.model.MealTimeType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.domain.main.model.NutrientManageType
@@ -140,9 +140,9 @@ class MainViewModel @Inject constructor(
         return listOf(
             MealRecord(
                 mealId = 1,
-                mealTimeType = MealTimeType.BREAKFAST,
+                mealTimeType = MealType.BREAKFAST,
                 mealTime = "08:00",
-                mealImageUrl = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+                imageUrl = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
                 mealItems = listOf(
                     "쌀밥",
                     "된장찌개",
@@ -164,9 +164,9 @@ class MainViewModel @Inject constructor(
             ),
             MealRecord(
                 mealId = 1,
-                mealTimeType = MealTimeType.LUNCH,
+                mealTimeType = MealType.LUNCH,
                 mealTime = "08:00",
-                mealImageUrl = "",
+                imageUrl = "",
                 mealItems = listOf(
                     "쌀밥"
                 ),
@@ -183,11 +183,11 @@ class MainViewModel @Inject constructor(
             intakeKcal = 1000,
             goalKcal = 1600,
             intakeCarbs = 50,
-            targetCarbs = 100,
+            goalCarbs = 100,
             intakeProtein = 10,
-            targetProtein = 100,
+            goalProtein = 100,
             intakeFat = 10,
-            targetFat = 100
+            goalFat = 100
         )
     }
 

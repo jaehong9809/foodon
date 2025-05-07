@@ -18,22 +18,29 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.CalorieProgressBar
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.formatDate
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
-import com.swallaby.foodon.domain.main.model.NutrientIntake
+import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
 fun NutrientIntakeContent(
-    intakeResult: ResultState<NutrientIntake>
+    uiState: MainUiState,
 ) {
 
+    val today = uiState.today
+    val selectedDate = uiState.selectedDate
+    val intakeResult = uiState.intakeResult
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        // TODO: 오늘 -> 오늘의 섭취량, 다른 날 -> 날짜 표시
         Text(
-            text = stringResource(R.string.main_nutrient_intake_title),
+            text = if (selectedDate != today) stringResource(R.string.main_nutrient_intake_date_title, formatDate(selectedDate))
+                    else stringResource(R.string.main_nutrient_intake_today_title),
             color = G900,
             style = NotoTypography.NotoBold18
         )

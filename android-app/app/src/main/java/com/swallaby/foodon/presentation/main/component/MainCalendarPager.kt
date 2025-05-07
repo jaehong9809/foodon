@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.swallaby.foodon.core.util.DateUtil.calculateWeeksOfMonth
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.CalendarDayItem
@@ -23,19 +21,12 @@ import org.threeten.bp.LocalDate
 
 @Composable
 fun MainCalendarPager(
+    pagerState: PagerState,
+    weeksInMonth: List<List<LocalDate?>>,
     mealItemMap: Map<String, CalendarItem>,
     uiState: MainUiState,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
 ) {
-    val weeksInMonth = remember(uiState.currentYearMonth) {
-        calculateWeeksOfMonth(uiState.currentYearMonth)
-    }
-
-    val initialPage = weeksInMonth.indexOfFirst { week ->
-        uiState.selectedDate in week
-    }.coerceAtLeast(0)
-
-    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { weeksInMonth.size })
 
     HorizontalPager(
         state = pagerState,

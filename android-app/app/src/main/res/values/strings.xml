@@ -56,9 +56,11 @@
 
     <!-- main -->
     <string name="main_today">오늘</string>
-    <string name="main_meal_record_title">식사 기록</string>
+    <string name="main_meal_record_today_title">오늘 식사 기록</string>
+    <string name="main_meal_record_date_title">%s 식사 기록</string>
     <string name="main_meal_record_empty">기록된 식단이 없습니다.</string>
-    <string name="main_nutrient_intake_title">오늘 섭취량</string>
+    <string name="main_nutrient_intake_today_title">오늘 섭취량</string>
+    <string name="main_nutrient_intake_date_title">%s 섭취량</string>
     <string name="main_nutrient_manage_title">관리 영양소</string>
     <string name="main_nutrient_manage_detail_title">자세히보기</string>
     <string name="main_nutrient_manage_good_title">몸에 꼭 필요한 영양소</string>
