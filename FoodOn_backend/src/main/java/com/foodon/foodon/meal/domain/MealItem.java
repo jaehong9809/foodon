@@ -1,9 +1,7 @@
 package com.foodon.foodon.meal.domain;
 
 import com.foodon.foodon.food.domain.FoodType;
-import com.foodon.foodon.meal.dto.MealCreateRequest;
 import com.foodon.foodon.meal.dto.MealItemInfo;
-import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
