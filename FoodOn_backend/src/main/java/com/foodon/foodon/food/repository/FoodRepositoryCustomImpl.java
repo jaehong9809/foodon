@@ -32,9 +32,10 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
             Member member
     ) {
         FoodInfo foodInfo = queryFactory
-                .select(Projections.fields(
+                .select(Projections.constructor(
                                 FoodInfo.class,
                                 food.id,
+                                food.memberId,
                                 food.name,
                                 food.unit
                         )
@@ -47,11 +48,11 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 .fetchOne();
 
         List<NutrientInfo> nutrients = queryFactory
-                .select(Projections.fields(
+                .select(Projections.constructor(
                                 NutrientInfo.class,
                                 foodNutrient.foodId,
-                                foodNutrient.id.as("foodNutrientId"),
-                                nutrient.type.as("nutrientType"),
+                                foodNutrient.id,
+                                nutrient.type,
                                 nutrient.nutrientUnit,
                                 foodNutrient.value
                 ))
@@ -75,9 +76,10 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     @Override
     public List<FoodWithNutrientInfo> findFoodInfoWithNutrientByNameIn(Set<String> foodNames) {
         List<FoodInfo> foods = queryFactory
-                .select(Projections.fields(
+                .select(Projections.constructor(
                                 FoodInfo.class,
                                 food.id,
+                                food.memberId,
                                 food.name,
                                 food.unit
                         )
@@ -92,11 +94,11 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
         List<Long> foodIds = foods.stream().map(FoodInfo::id).toList();
 
         List<NutrientInfo> nutrientList = queryFactory
-                .select(Projections.fields(
+                .select(Projections.constructor(
                                 NutrientInfo.class,
                                 foodNutrient.foodId,
-                                foodNutrient.id.as("foodNutrientId"),
-                                nutrient.type.as("nutrientType"),
+                                foodNutrient.id,
+                                nutrient.type,
                                 nutrient.nutrientUnit,
                                 foodNutrient.value
                 ))
