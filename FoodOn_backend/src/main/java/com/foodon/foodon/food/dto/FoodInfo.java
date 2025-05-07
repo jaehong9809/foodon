@@ -4,8 +4,8 @@ import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.food.domain.Unit;
 
 public record FoodInfo(
-        FoodType type,
         Long id,
+        Long memberId,
         String name,
         Unit unit
 ) {

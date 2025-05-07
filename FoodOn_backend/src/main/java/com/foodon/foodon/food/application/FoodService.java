@@ -1,8 +1,11 @@
 package com.foodon.foodon.food.application;
 
+import com.foodon.foodon.common.util.NutrientCalculator;
 import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
+import com.foodon.foodon.food.dto.FoodDetailInfoResponse;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodNutrientRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,12 +72,21 @@ public class FoodService {
                 ));
     }
 
-    public FoodWithNutrientInfo getFood(
+    public FoodDetailInfoResponse getFood(
             Long foodId,
             FoodType type,
             Member member
     ) {
-        return foodRepository.findFoodInfoWithNutrientByIdAndType(foodId, type, member);
+        FoodWithNutrientInfo food = foodRepository.findFoodInfoWithNutrientByIdAndType(foodId, type, member);
+        return FoodDetailInfoResponse.from(food, convertToTypedValueMap(food.nutrients()));
+    }
+
+    private Map<NutrientType, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
+        return nutrients.stream()
+                .collect(Collectors.toMap(
+                        info -> NutrientType.from(info.nutrientType()),
+                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                ));
     }
 
 }
