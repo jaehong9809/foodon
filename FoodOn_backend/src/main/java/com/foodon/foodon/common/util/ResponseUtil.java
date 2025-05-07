@@ -6,6 +6,8 @@ import com.foodon.foodon.common.exception.GlobalException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Component
 public class ResponseUtil {
@@ -52,8 +54,29 @@ public class ResponseUtil {
 
     public static <T> ResponseEntity<Response<T>> created() {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Response.<T>builder().code("00001")
+                .body(Response.<T>builder().code("00000")
                         .build());
     }
 
+    public static <T> ResponseEntity<Response<T>> failure(
+        MethodArgumentNotValidException e,
+        String message
+    ) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(Response.<T>builder()
+                .code("70000")
+                .message(message)
+                .build());
+    }
+
+    public static <T> ResponseEntity<Response<T>> failure(
+        MethodArgumentTypeMismatchException e,
+        String message
+    ) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(Response.<T>builder()
+                .code("80000")
+                .message(message)
+                .build());
+    }
 }

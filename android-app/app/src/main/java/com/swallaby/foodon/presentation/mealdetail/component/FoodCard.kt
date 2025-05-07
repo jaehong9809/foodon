@@ -104,8 +104,7 @@ fun FoodCard(
                             modifier = modifier.clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                                // todo foodId 추가
-                                onClick = { onClick(0) })
+                                onClick = { onClick(food.foodId) })
                         ) {
                             Text(
                                 text = food.foodName,

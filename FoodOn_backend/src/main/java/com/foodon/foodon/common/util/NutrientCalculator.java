@@ -1,8 +1,9 @@
 package com.foodon.foodon.common.util;
 
+import com.foodon.foodon.food.domain.NutrientUnit;
+import com.foodon.foodon.meal.dto.NutrientProfile;
 import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.meal.dto.MealItemInfo;
-import com.foodon.foodon.meal.dto.NutrientInfo;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +22,16 @@ public class NutrientCalculator {
     /**
      * 영양 성분 섭취량 총합 계산
      */
-    public static BigDecimal sum(
+    public static BigDecimal sumTotalIntake(
             List<MealItemInfo> items,
-            Function<NutrientInfo, BigDecimal> getter
+            Function<NutrientProfile, BigDecimal> nutrientGetter
     ) {
         return items.stream()
-                .map(item -> multiply(getter.apply(item.nutrientInfo()), item.quantity()))
+                .map(item -> {
+                    BigDecimal valuePerUnit = nutrientGetter.apply(item.nutrientInfo());
+                    BigDecimal quantity = item.quantity();
+                    return multiply(valuePerUnit, quantity);
+                })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -56,6 +61,22 @@ public class NutrientCalculator {
                 multiply(intakeKcal, BigDecimal.valueOf(ratio)),
                 kcalPerGram
         );
+    }
+
+    public static BigDecimal convertToMilligram(BigDecimal value, NutrientUnit unit) {
+        if (value == null) return BigDecimal.ZERO;
+
+        return unit.equals(NutrientUnit.GRAM)
+                ? multiply(value, BigDecimal.valueOf(1000))
+                : value;
+    }
+
+    public static BigDecimal convertToGram(BigDecimal value, NutrientUnit unit) {
+        if (value == null) return BigDecimal.ZERO;
+
+        return unit.equals(NutrientUnit.MILLIGRAM)
+                ? divide(value, BigDecimal.valueOf(1000))
+                : value;
     }
 
 }
