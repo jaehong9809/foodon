@@ -9,7 +9,6 @@ import com.foodon.foodon.meal.dto.MealCreateRequest;
 import com.foodon.foodon.meal.dto.MealInfoResponse;
 import com.foodon.foodon.meal.dto.MealSummaryResponse;
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.member.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +60,7 @@ public class MealController {
         return ResponseUtil.success(result);
     }
 
-    @GetMapping("/{date}")
+    @GetMapping("/manage-nutrient/{date}")
     @Operation(summary = "관리 영양소 조회")
     public ResponseEntity<Response<List<ManageNutrientResponse>>> getManageNutrientsByDate(
             @PathVariable(name = "date") LocalDate date,

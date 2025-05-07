@@ -1,6 +1,7 @@
 package com.foodon.foodon.meal.application;
 
 import com.foodon.foodon.common.util.NutrientCalculator;
+import com.foodon.foodon.common.util.NutrientTarget;
 import com.foodon.foodon.food.domain.Nutrient;
 import com.foodon.foodon.food.domain.NutrientType;
 import com.foodon.foodon.food.domain.RestrictionType;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 import static com.foodon.foodon.common.util.BigDecimalUtil.*;
 import static com.foodon.foodon.common.util.NutrientCalculator.sumTotalIntake;
+import static com.foodon.foodon.food.domain.NutrientType.KCAL;
 import static com.foodon.foodon.meal.exception.MealErrorCode.MEAL_ITEM_IS_NULL;
 
 @Slf4j
@@ -204,42 +206,41 @@ public class MealService {
     ){
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
-        Map<String, BigDecimal> nutrientIntakeMap = getNutrientIntakeMapByDate(member, startOfDay, endOfDay);
+        Map<NutrientType, BigDecimal> nutrientIntakeMap = getNutrientIntakeMapByDate(member, startOfDay, endOfDay);
         List<Nutrient> restrictedNutrients = nutrientRepository.findByRestrictionTypeIsNot(RestrictionType.NONE);
 
         return convertToManageNutrientResponse(nutrientIntakeMap, restrictedNutrients);
     }
 
-    private Map<String, BigDecimal> getNutrientIntakeMapByDate(
+    private Map<NutrientType, BigDecimal> getNutrientIntakeMapByDate(
             Member member,
             LocalDateTime start,
             LocalDateTime end
     ){
         return mealRepository.findNutrientIntakeByMemberAndDate(member, start, end).stream()
                 .collect(Collectors.toMap(
-                        NutrientIntakeInfo::type,
+                        nutrientIntakeInfo -> NutrientType.from(nutrientIntakeInfo.type()),
                         NutrientIntakeInfo::intake
                 ));
     }
 
     private List<ManageNutrientResponse> convertToManageNutrientResponse(
-            Map<String, BigDecimal> nutrientIntakeMap,
+            Map<NutrientType, BigDecimal> nutrientIntakeMap,
             List<Nutrient> restrictedNutrients
     ) {
-        BigDecimal intakeKcal = nutrientIntakeMap
-                .getOrDefault(NutrientType.KCAL.getDbType(), BigDecimal.ZERO);
+        BigDecimal intakeKcal = nutrientIntakeMap.getOrDefault(KCAL, BigDecimal.ZERO);
 
         return restrictedNutrients.stream()
                 .map(nutrient -> {
-                    BigDecimal intake = nutrientIntakeMap.getOrDefault(nutrient.getType(), BigDecimal.ZERO);
+                    BigDecimal intake = nutrientIntakeMap.getOrDefault(NutrientType.from(nutrient.getType()), BigDecimal.ZERO);
                     ManageNutrient manageNutrient = ManageNutrient.from(nutrient, intakeKcal);
                     ManageStatus status = ManageStatus.evaluate(intake.doubleValue(), manageNutrient.getMin(), manageNutrient.getMax());
 
                     return ManageNutrientResponse.from(
                             nutrient,
                             intake,
-                            manageNutrient.getMin(),
-                            manageNutrient.getMax(),
+                            BigDecimal.valueOf(manageNutrient.getMin()),
+                            BigDecimal.valueOf(manageNutrient.getMax()),
                             status
                     );
                 })
