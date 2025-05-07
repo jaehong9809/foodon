@@ -19,15 +19,18 @@ public class JwtUtil {
     private final SecretKey secretKey;
     private final Long accessTokenExpiry;
     private final Long refreshTokenExpiry;
+    private final Long superTokenExpiry;
 
     public JwtUtil(
             @Value("${spring.auth.jwt.secret-key}") final String secretKey,
             @Value("${spring.auth.jwt.access-token-expiry}") final Long accessTokenExpiry,
-            @Value("${spring.auth.jwt.refresh-token-expiry}") final Long refreshTokenExpiry
+            @Value("${spring.auth.jwt.refresh-token-expiry}") final Long refreshTokenExpiry,
+            @Value("${spring.auth.jwt.super-token-expiry}") final Long superTokenExpiry
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpiry = accessTokenExpiry;
         this.refreshTokenExpiry = refreshTokenExpiry;
+        this.superTokenExpiry = superTokenExpiry;
     }
 
     // ---------- * 토큰 생성 * ---------- //
@@ -35,6 +38,12 @@ public class JwtUtil {
     public MemberTokens createMemberToken(String subject) {
         String accessToken = createToken(subject, accessTokenExpiry);
         String refreshToken = createToken("", refreshTokenExpiry);
+        return new MemberTokens(accessToken, refreshToken);
+    }
+
+    public MemberTokens createSuperToken(String subject) {
+        String accessToken = createToken(subject, superTokenExpiry);
+        String refreshToken = createToken("", superTokenExpiry);
         return new MemberTokens(accessToken, refreshToken);
     }
 

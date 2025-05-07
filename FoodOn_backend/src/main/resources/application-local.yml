@@ -35,6 +35,7 @@ spring:
       secret-key: ${JWT_SECRET_KEY}
       access-token-expiry: ${JWT_ACCESS_TOKEN_EXPIRY}
       refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY}
+      super-token-expiry: 2592000000   # 30일 기한: 30 * 24 * 60 * 60 * 1000
 
 cloud:
   aws:
