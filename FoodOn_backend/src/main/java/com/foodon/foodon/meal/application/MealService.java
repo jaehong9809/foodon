@@ -7,6 +7,7 @@ import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.image.application.LocalImageService;
 import com.foodon.foodon.image.application.S3ImageService;
+import com.foodon.foodon.intakelog.application.IntakeLogService;
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.domain.MealItem;
 import com.foodon.foodon.meal.domain.Position;
@@ -48,6 +49,7 @@ public class MealService {
     private final MealDetectAiClient mealDetectAiClient;
     private final S3ImageService s3ImageService;
     private final LocalImageService localImageService;
+    private final IntakeLogService intakeLogService;
 
 
     public MealInfoResponse uploadAndDetect(MultipartFile multipartFile) {
@@ -137,6 +139,7 @@ public class MealService {
         Meal meal = Meal.createMeal(member, imageUrl, request);
         addMealItemsToMeal(member, meal, request.mealItems());
         mealRepository.save(meal);
+        intakeLogService.saveIntakeLog(member, meal);
 
         return meal.getId();
     }

@@ -1,12 +1,16 @@
 package com.foodon.foodon.intakelog.application;
 
-import com.foodon.foodon.common.util.NutrientGoal2;
+import com.foodon.foodon.activitylevel.domain.ActivityLevel;
+import com.foodon.foodon.activitylevel.repository.ActivityLevelRepository;
+import com.foodon.foodon.common.util.NutrientGoal;
 import com.foodon.foodon.intakelog.domain.IntakeLog;
 import com.foodon.foodon.intakelog.dto.IntakeDetailResponse;
 import com.foodon.foodon.intakelog.dto.IntakeSummaryResponse;
 import com.foodon.foodon.intakelog.exception.IntakeLogException.IntakeLogBadRequestException;
 import com.foodon.foodon.intakelog.repository.IntakeLogRepository;
 import com.foodon.foodon.meal.domain.Meal;
+import com.foodon.foodon.member.domain.MemberStatus;
+import com.foodon.foodon.member.repository.MemberStatusRepository;
 import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.nutrientplan.repository.NutrientPlanRepository;
@@ -23,7 +27,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.foodon.foodon.common.util.NutrientCalculator.calculateNutrientTarget;
 import static com.foodon.foodon.intakelog.exception.IntakeLogErrorCode.*;
 
 @Service
@@ -32,6 +35,8 @@ public class IntakeLogService {
 
     private final IntakeLogRepository intakeLogRepository;
     private final NutrientPlanRepository nutrientPlanRepository;
+    private final ActivityLevelRepository activityLevelRepository;
+    private final MemberStatusRepository memberStatusRepository;
 
 
     @Transactional
@@ -39,7 +44,9 @@ public class IntakeLogService {
         LocalDate date = meal.getMealTime().toLocalDate();
         IntakeLog intakeLog = findIntakeLogByDate(member, date)
                 .orElseGet(() -> {
-                    BigDecimal goalKcal = BigDecimal.valueOf(100); // 목표 섭취량 계산 로직
+                    MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+                    ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
+                    BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
                     return IntakeLog.createIntakeLogOfMember(member, date, goalKcal);
                 });
 
@@ -78,11 +85,33 @@ public class IntakeLogService {
             LocalDate date,
             Member member
     ) {
-        IntakeLog intakeLog = findIntakeLogByDate(member, date);
-        NutrientPlan nutrientPlan = findNutrientPlanById(member.getNutrientPlanId());
-        NutrientGoal2 nutrientTarget = calculateNutrientTarget(intakeLog.getIntakeKcal(), nutrientPlan);
+        Optional<IntakeLog> intakeLogOpt = findIntakeLogByDate(member, date);
+        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+        NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
 
-        return IntakeDetailResponse.from(nutrientTarget, intakeLog);
+        return intakeLogOpt
+                .map(intakeLog -> {
+                    NutrientGoal nutrientGoal = NutrientGoal.from(intakeLog.getGoalKcal(), nutrientPlan);
+                    return IntakeDetailResponse.from(nutrientGoal, intakeLog);
+                })
+                .orElseGet(() -> {
+                    ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
+                    NutrientGoal nutrientGoal = NutrientGoal.from(member, memberStatus, activityLevel, nutrientPlan);
+                    return IntakeDetailResponse.from(nutrientGoal, date);
+                });
+    }
+
+    public IntakeSummaryResponse getIntakeLogByTargetDate(LocalDate date, Member member) {
+        Optional<IntakeLog> intakeLogOpt = findIntakeLogByDate(member, date);
+
+        return intakeLogOpt
+                .map(IntakeSummaryResponse::of)
+                .orElseGet(() -> {
+                    MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+                    ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
+                    BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
+                    return IntakeSummaryResponse.from(goalKcal, date);
+                });
     }
 
     private NutrientPlan findNutrientPlanById(Long nutrientPlanId) {
@@ -94,8 +123,14 @@ public class IntakeLogService {
         return intakeLogRepository.findByMemberAndDate(member, date);
     }
 
-    public IntakeSummaryResponse getIntakeLogByTargetDate(LocalDate date, Member member) {
-        return IntakeSummaryResponse.of(findIntakeLogByDate(member, date));
+    private MemberStatus findMemberStatusByMemberId(Long memberId) {
+        return memberStatusRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 유저의 상태관리가 존재하지 않습니다. memberId = " + memberId));
+    }
+
+    private ActivityLevel findActivityLevelById(Long activityLevelId) {
+        return activityLevelRepository.findById(activityLevelId)
+                .orElseThrow(() -> new NoSuchElementException(("해당 ID의 활동량 유형이 존재하지 않습니다. activityLevelId = " + activityLevelId)));
     }
 
 }
