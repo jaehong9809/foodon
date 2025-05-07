@@ -6,3 +6,4 @@ data class Nutrition(
     val ratio: Float = 0f,
 )
 
+

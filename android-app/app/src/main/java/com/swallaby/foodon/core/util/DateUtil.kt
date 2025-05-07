@@ -92,5 +92,10 @@ object DateUtil {
         return localDate.format(outputFormatter)
     }
 
+    fun formatTimeToHHmm(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return dateTime.format(formatter)
+    }
+
 
 }
