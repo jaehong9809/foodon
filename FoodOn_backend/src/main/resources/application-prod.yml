@@ -54,6 +54,8 @@ cloud:
 meal-detect-ai-model:
   url: https://ssafy/api/v1/ai/detect
 
+file:
+  upload-dir: ${java.io.tmpdir}/files/
 
 server:
   forward-headers-strategy: NATIVE

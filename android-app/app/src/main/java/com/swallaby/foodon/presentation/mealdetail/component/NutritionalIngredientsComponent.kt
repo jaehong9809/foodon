@@ -1,10 +1,12 @@
-package com.swallaby.foodon.presentation.mealDetail.component
+package com.swallaby.foodon.presentation.mealdetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +17,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,8 +36,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.Bkg03
+import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
+import com.swallaby.foodon.core.ui.theme.WB500
+import com.swallaby.foodon.core.ui.theme.crop
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography.SpoqaBold24
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography.SpoqaMedium16
 import com.swallaby.foodon.core.util.StringUtil
@@ -45,7 +59,7 @@ fun NutritionalIngredientsComponent(
     totalFat: Int,
     totalKcal: Int,
     totalProtein: Int,
-    onMealTypeClick: () -> Unit = {},
+    onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit = {},
 ) {
     val totalNutrition = totalCarbs + totalProtein + totalFat
@@ -127,23 +141,87 @@ private fun MealTime(
     modifier: Modifier,
     mealType: MealType,
     mealTime: String,
-    onMealTypeClick: () -> Unit = {},
+    onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit,
 ) {
+    var expanded by remember { mutableStateOf(false) }
     Row(modifier = modifier.fillMaxWidth()) {
-        DropButton(
-            modifier = modifier
-                .wrapContentWidth()
-                .height(32.dp),
-            onClick = onMealTypeClick,
-            text = mealType.displayName,
-            suffixIcon = {
-                Image(
-                    painter = painterResource(R.drawable.icon_down_chevron),
-                    contentDescription = "down_chevron"
+        Box {
+            DropButton(
+                modifier = modifier
+                    .wrapContentWidth()
+                    .height(32.dp),
+                onClick = {
+                    expanded = true
+                },
+                text = mealType.displayName,
+                suffixIcon = {
+                    Image(
+                        painter = painterResource(R.drawable.icon_down_chevron),
+                        contentDescription = "down_chevron"
+                    )
+                },
+            )
+            // 드롭다운 메뉴
+            DropdownMenu(modifier = modifier
+//                    .clip(RoundedCornerShape(10.dp))
+                .border(
+                    shape = RoundedCornerShape(10.dp), color = Border02, width = 1.dp
                 )
-            },
-        )
+                // DropdownMenu 의 기본 Vertical Padding 8.dp 를 0.dp 로 변경
+                .crop(vertical = 8.dp)
+                .background(color = Color.White, shape = RoundedCornerShape(10.dp)),
+                expanded = expanded,
+                onDismissRequest = { expanded = false }) {
+                MealType.values().forEachIndexed { index, item ->
+                    DropdownMenuItem(contentPadding = PaddingValues(
+                        horizontal = 12.dp, vertical = 0.dp
+                    ), modifier = modifier
+                        .width(200.dp)
+                        .height(48.dp), onClick = {
+                        expanded = false
+                        onMealTypeClick(item)
+                    }, text = {
+                        Text(
+                            text = item.displayName,
+                            style = NotoTypography.NotoNormal16.copy(color = G900)
+                        )
+                    }, trailingIcon = {
+                        if (mealType == item) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_check),
+                                contentDescription = "check",
+                                tint = WB500,
+                            )
+                        }
+                    })
+//                {
+//                    Row(
+//                        modifier = modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        Text(
+//                            text = item.displayName,
+//                            style = NotoTypography.NotoNormal16.copy(color = G900)
+//                        )
+//
+//                        Icon(
+//                            painter = painterResource(R.drawable.icon_check),
+//                            contentDescription = "check",
+//                            tint = WB500,
+//                        )
+//                    }
+//                }
+                    // 마지막 아이템이 아닐 경우에만 구분선 추가
+                    if (index < MealType.values().size - 1) {
+                        HorizontalDivider(
+                            color = Border02
+                        )
+                    }
+                }
+            }
+        }
+
         Spacer(modifier = modifier.width(6.dp))
         DropButton(
             modifier = modifier

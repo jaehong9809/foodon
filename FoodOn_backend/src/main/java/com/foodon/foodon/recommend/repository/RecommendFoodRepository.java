@@ -9,11 +9,5 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RecommendFoodRepository extends JpaRepository<RecommendFood, Long> {
-
-    Optional<RecommendFood> findByMemberAndFoodTypeAndFoodId(
-            Member member,
-            FoodType foodType,
-            Long foodId
-    );
+public interface RecommendFoodRepository extends JpaRepository<RecommendFood, Long>, RecommendFoodRepositoryCustom {
 }

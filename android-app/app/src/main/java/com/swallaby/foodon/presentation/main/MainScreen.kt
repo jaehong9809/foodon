@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
+    onRecordClick: () -> Unit = {},
 ) {
 
     val navController = LocalNavController.current
@@ -108,7 +109,7 @@ fun MainScreen(
                 icon = R.drawable.icon_ai_camera,
                 text = stringResource(R.string.btn_record)
             ) {
-                // TODO: 식사 기록 화면으로 이동 (카메라)
+                onRecordClick()
             }
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -152,7 +153,7 @@ fun MainScreen(
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
             MealRecordContent(uiState = uiState) { mealId ->
-                navController.navigate(NavRoutes.FoodGraph.FoodDetail.createRoute(mealId))
+                navController.navigate(NavRoutes.FoodGraph.MealDetail)
             }
 
             Column(

@@ -1,4 +1,4 @@
-package com.swallaby.foodon.presentation.mealDetail.component
+package com.swallaby.foodon.presentation.mealdetail.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,7 +23,7 @@ import com.swallaby.foodon.domain.food.model.Nutrition
 @Composable
 fun NutritionalSmallInfo(
     modifier: Modifier = Modifier,
-    nutrition: Nutrition
+    nutrition: Nutrition,
 ) {
     Row {
         Box(
