@@ -99,7 +99,7 @@ fun CalendarScreen(
 
         // 추천 탭인 경우에만 기본 선택 주차 세팅
         if (calendarType == CalendarType.RECOMMENDATION) {
-            viewModel.selectWeek(if (isSameMonth) (today.dayOfMonth - 1) / 7 else 0)
+            viewModel.selectWeek(if (isSameMonth) (today.dayOfMonth - 1) / 7 + 1 else 0)
         }
 
         // 캘린더 데이터
