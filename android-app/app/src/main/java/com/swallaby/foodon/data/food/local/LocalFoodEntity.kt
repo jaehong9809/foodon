@@ -1,13 +1,18 @@
 package com.swallaby.foodon.data.food.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Fts4
 import androidx.room.PrimaryKey
-import com.swallaby.foodon.domain.food.model.Food
 
 @Entity(tableName = "foods")
+@Fts4
 data class LocalFoodEntity(
-    @PrimaryKey(autoGenerate = true)
+
+    @PrimaryKey
+    @ColumnInfo(name = "rowid")
     val id: Long = 0,
+    val foodId: Long,
     val name: String,
     val servingUnit: String,
     val kcal: Int,

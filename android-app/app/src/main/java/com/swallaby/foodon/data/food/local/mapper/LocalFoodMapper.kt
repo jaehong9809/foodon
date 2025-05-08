@@ -6,7 +6,7 @@ import com.swallaby.foodon.domain.food.model.Food
 
 fun LocalFoodEntity.toDomain(): Food {
     return Food(
-        id = this.id,
+        id = this.foodId,
         name = this.name,
         servingUnit = this.servingUnit,
         kcal = this.kcal,
@@ -16,11 +16,11 @@ fun LocalFoodEntity.toDomain(): Food {
 
 fun Food.toEntity(): LocalFoodEntity {
     return LocalFoodEntity(
-        id = this.id,
+        foodId = this.id,
         name = this.name,
         servingUnit = this.servingUnit,
         kcal = this.kcal,
         isRegistered = this.isRegistered,
-        namePrefixes = name.generatePrefixes()
+        namePrefixes = this.name.generatePrefixes()
     )
 }

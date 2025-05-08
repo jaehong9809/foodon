@@ -5,5 +5,5 @@ fun String.generatePrefixes(): String {
     for (i in 1..this.length) {
         result.add(this.substring(0, i))
     }
-    return result.joinToString(",")
+    return result.joinToString(" ")
 }
