@@ -21,5 +21,5 @@ data class LocalFoodEntity(
     val servingUnit: String,
     val kcal: Int,
     val isCustom: Boolean,
-    val namePrefixes: String
+    val searchTokens: String
 )

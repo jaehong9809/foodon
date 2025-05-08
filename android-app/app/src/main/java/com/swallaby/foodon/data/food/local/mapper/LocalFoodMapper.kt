@@ -1,6 +1,6 @@
 package com.swallaby.foodon.data.food.local.mapper
 
-import com.swallaby.foodon.core.util.generatePrefixes
+import com.swallaby.foodon.core.util.generateSearchTokens
 import com.swallaby.foodon.data.food.local.LocalFoodEntity
 import com.swallaby.foodon.domain.food.model.Food
 
@@ -21,6 +21,6 @@ fun Food.toEntity(): LocalFoodEntity {
         servingUnit = this.servingUnit,
         kcal = this.kcal,
         isCustom = this.isCustom,
-        namePrefixes = this.name.generatePrefixes()
+        searchTokens = this.name.generateSearchTokens()
     )
 }
