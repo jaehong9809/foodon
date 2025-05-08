@@ -8,14 +8,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.domain.food.model.MealItem
 
 @Composable
@@ -25,25 +32,45 @@ fun FoodInfoComponent(
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
 ) {
+    // todo 크롭 매니저 처리 리팩토링
+    val cropManager = ImageCropManager(LocalContext.current)
 
-    Column(
-        modifier = modifier
-            .background(color = Color.White)
-            .padding(24.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.food_info_check),
-            style = NotoTypography.NotoBold18.copy(color = G900)
-        )
-        Spacer(modifier = modifier.height(24.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            repeat(foods.size) { index ->
-                FoodCard(
-                    food = foods[index], onClick = onClick, onDelete = onDelete,
-                )
+    val positions = foods.mapNotNull { mealItem ->
+        mealItem.position.firstOrNull()
+    }
+    var isLoad by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        // 이미지 로드 및 크롭
+        cropManager.loadAndCropImage(
+            "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+            positions
+        ) {
+            isLoad = true
+        }
+    }
+
+    if (isLoad) {
+        Column(
+            modifier = modifier
+                .background(color = Color.White)
+                .padding(24.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.food_info_check),
+                style = NotoTypography.NotoBold18.copy(color = G900)
+            )
+            Spacer(modifier = modifier.height(24.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                repeat(foods.size) { index ->
+                    FoodCard(
+                        food = foods[index], onClick = onClick, onDelete = onDelete,
+                    )
+                }
             }
         }
     }
+
 
 }
 

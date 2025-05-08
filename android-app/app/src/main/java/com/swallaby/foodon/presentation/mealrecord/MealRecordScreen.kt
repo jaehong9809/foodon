@@ -71,6 +71,7 @@ import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
@@ -89,6 +90,7 @@ fun MealRecordScreen(
     onNavigateToMealDetail: () -> Unit,
 ) {
     val uiState by recordViewModel.uiState.collectAsStateWithLifecycle()
+    val cropManager = ImageCropManager(LocalContext.current)
 
     // 이벤트 수집
     LaunchedEffect(Unit) {
@@ -97,7 +99,19 @@ fun MealRecordScreen(
                 is MealRecordEvent.NavigateToDetail -> {
                     // 이벤트에서 데이터 꺼내서 사용
                     editViewModel.initMeal(event.mealInfo)
-                    onNavigateToMealDetail()
+
+                    val positions = event.mealInfo.mealItems.mapNotNull { mealItem ->
+                        mealItem.position.firstOrNull()
+                    }
+
+                    // 이미지 로드 및 크롭
+                    cropManager.loadAndCropImage(
+                        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+                        positions
+                    ) {
+                        // 모든 크롭 이미지가 준비됨
+                        onNavigateToMealDetail()
+                    }
                 }
             }
         }
@@ -324,7 +338,8 @@ fun CameraAppScreen(
         ) {
             // 앨범 선택 버튼
             Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
-                ActionButton(iconResId = R.drawable.icon_gallery,
+                ActionButton(
+                    iconResId = R.drawable.icon_gallery,
                     text = stringResource(R.string.select_gallery),
                     onClick = { galleryLauncher.launch("image/*") })
             }
@@ -351,7 +366,8 @@ fun CameraAppScreen(
                     contentValues
                 ).build()
 
-                imageCaptureUseCase.takePicture(outputOptions,
+                imageCaptureUseCase.takePicture(
+                    outputOptions,
                     ContextCompat.getMainExecutor(context),
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
@@ -431,10 +447,11 @@ fun CameraPreview(
         }
     }
 
-    AndroidView(modifier = modifier
-        .fillMaxWidth()
-        .aspectRatio(1f)
-        .clip(RectangleShape), // 1:1 비율에 맞게 clip
+    AndroidView(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .clip(RectangleShape), // 1:1 비율에 맞게 clip
         factory = { context ->
             PreviewView(context).also {
                 it.scaleType = PreviewView.ScaleType.FILL_CENTER

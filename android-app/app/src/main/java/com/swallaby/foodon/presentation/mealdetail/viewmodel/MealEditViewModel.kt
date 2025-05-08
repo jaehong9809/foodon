@@ -20,7 +20,9 @@ class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(M
         Log.d(TAG, "Initializing MealEditViewModel")
         if (!isInitialized) {
             _uiState.update {
-                it.copy(mealEditState = ResultState.Success(mealInfo))
+//                it.copy(mealEditState = ResultState.Success(mealInfo))
+                // todo test 용
+                it.copy(mealEditState = ResultState.Success(createDummyMealInfo()))
             }
             isInitialized = true
         }
@@ -194,7 +196,7 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
             ),
             position = listOf(
                 Position(
-                    height = 150.0, width = 70.0, x = 400, y = 80
+                    height = 10.0, width = 10.0, x = 400, y = 80
                 )
             )
         )
