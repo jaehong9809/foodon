@@ -78,9 +78,9 @@ object DateUtil {
 
     fun getWeekOfMonth(date: LocalDate): Int {
         val firstDayOfMonth = date.withDayOfMonth(1)
-        val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
+        val firstDayWeekday = firstDayOfMonth.dayOfWeek.value.let { if (it == 7) 0 else it }
 
-        val dayOffset = date.dayOfMonth + firstDayOfWeek - 1
+        val dayOffset = firstDayWeekday + date.dayOfMonth - 1
         return dayOffset / 7
     }
 

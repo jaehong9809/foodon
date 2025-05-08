@@ -115,7 +115,13 @@ fun CalendarScreen(
 
         // 추천 탭인 경우에만 기본 선택 주차 세팅
         if (calendarType == CalendarType.RECOMMENDATION) {
-            viewModel.selectWeek(if (isSameMonth) getWeekOfMonth(today) else 0)
+            val weekIndex = if (isSameMonth) getWeekOfMonth(today) else 0
+            viewModel.selectWeek(weekIndex)
+
+            viewModel.fetchRecommendFoods(
+                yearMonth = currentYearMonth.toString(),
+                week = (weekIndex + 1)
+            )
         }
 
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
@@ -125,7 +131,6 @@ fun CalendarScreen(
     LaunchedEffect(selectedTabIndex) {
         when (calendarType) {
             CalendarType.WEIGHT -> viewModel.fetchUserWeight()
-            CalendarType.RECOMMENDATION -> viewModel.fetchRecommendFoods(currentYearMonth.toString())
             else -> Unit
         }
     }
