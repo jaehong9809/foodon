@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.main.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
@@ -16,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,7 +37,13 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(selectedDate = date) }
     }
 
+    fun updateYearMonth(yearMonth: YearMonth) {
+        updateState { it.copy(currentYearMonth = yearMonth) }
+    }
+
     fun fetchCalendarData(date: String) {
+        Log.d("MainViewModel", "calendar $date")
+
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -72,6 +80,8 @@ class MainViewModel @Inject constructor(
     }
 
     fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
+        Log.d("MainViewModel", "recommend $yearMonth $week")
+
         updateState { it.copy(recommendMealResult = ResultState.Loading) }
 
         viewModelScope.launch {
