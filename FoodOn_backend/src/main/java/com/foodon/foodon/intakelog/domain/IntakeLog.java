@@ -34,16 +34,16 @@ public class IntakeLog {
     @Column(precision = 7, scale = 2, nullable = false)
     private BigDecimal goalKcal;
 
-    @Column(precision = 7, scale = 2, nullable = false)
+    @Column(precision = 8, scale = 2, nullable = false)
     private BigDecimal intakeKcal;
 
-    @Column(precision = 6, scale = 2, nullable = false)
+    @Column(precision = 8, scale = 2, nullable = false)
     private BigDecimal intakeCarbs;
 
-    @Column(precision = 6, scale = 2, nullable = false)
+    @Column(precision = 8, scale = 2, nullable = false)
     private BigDecimal intakeProtein;
 
-    @Column(precision = 6, scale = 2, nullable = false)
+    @Column(precision = 8, scale = 2, nullable = false)
     private BigDecimal intakeFat;
 
 
@@ -70,7 +70,7 @@ public class IntakeLog {
     }
 
     public void updateIntakeFromMeal(Meal meal){
-        this.intakeKcal = add(this.intakeKcal, BigDecimal.ONE);
+        this.intakeKcal = add(this.intakeKcal, meal.getTotalKcal());
         this.intakeCarbs = add(this.intakeCarbs, meal.getTotalCarbs());
         this.intakeProtein = add(this.intakeProtein, meal.getTotalProtein());
         this.intakeFat = add(this.intakeFat, meal.getTotalFat());
