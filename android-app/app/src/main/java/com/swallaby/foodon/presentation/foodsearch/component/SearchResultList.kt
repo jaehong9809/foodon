@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.Border02
@@ -73,7 +72,7 @@ fun SearchResultItem(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (foodItem.isRegistered) {
+        if (foodItem.isCustom) {
             RegisterBox("직접 등록", WB500.copy(alpha = 0.12f), WB500)
         }
     }

@@ -10,7 +10,7 @@ fun LocalFoodEntity.toDomain(): Food {
         name = this.name,
         servingUnit = this.servingUnit,
         kcal = this.kcal,
-        isRegistered = this.isRegistered
+        isCustom = this.isCustom
     )
 }
 
@@ -20,7 +20,7 @@ fun Food.toEntity(): LocalFoodEntity {
         name = this.name,
         servingUnit = this.servingUnit,
         kcal = this.kcal,
-        isRegistered = this.isRegistered,
+        isCustom = this.isCustom,
         namePrefixes = this.name.generatePrefixes()
     )
 }
