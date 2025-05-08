@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
@@ -28,20 +30,22 @@ import com.swallaby.foodon.domain.food.model.Food
 
 @Composable
 fun SearchResultList(
-    searchResults: List<Food>,
+    searchResults: LazyPagingItems<Food>,
     onClick: (Food) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
     ) {
-        searchResults.forEach { item ->
-            SearchResultItem(
-                foodItem = item,
-                onClick = { onClick(item) }
-            )
+        items(count = searchResults.itemCount) { index ->
+            searchResults[index]?.let { item ->
+                SearchResultItem(
+                    foodItem = item,
+                    onClick = { onClick(item) }
+                )
+            }
         }
     }
 }
