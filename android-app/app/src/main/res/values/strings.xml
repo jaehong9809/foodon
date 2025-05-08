@@ -6,6 +6,7 @@
     <string name="error_timeout">연결 요청 시간이 초과되었습니다.</string>
     <string name="error_unauthorized">로그인이 필요합니다.</string>
     <string name="error_unknown">알 수 없는 오류가 발생했습니다.</string>
+    <string name="error_duplicated_name">"중복된 이름은 등록할 수 없습니다."</string>
 
     <!-- Format -->
     <string name="format_kcal">%skcal</string>
