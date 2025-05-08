@@ -31,6 +31,8 @@ threetenabp = "1.4.9"
 
 kakao-sdk = "2.21.0"
 
+paging = "3.2.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -51,6 +53,11 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-room-runtime         = { group = "androidx.room",        name = "room-runtime",   version.ref = "room" }
 androidx-room-ktx             = { group = "androidx.room",        name = "room-ktx",       version.ref = "room" }
 androidx-room-compiler        = { group = "androidx.room",        name = "room-compiler",  version.ref = "room" }
+
+# Room Paging
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 
 # OkHttp
 okhttp                       = { group = "com.squareup.okhttp3", name = "okhttp",                version.ref = "okhttp" }
