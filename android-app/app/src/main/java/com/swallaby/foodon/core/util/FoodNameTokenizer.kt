@@ -11,7 +11,7 @@ fun String.generateSearchTokens(): String {
         }
     }
 
-    // 2. 초성 n-gram
+    // 2. 초성 누적 n-gram
     val initials = this.extractInitials()
     for (i in 1..initials.length) {
         result.add(initials.substring(0, i))
