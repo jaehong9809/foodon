@@ -4,8 +4,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.swallaby.foodon.core.error.AppError
-import com.swallaby.foodon.core.exception.ExceptionHandler
 import com.swallaby.foodon.data.food.local.FoodSearchDao
 import com.swallaby.foodon.data.food.local.mapper.toDomain
 import com.swallaby.foodon.data.food.local.mapper.toEntity

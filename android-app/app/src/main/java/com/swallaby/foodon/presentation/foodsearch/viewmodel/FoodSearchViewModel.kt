@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.foodsearch.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.domain.food.usecase.SearchFoodNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +29,7 @@ class FoodSearchViewModel @Inject constructor(
     }
 
     fun onClearClick() {
-        updateState { it.copy(query = "", searchResults = emptyList()) }
+        updateState { it.copy(query = "", searchResults = PagingData.empty()) }
     }
 
     fun onChipClick(chip: String) {
