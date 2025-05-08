@@ -76,4 +76,12 @@ object DateUtil {
         return dateTime.format(formatter)
     }
 
+    fun getWeekOfMonth(date: LocalDate): Int {
+        val firstDayOfMonth = date.withDayOfMonth(1)
+        val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
+
+        val dayOffset = date.dayOfMonth + firstDayOfWeek - 1
+        return dayOffset / 7
+    }
+
 }

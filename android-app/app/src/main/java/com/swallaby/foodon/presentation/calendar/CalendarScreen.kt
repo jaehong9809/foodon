@@ -34,6 +34,7 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
@@ -114,7 +115,7 @@ fun CalendarScreen(
 
         // 추천 탭인 경우에만 기본 선택 주차 세팅
         if (calendarType == CalendarType.RECOMMENDATION) {
-            viewModel.selectWeek(if (isSameMonth) (today.dayOfMonth - 1) / 7 + 1 else 0)
+            viewModel.selectWeek(if (isSameMonth) getWeekOfMonth(today) else 0)
         }
 
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
