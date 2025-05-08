@@ -1,7 +1,7 @@
 package com.swallaby.foodon.data.food.remote.api
 
 import com.swallaby.foodon.core.data.remote.BaseResponse
-import com.swallaby.foodon.data.food.remote.dto.request.MealInfoRequest
+import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 import com.swallaby.foodon.data.food.remote.dto.response.MealInfoResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -20,7 +20,7 @@ interface FoodApi {
 
     @POST("meals")
     suspend fun postFoodHistory(
-        @Body request: MealInfoRequest,
+        @Body request: RecordMealRequest,
     ): BaseResponse<Unit>
 
     @POST("custom")

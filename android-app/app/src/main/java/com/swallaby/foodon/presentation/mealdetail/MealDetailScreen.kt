@@ -42,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -59,11 +60,6 @@ import com.swallaby.foodon.presentation.mealdetail.component.NutritionalIngredie
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-// 데이터 클래스 정의
-data class ImageScaleInfo(
-    val scaledWidth: Float, val scaledHeight: Float, val offsetX: Float, val offsetY: Float
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,7 +132,11 @@ fun MealDetailScreen(
                     )
                 }
 
-                CommonWideButton(modifier.padding(horizontal = 24.dp), text = "기록 완료", onClick = {})
+                CommonWideButton(
+                    modifier.padding(horizontal = 24.dp),
+                    text = stringResource(R.string.btn_record_complete),
+                    onClick = viewModel::recordMeal
+                )
             }
             Box(
                 modifier = modifier
@@ -329,7 +329,7 @@ fun dismissModalBottomSheet(
 fun FoodDetailScreenPreview() {
     FoodonTheme {
         MealDetailScreen(
-            viewModel = MealEditViewModel(),
+            viewModel = hiltViewModel(),
             modifier = Modifier,
             onBackClick = {},
             onFoodClick = {},
