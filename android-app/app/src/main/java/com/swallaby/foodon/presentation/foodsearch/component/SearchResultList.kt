@@ -112,18 +112,3 @@ fun RegisterBox(
         )
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun SearchResultListPreview() {
-    val sampleItems = listOf(
-        // 내부 foodItem 리스트 등록
-        Food("햄버거", "1회분", 200, true),
-        Food("햄버거", "1회분", 200, false)
-    )
-    SearchResultList(
-        searchResults = sampleItems,
-        onClick = {}
-    )
-}
