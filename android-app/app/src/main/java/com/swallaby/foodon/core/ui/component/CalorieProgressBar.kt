@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
 import com.swallaby.foodon.domain.food.model.Nutrition
+import kotlin.math.sin
 
 @Composable
 fun CalorieProgressBar(
@@ -45,17 +47,18 @@ fun CalorieProgressBar(
     val totalKcal = if (goal > 0) consumed.toFloat() / goal.toFloat() else 0f
     val limitedKcalRatio = totalKcal.coerceAtMost(1f)
 
+    val arcHeightRatio = sin(Math.toRadians((sweepAngle / 2).toDouble())).toFloat()
+
     Box(
-        modifier = modifier.height(160.dp),
+        modifier = modifier.size(width = 165.dp, height = 116.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val radius = size.minDimension / 2
+            val radius = size.width / 2f
+            val arcHeight = radius * arcHeightRatio
+
             val arcSize = Size(radius * 2, radius * 2)
-            val topLeft = Offset(
-                (size.width - radius * 2) / 2,
-                (size.height - radius * 2) / 2
-            )
+            val topLeft = Offset(0f, radius - arcHeight)
 
             // 배경 반원
             drawArc(
@@ -90,7 +93,7 @@ fun CalorieProgressBar(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Spacer(modifier = Modifier.height(38.dp))
+            Spacer(modifier = Modifier.height(42.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
