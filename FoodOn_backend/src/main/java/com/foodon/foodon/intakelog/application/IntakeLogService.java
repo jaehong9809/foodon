@@ -42,16 +42,21 @@ public class IntakeLogService {
     @Transactional
     public void saveIntakeLog(Member member, Meal meal) {
         LocalDate date = meal.getMealTime().toLocalDate();
-        IntakeLog intakeLog = findIntakeLogByDate(member, date)
-                .orElseGet(() -> {
-                    MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-                    ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
-                    BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
-                    return IntakeLog.createIntakeLogOfMember(member, date, goalKcal);
-                });
-
+        IntakeLog intakeLog = findOrCreateIntakeLog(member, date);
         intakeLog.updateIntakeFromMeal(meal);
         intakeLogRepository.save(intakeLog);
+    }
+
+    private IntakeLog findOrCreateIntakeLog(Member member, LocalDate date) {
+        return findIntakeLogByDate(member, date)
+                .orElseGet(() -> createIntakeLog(member, date));
+    }
+
+    private IntakeLog createIntakeLog(Member member, LocalDate date) {
+        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+        ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
+        BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
+        return IntakeLog.createIntakeLogOfMember(member, date, goalKcal);
     }
 
     public List<IntakeSummaryResponse> getIntakeLogsByMonth(
@@ -86,32 +91,40 @@ public class IntakeLogService {
             Member member
     ) {
         Optional<IntakeLog> intakeLogOpt = findIntakeLogByDate(member, date);
-        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-        NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
 
-        return intakeLogOpt
-                .map(intakeLog -> {
-                    NutrientGoal nutrientGoal = NutrientGoal.from(intakeLog.getGoalKcal(), nutrientPlan);
-                    return IntakeDetailResponse.withIntakeLog(nutrientGoal, intakeLog, date);
-                })
-                .orElseGet(() -> {
-                    ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
-                    NutrientGoal nutrientGoal = NutrientGoal.from(member, memberStatus, activityLevel, nutrientPlan);
-                    return IntakeDetailResponse.withOutIntakeLog(nutrientGoal, date);
-                });
+        if(intakeLogOpt.isPresent()) {
+            MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+            NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
+            NutrientGoal nutrientGoal = NutrientGoal.from(intakeLogOpt.get().getGoalKcal(), nutrientPlan);
+            return IntakeDetailResponse.withIntakeLog(nutrientGoal, intakeLogOpt.get(), date);
+        } else {
+            NutrientGoal nutrientGoal = getNutrientGoalFromMemberStatus(member);
+            return IntakeDetailResponse.withOutIntakeLog(nutrientGoal, date);
+        }
     }
 
     public IntakeSummaryResponse getIntakeLogByTargetDate(LocalDate date, Member member) {
         Optional<IntakeLog> intakeLogOpt = findIntakeLogByDate(member, date);
 
-        return intakeLogOpt
-                .map(IntakeSummaryResponse::withIntakeLog)
-                .orElseGet(() -> {
-                    MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-                    ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
-                    BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
-                    return IntakeSummaryResponse.withoutIntakeLog(goalKcal, date);
-                });
+        if(intakeLogOpt.isPresent()) {
+            return IntakeSummaryResponse.withIntakeLog(intakeLogOpt.get());
+        } else {
+          BigDecimal goalKcal = getGoalKcalFromMemberStatus(member);
+            return IntakeSummaryResponse.withoutIntakeLog(goalKcal, date);
+        }
+    }
+
+    private NutrientGoal getNutrientGoalFromMemberStatus(Member member) {
+        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+        ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
+        NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
+        return NutrientGoal.from(member, memberStatus, activityLevel, nutrientPlan);
+    }
+
+    private BigDecimal getGoalKcalFromMemberStatus(Member member) {
+        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+        ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
+        return NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
     }
 
     private NutrientPlan findNutrientPlanById(Long nutrientPlanId) {
