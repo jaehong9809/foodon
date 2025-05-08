@@ -60,7 +60,7 @@ public class IntakeLogService {
     ) {
         List<IntakeLog> intakeLogs = findIntakeLogsByMonth(member, date);
 
-        return intakeLogs.stream().map(IntakeSummaryResponse::of).toList();
+        return intakeLogs.stream().map(IntakeSummaryResponse::withIntakeLog).toList();
     }
 
     private List<IntakeLog> findIntakeLogsByMonth(Member member, String date) {
@@ -92,12 +92,12 @@ public class IntakeLogService {
         return intakeLogOpt
                 .map(intakeLog -> {
                     NutrientGoal nutrientGoal = NutrientGoal.from(intakeLog.getGoalKcal(), nutrientPlan);
-                    return IntakeDetailResponse.from(nutrientGoal, intakeLog);
+                    return IntakeDetailResponse.withIntakeLog(nutrientGoal, intakeLog, date);
                 })
                 .orElseGet(() -> {
                     ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
                     NutrientGoal nutrientGoal = NutrientGoal.from(member, memberStatus, activityLevel, nutrientPlan);
-                    return IntakeDetailResponse.from(nutrientGoal, date);
+                    return IntakeDetailResponse.withOutIntakeLog(nutrientGoal, date);
                 });
     }
 
@@ -105,12 +105,12 @@ public class IntakeLogService {
         Optional<IntakeLog> intakeLogOpt = findIntakeLogByDate(member, date);
 
         return intakeLogOpt
-                .map(IntakeSummaryResponse::of)
+                .map(IntakeSummaryResponse::withIntakeLog)
                 .orElseGet(() -> {
                     MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
                     ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
                     BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
-                    return IntakeSummaryResponse.from(goalKcal, date);
+                    return IntakeSummaryResponse.withoutIntakeLog(goalKcal, date);
                 });
     }
 

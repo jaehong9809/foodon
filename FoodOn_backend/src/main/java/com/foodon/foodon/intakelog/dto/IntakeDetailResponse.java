@@ -21,12 +21,13 @@ public record IntakeDetailResponse(
         BigDecimal intakeFat,
         BigDecimal goalFat
 ) {
-    public static IntakeDetailResponse from(
+    public static IntakeDetailResponse withIntakeLog(
             NutrientGoal nutrientGoal,
-            IntakeLog intakeLog
+            IntakeLog intakeLog,
+            LocalDate date
     ) {
         return new IntakeDetailResponse(
-                intakeLog.getDate(),
+                date,
                 nutrientGoal.getGoalKcal(),
                 intakeLog.getIntakeKcal(),
                 nutrientGoal.getGoalCarbs(),
@@ -38,7 +39,7 @@ public record IntakeDetailResponse(
         );
     }
 
-    public static IntakeDetailResponse from(
+    public static IntakeDetailResponse withOutIntakeLog(
             NutrientGoal nutrientGoal,
             LocalDate date
     ) {

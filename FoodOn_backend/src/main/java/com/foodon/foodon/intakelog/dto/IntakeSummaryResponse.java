@@ -13,7 +13,7 @@ public record IntakeSummaryResponse(
         BigDecimal goalKcal,
         BigDecimal intakeKcal
 ) {
-    public static IntakeSummaryResponse of(IntakeLog intakeLog) {
+    public static IntakeSummaryResponse withIntakeLog(IntakeLog intakeLog) {
         return new IntakeSummaryResponse(
                 intakeLog.getDate(),
                 intakeLog.getGoalKcal(),
@@ -21,7 +21,7 @@ public record IntakeSummaryResponse(
         );
     }
 
-    public static IntakeSummaryResponse from(
+    public static IntakeSummaryResponse withoutIntakeLog(
             BigDecimal goalKcal,
             LocalDate date
     ) {
