@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.main.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
@@ -42,8 +41,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun fetchCalendarData(date: String) {
-        Log.d("MainViewModel", "calendar $date")
-
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -80,8 +77,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
-        Log.d("MainViewModel", "recommend $yearMonth $week")
-
         updateState { it.copy(recommendMealResult = ResultState.Loading) }
 
         viewModelScope.launch {
