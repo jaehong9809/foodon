@@ -1,5 +1,6 @@
 package com.swallaby.foodon.core.exception
 
+import android.database.sqlite.SQLiteConstraintException
 import com.swallaby.foodon.core.error.AppError
 import retrofit2.HttpException
 import java.io.IOException
@@ -16,6 +17,7 @@ object ExceptionHandler {
                     else -> AppError.Unknown(e)
                 }
             }
+            is SQLiteConstraintException -> AppError.DuplicateFoodName
             else -> AppError.Unknown(e)
         }
     }
