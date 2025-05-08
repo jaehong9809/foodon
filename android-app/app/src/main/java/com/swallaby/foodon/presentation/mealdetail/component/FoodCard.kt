@@ -97,7 +97,6 @@ fun FoodCard(
                 ) {
                     // todo position 으로 수정
                     foodImage?.let {
-                        Log.d("FoodCard", "FoodCard: $it")
                         AsyncImage(
                             model = cropManager.getCroppedImageRequest(
                                 "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",

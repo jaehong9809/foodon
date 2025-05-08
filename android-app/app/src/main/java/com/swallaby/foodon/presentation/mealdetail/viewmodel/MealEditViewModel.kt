@@ -196,7 +196,7 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
             ),
             position = listOf(
                 Position(
-                    height = 10.0, width = 10.0, x = 400, y = 80
+                    height = 50.0, width = 50.0, x = 50, y = 50
                 )
             )
         )

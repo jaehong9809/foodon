@@ -1,5 +1,7 @@
 package com.swallaby.foodon.presentation.mealdetail
 
+import android.graphics.drawable.BitmapDrawable
+import kotlin.Pair
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,10 +13,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,16 +27,19 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,12 +51,19 @@ import com.swallaby.foodon.core.ui.component.BackIconImage
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
+import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.presentation.foodedit.component.ScrollTimePicker
 import com.swallaby.foodon.presentation.mealdetail.component.FoodInfoComponent
+import com.swallaby.foodon.presentation.mealdetail.component.FoodLabelButton
 import com.swallaby.foodon.presentation.mealdetail.component.NutritionalIngredientsComponent
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+// 데이터 클래스 정의
+data class ImageScaleInfo(
+    val scaledWidth: Float, val scaledHeight: Float, val offsetX: Float, val offsetY: Float
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,12 +84,11 @@ fun MealDetailScreen(
 
     when (uiState.mealEditState) {
         is ResultState.Loading -> {
-            // 로딩 중 UI 표시
+            LoadingState()
         }
 
         is ResultState.Error -> {
-            // 에러 처리
-            val message = (uiState.mealEditState as ResultState.Error).messageRes
+            ErrorState(stringResource(((uiState.mealEditState as ResultState.Error).messageRes)))
         }
 
         is ResultState.Success -> {
@@ -90,26 +103,14 @@ fun MealDetailScreen(
                         .weight(1f)
                         .verticalScroll(scrollState)
                 ) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current).data(mealInfo.imageUri)
-                            .crossfade(true).listener(onError = { _, result ->
-                                Log.e("ImageLoading", "Error loading image: ${result.throwable}")
-                            }, onSuccess = { _, _ ->
-                                Log.d("ImageLoading", "Image loaded successfully")
-                            }).build(),
-                        contentDescription = "음식 사진",
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f),
-//                contentScale = ContentScale.Crop,
-                        contentScale = ContentScale.FillBounds,
-                        error = painterResource(R.drawable.icon_time), // 에러 시 표시할 이미지
-                        placeholder = painterResource(R.drawable.icon_search) // 로딩 중 표시할 이미지
+                    // 음식 이미지와 음식 이름 버튼 영역
+                    MealImageWithFoodLabels(
+                        mealItems = mealInfo.mealItems, onFoodClick = onFoodClick
                     )
 
-                    // todo icon_time 의 크기가 피그마와 일치하지 않음
-                    //  피그마보다 좀 더 작음
-                    NutritionalIngredientsComponent(modifier = modifier,
+                    // 영양소 정보 컴포넌트
+                    NutritionalIngredientsComponent(
+                        modifier = modifier,
                         mealType = uiState.mealType,
                         mealTime = uiState.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
@@ -117,17 +118,17 @@ fun MealDetailScreen(
                         totalKcal = mealInfo.totalKcal,
                         totalProtein = mealInfo.totalProtein,
                         onMealTypeClick = viewModel::updateMealType,
-                        onTimeClick = {
-                            scope.launch {
-                                showBottomSheet = true
-                            }
-                        })
+                        onTimeClick = { showBottomSheet = true })
+
+                    // 구분선
                     Spacer(
-                        modifier
+                        modifier = Modifier
                             .height(8.dp)
                             .fillMaxWidth()
                             .background(Bkg04)
                     )
+
+                    // 음식 정보 컴포넌트
                     FoodInfoComponent(
                         onClick = onFoodClick,
                         foods = mealInfo.mealItems,
@@ -155,12 +156,13 @@ fun MealDetailScreen(
                 ModalBottomSheet(dragHandle = null, sheetState = sheetState, onDismissRequest = {
                     showBottomSheet = false
                 }) {
+                    // todo 이미지 파일
                     var selectedTime by remember { mutableStateOf("08:00") }
                     val times = uiState.mealTime.split(":")
 
-                    val selectedAmPmIndex by remember { mutableStateOf(if (times[0].toInt() < 12) 0 else 1) }
-                    val selectedHourIndex by remember { mutableStateOf(times[0].toInt() % 12 - 1) }
-                    val selectedMinIndex by remember { mutableStateOf(times[1].toInt()) }
+                    val selectedAmPmIndex by remember { mutableIntStateOf(if (times[0].toInt() < 12) 0 else 1) }
+                    val selectedHourIndex by remember { mutableIntStateOf(times[0].toInt() % 12 - 1) }
+                    val selectedMinIndex by remember { mutableIntStateOf(times[1].toInt()) }
 
                     Column(
                         modifier = modifier
@@ -188,7 +190,8 @@ fun MealDetailScreen(
                                 )
                             }
                         }
-                        ScrollTimePicker(initTimeIndex = selectedMinIndex,
+                        ScrollTimePicker(
+                            initTimeIndex = selectedMinIndex,
                             initHourIndex = selectedHourIndex,
                             initAmPmIndex = selectedAmPmIndex,
                             onTimeChanged = {
@@ -219,6 +222,91 @@ fun MealDetailScreen(
 
 
 }
+
+
+@Composable
+private fun LoadingState() {
+    Box(
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun ErrorState(message: String) {
+    // 에러 상태 UI 구현
+}
+
+
+@Composable
+fun MealImageWithFoodLabels(
+    mealItems: List<MealItem>, onFoodClick: (foodId: Long) -> Unit
+) {
+    var originalImageSize by remember { mutableStateOf(Size(0f, 0f)) }
+    var isImageLoaded by remember { mutableStateOf(false) }
+
+    Box {
+        val imageContentScale = ContentScale.FillBounds
+        val context = LocalContext.current
+        val imageUrl =
+            "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
+
+        // 이미지 표시
+        AsyncImage(
+            model = ImageRequest.Builder(context).data(imageUrl).crossfade(true).listener(
+                onSuccess = { _, result ->
+                    val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
+                    if (bitmap != null && !isImageLoaded) {
+                        originalImageSize = Size(
+                            bitmap.width.toFloat(), bitmap.height.toFloat()
+                        )
+                        isImageLoaded = true
+                    }
+                }).build(),
+            contentDescription = "음식 사진",
+            contentScale = imageContentScale,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+        )
+
+        // 이미지 로드 완료 후 음식 이름 버튼 표시
+        if (isImageLoaded) {
+            Log.d(
+                "MealDetailScreen",
+                "Original image size: ${originalImageSize.width}x${originalImageSize.height}"
+            )
+            DisplayFoodLabels(mealItems, originalImageSize, onFoodClick)
+        } else {
+            // 로딩 표시
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+    }
+}
+
+@Composable
+private fun DisplayFoodLabels(
+    mealItems: List<MealItem>, originalImageSize: Size, onFoodClick: (foodId: Long) -> Unit
+) {
+    mealItems.forEach { mealItem ->
+        mealItem.position.forEach { position ->
+            FoodLabelButton(
+                position = position,
+                originalImageSize = originalImageSize,
+                foodName = mealItem.foodName,
+                onClick = { onFoodClick(mealItem.foodId) })
+        }
+    }
+}
+
 
 @ExperimentalMaterial3Api
 fun dismissModalBottomSheet(
