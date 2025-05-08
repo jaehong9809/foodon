@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface FoodSearchRepository {
     fun searchFoods(query: String): Flow<PagingData<Food>>
     suspend fun insertAll(foods: List<Food>)
+    suspend fun clearAll()
 }

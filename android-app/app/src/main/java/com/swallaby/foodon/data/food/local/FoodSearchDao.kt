@@ -16,4 +16,6 @@ interface FoodSearchDao {
     @Query("SELECT * FROM foods WHERE foods MATCH :query || '*'")
     fun searchFoods(query: String): PagingSource<Int, LocalFoodEntity>
 
+    @Query("DELETE FROM foods")
+    suspend fun clearAll()
 }

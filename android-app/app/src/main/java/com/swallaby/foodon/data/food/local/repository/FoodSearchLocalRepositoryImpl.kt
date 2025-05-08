@@ -31,4 +31,8 @@ class FoodSearchLocalRepositoryImpl @Inject constructor(
     override suspend fun insertAll(foods: List<Food>) {
         foodSearchDao.insertAll(foods.map { it.toEntity() })
     }
+
+    override suspend fun clearAll() {
+        foodSearchDao.clearAll()
+    }
 }
