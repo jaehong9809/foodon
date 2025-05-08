@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,9 +25,7 @@ fun MainContentPager(
     uiState: MainUiState
 ) {
 
-    val selectedTabIndex = 0
-
-    val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { 4 })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 4 })
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -44,7 +41,7 @@ fun MainContentPager(
                 0 -> NutrientIntakeContent(uiState)
                 1 -> NutrientManageContent(uiState.manageResult)
                 2 -> RecommendFoodContent(uiState.recommendMealResult)
-                3 -> Text("목표 관리 페이지")
+                3 -> GoalManageContent()
             }
         }
 
