@@ -6,6 +6,7 @@ import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
 import com.foodon.foodon.food.dto.FoodDetailInfoResponse;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.food.dto.NutrientInfo;
+import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
 import com.foodon.foodon.food.repository.FoodNutrientRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
@@ -20,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
-import static com.foodon.foodon.food.exception.FoodErrorCode.ILLEGAL_NUTRIENT_ID;
+import static com.foodon.foodon.food.exception.FoodErrorCode.CONFLICT_CUSTOM_FOOD;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +36,21 @@ public class FoodService {
             CustomFoodCreateRequest request,
             Member member
     ) {
+        checkDuplicateCustomFood(request.foodName(), member);
         Food food = Food.createCustomFoodByMember(request, member);
         foodRepository.save(food);
         registerFoodNutrients(request.nutrients(), food);
 
         return food.getId();
+    }
+
+    private void checkDuplicateCustomFood(
+            String foodName,
+            Member member
+    ) {
+        if(foodRepository.existsByMemberIdAndName(member.getId(), foodName)) {
+            throw new FoodConflictException(CONFLICT_CUSTOM_FOOD);
+        }
     }
 
     private void registerFoodNutrients(
