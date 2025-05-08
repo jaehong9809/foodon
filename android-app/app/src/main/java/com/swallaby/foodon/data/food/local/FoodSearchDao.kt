@@ -10,12 +10,15 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FoodSearchDao {
 
-    @Insert
-    suspend fun insertAll(foods: List<LocalFoodEntity>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(food: LocalFoodEntity)
 
-    @Query("SELECT * FROM foods WHERE foods MATCH :query || '*'")
-    fun searchFoods(query: String): PagingSource<Int, LocalFoodEntity>
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(foods: List<LocalFoodEntity>)
 
     @Query("DELETE FROM foods")
     suspend fun clearAll()
+
+    @Query("SELECT * FROM foods WHERE foods MATCH :query || '*'")
+    fun searchFoods(query: String): PagingSource<Int, LocalFoodEntity>
 }
