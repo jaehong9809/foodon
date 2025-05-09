@@ -28,6 +28,7 @@ import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.food.model.Food
 
+
 @Composable
 fun SearchResultList(
     searchResults: LazyPagingItems<Food>,
@@ -43,7 +44,8 @@ fun SearchResultList(
             searchResults[index]?.let { item ->
                 SearchResultItem(
                     foodItem = item,
-                    onClick = { onClick(item) }
+                    onClick = { onClick(item) },
+                    modifier = Modifier.animateItem()
                 )
             }
         }
