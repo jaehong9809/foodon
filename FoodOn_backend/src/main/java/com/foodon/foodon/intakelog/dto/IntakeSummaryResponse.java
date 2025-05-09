@@ -5,6 +5,7 @@ import com.foodon.foodon.intakelog.domain.IntakeLog;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import static com.foodon.foodon.common.util.BigDecimalUtil.round;
 import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
 
 
@@ -16,8 +17,8 @@ public record IntakeSummaryResponse(
     public static IntakeSummaryResponse withIntakeLog(IntakeLog intakeLog) {
         return new IntakeSummaryResponse(
                 intakeLog.getDate(),
-                intakeLog.getGoalKcal(),
-                intakeLog.getIntakeKcal()
+                round(intakeLog.getGoalKcal(), 0),
+                round(intakeLog.getIntakeKcal(), 0)
         );
     }
 
@@ -27,7 +28,7 @@ public record IntakeSummaryResponse(
     ) {
         return new IntakeSummaryResponse(
                 date,
-                goalKcal,
+                round(goalKcal, 0),
                 BigDecimal.ZERO
         );
     }
