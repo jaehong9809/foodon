@@ -24,8 +24,8 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.core.util.StringUtil.formatNutrition
 import com.swallaby.foodon.core.util.StringUtil.formatNutritionNumber
+import com.swallaby.foodon.core.util.StringUtil.formatNutritionOrigin
 import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 
@@ -96,7 +96,7 @@ fun IntakeItem(
             )
 
             Text(
-                text = "/${formatNutrition(nutrientTarget)}",
+                text = "/${formatNutritionOrigin(nutrientTarget)}",
                 style = SpoqaTypography.SpoqaMedium16.copy(color = G500)
             )
         }

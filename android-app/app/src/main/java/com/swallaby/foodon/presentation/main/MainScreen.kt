@@ -84,8 +84,7 @@ fun MainScreen(
         viewModel.fetchCalendarData(currentYearMonth.toString())
 
         viewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
-            week = 1
+            yearMonth = currentYearMonth.toString()
         )
     }
 
@@ -153,7 +152,7 @@ fun MainScreen(
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
             MealRecordContent(uiState = uiState) { mealId ->
-                navController.navigate(NavRoutes.FoodGraph.MealDetail)
+                navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
             }
 
             Column(

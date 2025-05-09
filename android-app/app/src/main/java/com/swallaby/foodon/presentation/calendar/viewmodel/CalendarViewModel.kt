@@ -1,17 +1,12 @@
 package com.swallaby.foodon.presentation.calendar.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
-import com.swallaby.foodon.domain.calendar.model.CalendarItem
-import com.swallaby.foodon.domain.calendar.model.CalendarMeal
-import com.swallaby.foodon.domain.calendar.model.CalendarRecommendation
+import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarType
-import com.swallaby.foodon.domain.calendar.model.CalendarWeight
 import com.swallaby.foodon.domain.calendar.model.Effect
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
-import com.swallaby.foodon.domain.calendar.model.UserWeight
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
@@ -52,18 +47,9 @@ class CalendarViewModel @Inject constructor(
     fun fetchCalendarData(type: CalendarType, date: String) {
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
-        Log.d("Calendar ViewModel", date)
-
         viewModelScope.launch {
-//            val result = getCalendarUseCase(type, date)
-//            updateState { it.copy(calendarResult = result.toResultState()) }
-
-            // TODO: 서버 연동 시 삭제
-            val fakeData: List<CalendarItem> = createFakeData(type)
-
-            updateState {
-                it.copy(calendarResult = ResultState.Success(fakeData))
-            }
+            val result = getCalendarUseCase(type, date)
+            updateState { it.copy(calendarResult = result.toResultState()) }
         }
     }
 
@@ -71,18 +57,13 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(weightResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getUserWeightUseCase()
-//            updateState { it.copy(weightState = result.toResultState()) }
-
-            val fakeData = UserWeight(1, 2)
-            updateState { it.copy(weightResult = ResultState.Success(fakeData)) }
+            val result = getUserWeightUseCase()
+            updateState { it.copy(weightResult = result.toResultState()) }
         }
     }
 
     fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
-
-        Log.d("Calendar ViewModel", "$yearMonth $week")
 
         viewModelScope.launch {
 //            val result = getRecommendFoodUseCase(yearMonth, week)
@@ -93,69 +74,6 @@ class CalendarViewModel @Inject constructor(
             updateState {
                 it.copy(recommendFoods = ResultState.Success(fakeData))
             }
-        }
-    }
-
-    private fun createFakeData(type: CalendarType): List<CalendarItem> {
-        return when (type) {
-            CalendarType.MEAL -> listOf(
-                CalendarItem.Meal(
-                    data = CalendarMeal(
-                        calendarType = CalendarType.MEAL,
-                        intakeLogId = 1L,
-                        date = "2025-04-01",
-                        intakeKcal = 1800,
-                        goalKcal = 2000
-                    )
-                ),
-                CalendarItem.Meal(
-                    data = CalendarMeal(
-                        calendarType = CalendarType.MEAL,
-                        intakeLogId = 2L,
-                        date = "2025-04-05",
-                        intakeKcal = 1950,
-                        goalKcal = 2000
-                    )
-                )
-            )
-
-            CalendarType.WEIGHT -> listOf(
-                CalendarItem.Weight(
-                    data = CalendarWeight(
-                        calendarType = CalendarType.WEIGHT,
-                        weightRecordId = 3L,
-                        date = "2025-04-03",
-                        weight = 68
-                    )
-                ),
-                CalendarItem.Weight(
-                    data = CalendarWeight(
-                        calendarType = CalendarType.WEIGHT,
-                        weightRecordId = 4L,
-                        date = "2025-04-09",
-                        weight = 67
-                    )
-                )
-            )
-
-            CalendarType.RECOMMENDATION -> listOf(
-                CalendarItem.Recommendation(
-                    data = CalendarRecommendation(
-                        calendarType = CalendarType.RECOMMENDATION,
-                        mealId = 5L,
-                        date = "2025-04-07",
-                        thumbnailImage = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
-                    )
-                ),
-                CalendarItem.Recommendation(
-                    data = CalendarRecommendation(
-                        calendarType = CalendarType.RECOMMENDATION,
-                        mealId = 6L,
-                        date = "2025-04-10",
-                        thumbnailImage = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
-                    )
-                )
-            )
         }
     }
 

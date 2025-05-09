@@ -98,5 +98,4 @@ object DateUtil {
         return dateTime.format(formatter)
     }
 
-
 }
