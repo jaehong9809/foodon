@@ -36,7 +36,7 @@ class DebugViewModel @Inject constructor(
                 name = name,
                 servingUnit = "1인분",
                 kcal = random.nextInt(500) + 100,
-                isCustom = false
+                isCustom = (i % 10 == 0) // i%10 == 0 일 때 true
             )
             val rowId = dao.insertFood(entity)
             dao.insertFoodFts(rowId, name, name.generateSearchTokens())

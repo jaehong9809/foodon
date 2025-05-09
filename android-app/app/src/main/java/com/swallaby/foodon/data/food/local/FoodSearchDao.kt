@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.swallaby.foodon.data.food.local.dto.LocalFoodDto
 
 @Dao
 interface FoodSearchDao {
@@ -25,12 +26,14 @@ interface FoodSearchDao {
     suspend fun deleteFoodFts(id: Long)
 
     @Query("""
-        SELECT f.*
+        SELECT f.*, 
+            CASE WHEN f.name LIKE :query || '%' THEN 1 ELSE 0 END AS prefix_match
         FROM foods f
         JOIN foods_fts fts ON f.id = fts.rowid
         WHERE foods_fts MATCH :query || '*'
+        ORDER BY f.isCustom DESC, prefix_match DESC, f.name ASC
     """)
-    fun searchFoods(query: String): PagingSource<Int, LocalFoodEntity>
+    fun searchFoods(query: String): PagingSource<Int, LocalFoodDto>
 
     @Query("DELETE FROM foods")
     suspend fun clearAll()

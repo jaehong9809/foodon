@@ -33,6 +33,6 @@ class FoodSearchLocalRepositoryImpl @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = 10),
             pagingSourceFactory = { dao.searchFoods(query) }
-        ).flow.map { it.map { entity -> entity.toDomain() } }
+        ).flow.map { it.map { dto -> dto.toDomain() } }
     }
 }
