@@ -1,12 +1,17 @@
 package com.foodon.foodon.meal.application;
 
 import com.foodon.foodon.common.util.NutrientCalculator;
+import com.foodon.foodon.common.util.NutrientTarget;
+import com.foodon.foodon.food.domain.Nutrient;
+import com.foodon.foodon.food.domain.RestrictionType;
 import com.foodon.foodon.food.domain.NutrientCode;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
+import com.foodon.foodon.food.repository.NutrientRepository;
 import com.foodon.foodon.image.application.LocalImageService;
 import com.foodon.foodon.image.application.S3ImageService;
+import com.foodon.foodon.meal.domain.ManageNutrient;
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.domain.MealItem;
 import com.foodon.foodon.meal.domain.Position;
@@ -45,6 +50,7 @@ public class MealService {
     private final MealItemRepository mealItemRepository;
     private final RecommendFoodRepository recommendFoodRepository;
     private final FoodRepository foodRepository;
+    private final NutrientRepository nutrientRepository;
     private final MealDetectAiClient mealDetectAiClient;
     private final S3ImageService s3ImageService;
     private final LocalImageService localImageService;
@@ -190,6 +196,54 @@ public class MealService {
         List<Meal> meals = mealRepository.findByMemberAndMealTimeBetween(member, startOfDay, endOfDay);
 
         return meals.stream().map(MealSummaryResponse::of).toList();
+    }
+
+
+    public List<ManageNutrientResponse> getManageNutrientsByDate(
+            LocalDate date,
+            Member member
+    ){
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+        Map<NutrientCode, BigDecimal> nutrientIntakeMap = getNutrientIntakeMapByDate(member, startOfDay, endOfDay);
+        List<Nutrient> restrictedNutrients = nutrientRepository.findByRestrictionTypeIsNot(RestrictionType.NONE);
+
+        return convertToManageNutrientResponse(nutrientIntakeMap, restrictedNutrients);
+    }
+
+    private Map<NutrientCode, BigDecimal> getNutrientIntakeMapByDate(
+            Member member,
+            LocalDateTime start,
+            LocalDateTime end
+    ){
+        return mealRepository.findNutrientIntakeByMemberAndDate(member, start, end).stream()
+                .collect(Collectors.toMap(
+                        NutrientIntakeInfo::nutrientCode,
+                        NutrientIntakeInfo::intake
+                ));
+    }
+
+    private List<ManageNutrientResponse> convertToManageNutrientResponse(
+            Map<NutrientCode, BigDecimal> nutrientIntakeMap,
+            List<Nutrient> restrictedNutrients
+    ) {
+        BigDecimal intakeKcal = nutrientIntakeMap.getOrDefault(NutrientCode.KCAL, BigDecimal.ZERO);
+
+        return restrictedNutrients.stream()
+                .map(nutrient -> {
+                    BigDecimal intake = nutrientIntakeMap.getOrDefault(nutrient.getCode(), BigDecimal.ZERO);
+                    ManageNutrient manageNutrient = ManageNutrient.from(nutrient, intakeKcal);
+                    ManageStatus status = ManageStatus.evaluate(intake.doubleValue(), manageNutrient.getMin(), manageNutrient.getMax());
+
+                    return ManageNutrientResponse.from(
+                            nutrient,
+                            intake,
+                            BigDecimal.valueOf(manageNutrient.getMin()),
+                            BigDecimal.valueOf(manageNutrient.getMax()),
+                            status
+                    );
+                })
+                .toList();
     }
 
 }
