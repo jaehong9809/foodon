@@ -33,4 +33,6 @@ sealed class NavRoutes(val route: String) {
     object LoginGraph : NavRoutes("login_graph")
     object Login : NavRoutes("login")
 
+    /* Debug */
+    object Debug : NavRoutes("debug")
 }

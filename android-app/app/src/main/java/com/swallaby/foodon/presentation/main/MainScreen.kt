@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.swallaby.foodon.BuildConfig
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.FloatingButton
@@ -174,9 +175,29 @@ fun MainScreen(
                 }
             }
 
+            if (BuildConfig.DEBUG) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(WB500)
+                            .clickable {
+                                navController.navigate(NavRoutes.Debug.route)
+                            }
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(16.dp),
+                            text = "디버그 중 동작 - DB",
+                            color = MainWhite,
+                            style = NotoTypography.NotoMedium20
+                        )
+                    }
+                }
+            }
         }
     }
-
 }
 
 @Preview(showBackground = true)

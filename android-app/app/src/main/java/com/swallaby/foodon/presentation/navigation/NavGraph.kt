@@ -29,6 +29,7 @@ fun NavGraph(
             loginGraph(navController)
             calendarGraph(navController, calendarViewModel)
             mealGraph(navController)
+            debugGraph(navController)
         }
     }
 
