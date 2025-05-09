@@ -5,9 +5,9 @@ import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.recommend.domain.RecommendFood;
-import com.foodon.foodon.recommend.domain.characteristic.FoodCharacteristic;
-import com.foodon.foodon.recommend.domain.characteristic.FoodCharacteristicEvaluator;
-import com.foodon.foodon.recommend.domain.characteristic.NutrientServingInfo;
+import com.foodon.foodon.recommend.domain.nutrientclaims.NutrientClaim;
+import com.foodon.foodon.recommend.domain.nutrientclaims.NutrientClaimEvaluator;
+import com.foodon.foodon.recommend.domain.nutrientclaims.NutrientServingInfo;
 import com.foodon.foodon.recommend.dto.RecommendFoodResponse;
 import com.foodon.foodon.recommend.repository.RecommendFoodRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,26 +37,26 @@ public class RecommendFoodService {
         LocalDateTime end = start.plusDays(1);
 
         List<RecommendFood> recommendFoods = recommendFoodRepository.findByMemberAndCreatedAtBetween(member, start, end);
-        Map<Long, List<FoodCharacteristic>> characteristicsById = getCharacteristicsByFood(recommendFoods);
+        Map<Long, List<NutrientClaim>> nutrientClaimsByFoodId = getNutrientClaimsByFood(recommendFoods);
 
         return recommendFoods.stream()
                 .map(recommendFood -> RecommendFoodResponse.from(
                         recommendFood,
-                        characteristicsById.get(recommendFood.getId())
+                        nutrientClaimsByFoodId.get(recommendFood.getId())
                 )).toList();
     }
 
-    private Map<Long, List<FoodCharacteristic>> getCharacteristicsByFood(
+    private Map<Long, List<NutrientClaim>> getNutrientClaimsByFood(
             List<RecommendFood> recommendFoods
     ) {
         return recommendFoods.stream()
                 .collect(Collectors.toMap(
                         RecommendFood::getId,
-                        this::evaluateCharacteristics
+                        this::evaluateNutrientClaims
                 ));
     }
 
-    private List<FoodCharacteristic> evaluateCharacteristics(RecommendFood recommendFood) {
+    private List<NutrientClaim> evaluateNutrientClaims(RecommendFood recommendFood) {
         FoodWithNutrientInfo foodWithNutrientInfo = foodRepository.findFoodInfoWithNutrientByIdAndType(
                 recommendFood.getFoodId(),
                 recommendFood.getFoodType(),
@@ -64,7 +64,7 @@ public class RecommendFoodService {
         );
 
         List<NutrientServingInfo> nutrientServingInfos = convertToNutrientServingInfos(foodWithNutrientInfo);
-        return FoodCharacteristicEvaluator.evaluate(nutrientServingInfos);
+        return NutrientClaimEvaluator.evaluate(nutrientServingInfos);
     }
 
     private List<NutrientServingInfo> convertToNutrientServingInfos(
@@ -78,7 +78,6 @@ public class RecommendFoodService {
                 ))
                 .toList();
     }
-
 
     private LocalDate getMondayOfWeek(LocalDate date) {
         return date.with(WeekFields.of(DayOfWeek.MONDAY, 1).dayOfWeek(), 1);

@@ -1,4 +1,4 @@
-package com.foodon.foodon.recommend.domain.characteristic;
+package com.foodon.foodon.recommend.domain.nutrientclaims;
 
 import com.foodon.foodon.food.domain.NutrientCode;
 
