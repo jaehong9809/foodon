@@ -20,7 +20,11 @@ public class Nutrient {
     private Long id;
 
     @Column(length = 50, unique = true, nullable = false)
-    private String type;
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(unique = true, nullable = false)
+    private NutrientCode code;
 
     @Enumerated(EnumType.STRING)
     private NutrientUnit nutrientUnit;

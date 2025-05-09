@@ -55,20 +55,23 @@ fun NutritionalIngredientsComponent(
     modifier: Modifier,
     mealType: MealType,
     mealTime: String,
-    totalCarbs: Int,
-    totalFat: Int,
+    totalCarbs: Double,
+    totalFat: Double,
     totalKcal: Int,
-    totalProtein: Int,
+    totalProtein: Double,
     onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit = {},
 ) {
     val totalNutrition = totalCarbs + totalProtein + totalFat
-
-    val nutritions = listOf(
-        Nutrition(NutritionType.CARBOHYDRATE, totalCarbs, totalCarbs.toFloat() / totalNutrition),
-        Nutrition(NutritionType.PROTEIN, totalProtein, totalProtein.toFloat() / totalNutrition),
-        Nutrition(NutritionType.FAT, totalFat, totalFat.toFloat() / totalNutrition),
-    ).sortedByDescending { it.amount }
+    val nutritions = listOfNotNull(totalCarbs.takeIf { it > 0 }
+        ?.let { Nutrition(NutritionType.CARBOHYDRATE, it, (it / totalNutrition).toFloat()) },
+        totalProtein.takeIf { it > 0 }
+            ?.let { Nutrition(NutritionType.PROTEIN, it, (it / totalNutrition).toFloat()) },
+        totalFat.takeIf { it > 0 }?.let {
+            Nutrition(
+                NutritionType.FAT, it, (it / totalNutrition).toFloat()
+            )
+        }).sortedByDescending { it.amount }
 
     Box(
         modifier = modifier
@@ -131,7 +134,6 @@ fun NutritionalIngredientsComponent(
                     }
                 }
             }
-
         }
     }
 }
@@ -163,23 +165,21 @@ private fun MealTime(
                 },
             )
             // 드롭다운 메뉴
-            DropdownMenu(
-                modifier = modifier
-                    .border(
-                        shape = RoundedCornerShape(10.dp), color = Border02, width = 1.dp
-                    )
-                    // DropdownMenu 의 기본 Vertical Padding 8.dp 를 0.dp 로 변경
-                    .crop(vertical = 8.dp)
-                    .background(color = Color.White, shape = RoundedCornerShape(10.dp)),
+            DropdownMenu(modifier = modifier
+                .border(
+                    shape = RoundedCornerShape(10.dp), color = Border02, width = 1.dp
+                )
+                // DropdownMenu 의 기본 Vertical Padding 8.dp 를 0.dp 로 변경
+                .crop(vertical = 8.dp)
+                .background(color = Color.White, shape = RoundedCornerShape(10.dp)),
                 expanded = expanded,
                 onDismissRequest = { expanded = false }) {
                 MealType.values().forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        contentPadding = PaddingValues(
+                    DropdownMenuItem(contentPadding = PaddingValues(
                         horizontal = 12.dp, vertical = 0.dp
                     ), modifier = modifier
-                            .width(200.dp)
-                            .height(48.dp), onClick = {
+                        .width(200.dp)
+                        .height(48.dp), onClick = {
                         expanded = false
                         onMealTypeClick(item)
                     }, text = {
@@ -238,9 +238,9 @@ fun NutritionalIngredientsComponentPreview() {
         modifier = Modifier,
         mealType = MealType.BREAKFAST,
         mealTime = "12:00",
-        totalCarbs = 100,
-        totalFat = 100,
+        totalCarbs = 100.0,
+        totalFat = 100.0,
         totalKcal = 100,
-        totalProtein = 100
+        totalProtein = 100.0
     )
 }

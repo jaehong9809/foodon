@@ -20,13 +20,12 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
 import com.swallaby.foodon.domain.food.model.NutritionType
-import java.text.NumberFormat
 
 @Composable
 fun NutritionalMediumInfo(
     modifier: Modifier = Modifier,
     nutritionType: NutritionType,
-    amount: Int = 0,
+    amount: Double = 0.0,
 ) {
     val childModifier = Modifier
 
@@ -55,6 +54,6 @@ fun NutritionalMediumInfo(
 @Composable
 fun NutritionalIngredientInfoPreview() {
     NutritionalMediumInfo(
-        nutritionType = NutritionType.CARBOHYDRATE, amount = 100
+        nutritionType = NutritionType.CARBOHYDRATE, amount = 100.0
     )
 }

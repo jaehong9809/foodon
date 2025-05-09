@@ -6,10 +6,9 @@ import com.swallaby.foodon.domain.food.repository.FoodRepository
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
-class UploadFoodUseCase @Inject constructor(
+class UploadMealUseCase @Inject constructor(
     private val foodRepository: FoodRepository,
 ) {
-    suspend operator fun invoke(image: MultipartBody.Part): ApiResult<MealInfo> {
-        return foodRepository.postFoodImage(image)
-    }
+    suspend operator fun invoke(image: MultipartBody.Part): ApiResult<MealInfo> =
+        foodRepository.postMealImage(image)
 }

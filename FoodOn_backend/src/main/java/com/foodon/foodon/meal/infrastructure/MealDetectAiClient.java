@@ -1,12 +1,14 @@
 package com.foodon.foodon.meal.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MealDetectAiClient {
@@ -23,12 +25,15 @@ public class MealDetectAiClient {
     }
 
     public MealDetectAiResponse detect(MultipartFile multipartFile) {
-        return webClient.post()
+        MealDetectAiResponse response = webClient.post()
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData("file", multipartFile.getResource()))
                 .retrieve()
                 .bodyToMono(MealDetectAiResponse.class)
                 .block();
+
+        log.info("AI 분석 결과 검출된 음식: {}", response);
+        return response;
     }
 
 }

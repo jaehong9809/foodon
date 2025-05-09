@@ -4,6 +4,14 @@
 
     <!-- INTERNET PERMISSION -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Camera permissions -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <!-- Storage permissions for gallery -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- For Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- For Android 13+ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" /> <!-- For older Android versions -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" /> <!-- For older Android versions -->
 
 
     <application
@@ -17,6 +25,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Foodon"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.swallaby.foodon.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

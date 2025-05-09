@@ -1,7 +1,7 @@
 package com.swallaby.foodon.core.network
 
-import com.swallaby.foodon.BuildConfig
 import android.content.Context
+import com.swallaby.foodon.BuildConfig
 import com.swallaby.foodon.core.data.TokenDataStore
 import com.swallaby.foodon.core.network.interceptor.AuthInterceptor
 import dagger.Module
@@ -27,14 +27,14 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAuthInterceptor(
-        tokenDataStore: TokenDataStore
+        tokenDataStore: TokenDataStore,
     ): AuthInterceptor = AuthInterceptor(tokenDataStore)
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
         @ApplicationContext context: Context,
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY

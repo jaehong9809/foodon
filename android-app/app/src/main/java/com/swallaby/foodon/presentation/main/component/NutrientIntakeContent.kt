@@ -51,7 +51,7 @@ fun NutrientIntakeContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column (
+        Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -63,11 +63,11 @@ fun NutrientIntakeContent(
                 val fatRatio = it.intakeFat.toFloat() * 9 / it.goalKcal
 
                 listOf(
-                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs, carbsRatio),
-                    Nutrition(NutritionType.PROTEIN, it.intakeProtein, proteinRatio),
-                    Nutrition(NutritionType.FAT, it.intakeFat, fatRatio),
+                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs.toDouble(), carbsRatio),
+                    Nutrition(NutritionType.PROTEIN, it.intakeProtein.toDouble(), proteinRatio),
+                    Nutrition(NutritionType.FAT, it.intakeFat.toDouble(), fatRatio),
                 ).sortedByDescending { n -> n.amount }
-            }?: emptyList()
+            } ?: emptyList()
 
             CalorieProgressBar(
                 nutrients = nutrients,

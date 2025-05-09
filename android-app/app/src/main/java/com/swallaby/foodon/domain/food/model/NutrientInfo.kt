@@ -2,29 +2,29 @@ package com.swallaby.foodon.domain.food.model
 
 // 기본 영양소 정보 클래스 (기존 제공된 클래스)
 data class NutrientInfo(
-    val alcohol: Int = 0,
-    val carbs: Int = 0,
-    val cholesterol: Int = 0,
-    val fat: Int = 0,
-    val fattyAcid: Int = 0,
-    val fiber: Int = 0,
+    val alcohol: Double = 0.0,
+    val carbs: Double = 0.0,
+    val cholesterol: Double = 0.0,
+    val fat: Double = 0.0,
+    val fattyAcid: Double = 0.0,
+    val fiber: Double = 0.0,
     val kcal: Int = 0,
-    val potassium: Int = 0,
-    val protein: Int = 0,
-    val saturatedFat: Int = 0,
-    val sodium: Int = 0,
-    val sugar: Int = 0,
-    val transFat: Int = 0,
-    val unsaturatedFat: Int = 0,
+    val potassium: Double = 0.0,
+    val protein: Double = 0.0,
+    val saturatedFat: Double = 0.0,
+    val sodium: Double = 0.0,
+    val sugar: Double = 0.0,
+    val transFat: Double = 0.0,
+    val unsaturatedFat: Double = 0.0,
 )
 
 // 영양소 항목을 표현하는 클래스
 data class NutrientItem(
     val name: String,
-    val value: Int,
+    val value: Double,
     val unit: String,
     val childItems: List<NutrientItem> = emptyList(),
-    val nutrientType: NutrientType  // 어떤 NutrientInfo 필드에 해당하는지 나타냄
+    val nutrientType: NutrientType,  // 어떤 NutrientInfo 필드에 해당하는지 나타냄
 )
 
 // 영양소 유형 (NutrientInfo의 필드와 매핑)
@@ -41,7 +41,7 @@ object NutrientConverter {
             // 열량 (단일 항목)
             NutrientItem(
                 name = "열량",
-                value = nutrientInfo.kcal,
+                value = nutrientInfo.kcal.toDouble(),
                 unit = "kcal",
                 nutrientType = NutrientType.KCAL
             ),
@@ -86,12 +86,12 @@ object NutrientConverter {
                         nutrientType = NutrientType.TRANS_FAT
                     ), NutrientItem(
                         name = "지방산",
-                        value = nutrientInfo.fattyAcid,
+                        value = nutrientInfo.fattyAcid.toDouble(),
                         unit = "g",
                         nutrientType = NutrientType.FATTY_ACID
                     ), NutrientItem(
                         name = "불포화지방산",
-                        value = nutrientInfo.unsaturatedFat,
+                        value = nutrientInfo.unsaturatedFat.toDouble(),
                         unit = "g",
                         nutrientType = NutrientType.UNSATURATED_FAT
                     )
@@ -109,7 +109,7 @@ object NutrientConverter {
             // 나트륨 (단일 항목)
             NutrientItem(
                 name = "나트륨",
-                value = nutrientInfo.sodium,
+                value = nutrientInfo.sodium.toDouble(),
                 unit = "mg",
                 nutrientType = NutrientType.SODIUM
             ),
@@ -117,7 +117,7 @@ object NutrientConverter {
             // 알코올 (단일 항목)
             NutrientItem(
                 name = "알코올",
-                value = nutrientInfo.alcohol,
+                value = nutrientInfo.alcohol.toDouble(),
                 unit = "g",
                 nutrientType = NutrientType.ALCOHOL
             ),
@@ -138,7 +138,7 @@ object NutrientConverter {
 
         for (item in items) {
             updatedInfo = when (item.nutrientType) {
-                NutrientType.KCAL -> updatedInfo.copy(kcal = item.value)
+                NutrientType.KCAL -> updatedInfo.copy(kcal = item.value.toInt())
                 NutrientType.CARBS -> updatedInfo.copy(carbs = item.value)
                 NutrientType.SUGAR -> updatedInfo.copy(sugar = item.value)
                 NutrientType.FIBER -> updatedInfo.copy(fiber = item.value)

@@ -113,15 +113,9 @@ fun CalendarScreen(
         val isSameMonth = currentYearMonth == baseYearMonth
         viewModel.selectDate(if (isSameMonth) today else currentYearMonth.atDay(1))
 
-        // 추천 탭인 경우에만 기본 선택 주차 세팅
         if (calendarType == CalendarType.RECOMMENDATION) {
             val weekIndex = if (isSameMonth) getWeekOfMonth(today) else 0
-            viewModel.selectWeek(weekIndex)
-
-            viewModel.fetchRecommendFoods(
-                yearMonth = currentYearMonth.toString(),
-                week = (weekIndex + 1)
-            )
+            viewModel.updateRecommendation(currentYearMonth, weekIndex)
         }
 
         viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
@@ -129,9 +123,8 @@ fun CalendarScreen(
 
     // 탭 전환 시 추가 데이터 로딩 (하단 콘텐츠)
     LaunchedEffect(selectedTabIndex) {
-        when (calendarType) {
-            CalendarType.WEIGHT -> viewModel.fetchUserWeight()
-            else -> Unit
+        if (calendarType == CalendarType.WEIGHT) {
+            viewModel.fetchUserWeight()
         }
     }
 
@@ -181,12 +174,7 @@ fun CalendarScreen(
                 weekCount = weekCount,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.fetchRecommendFoods(
-                        yearMonth = currentYearMonth.toString(),
-                        week = (weekIndex + 1)
-                    )
-
-                    viewModel.selectWeek(weekIndex)
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex)
                 }
             )
         }
