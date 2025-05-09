@@ -40,8 +40,16 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(currentYearMonth = yearMonth) }
     }
 
-    fun selectWeek(index: Int) {
+    private fun selectWeek(index: Int) {
         updateState { it.copy(selectedWeekIndex = index) }
+    }
+
+    fun updateRecommendation(currentYearMonth: YearMonth, weekIndex: Int) {
+        selectWeek(weekIndex)
+        fetchRecommendFoods(
+            yearMonth = currentYearMonth.toString(),
+            week = weekIndex + 1
+        )
     }
 
     fun fetchCalendarData(type: CalendarType, date: String) {
@@ -62,7 +70,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
+    private fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
 
         viewModelScope.launch {

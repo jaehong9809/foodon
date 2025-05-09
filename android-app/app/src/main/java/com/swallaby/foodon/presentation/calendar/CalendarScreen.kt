@@ -18,8 +18,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +34,7 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
@@ -60,9 +63,16 @@ fun CalendarScreen(
     val selectedTabIndex = uiState.selectedTabIndex
     val currentYearMonth = uiState.currentYearMonth
 
+    val calendarType = CalendarType.values()[selectedTabIndex]
+    val weekCount = rememberWeekCount(currentYearMonth, today)
+
     // 캘린더 페이지 관리
-    val monthOffsetRange = -12..12
-    val pagerState = rememberPagerState(initialPage = 12, pageCount = { monthOffsetRange.count() })
+    var monthOffset by remember { mutableIntStateOf(0) }
+
+    val nextMonth = currentYearMonth.plusMonths(1)
+    val maxPage = if (nextMonth.isAfter(baseYearMonth)) 2 else 3
+
+    val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
 
     // 날짜와 연관된 데이터 관리
@@ -86,32 +96,35 @@ fun CalendarScreen(
         }
     }
 
-    val calendarType = CalendarType.values()[selectedTabIndex]
-    val weekCount = rememberWeekCount(currentYearMonth, today)
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
+            val delta = pagerState.currentPage - 1
+            monthOffset += delta
+
+            val newMonth = baseYearMonth.plusMonths(monthOffset.toLong())
+            viewModel.updateYearMonth(newMonth)
+
+            pagerState.scrollToPage(1)
+        }
+    }
 
     // 현재 월, 선택 날짜 변경 처리
-    LaunchedEffect(pagerState.currentPage, selectedTabIndex) {
-        val offsetMonth = baseYearMonth.plusMonths((pagerState.currentPage - 12).toLong())
-        viewModel.updateYearMonth(offsetMonth)
+    LaunchedEffect(currentYearMonth, selectedTabIndex) {
+        val isSameMonth = currentYearMonth == baseYearMonth
+        viewModel.selectDate(if (isSameMonth) today else currentYearMonth.atDay(1))
 
-        val isSameMonth = offsetMonth == baseYearMonth
-        viewModel.selectDate(if (isSameMonth) today else offsetMonth.atDay(1)) // 기본 선택 날짜 세팅
-
-        // 추천 탭인 경우에만 기본 선택 주차 세팅
         if (calendarType == CalendarType.RECOMMENDATION) {
-            viewModel.selectWeek(if (isSameMonth) (today.dayOfMonth - 1) / 7 + 1 else 0)
+            val weekIndex = if (isSameMonth) getWeekOfMonth(today) else 0
+            viewModel.updateRecommendation(currentYearMonth, weekIndex)
         }
 
-        // 캘린더 데이터
-        viewModel.fetchCalendarData(calendarType, offsetMonth.toString())
+        viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
     }
 
     // 탭 전환 시 추가 데이터 로딩 (하단 콘텐츠)
     LaunchedEffect(selectedTabIndex) {
-        when (calendarType) {
-            CalendarType.WEIGHT -> viewModel.fetchUserWeight()
-            CalendarType.RECOMMENDATION -> viewModel.fetchRecommendFoods(currentYearMonth.toString())
-            else -> Unit
+        if (calendarType == CalendarType.WEIGHT) {
+            viewModel.fetchUserWeight()
         }
     }
 
@@ -161,12 +174,7 @@ fun CalendarScreen(
                 weekCount = weekCount,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.fetchRecommendFoods(
-                        yearMonth = currentYearMonth.toString(),
-                        week = (weekIndex + 1)
-                    )
-
-                    viewModel.selectWeek(weekIndex)
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex)
                 }
             )
         }

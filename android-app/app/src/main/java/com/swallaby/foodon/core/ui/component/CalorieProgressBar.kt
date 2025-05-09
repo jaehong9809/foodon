@@ -41,7 +41,7 @@ fun CalorieProgressBar(
     val backgroundColor = Bkg05
 
     val stroke = with(LocalDensity.current) { strokeWidth.toPx() }
-    
+
     val totalKcal = if (goal > 0) consumed.toFloat() / goal.toFloat() else 0f
     val limitedKcalRatio = totalKcal.coerceAtMost(1f)
 

@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +34,10 @@ class MainViewModel @Inject constructor(
 
     fun selectDate(date: LocalDate) {
         updateState { it.copy(selectedDate = date) }
+    }
+
+    fun updateYearMonth(yearMonth: YearMonth) {
+        updateState { it.copy(currentYearMonth = yearMonth) }
     }
 
     fun fetchCalendarData(date: String) {
