@@ -40,15 +40,18 @@ fun NutrientIntakeContent(
         verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = if (selectedDate != today) stringResource(R.string.main_nutrient_intake_date_title, formatDate(selectedDate))
-                    else stringResource(R.string.main_nutrient_intake_today_title),
+            text = if (selectedDate != today) stringResource(
+                R.string.main_nutrient_intake_date_title,
+                formatDate(selectedDate)
+            )
+            else stringResource(R.string.main_nutrient_intake_today_title),
             color = G900,
             style = NotoTypography.NotoBold18
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column (
+        Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -60,11 +63,11 @@ fun NutrientIntakeContent(
                 val fatRatio = it.intakeFat.toFloat() * 9 / it.goalKcal
 
                 listOf(
-                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs, carbsRatio),
-                    Nutrition(NutritionType.PROTEIN, it.intakeProtein, proteinRatio),
-                    Nutrition(NutritionType.FAT, it.intakeFat, fatRatio),
+                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs.toDouble(), carbsRatio),
+                    Nutrition(NutritionType.PROTEIN, it.intakeProtein.toDouble(), proteinRatio),
+                    Nutrition(NutritionType.FAT, it.intakeFat.toDouble(), fatRatio),
                 ).sortedByDescending { n -> n.amount }
-            }?: emptyList()
+            } ?: emptyList()
 
             CalorieProgressBar(
                 nutrients = nutrients,
