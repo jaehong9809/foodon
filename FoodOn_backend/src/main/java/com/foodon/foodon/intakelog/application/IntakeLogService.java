@@ -90,28 +90,26 @@ public class IntakeLogService {
             LocalDate date,
             Member member
     ) {
-        Optional<IntakeLog> intakeLogOpt = findIntakeLogByDate(member, date);
-
-        if(intakeLogOpt.isPresent()) {
-            MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-            NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
-            NutrientGoal nutrientGoal = NutrientGoal.from(intakeLogOpt.get().getGoalKcal(), nutrientPlan);
-            return IntakeDetailResponse.withIntakeLog(nutrientGoal, intakeLogOpt.get(), date);
-        } else {
-            NutrientGoal nutrientGoal = getNutrientGoalFromMemberStatus(member);
-            return IntakeDetailResponse.withOutIntakeLog(nutrientGoal, date);
-        }
+        return findIntakeLogByDate(member, date)
+                .map(intakeLog -> {
+                    MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
+                    NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
+                    NutrientGoal nutrientGoal = NutrientGoal.from(intakeLog.getGoalKcal(), nutrientPlan);
+                    return IntakeDetailResponse.withIntakeLog(nutrientGoal, intakeLog, date);
+                })
+                .orElseGet(() -> {
+                    NutrientGoal nutrientGoal = getNutrientGoalFromMemberStatus(member);
+                    return IntakeDetailResponse.withOutIntakeLog(nutrientGoal, date);
+                });
     }
 
     public IntakeSummaryResponse getIntakeLogByTargetDate(LocalDate date, Member member) {
-        Optional<IntakeLog> intakeLogOpt = findIntakeLogByDate(member, date);
-
-        if(intakeLogOpt.isPresent()) {
-            return IntakeSummaryResponse.withIntakeLog(intakeLogOpt.get());
-        } else {
-          BigDecimal goalKcal = getGoalKcalFromMemberStatus(member);
-            return IntakeSummaryResponse.withoutIntakeLog(goalKcal, date);
-        }
+        return findIntakeLogByDate(member, date)
+                .map(IntakeSummaryResponse::withIntakeLog)
+                .orElseGet(() -> {
+                    BigDecimal goalKcal = getGoalKcalFromMemberStatus(member);
+                    return IntakeSummaryResponse.withoutIntakeLog(goalKcal, date);
+                });
     }
 
     private NutrientGoal getNutrientGoalFromMemberStatus(Member member) {
