@@ -16,9 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -100,7 +98,8 @@ fun NutritionEditScreen(
                         modifier = modifier,
                         value = item.value.toString(),
                         onValueChange = { newValue ->
-                            val updatedValue = newValue.filter { it.isDigit() }.toIntOrNull() ?: 0
+                            val updatedValue =
+                                newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
                             // 업데이트된 아이템 생성
                             val updatedItem = item.copy(value = updatedValue)
                             // 리스트에서 해당 아이템 교체
@@ -120,7 +119,7 @@ fun NutritionEditScreen(
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
                                 val updatedValue =
-                                    newValue.filter { it.isDigit() }.toIntOrNull() ?: 0
+                                    newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
                                 // 업데이트된 자식 아이템 생성
                                 val updatedChildItem = childItem.copy(value = updatedValue)
                                 // 부모 아이템의 자식 목록 업데이트

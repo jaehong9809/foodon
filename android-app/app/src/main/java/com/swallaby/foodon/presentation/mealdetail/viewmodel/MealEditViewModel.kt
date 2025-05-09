@@ -1,23 +1,65 @@
 package com.swallaby.foodon.presentation.mealdetail.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.domain.food.model.NutrientInfo
 import com.swallaby.foodon.domain.food.model.Position
+import com.swallaby.foodon.domain.food.model.toRequest
+import com.swallaby.foodon.domain.food.usecase.RecordMealUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(MealEditUiState()) {
+class MealEditViewModel @Inject constructor(
+    private val recordMealUseCase: RecordMealUseCase,
+) : BaseViewModel<MealEditUiState>(MealEditUiState()) {
+    private var isInitialized = false
+
     init {
+        Log.d("MealEditViewModel", "init called")
+    }
+
+    fun initMeal(mealInfo: MealInfo) {
         Log.d(TAG, "Initializing MealEditViewModel")
-        _uiState.update {
-            it.copy(mealEditState = ResultState.Success(createDummyMealInfo()))
+        if (!isInitialized) {
+            _uiState.update {
+                it.copy(mealEditState = ResultState.Success(mealInfo))
+                // todo test 용
+//                it.copy(mealEditState = ResultState.Success(createDummyMealInfo()))
+            }
+            isInitialized = true
+        }
+    }
+
+    fun recordMeal() {
+        val mealEditUiState = (_uiState.value.mealEditState as ResultState.Success)
+        val mealInfo = mealEditUiState.data
+        val request = mealInfo.toRequest().copy(
+            mealTime = uiState.value.mealTime, mealTimeType = uiState.value.mealType
+        )
+        viewModelScope.launch {
+            when (val result = recordMealUseCase(request).toResultState()) {
+                is ResultState.Success -> {
+                    _uiState.update { it.copy(mealEditState = ResultState.Success(mealInfo)) }
+                }
+
+                is ResultState.Error -> {
+                    val errorMessage = result.messageRes
+                    _uiState.update { it.copy(mealEditState = ResultState.Error(messageRes = errorMessage)) }
+                }
+
+                else -> {
+                    _uiState.update { it.copy(mealEditState = ResultState.Loading) }
+                }
+            }
         }
     }
 
@@ -81,11 +123,11 @@ class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(M
         }
     }
 
-    private fun calculateTotalCarbs(items: List<MealItem>): Int {
+    private fun calculateTotalCarbs(items: List<MealItem>): Double {
         return items.sumOf { it.nutrientInfo.carbs }
     }
 
-    private fun calculateTotalFat(items: List<MealItem>): Int {
+    private fun calculateTotalFat(items: List<MealItem>): Double {
         return items.sumOf { it.nutrientInfo.fat }
     }
 
@@ -93,7 +135,7 @@ class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(M
         return items.sumOf { it.nutrientInfo.kcal }
     }
 
-    private fun calculateTotalProtein(items: List<MealItem>): Int {
+    private fun calculateTotalProtein(items: List<MealItem>): Double {
         return items.sumOf { it.nutrientInfo.protein }
     }
 
@@ -103,12 +145,12 @@ class MealEditViewModel @Inject constructor() : BaseViewModel<MealEditUiState>(M
 }
 
 fun createDummyMealInfo(): MealInfo = MealInfo(
-    imageUrl = "https://example.com/breakfast.jpg",
+    imageFileName = "https://example.com/breakfast.jpg",
     mealTime = "2025-05-02 07:30",
     mealTimeType = "BREAKFAST",
-    totalCarbs = 45,
-    totalFat = 15,
-    totalProtein = 20,
+    totalCarbs = 45.0,
+    totalFat = 15.0,
+    totalProtein = 20.0,
     totalKcal = 390,
     mealItems = listOf(
         MealItem(
@@ -119,23 +161,23 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
             quantity = 2,
             nutrientInfo = NutrientInfo(
                 kcal = 140,
-                protein = 12,
-                fat = 10,
-                carbs = 2,
-                sugar = 0,
-                fiber = 0,
-                sodium = 140,
-                cholesterol = 370,
-                potassium = 120,
-                saturatedFat = 3,
-                unsaturatedFat = 7,
-                transFat = 0,
-                fattyAcid = 5,
-                alcohol = 0
+                protein = 12.0,
+                fat = 10.0,
+                carbs = 2.0,
+                sugar = 0.0,
+                fiber = 0.0,
+                sodium = 140.0,
+                cholesterol = 370.0,
+                potassium = 120.0,
+                saturatedFat = 3.0,
+                unsaturatedFat = 7.0,
+                transFat = 0.0,
+                fattyAcid = 5.0,
+                alcohol = 0.0
             ),
-            position = listOf(
+            positions = listOf(
                 Position(
-                    height = 120.0, width = 130.0, x = 50, y = 100
+                    height = 0.1, width = 0.2, x = 120.0, y = 130.0
                 )
             )
         ), MealItem(
@@ -146,23 +188,23 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
             quantity = 2,
             nutrientInfo = NutrientInfo(
                 kcal = 180,
-                protein = 6,
-                fat = 3,
-                carbs = 32,
-                sugar = 3,
-                fiber = 2,
-                sodium = 200,
-                cholesterol = 0,
-                potassium = 70,
-                saturatedFat = 1,
-                unsaturatedFat = 2,
-                transFat = 0,
-                fattyAcid = 1,
-                alcohol = 0
+                protein = 6.0,
+                fat = 3.0,
+                carbs = 32.0,
+                sugar = 3.0,
+                fiber = 2.0,
+                sodium = 200.0,
+                cholesterol = 0.0,
+                potassium = 70.0,
+                saturatedFat = 1.0,
+                unsaturatedFat = 2.0,
+                transFat = 0.0,
+                fattyAcid = 1.0,
+                alcohol = .0
             ),
-            position = listOf(
+            positions = listOf(
                 Position(
-                    height = 80.0, width = 150.0, x = 200, y = 120
+                    height = 0.1, width = 0.2, x = 120.0, y = 130.0
                 )
             )
         ), MealItem(
@@ -173,23 +215,23 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
             quantity = 250,
             nutrientInfo = NutrientInfo(
                 kcal = 70,
-                protein = 2,
-                fat = 2,
-                carbs = 11,
-                sugar = 9,
-                fiber = 1,
-                sodium = 5,
-                cholesterol = 0,
-                potassium = 450,
-                saturatedFat = 0,
-                unsaturatedFat = 2,
-                transFat = 0,
-                fattyAcid = 0,
-                alcohol = 0
+                protein = 2.0,
+                fat = 2.0,
+                carbs = 11.0,
+                sugar = 9.0,
+                fiber = 1.0,
+                sodium = 5.0,
+                cholesterol = 0.0,
+                potassium = 450.0,
+                saturatedFat = 0.0,
+                unsaturatedFat = 2.0,
+                transFat = 0.0,
+                fattyAcid = 0.0,
+                alcohol = .00
             ),
-            position = listOf(
+            positions = listOf(
                 Position(
-                    height = 150.0, width = 70.0, x = 400, y = 80
+                    height = 0.1, width = 0.2, x = 120.0, y = 130.0
                 )
             )
         )

@@ -22,8 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +50,6 @@ import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
-import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientItem
 import com.swallaby.foodon.domain.food.model.NutrientType
@@ -61,8 +58,6 @@ import com.swallaby.foodon.presentation.foodedit.component.FoodChip
 import com.swallaby.foodon.presentation.foodedit.component.FoodThumbnailList
 import com.swallaby.foodon.presentation.foodedit.component.SearchChip
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
-import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditUiState
-import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 
 @Composable
 fun FoodEditScreen(
@@ -155,7 +150,8 @@ fun NutritionComponent(
                     ParentNutritionInfo(
                         nutritionName = nutrientInfo[index].name,
                         amount = stringResource(
-                            R.string.format_kcal, StringUtil.formatKcal(nutrientInfo[index].value)
+                            R.string.format_kcal,
+                            StringUtil.formatKcal(nutrientInfo[index].value.toInt())
                         ),
                         amountColor = WB500,
                     )
@@ -258,7 +254,7 @@ private fun ChildNutritionInfo(
 
 @Composable
 fun FoodSearch(
-    modifier: Modifier = Modifier, foodName: String
+    modifier: Modifier = Modifier, foodName: String,
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier.padding(top = 16.dp, bottom = 24.dp)) {
