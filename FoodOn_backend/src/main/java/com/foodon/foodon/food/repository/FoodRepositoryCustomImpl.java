@@ -37,7 +37,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 food.id,
                                 food.memberId,
                                 food.name,
-                                food.unit
+                                food.unit,
+                                food.servingSize
                         )
                 )
                 .from(food)
@@ -70,6 +71,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 foodInfo.id(),
                 foodInfo.name(),
                 foodInfo.unit(),
+                foodInfo.servingSize(),
                 nutrients
         );
     }
@@ -82,7 +84,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 food.id,
                                 food.memberId,
                                 food.name,
-                                food.unit
+                                food.unit,
+                                food.servingSize
                         )
                 )
                 .from(food)
@@ -118,6 +121,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                         food.id(),
                         food.name(),
                         food.unit(),
+                        food.servingSize(),
                         nutrientsByFoodId.getOrDefault(food.id(), List.of())
                 ))
                 .toList();
