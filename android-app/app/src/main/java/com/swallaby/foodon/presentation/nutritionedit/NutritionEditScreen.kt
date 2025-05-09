@@ -12,14 +12,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
@@ -33,6 +36,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientInfo
+import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
 
@@ -44,6 +48,7 @@ fun NutritionEditScreen(
     foodId: Long = 0,
     onFoodUpdateClick: (nutrientInfo: NutrientInfo) -> Unit = {},
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
     val food = mealInfo.mealItems.find { item ->
@@ -52,6 +57,18 @@ fun NutritionEditScreen(
 
     var nutritions by remember(uiState) {
         mutableStateOf(NutrientConverter.convertToHierarchy(food.nutrientInfo))
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is FoodEditEvent.SuccessUpdateFood -> {
+                    onBackClick()
+                }
+
+                else -> {}
+            }
+        }
     }
 
     val scrollState = rememberScrollState()
@@ -161,6 +178,6 @@ fun NutritionEditScreen(
 @Preview(showBackground = true)
 @Composable
 fun NutritionEditScreenPreview() {
-    NutritionEditScreen(onBackClick = {}, viewModel = FoodEditViewModel())
+    NutritionEditScreen(onBackClick = {}, viewModel = hiltViewModel())
 }
 

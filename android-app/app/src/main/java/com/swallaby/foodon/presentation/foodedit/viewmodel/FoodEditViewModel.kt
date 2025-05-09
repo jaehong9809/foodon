@@ -1,17 +1,30 @@
 package com.swallaby.foodon.presentation.foodedit.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.domain.food.model.MealInfo
+import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.NutrientInfo
+import com.swallaby.foodon.domain.food.usecase.RegisterCustomFoodUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FoodEditViewModel @Inject constructor(
+    private val registerCustomFoodUseCase: RegisterCustomFoodUseCase,
 ) : BaseViewModel<FoodEditUiState>(FoodEditUiState()) {
     private var isInitialized = false
+
+    private val _events = MutableSharedFlow<FoodEditEvent>()
+    val events = _events.asSharedFlow()
 
     fun initFood(mealInfo: MealInfo) {
         if (!isInitialized) {
@@ -25,8 +38,40 @@ class FoodEditViewModel @Inject constructor(
         }
     }
 
+    fun registerCustomFood(mealItem: MealItem) {
+        viewModelScope.launch {
+            val request = CustomFoodRequest(
+                foodName = mealItem.foodName,
+                nutrients = mealItem.nutrientInfo,
+                servingSize = mealItem.quantity,
+                unit = mealItem.unit
+            )
+
+            when (val result = registerCustomFoodUseCase(
+                request = request
+            ).toResultState()) {
+                is ResultState.Success -> {
+                    Log.d("FoodEditViewModel", "Success custom food")
+                    _events.emit(FoodEditEvent.SuccessCustomFood(mealItem))
+                }
+
+                is ResultState.Error -> {
+                    Log.d("FoodEditViewModel", "Error registerCustomFood: ${result.messageRes}")
+                    _events.emit(FoodEditEvent.FailedCustomFood(result.messageRes))
+                }
+
+                else -> {
+
+                }
+
+            }
+        }
+
+    }
+
     fun updateFoodNutrients(foodId: Long, updatedNutrientInfo: NutrientInfo) {
         val currentUiState = _uiState.value
+
         if (currentUiState.foodEditState is ResultState.Success) {
             val mealInfo = currentUiState.foodEditState.data
 

@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.mealdetail.MealDetailScreen
@@ -80,8 +81,7 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
                 initFood(mealInfo)
             }
 
-            FoodEditScreen(
-                viewModel = foodEditViewModel,
+            FoodEditScreen(viewModel = foodEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onNutritionEditClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodNutritionEdit.createRoute(foodId))
@@ -96,11 +96,14 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
                     val food = updateMealInfo.mealItems.find { item -> item.foodId == foodId }
 
                     food?.let { it ->
-                        mealEditViewModel.updateFood(it)
-                        navController.popBackStack()
+                        foodEditViewModel.registerCustomFood(it)
+
                     }
                 },
-            )
+                onSuccessCustomFood = { mealItem ->
+                    mealEditViewModel.updateFood(mealItem.copy(type = FoodType.CUSTOM))
+                    navController.popBackStack()
+                })
         }
 
         composable(

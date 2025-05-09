@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.MealType
@@ -160,7 +161,7 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
     totalKcal = 390,
     mealItems = listOf(
         MealItem(
-            type = "PUBLIC",
+            type = FoodType.PUBLIC,
             foodId = 1001,
             foodName = "계란 프라이",
             unit = "개",
@@ -187,7 +188,7 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
                 )
             )
         ), MealItem(
-            type = "PUBLIC",
+            type = FoodType.PUBLIC,
             foodId = 1002,
             foodName = "토스트",
             unit = "조각",
@@ -214,7 +215,7 @@ fun createDummyMealInfo(): MealInfo = MealInfo(
                 )
             )
         ), MealItem(
-            type = "PUBLIC",
+            type = FoodType.PUBLIC,
             foodId = 1003,
             foodName = "오렌지 주스",
             unit = "ml",
