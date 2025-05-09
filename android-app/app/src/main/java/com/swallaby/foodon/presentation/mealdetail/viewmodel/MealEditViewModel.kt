@@ -24,8 +24,6 @@ import javax.inject.Inject
 class MealEditViewModel @Inject constructor(
     private val recordMealUseCase: RecordMealUseCase,
 ) : BaseViewModel<MealEditUiState>(MealEditUiState()) {
-    private var isInitialized = false
-
     private val _events = MutableSharedFlow<MealEditEvent>()
     val events = _events.asSharedFlow()
 
@@ -35,14 +33,9 @@ class MealEditViewModel @Inject constructor(
 
     fun initMeal(mealInfo: MealInfo) {
         Log.d(TAG, "Initializing MealEditViewModel")
-//        if (!isInitialized) {
         _uiState.update {
             it.copy(mealEditState = ResultState.Success(mealInfo))
-            // todo test 용
-//                it.copy(mealEditState = ResultState.Success(createDummyMealInfo()))
         }
-//            isInitialized = true
-//        }
     }
 
     fun recordMeal() {

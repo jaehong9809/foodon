@@ -72,6 +72,7 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.ImageCropManager
+import com.swallaby.foodon.core.util.ImageMetadataUtil
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
@@ -100,6 +101,15 @@ fun MealRecordScreen(
                 is MealRecordEvent.NavigateToDetail -> {
                     // 이벤트에서 데이터 꺼내서 사용
                     editViewModel.initMeal(event.mealInfo)
+                    event.mealInfo.imageUri?.let {
+                        val metadata = ImageMetadataUtil.getMetadataFromUri(context, it)
+                        Log.d("MealRecordScreen", "metadata: $metadata")
+                        metadata?.getFormattedCaptureTime()?.let { time ->
+                            Log.d("MealRecordScreen", "time: $time")
+                            editViewModel.updateMealTime(time.split(" ")[1])
+                        }
+                    }
+
 
                     val positions = event.mealInfo.mealItems.mapNotNull { mealItem ->
                         mealItem.positions.firstOrNull()
