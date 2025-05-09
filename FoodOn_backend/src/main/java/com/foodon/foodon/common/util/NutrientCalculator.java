@@ -79,4 +79,15 @@ public class NutrientCalculator {
                 : value;
     }
 
+    /**
+     * 1회 제공량당 영양성분 함량 계산
+     */
+    public static BigDecimal calculateNutrientPerServing(
+            BigDecimal foodServingSize,
+            BigDecimal per100g
+    ){
+        return divide(per100g, BigDecimal.valueOf(100))
+                .multiply(foodServingSize);
+    }
+
 }
