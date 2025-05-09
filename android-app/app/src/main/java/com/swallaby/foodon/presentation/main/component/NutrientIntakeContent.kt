@@ -40,8 +40,11 @@ fun NutrientIntakeContent(
         verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = if (selectedDate != today) stringResource(R.string.main_nutrient_intake_date_title, formatDate(selectedDate))
-                    else stringResource(R.string.main_nutrient_intake_today_title),
+            text = if (selectedDate != today) stringResource(
+                R.string.main_nutrient_intake_date_title,
+                formatDate(selectedDate)
+            )
+            else stringResource(R.string.main_nutrient_intake_today_title),
             color = G900,
             style = NotoTypography.NotoBold18
         )

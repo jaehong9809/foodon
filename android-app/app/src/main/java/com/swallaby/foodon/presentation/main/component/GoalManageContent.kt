@@ -29,38 +29,54 @@ import com.swallaby.foodon.core.util.StringUtil.formatKcal
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 
+data class InfoData(val title: String, val content: String)
+data class SectionData(val title: String, val items: List<InfoData>)
+
 @Composable
 fun GoalManageContent() {
+    val sections = listOf(
+        SectionData(
+            title = stringResource(R.string.main_goal_manage_title),
+            items = listOf(
+                InfoData(stringResource(R.string.main_goal_manage_type), "고단백형"),
+                InfoData(stringResource(R.string.main_goal_manage_calorie), stringResource(R.string.format_kcal, formatKcal(1000))),
+                InfoData(stringResource(R.string.main_goal_manage_nutrient), "48:28:24")
+            )
+        ),
+        SectionData(
+            title = stringResource(R.string.main_profile_manage_title),
+            items = listOf(
+                InfoData(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, 174)),
+                InfoData(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, 60)),
+                InfoData(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, 60))
+            )
+        )
+    )
+
     Column(
         modifier = Modifier
             .padding(top = 24.dp, start = 24.dp, end = 24.dp)
             .fillMaxSize()
     ) {
-        Text(
-            text = stringResource(R.string.main_goal_manage_title),
-            style = NotoTypography.NotoBold18.copy(color = G900)
-        )
+        sections.forEach { section ->
+            Section(title = section.title, items = section.items)
 
-        Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(11.5.dp))
+        }
+    }
+}
 
-        InfoItem(stringResource(R.string.main_goal_manage_type), "고단백형", NavRoutes.FoodGraph)
-        InfoItem(stringResource(R.string.main_goal_manage_calorie), stringResource(R.string.format_kcal, formatKcal(1000)), NavRoutes.FoodGraph)
-        InfoItem(stringResource(R.string.main_goal_manage_nutrient), "48:28:24", NavRoutes.FoodGraph)
+@Composable
+fun Section(title: String, items: List<InfoData>) {
+    Text(
+        text = title,
+        style = NotoTypography.NotoBold18.copy(color = G900)
+    )
 
-        Spacer(modifier = Modifier.height((11.5).dp))
+    Spacer(modifier = Modifier.height(4.dp))
 
-        Text(
-            text = stringResource(R.string.main_profile_manage_title),
-            style = NotoTypography.NotoBold18.copy(color = G900)
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        InfoItem(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, 174), NavRoutes.FoodGraph)
-        InfoItem(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, 60), NavRoutes.FoodGraph)
-        InfoItem(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, 60), NavRoutes.FoodGraph)
-
-        Spacer(modifier = Modifier.height((11.5).dp))
+    items.forEach { item ->
+        InfoItem(title = item.title, content = item.content, navRoutes = NavRoutes.FoodGraph)
     }
 }
 
