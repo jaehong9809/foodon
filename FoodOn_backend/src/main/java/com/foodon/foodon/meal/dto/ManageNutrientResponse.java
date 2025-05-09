@@ -29,9 +29,9 @@ public record ManageNutrientResponse(
                 nutrient.getCode(),
                 nutrient.getRestrictionType(),
                 nutrient.getNutrientUnit(),
-                BigDecimalUtil.round(intake, 2),
-                BigDecimalUtil.round(minRecommended, 2),
-                BigDecimalUtil.round(maxRecommended, 2),
+                BigDecimalUtil.round(intake, 1),
+                BigDecimalUtil.round(minRecommended, 1),
+                BigDecimalUtil.round(maxRecommended, 1),
                 nutrient.getHealthEffect(),
                 status
         );
