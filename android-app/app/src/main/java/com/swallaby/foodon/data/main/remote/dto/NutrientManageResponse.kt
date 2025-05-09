@@ -11,8 +11,8 @@ data class NutrientManageResponse(
     val nutrientCode: NutrientCode = NutrientCode.CARBS,
     val unit: UnitType = UnitType.GRAM,
     val intake: Double = 0.0,
-    val minRecommend: Int = 0,
-    val maxRecommend: Int = 0,
+    val minRecommended: Double = 0.0,
+    val maxRecommended: Double = 0.0,
     val healthEffect: HealthEffect = HealthEffect.UNKNOWN,
     val status: ManageStatus = ManageStatus.ADEQUATE
 )
@@ -23,8 +23,8 @@ fun NutrientManageResponse.toDomain(): NutrientManage {
         nutrientCode = this.nutrientCode,
         unit = this.unit,
         intake = this.intake,
-        minRecommend = this.minRecommend,
-        maxRecommend = this.maxRecommend,
+        minRecommend = this.minRecommended,
+        maxRecommend = this.maxRecommended,
         healthEffect = this.healthEffect,
         status = this.status
     )
