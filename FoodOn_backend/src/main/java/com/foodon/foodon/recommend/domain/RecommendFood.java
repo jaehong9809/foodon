@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -16,6 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(
         name = "recommend_foods",
         indexes = {
+                @Index(name = "idx_member_created", columnList = "member_id, created_at"),
                 @Index(name = "idx_member_type_id_created", columnList = "member_id, food_type, food_id, created_at")
         }
 )
@@ -35,6 +38,12 @@ public class RecommendFood extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Long foodId;
+
+    @Column(nullable = false)
+    private String foodName;
+
+    @Column(precision = 7, scale = 2, nullable = false)
+    private BigDecimal kcalPerServing; // 1회 제공 열량 (100g 당 x)
 
 }
 
