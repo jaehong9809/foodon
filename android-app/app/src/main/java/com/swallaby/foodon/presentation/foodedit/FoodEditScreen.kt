@@ -73,9 +73,7 @@ fun FoodEditScreen(
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
-    Log.d("Screen", "foodId = $foodId")
     val food = mealInfo.mealItems.find { item ->
-        Log.d("Screen", "item.foodId = ${item.foodId} foodId = $foodId")
         item.foodId == foodId
     }!!
 
@@ -152,7 +150,8 @@ fun NutritionComponent(
                     ParentNutritionInfo(
                         nutritionName = nutrientInfo[index].name,
                         amount = stringResource(
-                            R.string.format_kcal, StringUtil.formatKcal(nutrientInfo[index].value)
+                            R.string.format_kcal,
+                            StringUtil.formatKcal(nutrientInfo[index].value.toInt())
                         ),
                         amountColor = WB500,
                     )
