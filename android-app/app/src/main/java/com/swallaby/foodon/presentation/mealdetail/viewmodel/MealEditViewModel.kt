@@ -19,9 +19,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MealEditViewModel @Inject constructor(
-    private val recordMealUseCase: RecordMealUseCase
+    private val recordMealUseCase: RecordMealUseCase,
 ) : BaseViewModel<MealEditUiState>(MealEditUiState()) {
     private var isInitialized = false
+
+    init {
+        Log.d("MealEditViewModel", "init called")
+    }
 
     fun initMeal(mealInfo: MealInfo) {
         Log.d(TAG, "Initializing MealEditViewModel")

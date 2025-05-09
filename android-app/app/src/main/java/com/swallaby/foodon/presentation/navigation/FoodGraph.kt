@@ -67,7 +67,7 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
         ) {
             val foodId = it.arguments?.getLong(NavRoutes.FoodGraph.FoodEdit.FOOD_ID) ?: 0L
             val backStackEntry = remember(navController.currentBackStackEntry) {
-                navController.getBackStackEntry(NavRoutes.FoodGraph.MealDetail.route)
+                navController.getBackStackEntry(NavRoutes.FoodGraph.FoodRecord.route)
             }
 
             val mealEditViewModel: MealEditViewModel = hiltViewModel(backStackEntry)
