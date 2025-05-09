@@ -134,10 +134,10 @@ fun DayText(
 @Composable
 fun DayBottomContent(calendarItem: CalendarItem?) {
     calendarItem?.let {
-        Spacer(modifier = Modifier.height(8.dp))
-
         when (it) {
             is CalendarItem.Meal -> {
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = formatKcal(it.data.intakeKcal),
                     style = SpoqaTypography.SpoqaMedium11,
@@ -145,6 +145,8 @@ fun DayBottomContent(calendarItem: CalendarItem?) {
                 )
             }
             is CalendarItem.Weight -> {
+                Spacer(modifier = Modifier.height(4.dp))
+
                 WeightBox(
                     text = stringResource(R.string.format_kg, it.data.weight),
                     fontStyle = SpoqaTypography.SpoqaMedium11,
