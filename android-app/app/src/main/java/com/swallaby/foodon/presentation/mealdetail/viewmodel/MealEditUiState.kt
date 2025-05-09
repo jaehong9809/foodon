@@ -7,6 +7,10 @@ import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealType
 import org.threeten.bp.LocalDateTime
 
+sealed class MealEditEvent {
+    object NavigateToMain : MealEditEvent()
+}
+
 data class MealEditUiState(
     val mealEditState: ResultState<MealInfo> = ResultState.Success(
         MealInfo()

@@ -45,18 +45,19 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
         composable(
             route = NavRoutes.FoodGraph.MealDetail.route,
         ) {
-            val backStackEntry = remember(navController.currentBackStackEntry) {
+            val backStackEntry = remember {
                 navController.getBackStackEntry(NavRoutes.FoodGraph.FoodRecord.route)
             }
             val mealEditViewModel: MealEditViewModel = hiltViewModel(backStackEntry)
 
-            MealDetailScreen(
-                viewModel = mealEditViewModel,
+            MealDetailScreen(viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
                 },
-            )
+                onNavigateMain = {
+                    navController.popBackStack(NavRoutes.MainGraph.route, inclusive = false)
+                })
         }
 
         composable(

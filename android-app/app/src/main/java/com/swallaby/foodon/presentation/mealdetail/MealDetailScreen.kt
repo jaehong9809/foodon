@@ -25,6 +25,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,7 @@ import com.swallaby.foodon.presentation.foodedit.component.ScrollTimePicker
 import com.swallaby.foodon.presentation.mealdetail.component.FoodInfoComponent
 import com.swallaby.foodon.presentation.mealdetail.component.FoodLabelButton
 import com.swallaby.foodon.presentation.mealdetail.component.NutritionalIngredientsComponent
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditEvent
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -67,8 +69,19 @@ fun MealDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
+    onNavigateMain: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is MealEditEvent.NavigateToMain -> {
+                    onNavigateMain()
+                }
+            }
+        }
+    }
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
@@ -315,13 +328,11 @@ private fun DisplayFoodLabels(
             val centerX = relativeX + (partialWidth / 2)
             val centerY = relativeY + (partialHeight / 2)
 
-            FoodLabelButton(
-                position = position,
+            FoodLabelButton(position = position,
                 originalImageSize = originalImageSize,
                 centerPosition = Size(centerX.toFloat(), centerY.toFloat()),  // 중앙 좌표 전달
                 foodName = mealItem.foodName,
-                onClick = { onFoodClick(mealItem.foodId) }
-            )
+                onClick = { onFoodClick(mealItem.foodId) })
         }
     }
 }
