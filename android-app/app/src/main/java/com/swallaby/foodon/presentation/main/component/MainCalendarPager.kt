@@ -22,7 +22,7 @@ import org.threeten.bp.LocalDate
 @Composable
 fun MainCalendarPager(
     pagerState: PagerState,
-    weeksInMonth: List<List<LocalDate?>>,
+    currentWeekStart: LocalDate,
     mealItemMap: Map<String, CalendarItem>,
     uiState: MainUiState,
     onDateSelected: (LocalDate) -> Unit,
@@ -32,7 +32,10 @@ fun MainCalendarPager(
         state = pagerState,
         modifier = Modifier
     ) { page ->
-        val week = weeksInMonth[page]
+
+        val offsetFromCenter = page - 1
+        val weekStartDate = currentWeekStart.plusWeeks(offsetFromCenter.toLong())
+        val week = (0..6).map { weekStartDate.plusDays(it.toLong()) }
 
         Row(
             modifier = Modifier

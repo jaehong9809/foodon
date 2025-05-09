@@ -7,5 +7,5 @@ data class NutrientManage(
     val intake: Int = 0,
     val minRecommend: Int = 0,
     val maxRecommend: Int = 0,
-    val status: NutrientStatus = NutrientStatus.NORMAL
+    val status: ManageStatus = ManageStatus.NORMAL
 )

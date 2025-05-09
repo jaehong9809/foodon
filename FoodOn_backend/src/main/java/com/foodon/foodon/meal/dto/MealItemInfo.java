@@ -1,6 +1,6 @@
 package com.foodon.foodon.meal.dto;
 
-import com.foodon.foodon.food.domain.NutrientType;
+import com.foodon.foodon.food.domain.NutrientCode;
 import com.foodon.foodon.food.domain.Unit;
 import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
@@ -23,7 +23,7 @@ public record MealItemInfo(
             FoodWithNutrientInfo food,
             BigDecimal quantity,
             List<PositionInfo> positions,
-            Map<NutrientType, BigDecimal> nutrientMap
+            Map<NutrientCode, BigDecimal> nutrientMap
     ) {
 
         return new MealItemInfo(

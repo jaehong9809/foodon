@@ -38,11 +38,12 @@ object StringUtil {
 
     fun formatNutritionNumber(amount: Int): String {
         val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
-        return if (amount >= 1000) {
-            val kgWeight = amount / 1000.0
-            formatter.format(kgWeight)
-        } else {
-            formatter.format(amount)
-        }
+        return formatter.format(amount)
+    }
+
+    @Composable
+    fun formatNutritionOrigin(amount: Int): String {
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        return stringResource(R.string.format_nutrition_g, formatter.format(amount))
     }
 }

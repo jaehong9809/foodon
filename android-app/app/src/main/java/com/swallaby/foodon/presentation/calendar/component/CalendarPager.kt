@@ -11,8 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.swallaby.foodon.core.result.ResultState
-import com.swallaby.foodon.core.ui.component.LoadingProgress
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import org.threeten.bp.LocalDate
@@ -39,10 +37,6 @@ fun CalendarPager(
                 uiState = uiState,
                 onDateSelected = onDateSelected
             )
-
-            if (uiState.calendarResult is ResultState.Loading) {
-                LoadingProgress()
-            }
         }
     }
 }

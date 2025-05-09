@@ -31,6 +31,7 @@ fun TabContentLayout(
     bgColor: Color,
     @DrawableRes icon: Int = R.drawable.icon_mountain,
     bottomPadding: Dp = 16.dp,
+    contentPadding: Dp = 8.dp,
     content: @Composable () -> Unit,
 ) {
     Column(
@@ -57,7 +58,7 @@ fun TabContentLayout(
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(contentPadding))
 
         content()
     }

@@ -1,8 +1,8 @@
 package com.swallaby.foodon.data.main.remote.dto
 
+import com.swallaby.foodon.domain.main.model.ManageStatus
 import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.domain.main.model.NutrientManageType
-import com.swallaby.foodon.domain.main.model.NutrientStatus
 
 data class NutrientManageResponse(
     val nutrientName: String = "",
@@ -11,7 +11,7 @@ data class NutrientManageResponse(
     val intake: Int = 0,
     val minRecommend: Int = 0,
     val maxRecommend: Int = 0,
-    val status: NutrientStatus = NutrientStatus.NORMAL
+    val status: ManageStatus = ManageStatus.NORMAL
 )
 
 fun NutrientManageResponse.toDomain(): NutrientManage {

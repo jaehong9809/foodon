@@ -10,7 +10,7 @@ import com.swallaby.foodon.core.ui.theme.TextGreen
 import com.swallaby.foodon.core.ui.theme.TextRed
 import com.swallaby.foodon.core.ui.theme.WB500
 
-enum class NutrientStatus(val statusName: String, val textColor: Color, val bgColor: Color) {
+enum class ManageStatus(val statusName: String, val textColor: Color, val bgColor: Color) {
     NORMAL("적정", TextGreen, BGGreen),
     LACK("부족", WB500, BGBlue),
     CAUTION("주의", TextRed, BGRed),
