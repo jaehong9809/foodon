@@ -1,27 +1,31 @@
 package com.swallaby.foodon.data.main.remote.dto
 
+import com.swallaby.foodon.domain.food.model.NutrientCode
+import com.swallaby.foodon.domain.food.model.UnitType
+import com.swallaby.foodon.domain.main.model.HealthEffect
 import com.swallaby.foodon.domain.main.model.ManageStatus
 import com.swallaby.foodon.domain.main.model.NutrientManage
-import com.swallaby.foodon.domain.main.model.NutrientManageType
 
 data class NutrientManageResponse(
     val nutrientName: String = "",
-    val nutrientType: NutrientManageType = NutrientManageType.ESSENTIAL,
-    val unit: String = "",
-    val intake: Int = 0,
+    val nutrientCode: NutrientCode = NutrientCode.CARBS,
+    val unit: UnitType = UnitType.GRAM,
+    val intake: Double = 0.0,
     val minRecommend: Int = 0,
     val maxRecommend: Int = 0,
-    val status: ManageStatus = ManageStatus.NORMAL
+    val healthEffect: HealthEffect = HealthEffect.UNKNOWN,
+    val status: ManageStatus = ManageStatus.ADEQUATE
 )
 
 fun NutrientManageResponse.toDomain(): NutrientManage {
     return NutrientManage(
         nutrientName = this.nutrientName,
-        manageType = this.nutrientType,
+        nutrientCode = this.nutrientCode,
         unit = this.unit,
         intake = this.intake,
         minRecommend = this.minRecommend,
         maxRecommend = this.maxRecommend,
+        healthEffect = this.healthEffect,
         status = this.status
     )
 }

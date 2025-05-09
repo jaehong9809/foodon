@@ -29,9 +29,8 @@ import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.domain.main.model.NutrientIconType
+import com.swallaby.foodon.domain.main.model.HealthEffect
 import com.swallaby.foodon.domain.main.model.NutrientManage
-import com.swallaby.foodon.domain.main.model.NutrientManageType
 
 @Composable
 fun NutrientManageSummaryItem(
@@ -54,7 +53,7 @@ fun NutrientManageSummaryItem(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = NutrientIconType.getDrawable(nutrient.nutrientName)),
+                    painter = painterResource(id = nutrient.nutrientCode.icon),
                     contentDescription = nutrient.nutrientName,
                     modifier = Modifier.size(32.dp)
                 )
@@ -76,14 +75,14 @@ fun NutrientManageSummaryItem(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        NutrientInfo(nutrient.nutrientName, "${nutrient.intake}${nutrient.unit}")
+        NutrientInfo(nutrient.nutrientName, "${nutrient.intake}${nutrient.unit.value}")
     }
 }
 
 @Composable
 fun NutrientManageDetailItem(
     nutrient: NutrientManage,
-    type: NutrientManageType
+    type: HealthEffect
 ) {
     Row(
         modifier = Modifier.padding(vertical = 16.dp),
@@ -95,21 +94,21 @@ fun NutrientManageDetailItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = NutrientIconType.getDrawable(nutrient.nutrientName)),
+                painter = painterResource(id = nutrient.nutrientCode.icon),
                 contentDescription = nutrient.nutrientName,
                 modifier = Modifier.size(32.dp)
             )
 
-            val content = if (type == NutrientManageType.ESSENTIAL) stringResource(
+            val content = if (type == HealthEffect.BENEFICIAL) stringResource(
                 R.string.main_pager_good_nutrient_range,
                 nutrient.minRecommend,
                 nutrient.maxRecommend,
-                nutrient.unit
+                nutrient.unit.value
             )
             else stringResource(
                 R.string.main_pager_bad_nutrient_range,
                 nutrient.maxRecommend,
-                nutrient.unit
+                nutrient.unit.value
             )
 
             NutrientInfo(
@@ -124,7 +123,7 @@ fun NutrientManageDetailItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${nutrient.intake}${nutrient.unit}",
+                text = "${nutrient.intake}${nutrient.unit.value}",
                 style = SpoqaTypography.SpoqaBold16.copy(color = G900)
             )
 
