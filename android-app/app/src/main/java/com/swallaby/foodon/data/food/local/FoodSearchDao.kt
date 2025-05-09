@@ -35,4 +35,6 @@ interface FoodSearchDao {
     @Query("DELETE FROM foods")
     suspend fun clearAll()
 
+    @Query("DELETE FROM foods_fts")
+    suspend fun clearAllFts()
 }
