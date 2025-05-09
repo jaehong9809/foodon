@@ -14,6 +14,7 @@ import androidx.navigation.navigation
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
+import com.swallaby.foodon.presentation.foodsearch.FoodSearchScreen
 import com.swallaby.foodon.presentation.mealdetail.MealDetailScreen
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.nutritionedit.NutritionEditScreen
@@ -105,6 +106,10 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
                     navController.popBackStack()
                 },
             )
+        }
+
+        composable(NavRoutes.FoodGraph.FoodSearch.route){
+            FoodSearchScreen()
         }
     }
 }

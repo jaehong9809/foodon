@@ -25,6 +25,7 @@ sealed class NavRoutes(val route: String) {
             fun createRoute(foodId: Long) = "food_nutrition_edit/$foodId"
         }
 
+        object FoodSearch : NavRoutes("food_search")
 
         object FoodRecord : NavRoutes("food_record")
     }
