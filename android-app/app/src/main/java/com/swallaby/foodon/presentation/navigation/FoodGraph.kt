@@ -83,7 +83,6 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
             FoodEditScreen(
                 viewModel = foodEditViewModel,
                 onBackClick = { navController.popBackStack() },
-                foodId = foodId,
                 onNutritionEditClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodNutritionEdit.createRoute(foodId))
                 },

@@ -4,12 +4,10 @@ import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.NutrientInfo
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-// todo @AssistedInject 로 나중에 foodId 주입
 @HiltViewModel
 class FoodEditViewModel @Inject constructor(
 ) : BaseViewModel<FoodEditUiState>(FoodEditUiState()) {
@@ -18,7 +16,10 @@ class FoodEditViewModel @Inject constructor(
     fun initFood(mealInfo: MealInfo) {
         if (!isInitialized) {
             _uiState.update {
-                it.copy(foodEditState = ResultState.Success(mealInfo))
+                it.copy(
+                    foodEditState = ResultState.Success(mealInfo),
+                    selectedFoodId = mealInfo.mealItems.firstOrNull()?.foodId ?: 0
+                )
             }
             isInitialized = true
         }
@@ -46,6 +47,12 @@ class FoodEditViewModel @Inject constructor(
                 )
             }
 
+        }
+    }
+
+    fun selectFood(foodId: Long) {
+        _uiState.update {
+            it.copy(selectedFoodId = foodId)
         }
     }
 

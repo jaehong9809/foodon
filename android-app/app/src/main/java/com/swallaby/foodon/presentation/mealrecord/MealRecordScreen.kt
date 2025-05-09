@@ -89,8 +89,9 @@ fun MealRecordScreen(
     onSearchClick: () -> Unit,
     onNavigateToMealDetail: () -> Unit,
 ) {
+    val context = LocalContext.current
     val uiState by recordViewModel.uiState.collectAsStateWithLifecycle()
-    val cropManager = ImageCropManager(LocalContext.current)
+    val cropManager = ImageCropManager(context)
 
     // 이벤트 수집
     LaunchedEffect(Unit) {
@@ -114,6 +115,13 @@ fun MealRecordScreen(
                         // 모든 크롭 이미지가 준비됨
                         onNavigateToMealDetail()
                     }
+                }
+
+                is MealRecordEvent.ShowErrorMessage -> {
+                    // 에러 시 UI 표시
+                    Toast.makeText(
+                        context, event.errorMessageRes, Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -280,9 +288,7 @@ fun CameraAppScreen(
         }
 
         is ResultState.Error -> {
-            // 에러 시 UI 표시
-            val messageRes = uiState.mealRecordState.messageRes
-            Toast.makeText(context, stringResource(messageRes), Toast.LENGTH_SHORT).show()
+
         }
     }
 

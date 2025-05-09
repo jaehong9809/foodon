@@ -34,14 +34,14 @@ class MealEditViewModel @Inject constructor(
 
     fun initMeal(mealInfo: MealInfo) {
         Log.d(TAG, "Initializing MealEditViewModel")
-        if (!isInitialized) {
-            _uiState.update {
-                it.copy(mealEditState = ResultState.Success(mealInfo))
-                // todo test 용
+//        if (!isInitialized) {
+        _uiState.update {
+            it.copy(mealEditState = ResultState.Success(mealInfo))
+            // todo test 용
 //                it.copy(mealEditState = ResultState.Success(createDummyMealInfo()))
-            }
-            isInitialized = true
         }
+//            isInitialized = true
+//        }
     }
 
     fun recordMeal() {

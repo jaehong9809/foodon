@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,7 +65,6 @@ fun FoodEditScreen(
     modifier: Modifier = Modifier,
     viewModel: FoodEditViewModel,
     onBackClick: () -> Unit,
-    foodId: Long = 0,
     onFoodDeleteClick: () -> Unit = {},
     onFoodUpdateClick: () -> Unit = {},
     onNutritionEditClick: () -> Unit = {},
@@ -73,8 +73,12 @@ fun FoodEditScreen(
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
+
+    LaunchedEffect(uiState.selectedFoodId) {
+
+    }
     val food = mealInfo.mealItems.find { item ->
-        item.foodId == foodId
+        item.foodId == uiState.selectedFoodId
     }!!
 
     // food.nutrientInfo 대신 uiState 자체를 의존성으로 설정
@@ -97,7 +101,12 @@ fun FoodEditScreen(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            FoodThumbnailList()
+            FoodThumbnailList(
+                foods = mealInfo.mealItems,
+                imageUri = mealInfo.imageUri,
+                selectedFoodId = uiState.selectedFoodId,
+                selectFood = viewModel::selectFood
+            )
             HorizontalDivider(
                 modifier = modifier.padding(horizontal = 24.dp), thickness = 1.dp, color = Border02
             )
