@@ -1,5 +1,7 @@
 package com.swallaby.foodon.data.food.local.dto
 
+import androidx.room.ColumnInfo
+
 data class LocalFoodDto(
     val id: Long,
     val foodId: Long,
@@ -7,5 +9,6 @@ data class LocalFoodDto(
     val servingUnit: String,
     val kcal: Int,
     val isCustom: Boolean,
+    @ColumnInfo(name = "prefix_match")
     val prefixMatch: Int
 )
