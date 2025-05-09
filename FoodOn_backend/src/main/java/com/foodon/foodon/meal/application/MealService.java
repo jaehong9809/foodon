@@ -1,7 +1,7 @@
 package com.foodon.foodon.meal.application;
 
 import com.foodon.foodon.common.util.NutrientCalculator;
-import com.foodon.foodon.food.domain.NutrientType;
+import com.foodon.foodon.food.domain.NutrientCode;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
@@ -114,10 +114,10 @@ public class MealService {
     /**
      * [영양소타입 : 값] 으로 매핑
      */
-    private Map<NutrientType, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
+    private Map<NutrientCode, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
         return nutrients.stream()
                 .collect(Collectors.toMap(
-                        info -> NutrientType.from(info.nutrientType()),
+                        NutrientInfo::code,
                         info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
                 ));
     }

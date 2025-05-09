@@ -52,7 +52,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 NutrientInfo.class,
                                 foodNutrient.foodId,
                                 foodNutrient.id,
-                                nutrient.type,
+                                nutrient.name,
+                                nutrient.code,
                                 nutrient.nutrientUnit,
                                 foodNutrient.value
                 ))
@@ -98,7 +99,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 NutrientInfo.class,
                                 foodNutrient.foodId,
                                 foodNutrient.id,
-                                nutrient.type,
+                                nutrient.name,
+                                nutrient.code,
                                 nutrient.nutrientUnit,
                                 foodNutrient.value
                 ))

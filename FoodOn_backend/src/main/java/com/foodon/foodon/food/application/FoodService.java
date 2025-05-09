@@ -48,7 +48,7 @@ public class FoodService {
             Food food
     ) {
         List<Nutrient> nutrientList = nutrientRepository.findAll();
-        Map<NutrientType, Long> nutrientIdMap = convertToTypeIdMap(nutrientList);
+        Map<NutrientCode, Long> nutrientIdMap = convertToTypeIdMap(nutrientList);
 
         nutrients.toMap().forEach((type, value) -> {
             if (value == null) {
@@ -64,10 +64,10 @@ public class FoodService {
         });
     }
 
-    private Map<NutrientType, Long> convertToTypeIdMap(List<Nutrient> nutrientList) {
+    private Map<NutrientCode, Long> convertToTypeIdMap(List<Nutrient> nutrientList) {
         return nutrientList.stream()
                 .collect(Collectors.toMap(
-                        nutrient -> NutrientType.from(nutrient.getType()),
+                        Nutrient::getCode,
                         Nutrient::getId
                 ));
     }
@@ -81,10 +81,10 @@ public class FoodService {
         return FoodDetailInfoResponse.from(food, convertToTypedValueMap(food.nutrients()));
     }
 
-    private Map<NutrientType, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
+    private Map<NutrientCode, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
         return nutrients.stream()
                 .collect(Collectors.toMap(
-                        info -> NutrientType.from(info.nutrientType()),
+                        NutrientInfo::code,
                         info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
                 ));
     }

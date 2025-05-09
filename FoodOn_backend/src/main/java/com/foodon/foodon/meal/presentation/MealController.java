@@ -8,7 +8,6 @@ import com.foodon.foodon.meal.dto.MealCreateRequest;
 import com.foodon.foodon.meal.dto.MealInfoResponse;
 import com.foodon.foodon.meal.dto.MealSummaryResponse;
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.member.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
