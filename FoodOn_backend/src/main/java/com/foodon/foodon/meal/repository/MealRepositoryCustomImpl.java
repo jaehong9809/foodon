@@ -34,7 +34,8 @@ public class MealRepositoryCustomImpl implements MealRepositoryCustom{
                         Projections.constructor(
                                 NutrientIntakeInfo.class,
                                 nutrient.id,
-                                nutrient.type,
+                                nutrient.name,
+                                nutrient.code,
                                 foodNutrient.value.multiply(mealItem.quantity).sum()
                         )
                 )
@@ -48,7 +49,7 @@ public class MealRepositoryCustomImpl implements MealRepositoryCustom{
                         meal.isDeleted.isFalse(),
                         mealItem.isDeleted.isFalse()
                 )
-                .groupBy(nutrient.type)
+                .groupBy(nutrient.id, nutrient.name, nutrient.code)
                 .fetch();
     }
 }

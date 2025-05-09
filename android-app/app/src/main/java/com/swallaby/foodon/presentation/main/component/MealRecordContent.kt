@@ -11,24 +11,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.ui.component.EmptyContentText
+import com.swallaby.foodon.core.ui.component.LoadingProgress
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.domain.main.model.MealRecord
+import com.swallaby.foodon.core.util.DateUtil.formatDate
+import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
 fun MealRecordContent(
-    recordState: ResultState<List<MealRecord>>,
+    uiState: MainUiState,
     onMealClick: (Long) -> Unit
 ) {
+
+    val today = uiState.today
+    val selectedDate = uiState.selectedDate
+    val recordState = uiState.recordResult
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(24.dp)
     ) {
         Text(
-            text = stringResource(R.string.main_meal_record_title),
+            text = if (selectedDate != today) stringResource(R.string.main_meal_record_date_title, formatDate(selectedDate))
+                else stringResource(R.string.main_meal_record_today_title),
             color = G900,
             style = NotoTypography.NotoBold18
         )
@@ -36,25 +44,26 @@ fun MealRecordContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         when (recordState) {
+            is ResultState.Loading -> {
+                LoadingProgress()
+            }
             is ResultState.Success -> {
-                Column(
-                    modifier = Modifier.wrapContentHeight(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    recordState.data.forEach { item ->
-                        MealRecordItem(meal = item, onClick = onMealClick)
+                if (recordState.data.isEmpty()) {
+                    EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
+                } else {
+                    Column(
+                        modifier = Modifier.wrapContentHeight(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        recordState.data.forEach { item ->
+                            MealRecordItem(meal = item, onClick = onMealClick)
+                        }
                     }
                 }
             }
             else -> {
-                Text(
-                    text = stringResource(R.string.main_meal_record_title),
-                    color = G900,
-                    style = NotoTypography.NotoBold20,
-                    textAlign = TextAlign.Center
-                )
+                EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
             }
         }
     }
 }
-

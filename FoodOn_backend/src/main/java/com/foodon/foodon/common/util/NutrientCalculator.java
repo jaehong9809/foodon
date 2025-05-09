@@ -1,6 +1,5 @@
 package com.foodon.foodon.common.util;
 
-import com.foodon.foodon.food.domain.NutrientType;
 import com.foodon.foodon.food.domain.NutrientUnit;
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.dto.NutrientProfile;

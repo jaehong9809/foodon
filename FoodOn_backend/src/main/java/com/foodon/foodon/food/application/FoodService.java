@@ -1,8 +1,11 @@
 package com.foodon.foodon.food.application;
 
+import com.foodon.foodon.common.util.NutrientCalculator;
 import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
+import com.foodon.foodon.food.dto.FoodDetailInfoResponse;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodNutrientRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,7 +48,7 @@ public class FoodService {
             Food food
     ) {
         List<Nutrient> nutrientList = nutrientRepository.findAll();
-        Map<NutrientType, Long> nutrientIdMap = convertToTypeIdMap(nutrientList);
+        Map<NutrientCode, Long> nutrientIdMap = convertToTypeIdMap(nutrientList);
 
         nutrients.toMap().forEach((type, value) -> {
             if (value == null) {
@@ -60,20 +64,29 @@ public class FoodService {
         });
     }
 
-    private Map<NutrientType, Long> convertToTypeIdMap(List<Nutrient> nutrientList) {
+    private Map<NutrientCode, Long> convertToTypeIdMap(List<Nutrient> nutrientList) {
         return nutrientList.stream()
                 .collect(Collectors.toMap(
-                        nutrient -> NutrientType.from(nutrient.getType()),
+                        Nutrient::getCode,
                         Nutrient::getId
                 ));
     }
 
-    public FoodWithNutrientInfo getFood(
+    public FoodDetailInfoResponse getFood(
             Long foodId,
             FoodType type,
             Member member
     ) {
-        return foodRepository.findFoodInfoWithNutrientByIdAndType(foodId, type, member);
+        FoodWithNutrientInfo food = foodRepository.findFoodInfoWithNutrientByIdAndType(foodId, type, member);
+        return FoodDetailInfoResponse.from(food, convertToTypedValueMap(food.nutrients()));
+    }
+
+    private Map<NutrientCode, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
+        return nutrients.stream()
+                .collect(Collectors.toMap(
+                        NutrientInfo::code,
+                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                ));
     }
 
 }

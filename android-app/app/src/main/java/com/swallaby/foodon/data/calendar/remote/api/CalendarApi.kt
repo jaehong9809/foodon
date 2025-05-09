@@ -7,21 +7,22 @@ import com.swallaby.foodon.data.calendar.remote.dto.RecommendationResponse
 import com.swallaby.foodon.data.calendar.remote.dto.UserWeightResponse
 import com.swallaby.foodon.data.calendar.remote.dto.WeightResponse
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CalendarApi {
 
-    @GET("calendar/meals")
+    @GET("intake")
     suspend fun getCalendarMeals(@Query(value = "date") date: String): BaseResponse<List<MealResponse>>
 
-    @GET("calendar/weight")
-    suspend fun getCalendarWeights(@Query(value = "date") date: String): BaseResponse<List<WeightResponse>>
-
-    @GET("calendar/recommendations")
-    suspend fun getCalendarRecommendations(@Query(value = "date") date: String): BaseResponse<List<RecommendationResponse>>
+    @GET("members/weights/calendar/{yearMonth}")
+    suspend fun getCalendarWeights(@Path("yearMonth") date: String): BaseResponse<List<WeightResponse>>
 
     @GET("members/profile/weight")
     suspend fun getUserWeight(): BaseResponse<UserWeightResponse>
+
+    @GET("calendar/recommendations")
+    suspend fun getCalendarRecommendations(@Query(value = "date") date: String): BaseResponse<List<RecommendationResponse>>
 
     @GET("recommendations")
     suspend fun getRecommendFoods(

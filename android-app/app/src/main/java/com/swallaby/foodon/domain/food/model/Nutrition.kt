@@ -5,3 +5,5 @@ data class Nutrition(
     val amount: Int = 0,
     val ratio: Float = 0f,
 )
+
+

@@ -76,10 +76,11 @@ fun RecommendFoodCompact(
 
 @Composable
 fun RecommendFoodDetail(
+    modifier: Modifier = Modifier,
     food: RecommendFood = RecommendFood()
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(color = MainWhite, shape = RoundedCornerShape(10.dp))
             .border(1.dp, color = Border025, shape = RoundedCornerShape(10.dp))

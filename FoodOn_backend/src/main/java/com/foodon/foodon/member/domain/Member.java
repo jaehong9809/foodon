@@ -64,4 +64,22 @@ public class Member extends BaseTimeEntity {
                 profileImgUrl
         );
     }
+
+    public void updateProfile(
+            Gender gender,
+            int height,
+            int goalWeight,
+            Long nutrientPlanId,
+            Long activityLevelId
+    ) {
+        this.gender = gender;
+        this.height = height;
+        this.goalWeight = goalWeight;
+        this.nutrientPlanId = nutrientPlanId;
+        this.activityLevelId = activityLevelId;
+    }
+
+    public void markProfileUpdated() {
+        this.profileUpdated = true;
+    }
 }
