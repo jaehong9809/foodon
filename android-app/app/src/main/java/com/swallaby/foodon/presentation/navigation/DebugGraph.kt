@@ -12,7 +12,10 @@ fun NavGraphBuilder.debugGraph(navController: NavHostController) {
         val viewModel: DebugViewModel = hiltViewModel()
         DebugControlScreen(
             onInsertDummyData = { viewModel.insertDummyData() },
-            onClearDb = { viewModel.clearDatabase() }
+            onClearDb = { viewModel.clearDatabase() },
+            onGoToFoodSearch = {
+                navController.navigate(NavRoutes.FoodGraph.FoodSearch.route)
+            }
         )
     }
 }

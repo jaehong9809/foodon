@@ -14,7 +14,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DebugControlScreen(
     onInsertDummyData: () -> Unit,
-    onClearDb: () -> Unit
+    onClearDb: () -> Unit,
+    onGoToFoodSearch: () -> Unit
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         Button(onClick = onInsertDummyData) {
@@ -24,6 +25,11 @@ fun DebugControlScreen(
 
         Button(onClick = onClearDb) {
             Text("DB 초기화")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = onGoToFoodSearch) {
+            Text("FoodSearch UI")
         }
     }
 }
