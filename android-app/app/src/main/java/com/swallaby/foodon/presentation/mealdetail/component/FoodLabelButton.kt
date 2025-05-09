@@ -33,9 +33,13 @@ import com.swallaby.foodon.domain.food.model.Position
 
 @Composable
 fun FoodLabelButton(
-    position: Position, originalImageSize: Size, foodName: String, onClick: () -> Unit = {}
+    position: Position,
+    originalImageSize: Size,
+    centerPosition: Size,  // 중앙 좌표 추가
+    foodName: String,
+    onClick: () -> Unit = {},
 ) {
-    // 상대적 위치 계산 (0-1 사이 값)
+    // position.x와 position.y는 부분 이미지의 좌상단 좌표 (이미지 비율 기준)
     val relativeX = position.x / originalImageSize.width
     val relativeY = position.y / originalImageSize.height
 
@@ -61,19 +65,19 @@ fun FoodLabelButton(
                 val containerWidth = constraints.maxWidth.toFloat()
                 val containerHeight = constraints.maxHeight.toFloat()
 
-                // 위치 계산
-                val x = (relativeX * containerWidth).toInt()
-                val y = (relativeY * containerHeight).toInt()
+                // 중앙 위치 계산 (버튼 자체 크기의 절반을 빼서 중앙 정렬)
+                val x = (centerPosition.width * containerWidth).toInt() - (placeable.width / 2)
+                val y = (centerPosition.height * containerHeight).toInt() - (placeable.height / 2)
 
                 // 원래 크기를 유지하면서 위치만 조정
                 layout(placeable.width, placeable.height) {
                     placeable.placeRelative(x, y)
                 }
             }
-            .clickable(
-                onClick = onClick,
+            .clickable(onClick = onClick,
                 indication = null,
-                interactionSource = remember { MutableInteractionSource() })) {
+                interactionSource = remember { MutableInteractionSource() })
+        ) {
             // 블러 처리된 배경 박스
             Box(
                 modifier = Modifier
@@ -114,6 +118,9 @@ fun FoodLabelButton(
 @Composable
 fun FoodLabelButtonPreview() {
     FoodLabelButton(
-        foodName = "과일 케이크", position = Position(), originalImageSize = Size(100f, 100f)
+        foodName = "과일 케이크",
+        position = Position(),
+        originalImageSize = Size(100f, 100f),
+        centerPosition = Size(100f, 100f)
     )
 }

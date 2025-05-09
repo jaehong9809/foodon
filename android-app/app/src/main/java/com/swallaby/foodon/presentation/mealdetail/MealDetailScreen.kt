@@ -296,18 +296,35 @@ fun MealImageWithFoodLabels(
 
 @Composable
 private fun DisplayFoodLabels(
-    mealItems: List<MealItem>, originalImageSize: Size, onFoodClick: (foodId: Long) -> Unit,
+    mealItems: List<MealItem>,
+    originalImageSize: Size,
+    onFoodClick: (foodId: Long) -> Unit,
 ) {
     mealItems.forEach { mealItem ->
         mealItem.positions.forEach { position ->
-            FoodLabelButton(position = position,
+            // position.x와 position.y가 픽셀 단위인 경우 (주석대로)
+            // 픽셀을 비율로 변환
+            val relativeX = position.x / originalImageSize.width
+            val relativeY = position.y / originalImageSize.height
+
+            // 부분 이미지의 너비와 높이 (비율)
+            val partialWidth = position.width  // 이미 비율이라고 가정
+            val partialHeight = position.height  // 이미 비율이라고 가정
+
+            // 부분 이미지의 중앙 좌표 (비율)
+            val centerX = relativeX + (partialWidth / 2)
+            val centerY = relativeY + (partialHeight / 2)
+
+            FoodLabelButton(
+                position = position,
                 originalImageSize = originalImageSize,
+                centerPosition = Size(centerX.toFloat(), centerY.toFloat()),  // 중앙 좌표 전달
                 foodName = mealItem.foodName,
-                onClick = { onFoodClick(mealItem.foodId) })
+                onClick = { onFoodClick(mealItem.foodId) }
+            )
         }
     }
 }
-
 
 @ExperimentalMaterial3Api
 fun dismissModalBottomSheet(
