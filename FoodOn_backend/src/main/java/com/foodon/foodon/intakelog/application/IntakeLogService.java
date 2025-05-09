@@ -17,6 +17,7 @@ import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.nutrientplan.repository.NutrientPlanRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +26,10 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.foodon.foodon.intakelog.exception.IntakeLogErrorCode.*;
 
@@ -61,22 +63,86 @@ public class IntakeLogService {
         return IntakeLog.createIntakeLogOfMember(member, date, goalKcal);
     }
 
-    public List<IntakeSummaryResponse> getIntakeLogsByMonth(
-            String date,
+    public List<IntakeSummaryResponse> getIntakeLogCalendar(
+            YearMonth yearMonth,
             Member member
     ) {
-        List<IntakeLog> intakeLogs = findIntakeLogsByMonth(member, date);
+        List<LocalDate> allDates = getAllDatesInMonth(yearMonth);
+        TreeMap<LocalDate, MemberStatus> recordMap = findLatestMemberStatusSortedMap(member, yearMonth);
+        Map<LocalDate, IntakeLog> intakeLogMap = findIntakeLogsInMonth(member, yearMonth);
 
-        return intakeLogs.stream().map(IntakeSummaryResponse::withIntakeLog).toList();
+        return allDates.stream()
+                .map(date -> convertToIntakeSummaryResponse(date, member, intakeLogMap, recordMap))
+                .toList();
     }
 
-    private List<IntakeLog> findIntakeLogsByMonth(Member member, String date) {
-        validateYearMonthFormat(date); // 날짜 요청 형식 검증
-        YearMonth yearMonth = YearMonth.parse(date);
+    private IntakeSummaryResponse convertToIntakeSummaryResponse(
+            LocalDate date,
+            Member member,
+            Map<LocalDate, IntakeLog> intakeLogMap,
+            TreeMap<LocalDate, MemberStatus> recordMap
+    ) {
+        if (intakeLogMap.containsKey(date)) {
+            return IntakeSummaryResponse.withIntakeLog(intakeLogMap.get(date));
+        }
+
+        MemberStatus status = getLatestMemberStatusBeforeDate(recordMap, date);
+        BigDecimal goalKcal = !Objects.isNull(status)
+                ? getGoalKcalFromMemberStatus(member)
+                : BigDecimal.ZERO;
+
+        return IntakeSummaryResponse.withoutIntakeLog(goalKcal, date);
+    }
+
+    private MemberStatus getLatestMemberStatusBeforeDate(
+            TreeMap<LocalDate, MemberStatus> recordMap,
+            LocalDate date
+    ) {
+        return recordMap.getOrDefault(date,
+                Optional.ofNullable(recordMap.floorEntry(date))
+                        .map(Map.Entry::getValue)
+                        .orElse(null)
+        );
+    }
+
+    private List<LocalDate> getAllDatesInMonth(YearMonth yearMonth) {
+        return IntStream.rangeClosed(1, yearMonth.lengthOfMonth())
+                .mapToObj(yearMonth::atDay)
+                .toList();
+    }
+
+    private TreeMap<LocalDate, MemberStatus> findLatestMemberStatusSortedMap(
+            Member member,
+            YearMonth yearMonth
+    ) {
+        MemberStatus latestStatus = getLatestStatusOrThrow(member);
+        YearMonth createdMonth = YearMonth.from(latestStatus.getCreatedAt());
+        if(createdMonth.isBefore(yearMonth)) {
+            return new TreeMap<>(Map.of(latestStatus.getCreatedAt(), latestStatus));
+        }
+
+        LocalDate start = createdMonth.atDay(1);
+        LocalDate end = yearMonth.atEndOfMonth();
+
+        return memberStatusRepository.findByMemberIdAndCreatedAtBetweenOrderByCreatedAt(
+                member.getId(),
+                start,
+                end
+        ).stream().collect(Collectors.toMap(
+                MemberStatus::getCreatedAt,
+                Function.identity(),
+                (prev, next) -> prev,
+                TreeMap::new
+        ));
+    }
+
+    private Map<LocalDate, IntakeLog> findIntakeLogsInMonth(Member member, YearMonth yearMonth) {
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
-        return intakeLogRepository.findByMemberAndDateBetween(member, startDate, endDate);
+        return intakeLogRepository.findByMemberAndDateBetween(member, startDate, endDate)
+                .stream()
+                .collect(Collectors.toMap(IntakeLog::getDate, Function.identity()));
     }
 
     private void validateYearMonthFormat(String date) {
