@@ -186,8 +186,8 @@ fun MealRecordItemPreview() {
             "김치",
         ),
         totalKcal = 1000,
-        totalCarbs = 10,
-        totalProtein = 5,
-        totalFat = 5
+        totalCarbs = 10.0,
+        totalProtein = 5.0,
+        totalFat = 5.0
     ), onClick = {})
 }

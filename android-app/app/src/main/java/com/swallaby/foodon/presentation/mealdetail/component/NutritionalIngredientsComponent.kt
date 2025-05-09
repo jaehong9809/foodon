@@ -55,23 +55,21 @@ fun NutritionalIngredientsComponent(
     modifier: Modifier,
     mealType: MealType,
     mealTime: String,
-    totalCarbs: Int,
-    totalFat: Int,
+    totalCarbs: Double,
+    totalFat: Double,
     totalKcal: Int,
-    totalProtein: Int,
+    totalProtein: Double,
     onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit = {},
 ) {
     val totalNutrition = totalCarbs + totalProtein + totalFat
     val nutritions = listOfNotNull(totalCarbs.takeIf { it > 0 }
-        ?.let { Nutrition(NutritionType.CARBOHYDRATE, it, it.toFloat() / totalNutrition) },
+        ?.let { Nutrition(NutritionType.CARBOHYDRATE, it, (it / totalNutrition).toFloat()) },
         totalProtein.takeIf { it > 0 }
-            ?.let { Nutrition(NutritionType.PROTEIN, it, it.toFloat() / totalNutrition) },
+            ?.let { Nutrition(NutritionType.PROTEIN, it, (it / totalNutrition).toFloat()) },
         totalFat.takeIf { it > 0 }?.let {
             Nutrition(
-                NutritionType.FAT,
-                it,
-                it.toFloat() / totalNutrition
+                NutritionType.FAT, it, (it / totalNutrition).toFloat()
             )
         }).sortedByDescending { it.amount }
 
@@ -240,9 +238,9 @@ fun NutritionalIngredientsComponentPreview() {
         modifier = Modifier,
         mealType = MealType.BREAKFAST,
         mealTime = "12:00",
-        totalCarbs = 100,
-        totalFat = 100,
+        totalCarbs = 100.0,
+        totalFat = 100.0,
         totalKcal = 100,
-        totalProtein = 100
+        totalProtein = 100.0
     )
 }

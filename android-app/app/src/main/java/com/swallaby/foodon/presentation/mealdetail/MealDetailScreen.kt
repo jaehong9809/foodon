@@ -1,7 +1,7 @@
 package com.swallaby.foodon.presentation.mealdetail
 
 import android.graphics.drawable.BitmapDrawable
-import kotlin.Pair
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -101,12 +100,13 @@ fun MealDetailScreen(
                 ) {
                     // 음식 이미지와 음식 이름 버튼 영역
                     MealImageWithFoodLabels(
-                        mealItems = mealInfo.mealItems, onFoodClick = onFoodClick
+                        mealItems = mealInfo.mealItems,
+                        onFoodClick = onFoodClick,
+                        imageUri = mealInfo.imageUri
                     )
 
                     // 영양소 정보 컴포넌트
-                    NutritionalIngredientsComponent(
-                        modifier = modifier,
+                    NutritionalIngredientsComponent(modifier = modifier,
                         mealType = uiState.mealType,
                         mealTime = uiState.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
@@ -128,6 +128,7 @@ fun MealDetailScreen(
                     FoodInfoComponent(
                         onClick = onFoodClick,
                         foods = mealInfo.mealItems,
+                        imageUri = mealInfo.imageUri,
                         onDelete = viewModel::deleteFood
                     )
                 }
@@ -190,8 +191,7 @@ fun MealDetailScreen(
                                 )
                             }
                         }
-                        ScrollTimePicker(
-                            initTimeIndex = selectedMinIndex,
+                        ScrollTimePicker(initTimeIndex = selectedMinIndex,
                             initHourIndex = selectedHourIndex,
                             initAmPmIndex = selectedAmPmIndex,
                             onTimeChanged = {
@@ -241,7 +241,9 @@ private fun ErrorState(message: String) {
 
 @Composable
 fun MealImageWithFoodLabels(
-    mealItems: List<MealItem>, onFoodClick: (foodId: Long) -> Unit
+    modifier: Modifier = Modifier,
+    imageUri: Uri?,
+    mealItems: List<MealItem>, onFoodClick: (foodId: Long) -> Unit,
 ) {
     var originalImageSize by remember { mutableStateOf(Size(0f, 0f)) }
     var isImageLoaded by remember { mutableStateOf(false) }
@@ -249,13 +251,13 @@ fun MealImageWithFoodLabels(
     Box {
         val imageContentScale = ContentScale.FillBounds
         val context = LocalContext.current
-        val imageUrl =
-            "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
+        val imageUrl = imageUri.toString()
+//        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
 
         // 이미지 표시
         AsyncImage(
-            model = ImageRequest.Builder(context).data(imageUrl).crossfade(true).listener(
-                onSuccess = { _, result ->
+            model = ImageRequest.Builder(context).data(imageUrl).crossfade(true)
+                .listener(onSuccess = { _, result ->
                     val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
                     if (bitmap != null && !isImageLoaded) {
                         originalImageSize = Size(
@@ -294,12 +296,11 @@ fun MealImageWithFoodLabels(
 
 @Composable
 private fun DisplayFoodLabels(
-    mealItems: List<MealItem>, originalImageSize: Size, onFoodClick: (foodId: Long) -> Unit
+    mealItems: List<MealItem>, originalImageSize: Size, onFoodClick: (foodId: Long) -> Unit,
 ) {
     mealItems.forEach { mealItem ->
-        mealItem.position.forEach { position ->
-            FoodLabelButton(
-                position = position,
+        mealItem.positions.forEach { position ->
+            FoodLabelButton(position = position,
                 originalImageSize = originalImageSize,
                 foodName = mealItem.foodName,
                 onClick = { onFoodClick(mealItem.foodId) })

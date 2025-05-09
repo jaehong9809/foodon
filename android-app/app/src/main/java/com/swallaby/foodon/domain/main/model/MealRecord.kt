@@ -9,7 +9,7 @@ data class MealRecord(
     val imageUrl: String = "",
     val mealItems: List<String> = emptyList(),
     val totalKcal: Int = 0,
-    val totalCarbs: Int = 0,
-    val totalProtein: Int = 0,
-    val totalFat: Int = 0
+    val totalCarbs: Double = 0.0,
+    val totalProtein: Double = 0.0,
+    val totalFat: Double = 0.0,
 )

@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import com.swallaby.foodon.domain.food.model.MealItem
 @Composable
 fun FoodInfoComponent(
     modifier: Modifier = Modifier,
+    imageUri: Uri?,
     foods: List<MealItem> = emptyList(),
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
@@ -36,14 +38,15 @@ fun FoodInfoComponent(
     val cropManager = ImageCropManager(LocalContext.current)
 
     val positions = foods.mapNotNull { mealItem ->
-        mealItem.position.firstOrNull()
+        mealItem.positions.firstOrNull()
     }
     var isLoad by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         // 이미지 로드 및 크롭
         cropManager.loadAndCropImage(
-            "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+            imageUri.toString(),
+            //"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
             positions
         ) {
             isLoad = true
@@ -64,7 +67,10 @@ fun FoodInfoComponent(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 repeat(foods.size) { index ->
                     FoodCard(
-                        food = foods[index], onClick = onClick, onDelete = onDelete,
+                        food = foods[index],
+                        onClick = onClick,
+                        onDelete = onDelete,
+                        imageUri = imageUri
                     )
                 }
             }
@@ -78,5 +84,5 @@ fun FoodInfoComponent(
 @Preview
 @Composable
 fun FoodInfoComponentPreview() {
-    FoodInfoComponent(onClick = {}, onDelete = {})
+    FoodInfoComponent(onClick = {}, onDelete = {}, imageUri = null)
 }

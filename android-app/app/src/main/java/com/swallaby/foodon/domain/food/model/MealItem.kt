@@ -7,6 +7,6 @@ data class MealItem(
     val unit: String = "",
     val quantity: Int = 0,
     val nutrientInfo: NutrientInfo = NutrientInfo(),
-    val position: List<Position> = emptyList(),
+    val positions: List<Position> = emptyList(),
 )
 

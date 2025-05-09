@@ -115,24 +115,24 @@ class MainViewModel @Inject constructor(
 
     private fun createFakeData(): List<CalendarItem> {
         return listOf(
-        CalendarItem.Meal(
-            data = CalendarMeal(
-                calendarType = CalendarType.MEAL,
-                intakeLogId = 1L,
-                date = "2025-05-01",
-                intakeKcal = 1800,
-                goalKcal = 2000
+            CalendarItem.Meal(
+                data = CalendarMeal(
+                    calendarType = CalendarType.MEAL,
+                    intakeLogId = 1L,
+                    date = "2025-05-01",
+                    intakeKcal = 1800,
+                    goalKcal = 2000
+                )
+            ),
+            CalendarItem.Meal(
+                data = CalendarMeal(
+                    calendarType = CalendarType.MEAL,
+                    intakeLogId = 2L,
+                    date = "2025-05-05",
+                    intakeKcal = 1950,
+                    goalKcal = 2000
+                )
             )
-        ),
-        CalendarItem.Meal(
-            data = CalendarMeal(
-                calendarType = CalendarType.MEAL,
-                intakeLogId = 2L,
-                date = "2025-05-05",
-                intakeKcal = 1950,
-                goalKcal = 2000
-            )
-        )
         )
     }
 
@@ -158,9 +158,9 @@ class MainViewModel @Inject constructor(
                     "김치",
                 ),
                 totalKcal = 1000,
-                totalCarbs = 10,
-                totalProtein = 5,
-                totalFat = 5
+                totalCarbs = 10.0,
+                totalProtein = 5.0,
+                totalFat = 5.0
             ),
             MealRecord(
                 mealId = 1,
@@ -171,9 +171,9 @@ class MainViewModel @Inject constructor(
                     "쌀밥"
                 ),
                 totalKcal = 1000,
-                totalCarbs = 10,
-                totalProtein = 5,
-                totalFat = 5
+                totalCarbs = 10.0,
+                totalProtein = 5.0,
+                totalFat = 5.0
             )
         )
     }

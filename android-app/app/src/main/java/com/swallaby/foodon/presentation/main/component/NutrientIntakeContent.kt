@@ -39,20 +39,23 @@ fun NutrientIntakeContent(
         verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = if (selectedDate != today) stringResource(R.string.main_nutrient_intake_date_title, formatDate(selectedDate))
-                    else stringResource(R.string.main_nutrient_intake_today_title),
+            text = if (selectedDate != today) stringResource(
+                R.string.main_nutrient_intake_date_title,
+                formatDate(selectedDate)
+            )
+            else stringResource(R.string.main_nutrient_intake_today_title),
             color = G900,
             style = NotoTypography.NotoBold18
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column (
+        Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (intakeResult) {
-                is ResultState.Success ->  {
+                is ResultState.Success -> {
                     val calorie = intakeResult.data
 
                     val carbsRatio = calorie.intakeCarbs.toFloat() * 4 / calorie.goalKcal
@@ -60,9 +63,17 @@ fun NutrientIntakeContent(
                     val fatRatio = calorie.intakeFat.toFloat() * 9 / calorie.goalKcal
 
                     val nutrients = listOf(
-                        Nutrition(NutritionType.CARBOHYDRATE, calorie.intakeCarbs, carbsRatio),
-                        Nutrition(NutritionType.PROTEIN, calorie.intakeProtein, proteinRatio),
-                        Nutrition(NutritionType.FAT, calorie.intakeFat, fatRatio),
+                        Nutrition(
+                            NutritionType.CARBOHYDRATE,
+                            calorie.intakeCarbs.toDouble(),
+                            carbsRatio
+                        ),
+                        Nutrition(
+                            NutritionType.PROTEIN,
+                            calorie.intakeProtein.toDouble(),
+                            proteinRatio
+                        ),
+                        Nutrition(NutritionType.FAT, calorie.intakeFat.toDouble(), fatRatio),
                     ).sortedByDescending { it.amount }
 
                     CalorieProgressBar(
@@ -73,6 +84,7 @@ fun NutrientIntakeContent(
 
                     IntakeDetail(calorie)
                 }
+
                 else -> {
                     CalorieProgressBar()
                 }

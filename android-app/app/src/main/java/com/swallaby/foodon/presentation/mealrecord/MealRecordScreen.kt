@@ -101,12 +101,14 @@ fun MealRecordScreen(
                     editViewModel.initMeal(event.mealInfo)
 
                     val positions = event.mealInfo.mealItems.mapNotNull { mealItem ->
-                        mealItem.position.firstOrNull()
+                        mealItem.positions.firstOrNull()
                     }
 
+                    Log.d("MealRecordScreen", "image URI: ${event.mealInfo.imageUri.toString()}")
                     // 이미지 로드 및 크롭
                     cropManager.loadAndCropImage(
-                        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+                        event.mealInfo.imageUri.toString(),
+//                        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
                         positions
                     ) {
                         // 모든 크롭 이미지가 준비됨
@@ -338,8 +340,7 @@ fun CameraAppScreen(
         ) {
             // 앨범 선택 버튼
             Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
-                ActionButton(
-                    iconResId = R.drawable.icon_gallery,
+                ActionButton(iconResId = R.drawable.icon_gallery,
                     text = stringResource(R.string.select_gallery),
                     onClick = { galleryLauncher.launch("image/*") })
             }
@@ -366,8 +367,7 @@ fun CameraAppScreen(
                     contentValues
                 ).build()
 
-                imageCaptureUseCase.takePicture(
-                    outputOptions,
+                imageCaptureUseCase.takePicture(outputOptions,
                     ContextCompat.getMainExecutor(context),
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
@@ -447,11 +447,10 @@ fun CameraPreview(
         }
     }
 
-    AndroidView(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .clip(RectangleShape), // 1:1 비율에 맞게 clip
+    AndroidView(modifier = modifier
+        .fillMaxWidth()
+        .aspectRatio(1f)
+        .clip(RectangleShape), // 1:1 비율에 맞게 clip
         factory = { context ->
             PreviewView(context).also {
                 it.scaleType = PreviewView.ScaleType.FILL_CENTER

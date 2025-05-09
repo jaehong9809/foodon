@@ -1,6 +1,6 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
-import android.util.Log
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -63,9 +63,10 @@ import kotlin.math.roundToInt
 fun FoodCard(
     modifier: Modifier = Modifier,
     food: MealItem,
+    imageUri: Uri?,
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
-    cropManager: ImageCropManager = ImageCropManager(LocalContext.current)
+    cropManager: ImageCropManager = ImageCropManager(LocalContext.current),
 ) {
     val nutrients: List<Nutrition> = food.nutrientInfo.toNutrient()
     var showDeletePopup by remember { mutableStateOf(false) }
@@ -74,7 +75,7 @@ fun FoodCard(
     var iconPosition by remember { mutableStateOf(IntOffset.Zero) }
     var iconSize by remember { mutableStateOf(IntSize.Zero) }
 
-    val foodImage = food.position.firstOrNull()
+    val foodImage = food.positions.firstOrNull()
 
 
 
@@ -99,7 +100,7 @@ fun FoodCard(
                     foodImage?.let {
                         AsyncImage(
                             model = cropManager.getCroppedImageRequest(
-                                "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+                                imageUri.toString(),//"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
                                 it
                             ),
                             contentDescription = "음식 사진",
@@ -116,8 +117,7 @@ fun FoodCard(
                     Column {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = modifier.clickable(
-                                interactionSource = remember { MutableInteractionSource() },
+                            modifier = modifier.clickable(interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
                                 onClick = { onClick(food.foodId) })
                         ) {
@@ -170,8 +170,7 @@ fun FoodCard(
                     modifier = modifier
                         .padding(end = 2.dp)
                         .size(32.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
+                        .clickable(interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                             onClick = {
                                 if (!showDeletePopup) showDeletePopup = true
@@ -232,8 +231,7 @@ fun FoodCard(
                         }
                     }
 
-                    Popup(
-                        popupPositionProvider = popupPositionProvider,
+                    Popup(popupPositionProvider = popupPositionProvider,
                         onDismissRequest = { showDeletePopup = false }) {
                         Box(
                             modifier = Modifier
@@ -268,5 +266,5 @@ fun FoodCard(
 @Preview(showBackground = true)
 @Composable
 fun FoodCardPreview() {
-    FoodCard(onClick = {}, food = MealItem(), onDelete = {})
+    FoodCard(onClick = {}, food = MealItem(), onDelete = {}, imageUri = null)
 }
