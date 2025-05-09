@@ -11,6 +11,7 @@ import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class FoodController {
     @PostMapping("/custom")
     @Operation(summary = "음식 등록하기")
     public ResponseEntity<Response<Void>> saveCustomFood(
-            @RequestBody CustomFoodCreateRequest request,
+            @Valid @RequestBody CustomFoodCreateRequest request,
             @Parameter(hidden = true) @AuthMember Member member
     ){
         foodService.saveCustomFood(request, member);
