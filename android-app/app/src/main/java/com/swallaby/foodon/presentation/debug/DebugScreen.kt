@@ -21,6 +21,7 @@ fun DebugControlScreen(
             Text("더미 데이터 삽입 (500개)")
         }
         Spacer(modifier = Modifier.height(16.dp))
+
         Button(onClick = onClearDb) {
             Text("DB 초기화")
         }
