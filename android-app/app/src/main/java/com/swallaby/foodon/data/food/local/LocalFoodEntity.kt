@@ -10,16 +10,13 @@ import androidx.room.PrimaryKey
     tableName = "foods",
     indices = [Index(value = ["name"], unique = true)]
 )
-@Fts4
 data class LocalFoodEntity(
 
-    @PrimaryKey
-    @ColumnInfo(name = "rowid")
+    @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val foodId: Long,
     val name: String,
     val servingUnit: String,
     val kcal: Int,
-    val isCustom: Boolean,
-    val searchTokens: String
+    val isCustom: Boolean
 )
