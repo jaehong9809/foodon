@@ -26,29 +26,28 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
+import com.swallaby.foodon.domain.main.model.GoalInfo
+import com.swallaby.foodon.domain.main.model.GoalSection
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
-
-data class InfoData(val title: String, val content: String)
-data class SectionData(val title: String, val items: List<InfoData>)
 
 @Composable
 fun GoalManageContent() {
     val sections = listOf(
-        SectionData(
+        GoalSection(
             title = stringResource(R.string.main_goal_manage_title),
             items = listOf(
-                InfoData(stringResource(R.string.main_goal_manage_type), "고단백형"),
-                InfoData(stringResource(R.string.main_goal_manage_calorie), stringResource(R.string.format_kcal, formatKcal(1000))),
-                InfoData(stringResource(R.string.main_goal_manage_nutrient), "48:28:24")
+                GoalInfo(stringResource(R.string.main_goal_manage_type), "고단백형"),
+                GoalInfo(stringResource(R.string.main_goal_manage_calorie), stringResource(R.string.format_kcal, formatKcal(1000))),
+                GoalInfo(stringResource(R.string.main_goal_manage_nutrient), "48:28:24")
             )
         ),
-        SectionData(
+        GoalSection(
             title = stringResource(R.string.main_profile_manage_title),
             items = listOf(
-                InfoData(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, 174)),
-                InfoData(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, 60)),
-                InfoData(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, 60))
+                GoalInfo(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, 174)),
+                GoalInfo(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, 60)),
+                GoalInfo(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, 60))
             )
         )
     )
@@ -67,7 +66,7 @@ fun GoalManageContent() {
 }
 
 @Composable
-fun Section(title: String, items: List<InfoData>) {
+fun Section(title: String, items: List<GoalInfo>) {
     Text(
         text = title,
         style = NotoTypography.NotoBold18.copy(color = G900)
@@ -75,6 +74,7 @@ fun Section(title: String, items: List<InfoData>) {
 
     Spacer(modifier = Modifier.height(4.dp))
 
+    // TODO: 프로필 UI 추가되면 그 화면 사용
     items.forEach { item ->
         InfoItem(title = item.title, content = item.content, navRoutes = NavRoutes.FoodGraph)
     }
