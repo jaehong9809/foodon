@@ -120,8 +120,8 @@ fun MealDetailScreen(
 
                     // 영양소 정보 컴포넌트
                     NutritionalIngredientsComponent(modifier = modifier,
-                        mealType = uiState.mealType,
-                        mealTime = uiState.mealTime,
+                        mealType = mealInfo.mealTimeType,
+                        mealTime = mealInfo.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
                         totalFat = mealInfo.totalFat,
                         totalKcal = mealInfo.totalKcal,
@@ -172,7 +172,7 @@ fun MealDetailScreen(
                 }) {
                     // todo 이미지 파일
                     var selectedTime by remember { mutableStateOf("08:00") }
-                    val times = uiState.mealTime.split(":")
+                    val times = mealInfo.mealTime.split(":")
 
                     val selectedAmPmIndex by remember { mutableIntStateOf(if (times[0].toInt() < 12) 0 else 1) }
                     val selectedHourIndex by remember { mutableIntStateOf(times[0].toInt() % 12 - 1) }

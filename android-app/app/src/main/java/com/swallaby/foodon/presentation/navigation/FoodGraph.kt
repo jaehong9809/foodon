@@ -21,13 +21,16 @@ import com.swallaby.foodon.presentation.mealrecord.MealRecordScreen
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
 import com.swallaby.foodon.presentation.nutritionedit.NutritionEditScreen
 
-fun NavGraphBuilder.mealGraph(navController: NavHostController) {
+fun NavGraphBuilder.mealGraph(
+    navController: NavHostController,
+    mealEditViewModel: MealEditViewModel,
+) {
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
         composable(NavRoutes.FoodGraph.FoodRecord.route, exitTransition = { ExitTransition.None }) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
-            val mealEditViewModel = hiltViewModel<MealEditViewModel>()
+
 
             MealRecordScreen(recordViewModel = recordViewModel,
                 editViewModel = mealEditViewModel,
@@ -46,10 +49,7 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
         composable(
             route = NavRoutes.FoodGraph.MealDetail.route,
         ) {
-            val backStackEntry = remember {
-                navController.getBackStackEntry(NavRoutes.FoodGraph.FoodRecord.route)
-            }
-            val mealEditViewModel: MealEditViewModel = hiltViewModel(backStackEntry)
+
 
             MealDetailScreen(viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
@@ -68,11 +68,7 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
             })
         ) {
             val foodId = it.arguments?.getLong(NavRoutes.FoodGraph.FoodEdit.FOOD_ID) ?: 0L
-            val backStackEntry = remember(navController.currentBackStackEntry) {
-                navController.getBackStackEntry(NavRoutes.FoodGraph.FoodRecord.route)
-            }
 
-            val mealEditViewModel: MealEditViewModel = hiltViewModel(backStackEntry)
             val mealEditUiState by mealEditViewModel.uiState.collectAsStateWithLifecycle()
             val mealInfo = (mealEditUiState.mealEditState as ResultState.Success).data
 
@@ -97,7 +93,6 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
 
                     food?.let { it ->
                         foodEditViewModel.registerCustomFood(it)
-
                     }
                 },
                 onSuccessCustomFood = { mealItem ->

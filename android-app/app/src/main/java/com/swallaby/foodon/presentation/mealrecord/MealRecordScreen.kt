@@ -71,12 +71,14 @@ import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.ImageMetadataUtil
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
+import org.threeten.bp.LocalDateTime
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -104,9 +106,17 @@ fun MealRecordScreen(
                     event.mealInfo.imageUri?.let {
                         val metadata = ImageMetadataUtil.getMetadataFromUri(context, it)
                         Log.d("MealRecordScreen", "metadata: $metadata")
-                        metadata?.getFormattedCaptureTime()?.let { time ->
-                            Log.d("MealRecordScreen", "time: $time")
-                            editViewModel.updateMealTime(time.split(" ")[1])
+
+                        when (val time = metadata?.getFormattedCaptureTime()) {
+                            null -> {
+                                Log.d("MealRecordScreen", "time is null")
+                                editViewModel.updateMealTime(DateUtil.formatTimeToHHmm(LocalDateTime.now()))
+                            }
+
+                            else -> {
+                                Log.d("MealRecordScreen", "time: $time")
+                                editViewModel.updateMealTime(time.split(" ")[1])
+                            }
                         }
                     }
 
