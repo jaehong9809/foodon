@@ -2,18 +2,16 @@ package com.foodon.foodon.member.dto;
 
 import java.time.LocalDate;
 
-import com.foodon.foodon.member.domain.WeightRecord;
+import com.foodon.foodon.member.domain.MemberStatus;
 
 public record WeightRecordResponse(
-	Long weightRecordId,
 	LocalDate date,
 	int weight
 ) {
-	public static WeightRecordResponse of(WeightRecord weightRecord) {
+	public static WeightRecordResponse of(MemberStatus memberStatus) {
 		return new WeightRecordResponse(
-			weightRecord.getId(),
-			weightRecord.getRecordedAt().toLocalDate(),
-			weightRecord.getWeight()
+			memberStatus.getCreatedAt(),
+			memberStatus.getWeight()
 		);
 	}
 }

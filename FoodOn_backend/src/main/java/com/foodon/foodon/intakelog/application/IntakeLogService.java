@@ -6,6 +6,10 @@ import com.foodon.foodon.intakelog.dto.IntakeDetailResponse;
 import com.foodon.foodon.intakelog.dto.IntakeSummaryResponse;
 import com.foodon.foodon.intakelog.exception.IntakeLogException.IntakeLogBadRequestException;
 import com.foodon.foodon.intakelog.repository.IntakeLogRepository;
+import com.foodon.foodon.member.domain.MemberStatus;
+import com.foodon.foodon.member.exception.MemberErrorCode;
+import com.foodon.foodon.member.exception.MemberException;
+import com.foodon.foodon.member.repository.MemberStatusRepository;
 import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.nutrientplan.repository.NutrientPlanRepository;
@@ -28,6 +32,7 @@ public class IntakeLogService {
 
     private final IntakeLogRepository intakeLogRepository;
     private final NutrientPlanRepository nutrientPlanRepository;
+    private final MemberStatusRepository memberStatusRepository;
 
     public List<IntakeSummaryResponse> getIntakeLogsByMonth(
             String date,
@@ -60,8 +65,9 @@ public class IntakeLogService {
             LocalDate date,
             Member member
     ) {
+        MemberStatus latestStatus = getLatestStatusOrThrow(member);
         IntakeLog intakeLog = findIntakeLogByDate(member, date);
-        NutrientPlan nutrientPlan = findNutrientPlanById(member.getNutrientPlanId());
+        NutrientPlan nutrientPlan = findNutrientPlanById(latestStatus.getNutrientPlanId());
         NutrientTarget nutrientTarget = calculateNutrientTarget(intakeLog.getIntakeKcal(), nutrientPlan);
 
         return IntakeDetailResponse.from(nutrientTarget, intakeLog);
@@ -79,6 +85,13 @@ public class IntakeLogService {
 
     public IntakeSummaryResponse getIntakeLogByTargetDate(LocalDate date, Member member) {
         return IntakeSummaryResponse.of(findIntakeLogByDate(member, date));
+    }
+
+    private MemberStatus getLatestStatusOrThrow(Member member) {
+        return memberStatusRepository.findTopByMemberIdOrderByCreatedAtDesc(member.getId())
+            .orElseThrow(
+                () -> new MemberException.MemberBadRequestException(MemberErrorCode.MEMBER_STATUS_NOT_FOUND)
+            );
     }
 
 }
