@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.core.util.StringUtil
+import com.swallaby.foodon.core.util.StringUtil.formatNutrition
 import com.swallaby.foodon.domain.food.model.Nutrition
 
 @Composable
@@ -42,7 +42,7 @@ fun NutritionalSmallInfo(
         }
         Spacer(modifier.width(4.dp))
         Text(
-            text = StringUtil.formatNutrition(nutrition.amount),
+            text = formatNutrition(nutrition.amount),
             style = SpoqaTypography.SpoqaMedium13.copy(color = G700)
         )
 

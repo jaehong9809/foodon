@@ -1,22 +1,23 @@
 package com.foodon.foodon.member.domain;
 
+
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
+@Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(
         name = "member_status",
         indexes = {
-                @Index(name = "idx_member_created_at", columnList = "memberId, createdAt")
+                @Index(name = "idx_member_created_at", columnList = "member_id, created_at")
         }
 )
 public class MemberStatus {
@@ -46,40 +47,46 @@ public class MemberStatus {
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
-    private MemberStatus(
+
+    public static MemberStatus createMemberStatus(
             Long memberId,
             int height,
             int weight,
             int goalWeight,
             Long nutrientPlanId,
             Long activityLevelId
-    ){
-        this.memberId = memberId;
-        this.height = height;
-        this.weight = weight;
-        this.goalWeight = goalWeight;
-        this.nutrientPlanId = nutrientPlanId;
-        this.activityLevelId = activityLevelId;
-    }
-
-
-    public static MemberStatus copyFrom(
-            MemberStatus memberStatus
     ) {
-        return new MemberStatus(
-                memberStatus.getMemberId(),
-                memberStatus.getHeight(),
-                memberStatus.getWeight(),
-                memberStatus.getGoalWeight(),
-                memberStatus.getNutrientPlanId(),
-                memberStatus.getActivityLevelId()
-        );
+        return MemberStatus.builder()
+                .memberId(memberId)
+                .height(height)
+                .weight(weight)
+                .goalWeight(goalWeight)
+                .nutrientPlanId(nutrientPlanId)
+                .activityLevelId(activityLevelId)
+                .createdAt(LocalDate.now())
+                .build();
     }
 
-    public void changeWeight(int weight){
-        this.weight = weight;
+    public static MemberStatus createFromPrevious(
+            MemberStatus previousStatus,
+            int currentWeight,
+            LocalDate currentDate
+    ) {
+        return MemberStatus.builder()
+                .memberId(previousStatus.getMemberId())
+                .height(previousStatus.getHeight())
+                .weight(currentWeight)
+                .goalWeight(previousStatus.getGoalWeight())
+                .nutrientPlanId(previousStatus.getNutrientPlanId())
+                .activityLevelId(previousStatus.getActivityLevelId())
+                .createdAt(currentDate)
+                .build();
+    }
+
+    public void updateWeight(int currentWeight) {
+        this.weight = currentWeight;
     }
 
 }

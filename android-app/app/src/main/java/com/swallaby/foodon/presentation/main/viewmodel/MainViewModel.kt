@@ -3,19 +3,12 @@ package com.swallaby.foodon.presentation.main.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
-import com.swallaby.foodon.domain.calendar.model.CalendarItem
-import com.swallaby.foodon.domain.calendar.model.CalendarMeal
+import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.model.Effect
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
-import com.swallaby.foodon.domain.food.model.MealType
-import com.swallaby.foodon.domain.main.model.MealRecord
-import com.swallaby.foodon.domain.main.model.NutrientIntake
-import com.swallaby.foodon.domain.main.model.NutrientManage
-import com.swallaby.foodon.domain.main.model.NutrientManageType
-import com.swallaby.foodon.domain.main.model.NutrientStatus
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
@@ -39,26 +32,20 @@ class MainViewModel @Inject constructor(
         _uiState.update(block)
     }
 
-    fun updateYearMonth(yearMonth: YearMonth) {
-        updateState { it.copy(currentYearMonth = yearMonth) }
-    }
-
     fun selectDate(date: LocalDate) {
         updateState { it.copy(selectedDate = date) }
+    }
+
+    fun updateYearMonth(yearMonth: YearMonth) {
+        updateState { it.copy(currentYearMonth = yearMonth) }
     }
 
     fun fetchCalendarData(date: String) {
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getCalendarUseCase(CalendarType.MEAL, date)
-//            updateState { it.copy(calendarResult = result.toResultState()) }
-
-            val fakeData: List<CalendarItem> = createFakeData()
-
-            updateState {
-                it.copy(calendarResult = ResultState.Success(fakeData))
-            }
+            val result = getCalendarUseCase(CalendarType.MEAL, date)
+            updateState { it.copy(calendarResult = result.toResultState()) }
         }
     }
 
@@ -66,11 +53,8 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(recordResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getMealRecordUseCase(date)
-//            updateState { it.copy(recordState = result.toResultState()) }
-
-            val fakeData = createFakeMealRecord()
-            updateState { it.copy(recordResult = ResultState.Success(fakeData)) }
+            val result = getMealRecordUseCase(date)
+            updateState { it.copy(recordResult = result.toResultState()) }
         }
     }
 
@@ -78,11 +62,8 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(intakeResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getNutrientIntakeUseCase(date)
-//            updateState { it.copy(intakeResult = result.toResultState()) }
-
-            val fakeData = createFakeIntake()
-            updateState { it.copy(intakeResult = ResultState.Success(fakeData)) }
+            val result = getNutrientIntakeUseCase(date)
+            updateState { it.copy(intakeResult = result.toResultState()) }
         }
     }
 
@@ -90,11 +71,8 @@ class MainViewModel @Inject constructor(
         updateState { it.copy(manageResult = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getNutrientManageUseCase(date)
-//            updateState { it.copy(manageResult = result.toResultState()) }
-
-            val fakeData = createFakeManage()
-            updateState { it.copy(manageResult = ResultState.Success(fakeData)) }
+            val result = getNutrientManageUseCase(date)
+            updateState { it.copy(manageResult = result.toResultState()) }
         }
     }
 
@@ -111,143 +89,6 @@ class MainViewModel @Inject constructor(
                 it.copy(recommendMealResult = ResultState.Success(fakeData))
             }
         }
-    }
-
-    private fun createFakeData(): List<CalendarItem> {
-        return listOf(
-        CalendarItem.Meal(
-            data = CalendarMeal(
-                calendarType = CalendarType.MEAL,
-                intakeLogId = 1L,
-                date = "2025-05-01",
-                intakeKcal = 1800,
-                goalKcal = 2000
-            )
-        ),
-        CalendarItem.Meal(
-            data = CalendarMeal(
-                calendarType = CalendarType.MEAL,
-                intakeLogId = 2L,
-                date = "2025-05-05",
-                intakeKcal = 1950,
-                goalKcal = 2000
-            )
-        )
-        )
-    }
-
-    private fun createFakeMealRecord(): List<MealRecord> {
-        return listOf(
-            MealRecord(
-                mealId = 1,
-                mealTimeType = MealType.BREAKFAST,
-                mealTime = "08:00",
-                imageUrl = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
-                mealItems = listOf(
-                    "쌀밥",
-                    "된장찌개",
-                    "김치",
-                    "쌀밥",
-                    "된장찌개",
-                    "김치",
-                    "쌀밥",
-                    "된장찌개",
-                    "김치",
-                    "쌀밥",
-                    "된장찌개",
-                    "김치",
-                ),
-                totalKcal = 1000,
-                totalCarbs = 10,
-                totalProtein = 5,
-                totalFat = 5
-            ),
-            MealRecord(
-                mealId = 1,
-                mealTimeType = MealType.LUNCH,
-                mealTime = "08:00",
-                imageUrl = "",
-                mealItems = listOf(
-                    "쌀밥"
-                ),
-                totalKcal = 1000,
-                totalCarbs = 10,
-                totalProtein = 5,
-                totalFat = 5
-            )
-        )
-    }
-
-    private fun createFakeIntake(): NutrientIntake {
-        return NutrientIntake(
-            intakeKcal = 1000,
-            goalKcal = 1600,
-            intakeCarbs = 50,
-            goalCarbs = 100,
-            intakeProtein = 10,
-            goalProtein = 100,
-            intakeFat = 10,
-            goalFat = 100
-        )
-    }
-
-    private fun createFakeManage(): List<NutrientManage> {
-        return listOf(
-            NutrientManage(
-                nutrientName = "당류",
-                manageType = NutrientManageType.ESSENTIAL,
-                unit = "g",
-                intake = 10,
-                minRecommend = 0,
-                maxRecommend = 50,
-                status = NutrientStatus.DANGER
-            ),
-            NutrientManage(
-                nutrientName = "나트륨",
-                manageType = NutrientManageType.LIMITED,
-                unit = "mg",
-                intake = 4000,
-                minRecommend = 0,
-                maxRecommend = 5000,
-                status = NutrientStatus.LACK
-            ),
-            NutrientManage(
-                nutrientName = "포화지방",
-                manageType = NutrientManageType.LIMITED,
-                unit = "g",
-                intake = 100,
-                minRecommend = 0,
-                maxRecommend = 20,
-                status = NutrientStatus.CAUTION
-            ),
-            NutrientManage(
-                nutrientName = "트랜스지방",
-                manageType = NutrientManageType.ESSENTIAL,
-                unit = "g",
-                intake = 10,
-                minRecommend = 0,
-                maxRecommend = 2,
-                status = NutrientStatus.CAUTION
-            ),
-            NutrientManage(
-                nutrientName = "카페인",
-                manageType = NutrientManageType.ESSENTIAL,
-                unit = "mg",
-                intake = 400,
-                minRecommend = 0,
-                maxRecommend = 400,
-                status = NutrientStatus.NORMAL
-            ),
-            NutrientManage(
-                nutrientName = "알코올",
-                manageType = NutrientManageType.LIMITED,
-                unit = "g",
-                intake = 100,
-                minRecommend = 0,
-                maxRecommend = 30,
-                status = NutrientStatus.CAUTION
-            )
-        )
     }
 
     private fun createFakeRecommendFoods(): List<RecommendFood> {

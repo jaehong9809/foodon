@@ -10,6 +10,8 @@ import com.foodon.foodon.intakelog.exception.IntakeLogException.IntakeLogBadRequ
 import com.foodon.foodon.intakelog.repository.IntakeLogRepository;
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.member.domain.MemberStatus;
+import com.foodon.foodon.member.exception.MemberErrorCode;
+import com.foodon.foodon.member.exception.MemberException;
 import com.foodon.foodon.member.repository.MemberStatusRepository;
 import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.member.domain.Member;
@@ -53,9 +55,9 @@ public class IntakeLogService {
     }
 
     private IntakeLog createIntakeLog(Member member, LocalDate date) {
-        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-        ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
-        BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
+        MemberStatus latestStatus = getLatestStatusOrThrow(member);
+        ActivityLevel activityLevel = findActivityLevelById(latestStatus.getActivityLevelId());
+        BigDecimal goalKcal = NutrientGoal.calculateGoalKcal(member, latestStatus, activityLevel);
         return IntakeLog.createIntakeLogOfMember(member, date, goalKcal);
     }
 
@@ -92,8 +94,8 @@ public class IntakeLogService {
     ) {
         return findIntakeLogByDate(member, date)
                 .map(intakeLog -> {
-                    MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-                    NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
+                    MemberStatus latestStatus = getLatestStatusOrThrow(member);
+                    NutrientPlan nutrientPlan = findNutrientPlanById(latestStatus.getNutrientPlanId());
                     NutrientGoal nutrientGoal = NutrientGoal.from(intakeLog.getGoalKcal(), nutrientPlan);
                     return IntakeDetailResponse.withIntakeLog(nutrientGoal, intakeLog, date);
                 })
@@ -113,16 +115,16 @@ public class IntakeLogService {
     }
 
     private NutrientGoal getNutrientGoalFromMemberStatus(Member member) {
-        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-        ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
-        NutrientPlan nutrientPlan = findNutrientPlanById(memberStatus.getNutrientPlanId());
-        return NutrientGoal.from(member, memberStatus, activityLevel, nutrientPlan);
+        MemberStatus latestStatus = getLatestStatusOrThrow(member);
+        ActivityLevel activityLevel = findActivityLevelById(latestStatus.getActivityLevelId());
+        NutrientPlan nutrientPlan = findNutrientPlanById(latestStatus.getNutrientPlanId());
+        return NutrientGoal.from(member, latestStatus, activityLevel, nutrientPlan);
     }
 
     private BigDecimal getGoalKcalFromMemberStatus(Member member) {
-        MemberStatus memberStatus = findMemberStatusByMemberId(member.getId());
-        ActivityLevel activityLevel = findActivityLevelById(memberStatus.getActivityLevelId());
-        return NutrientGoal.calculateGoalKcal(member, memberStatus, activityLevel);
+        MemberStatus latestStatus = getLatestStatusOrThrow(member);
+        ActivityLevel activityLevel = findActivityLevelById(latestStatus.getActivityLevelId());
+        return NutrientGoal.calculateGoalKcal(member, latestStatus, activityLevel);
     }
 
     private NutrientPlan findNutrientPlanById(Long nutrientPlanId) {
@@ -134,14 +136,16 @@ public class IntakeLogService {
         return intakeLogRepository.findByMemberAndDate(member, date);
     }
 
-    private MemberStatus findMemberStatusByMemberId(Long memberId) {
-        return memberStatusRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new NoSuchElementException("해당 ID의 유저의 상태관리가 존재하지 않습니다. memberId = " + memberId));
-    }
-
     private ActivityLevel findActivityLevelById(Long activityLevelId) {
         return activityLevelRepository.findById(activityLevelId)
                 .orElseThrow(() -> new NoSuchElementException(("해당 ID의 활동량 유형이 존재하지 않습니다. activityLevelId = " + activityLevelId)));
+    }
+
+    private MemberStatus getLatestStatusOrThrow(Member member) {
+        return memberStatusRepository.findTopByMemberIdOrderByCreatedAtDesc(member.getId())
+                .orElseThrow(
+                        () -> new MemberException.MemberBadRequestException(MemberErrorCode.MEMBER_STATUS_NOT_FOUND)
+                );
     }
 
 }

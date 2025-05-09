@@ -15,8 +15,8 @@ interface CalendarApi {
     @GET("intake")
     suspend fun getCalendarMeals(@Query(value = "date") date: String): BaseResponse<List<MealResponse>>
 
-    @GET("members/weights/calendar/{date}")
-    suspend fun getCalendarWeights(@Path("date") date: String): BaseResponse<List<WeightResponse>>
+    @GET("members/weights/calendar/{yearMonth}")
+    suspend fun getCalendarWeights(@Path("yearMonth") date: String): BaseResponse<List<WeightResponse>>
 
     @GET("members/profile/weight")
     suspend fun getUserWeight(): BaseResponse<UserWeightResponse>

@@ -30,7 +30,7 @@ fun RecommendationContent(
     var selectedWeek by remember { mutableIntStateOf(0) }
 
     // 달이 바뀔 때마다 선택된 week 초기화
-    LaunchedEffect(weekCount) {
+    LaunchedEffect(selectedWeekIndex) {
         selectedWeek = selectedWeekIndex
     }
 

@@ -59,11 +59,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public void updateProfile(
-            Gender gender,
-            int height,
-            int goalWeight,
-            Long nutrientPlanId,
-            Long activityLevelId
+            Gender gender
     ) {
         this.gender = gender;
     }

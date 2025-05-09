@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.WeekFields
@@ -65,28 +66,6 @@ object DateUtil {
         }
     }
 
-    fun calculateWeeksOfMonth(yearMonth: YearMonth): List<List<LocalDate?>> {
-        val firstDayOfMonth = yearMonth.atDay(1)
-        val lastDayOfMonth = yearMonth.atEndOfMonth()
-
-        // 주의 시작일을 가장 가까운 이전 일요일로 조정
-        val startOfWeek = firstDayOfMonth.minusDays((firstDayOfMonth.dayOfWeek.value % 7).toLong())
-
-        val weeks = mutableListOf<List<LocalDate?>>()
-        var current = startOfWeek
-
-        while (current <= lastDayOfMonth || weeks.size < 6) {
-            val week = (0..6).map {
-                val date = current.plusDays(it.toLong())
-                if (date.month == yearMonth.month) date else null
-            }
-            weeks.add(week)
-            current = current.plusDays(7)
-        }
-
-        return weeks
-    }
-
     fun formatDate(localDate: LocalDate): String {
         val outputFormatter = DateTimeFormatter.ofPattern("M월 d일")
         return localDate.format(outputFormatter)
@@ -97,5 +76,12 @@ object DateUtil {
         return dateTime.format(formatter)
     }
 
+    fun getWeekOfMonth(date: LocalDate): Int {
+        val firstDayOfMonth = date.withDayOfMonth(1)
+        val firstDayWeekday = firstDayOfMonth.dayOfWeek.value.let { if (it == 7) 0 else it }
+
+        val dayOffset = firstDayWeekday + date.dayOfMonth - 1
+        return dayOffset / 7
+    }
 
 }

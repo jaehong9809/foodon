@@ -21,6 +21,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.formatDate
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
+import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
@@ -51,32 +52,27 @@ fun NutrientIntakeContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (intakeResult) {
-                is ResultState.Success ->  {
-                    val calorie = intakeResult.data
+            val calorie: NutrientIntake? = (intakeResult as? ResultState.Success)?.data
 
-                    val carbsRatio = calorie.intakeCarbs.toFloat() * 4 / calorie.goalKcal
-                    val proteinRatio = calorie.intakeProtein.toFloat() * 4 / calorie.goalKcal
-                    val fatRatio = calorie.intakeFat.toFloat() * 9 / calorie.goalKcal
+            val nutrients = calorie?.let {
+                val carbsRatio = it.intakeCarbs.toFloat() * 4 / it.goalKcal
+                val proteinRatio = it.intakeProtein.toFloat() * 4 / it.goalKcal
+                val fatRatio = it.intakeFat.toFloat() * 9 / it.goalKcal
 
-                    val nutrients = listOf(
-                        Nutrition(NutritionType.CARBOHYDRATE, calorie.intakeCarbs, carbsRatio),
-                        Nutrition(NutritionType.PROTEIN, calorie.intakeProtein, proteinRatio),
-                        Nutrition(NutritionType.FAT, calorie.intakeFat, fatRatio),
-                    ).sortedByDescending { it.amount }
+                listOf(
+                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs, carbsRatio),
+                    Nutrition(NutritionType.PROTEIN, it.intakeProtein, proteinRatio),
+                    Nutrition(NutritionType.FAT, it.intakeFat, fatRatio),
+                ).sortedByDescending { n -> n.amount }
+            }?: emptyList()
 
-                    CalorieProgressBar(
-                        nutrients = nutrients,
-                        consumed = calorie.intakeKcal,
-                        goal = calorie.goalKcal
-                    )
+            CalorieProgressBar(
+                nutrients = nutrients,
+                consumed = calorie?.intakeKcal ?: 0,
+                goal = calorie?.goalKcal ?: 0
+            )
 
-                    IntakeDetail(calorie)
-                }
-                else -> {
-                    CalorieProgressBar()
-                }
-            }
+            IntakeDetail(calorie ?: NutrientIntake())
         }
     }
 
