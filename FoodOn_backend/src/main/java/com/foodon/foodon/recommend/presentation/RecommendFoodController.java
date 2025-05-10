@@ -8,12 +8,10 @@ import com.foodon.foodon.recommend.application.RecommendFoodService;
 import com.foodon.foodon.recommend.dto.RecommendFoodResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -23,12 +21,13 @@ public class RecommendFoodController {
 
     private final RecommendFoodService recommendFoodService;
 
-    @GetMapping("/{date}")
+    @GetMapping
     public ResponseEntity<Response<List<RecommendFoodResponse>>> getRecommendFoodByWeek(
-            @PathVariable(name = "date") LocalDate date,
+            @RequestParam(name = "yearMonth") YearMonth yearMonth,
+            @RequestParam(name = "week") int week,
             @AuthMember Member member
     ){
-        List<RecommendFoodResponse> result = recommendFoodService.getRecommendFoodsByWeek(date, member);
+        List<RecommendFoodResponse> result = recommendFoodService.getRecommendFoodsByWeek(yearMonth, week, member);
         return ResponseUtil.success(result);
     }
 }
