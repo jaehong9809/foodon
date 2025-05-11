@@ -1,13 +1,9 @@
 package com.foodon.foodon.recommend.application;
 
-import com.foodon.foodon.common.util.NutrientCalculator;
-import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.NutrientClaimInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.recommend.domain.RecommendFood;
-import com.foodon.foodon.recommend.domain.nutrientclaims.NutrientClaim;
-import com.foodon.foodon.recommend.domain.nutrientclaims.NutrientClaimEvaluator;
-import com.foodon.foodon.recommend.domain.nutrientclaims.NutrientServingInfo;
 import com.foodon.foodon.recommend.dto.RecommendFoodResponse;
 import com.foodon.foodon.recommend.exception.RecommendFoodException.RecommendFoodBadRequestException;
 import com.foodon.foodon.recommend.repository.RecommendFoodRepository;
@@ -19,7 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,13 +39,24 @@ public class RecommendFoodService {
         LocalDateTime end = start.plusDays(1);
 
         List<RecommendFood> recommendFoods = recommendFoodRepository.findByMemberAndCreatedAtBetween(member, start, end);
-        Map<Long, List<NutrientClaim>> nutrientClaimsByFoodId = getNutrientClaimsByFood(recommendFoods);
+        Map<Long, List<NutrientClaimInfo>> nutrientClaimsByFoodId = getNutrientClaimsOfFoods(recommendFoods);
 
         return recommendFoods.stream()
                 .map(recommendFood -> RecommendFoodResponse.from(
                         recommendFood,
-                        nutrientClaimsByFoodId.get(recommendFood.getId())
+                        nutrientClaimsByFoodId.getOrDefault(recommendFood.getFoodId(), List.of())
                 )).toList();
+    }
+
+    private Map<Long, List<NutrientClaimInfo>> getNutrientClaimsOfFoods(
+            List<RecommendFood> recommendFoods
+    ) {
+        List<Long> recommendFoodIds = recommendFoods.stream()
+                .map(RecommendFood::getFoodId)
+                .toList();
+
+        List<NutrientClaimInfo> nutrientClaims = foodRepository.findNutrientClaimsByFoodIds(recommendFoodIds);
+        return nutrientClaims.stream().collect(Collectors.groupingBy(NutrientClaimInfo::foodId));
     }
 
     private void validateWeekInMonth(YearMonth yearMonth, int week) {
@@ -61,39 +67,6 @@ public class RecommendFoodService {
         if(week < 1 || week > maxWeek) {
             throw new RecommendFoodBadRequestException(ILLEGAL_WEEK_RANGE);
         }
-    }
-
-    private Map<Long, List<NutrientClaim>> getNutrientClaimsByFood(
-            List<RecommendFood> recommendFoods
-    ) {
-        return recommendFoods.stream()
-                .collect(Collectors.toMap(
-                        RecommendFood::getId,
-                        this::evaluateNutrientClaims
-                ));
-    }
-
-    private List<NutrientClaim> evaluateNutrientClaims(RecommendFood recommendFood) {
-        FoodWithNutrientInfo foodWithNutrientInfo = foodRepository.findFoodInfoWithNutrientByIdAndType(
-                recommendFood.getFoodId(),
-                recommendFood.getFoodType(),
-                recommendFood.getMember()
-        );
-
-        List<NutrientServingInfo> nutrientServingInfos = convertToNutrientServingInfos(foodWithNutrientInfo);
-        return NutrientClaimEvaluator.evaluate(nutrientServingInfos);
-    }
-
-    private List<NutrientServingInfo> convertToNutrientServingInfos(
-            FoodWithNutrientInfo food
-    ) {
-        return food.nutrients().stream()
-                .map(nutrient -> new NutrientServingInfo(
-                        nutrient.code(),
-                        nutrient.value(),
-                        NutrientCalculator.calculateNutrientPerServing(food.servingSize(), nutrient.value())
-                ))
-                .toList();
     }
 
     private LocalDate getStartMondayOfWeek(YearMonth yearMonth, int week) {
