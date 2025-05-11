@@ -1,4 +1,4 @@
-package com.foodon.foodon.recommend.domain.nutrientclaims;
+package com.foodon.foodon.food.dto;
 
 import com.foodon.foodon.food.domain.NutrientCode;
 

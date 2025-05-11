@@ -1,6 +1,9 @@
-package com.foodon.foodon.recommend.domain.nutrientclaims;
+package com.foodon.foodon.food.infrastructure;
 
+import com.foodon.foodon.food.domain.NutrientClaimType;
 import com.foodon.foodon.food.domain.NutrientCode;
+import com.foodon.foodon.food.domain.rule.*;
+import com.foodon.foodon.food.dto.NutrientServingInfo;
 import lombok.Getter;
 
 import java.util.List;
@@ -19,11 +22,11 @@ public class NutrientClaimEvaluator {
             new LowKcalRule() // 저칼로리
     );
 
-    public static List<NutrientClaim> evaluate(List<NutrientServingInfo> nutrientServingInfos) {
+    public static List<NutrientClaimType> evaluate(List<NutrientServingInfo> nutrientServingInfos) {
         Map<NutrientCode, NutrientServingInfo> nutrientMap = convertToMap(nutrientServingInfos);
         return rules.stream()
                 .filter(rule -> rule.matches(nutrientMap))
-                .map(NutrientClaim::from)
+                .map(NutrientClaimRule::getNutrientClaimType)
                 .toList();
     }
 

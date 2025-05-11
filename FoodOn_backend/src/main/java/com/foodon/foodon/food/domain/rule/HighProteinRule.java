@@ -1,19 +1,27 @@
-package com.foodon.foodon.recommend.domain.nutrientclaims;
+package com.foodon.foodon.food.domain.rule;
 
+import com.foodon.foodon.food.dto.NutrientServingInfo;
+import com.foodon.foodon.food.domain.NutrientClaimType;
 import com.foodon.foodon.food.domain.NutrientCode;
+import com.foodon.foodon.food.domain.NutrientLevel;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
 public class HighProteinRule implements NutrientClaimRule {
     @Override
+    public NutrientClaimType getNutrientClaimType() {
+        return NutrientClaimType.HIGH_PROTEIN;
+    }
+
+    @Override
     public NutrientCode getNutrientCode() {
         return NutrientCode.PROTEIN;
     }
 
     @Override
-    public Level getLevel() {
-        return Level.HIGH;
+    public NutrientLevel getLevel() {
+        return NutrientLevel.HIGH;
     }
 
     /**

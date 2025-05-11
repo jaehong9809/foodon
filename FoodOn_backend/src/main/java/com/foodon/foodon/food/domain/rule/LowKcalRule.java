@@ -1,19 +1,27 @@
-package com.foodon.foodon.recommend.domain.nutrientclaims;
+package com.foodon.foodon.food.domain.rule;
 
+import com.foodon.foodon.food.dto.NutrientServingInfo;
+import com.foodon.foodon.food.domain.NutrientClaimType;
 import com.foodon.foodon.food.domain.NutrientCode;
+import com.foodon.foodon.food.domain.NutrientLevel;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
 public class LowKcalRule implements NutrientClaimRule {
     @Override
+    public NutrientClaimType getNutrientClaimType() {
+        return NutrientClaimType.LOW_KCAL;
+    }
+
+    @Override
     public NutrientCode getNutrientCode() {
         return NutrientCode.KCAL;
     }
 
     @Override
-    public Level getLevel() {
-        return Level.LOW;
+    public NutrientLevel getLevel() {
+        return NutrientLevel.LOW;
     }
 
     @Override

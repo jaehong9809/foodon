@@ -1,9 +1,9 @@
 package com.foodon.foodon.food.repository;
 
-import com.foodon.foodon.food.dto.FoodInfo;
-import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.domain.QFoodNutrientClaim;
+import com.foodon.foodon.food.domain.QNutrientClaim;
+import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.domain.FoodType;
-import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.member.domain.Member;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -18,7 +18,9 @@ import java.util.stream.Collectors;
 
 import static com.foodon.foodon.food.domain.QFood.food;
 import static com.foodon.foodon.food.domain.QFoodNutrient.foodNutrient;
+import static com.foodon.foodon.food.domain.QFoodNutrientClaim.foodNutrientClaim;
 import static com.foodon.foodon.food.domain.QNutrient.nutrient;
+import static com.foodon.foodon.food.domain.QNutrientClaim.nutrientClaim;
 
 @RequiredArgsConstructor
 public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
@@ -97,7 +99,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
         List<Long> foodIds = foods.stream().map(FoodInfo::id).toList();
 
-        List<NutrientInfo> nutrientList = queryFactory
+        List<NutrientInfo> nutrients = queryFactory
                 .select(Projections.constructor(
                                 NutrientInfo.class,
                                 foodNutrient.foodId,
@@ -112,8 +114,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 .where(foodNutrient.foodId.in(foodIds))
                 .fetch();
 
-        Map<Long, List<NutrientInfo>> nutrientsByFoodId = nutrientList.stream()
-                .collect(Collectors.groupingBy(NutrientInfo::foodId));
+        Map<Long, List<NutrientInfo>> nutrientsByFoodId = groupByFoodId(nutrients);
 
         return foods.stream()
                 .map(food -> new FoodWithNutrientInfo(
@@ -125,6 +126,70 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                         nutrientsByFoodId.getOrDefault(food.id(), List.of())
                 ))
                 .toList();
+    }
+
+    @Override
+    public List<FoodWithNutrientInfo> findAllFoodInfo() {
+        List<FoodInfo> foods = queryFactory
+                .select(Projections.constructor(
+                                FoodInfo.class,
+                                food.id,
+                                food.memberId,
+                                food.name,
+                                food.unit,
+                                food.servingSize
+                        )
+                )
+                .from(food)
+                .where(food.memberId.isNull())
+                .fetch();
+
+        List<NutrientInfo> nutrients = queryFactory
+                .select(Projections.constructor(
+                        NutrientInfo.class,
+                        foodNutrient.foodId,
+                        foodNutrient.id,
+                        nutrient.name,
+                        nutrient.code,
+                        nutrient.nutrientUnit,
+                        foodNutrient.value
+                ))
+                .from(foodNutrient)
+                .join(nutrient).on(foodNutrient.nutrientId.eq(nutrient.id))
+                .fetch();
+
+        Map<Long, List<NutrientInfo>> nutrientsByFoodId = groupByFoodId(nutrients);
+
+        return foods.stream()
+                .map(food -> new FoodWithNutrientInfo(
+                        FoodType.PUBLIC,
+                        food.id(),
+                        food.name(),
+                        food.unit(),
+                        food.servingSize(),
+                        nutrientsByFoodId.getOrDefault(food.id(), List.of())
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<NutrientClaimInfo> findNutrientClaimsByFoodIds(List<Long> foodIds) {
+        return queryFactory
+                .select(Projections.constructor(
+                        NutrientClaimInfo.class,
+                        foodNutrientClaim.foodId,
+                        nutrientClaim.id,
+                        nutrientClaim.name,
+                        nutrientClaim.type
+                ))
+                .from(foodNutrientClaim)
+                .join(nutrientClaim).on(nutrientClaim.id.eq(foodNutrientClaim.nutrientClaimId))
+                .where(foodNutrientClaim.id.in(foodIds))
+                .fetch();
+    }
+
+    public static Map<Long, List<NutrientInfo>> groupByFoodId(List<NutrientInfo> nutrients) {
+        return nutrients.stream().collect(Collectors.groupingBy(NutrientInfo::foodId));
     }
 
     private BooleanExpression eqMemberId(FoodType type, Long memberId) {
