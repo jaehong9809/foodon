@@ -334,7 +334,15 @@ fun CameraAppScreen(
                 // 플래시 모드 변경 적용
                 imageCaptureUseCase.flashMode = flashMode
             }) {
-                Icon(painter = painterResource(R.drawable.icon_flash), contentDescription = "flash")
+                Icon(
+                    painter = painterResource(
+                        when (flashMode) {
+                            ImageCapture.FLASH_MODE_OFF -> R.drawable.icon_flash_off
+                            ImageCapture.FLASH_MODE_AUTO -> R.drawable.icon_flash_auto
+                            else -> R.drawable.icon_flash_on
+                        }
+                    ), contentDescription = "flash"
+                )
             }
         }
 
