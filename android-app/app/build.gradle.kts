@@ -111,7 +111,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.compose)
 
-    implementation(libs.accompanist.systemuicontroller)
+    // pager
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
 

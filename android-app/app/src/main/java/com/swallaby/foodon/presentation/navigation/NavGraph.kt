@@ -55,7 +55,7 @@ fun NavGraph(
         ) {
             mainGraph(navController, mainViewModel, calendarViewModel)
             loginGraph(navController)
-            calendarGraph(navController, calendarViewModel)
+            calendarGraph(calendarViewModel)
             mealGraph(navController, mealEditViewModel)
         }
     }
