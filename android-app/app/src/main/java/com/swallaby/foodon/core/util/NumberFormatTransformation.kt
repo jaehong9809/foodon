@@ -31,13 +31,10 @@ fun cleanDoubleInput(input: String): String {
     // 입력값에 소수점이 여러 개 있는 경우 처리
     return if (decimalIndex != -1) {
         // 소수점 앞부분 (숫자만 허용)
-        val beforeDecimal = withoutCommas.substring(0, decimalIndex)
-            .filter { it.isDigit() }
+        val beforeDecimal = withoutCommas.substring(0, decimalIndex).filter { it.isDigit() }
 
         // 소수점 뒷부분 (최대 2자리까지만)
-        val afterDecimal = withoutCommas.substring(decimalIndex + 1)
-            .filter { it.isDigit() }
-            .take(2)
+        val afterDecimal = withoutCommas.substring(decimalIndex + 1).filter { it.isDigit() }.take(2)
 
         // 소수점 앞부분과 뒷부분이 모두 비어있지 않은 경우에만 소수점 추가
         if (beforeDecimal.isEmpty() && afterDecimal.isEmpty()) {
@@ -54,268 +51,101 @@ fun cleanDoubleInput(input: String): String {
 }
 
 
-//class DoubleVisualTransformation(
-//    private val pattern: String = "###,###.##",
-//    locale: Locale = Locale.getDefault(),
-//) : VisualTransformation {
-//
-//    private val formatter = DecimalFormat(pattern, DecimalFormatSymbols(locale))
-//
-//    override fun filter(text: AnnotatedString): TransformedText {
-//        if (text.text.isEmpty() || text.text.isBlank()) return TransformedText(
-//            AnnotatedString(""), OffsetMapping.Identity
-//        )
-//
-//        // 유효한 문자만 필터링 (숫자와 소수점)
-//        val filteredText = buildString {
-//            var hasDecimal = false
-//            for (char in text.text) {
-//                when {
-//                    char.isDigit() -> append(char)
-//                    char == '.' && !hasDecimal -> {
-//                        append(char)
-//                        hasDecimal = true
-//                    }
-//                }
-//            }
-//        }
-//
-//        val formattedText = formatter.format(filteredText.toDouble())
-//
-//        val decimalIndex = formattedText.indexOf('.')
-//
-//        Log.d(
-//            "NutrientField", "filter text = ${text.text}, formattedText = $formattedText"
-//        )
-//
-//        val offsetMapping = object : OffsetMapping {
-//            override fun originalToTransformed(offset: Int): Int {
-//                Log.d("NutrientField", "originalToTransformed offset = $offset")
-//
-//                val commaCount = if (decimalIndex != -1) {
-//                    Log.d(
-//                        "NutrientField",
-//                        "formattedText.take(decimalIndex) = ${formattedText.take(decimalIndex)}"
-//                    )
-//                    formattedText.take(decimalIndex).count { it == ',' }
-//                } else formattedText.count { it == ',' }
-//
-//                val decimalCount = offset - decimalIndex.coerceAtLeast(0) - 1
-//                Log.d("NutrientField", "decimalCount = $decimalCount")
-//
-//                val overDecimal = (decimalCount - 2).coerceAtLeast(0)
-//                Log.d("NutrientField", "overDecimal = $overDecimal")
-//                Log.d("NutrientField", "return = ${formattedText.length - overDecimal}")
-//
-//                return formattedText.length - overDecimal
-//            }
-//
-//            override fun transformedToOriginal(offset: Int): Int {
-//                Log.d("NutrientField", "transformedToOriginal offset = $offset")
-//                if (offset <= 0) return 0
-//                if (offset >= formattedText.length) return text.length
-//
-//                Log.d(
-//                    "NutrientField",
-//                    "originalToTransformed offset = $offset, formattedText = $formattedText"
-//                )
-//
-//                val commaCount = if (decimalIndex != -1) {
-//                    Log.d(
-//                        "NutrientField",
-//                        "formattedText.take(decimalIndex) = ${formattedText.take(decimalIndex)}"
-//                    )
-//                    formattedText.take(decimalIndex).count { it == ',' }
-//                } else formattedText.count { it == ',' }
-//                Log.d(
-//                    "NutrientField",
-//                    "formattedText.length = ${formattedText.length}, return = ${formattedText.length - commaCount}"
-//                )
-//
-//                return formattedText.length - commaCount
-//            }
-//        }
-//        return TransformedText(AnnotatedString(formattedText), offsetMapping)
-//    }
-//}
-
-/**
- * 숫자 입력을 위한 VisualTransformation 클래스
- * @param pattern 적용할 숫자 포맷 패턴
- */
-//class NumberFormatTransformation(private val pattern: NumberFormatPattern) : VisualTransformation {
-//    override fun filter(text: AnnotatedString): TransformedText {
-//        // 숫자만 추출
-//        val digitsOnly =
-//            text.text.toBigDecimalOrNull()?.toString() ?: "0" // text.text.filter { it.isDigit() }
-//
-//
-//        // 포맷팅된 텍스트와 커서 위치 매핑을 위한 객체
-//        return when (pattern) {
-//            NumberFormatPattern.PLAIN -> TransformedText(
-//                AnnotatedString(digitsOnly), OffsetMapping.Identity
-//            )
-//
-//            NumberFormatPattern.THOUSAND_COMMA -> {
-//                if (digitsOnly.isEmpty()) {
-//                    return TransformedText(AnnotatedString(""), OffsetMapping.Identity)
-//                }
-//
-//                val number = digitsOnly.toBigDecimalOrNull() ?: return TransformedText(
-//                    AnnotatedString(digitsOnly), OffsetMapping.Identity
-//                )
-//
-//                val formatted = DecimalFormat("#,###").format(number)
-//
-//                // 커서 위치 조정을 위한 오프셋 매핑
-////                val offsetMapping = object : OffsetMapping {
-////                    override fun originalToTransformed(offset: Int): Int {
-////                        // 컴마 개수 계산
-////                        val commasBeforeOffset = digitsOnly.take(offset).length / 3
-////                        return minOf(offset + commasBeforeOffset, formatted.length)
-////                    }
-////
-////                    override fun transformedToOriginal(offset: Int): Int {
-////                        // 입력된 오프셋까지의 컴마 개수를 세어 원래 위치 계산
-////                        var commas = 0
-////                        for (i in 0 until minOf(offset, formatted.length)) {
-////                            if (formatted[i] == ',') commas++
-////                        }
-////                        return maxOf(0, offset - commas)
-////                    }
-////                }
-//
-//                TransformedText(AnnotatedString(formatted), OffsetMapping.Identity)// offsetMapping
-//            }
-//        }
-//    }
-//}
-
-
-class DecimalVisualTransformation : VisualTransformation {
-    private val symbols = DecimalFormat().decimalFormatSymbols
-    private val comma = symbols.groupingSeparator
-    private val dot = symbols.decimalSeparator
-    private val maxFractionDigits = 2
-
-    // 천 단위 구분자 패턴
-    private val commaPattern = Regex("\\B(?=(?:\\d{3})+(?!\\d))")
+class DoubleVisualTransformation : VisualTransformation {
+    private val decimalFormat = DecimalFormat("#,##0.00")
 
     override fun filter(text: AnnotatedString): TransformedText {
-        if (text.isEmpty()) {
+        // 입력 텍스트 처리
+        val input = text.text
+
+        // 텍스트가 비어있으면 기본 반환
+        if (input.isEmpty()) {
             return TransformedText(text, OffsetMapping.Identity)
         }
 
-        // 첫 번째 소수점만 인식하도록 제한
-        val parts = text.text.split(dot, limit = 2)
-        val integerPart = parts[0]
-        val fractionPart = if (parts.size > 1) parts[1] else ""
+        // 소수점 처리를 위한 기본값 설정
+        var cleanedInput = input
 
-        // 천 단위 구분자 추가
-        val formattedIntegerPart = integerPart.replace(commaPattern, comma.toString())
-
-        // 소수점 이하 두 자리까지만 제한
-        val limitedFractionPart = fractionPart.take(maxFractionDigits)
-
-        // 결과 문자열 생성
-        val formattedText = if (limitedFractionPart.isEmpty()) {
-            formattedIntegerPart
+        // 소수점이 없는 경우 소수점 추가
+        if (!input.contains(".")) {
+            cleanedInput = "$input.00"
         } else {
-            "$formattedIntegerPart$dot$limitedFractionPart"
+            // 소수점이 있는 경우 소수점 이하 자릿수 조정
+            val parts = input.split(".")
+            val integerPart = parts[0]
+            var decimalPart = if (parts.size > 1) parts[1] else "00"
+
+            // 소수점 이하 2자리로 제한
+            decimalPart =
+                if (decimalPart.length > 2) decimalPart.substring(0, 2) else decimalPart.padEnd(
+                    2, '0'
+                )
+            cleanedInput = "$integerPart.$decimalPart"
         }
 
-        val newText = AnnotatedString(
-            formattedText,
-            text.spanStyles,
-            text.paragraphStyles
-        )
-
-        return TransformedText(
-            newText, DecimalOffsetMapping(
-                originalText = text.text,
-                formattedText = formattedText,
-                integerPartLength = integerPart.length,
-                formattedIntegerPartLength = formattedIntegerPart.length,
-                hasFraction = limitedFractionPart.isNotEmpty()
-            )
-        )
-    }
-
-    private inner class DecimalOffsetMapping(
-        val originalText: String,
-        val formattedText: String,
-        val integerPartLength: Int,
-        val formattedIntegerPartLength: Int,
-        val hasFraction: Boolean,
-    ) : OffsetMapping {
-
-        // 천 단위 구분자(콤마) 위치를 계산
-        private val commaPositions = mutableListOf<Int>()
-
-        init {
-            // 포맷된 정수 부분에서 콤마 위치 찾기
-            var commaCount = 0
-            for (i in formattedText.indices) {
-                if (i < formattedIntegerPartLength && formattedText[i] == comma) {
-                    commaPositions.add(i)
-                    commaCount++
-                }
-            }
+        // 숫자 파싱 및 포맷팅
+        val number = try {
+            cleanedInput.toDouble()
+        } catch (e: NumberFormatException) {
+            0.0
         }
 
-        override fun originalToTransformed(offset: Int): Int {
-            // 소수점 앞 부분 (정수 부분)
-            if (offset <= integerPartLength) {
-                var result = offset
-                for (commaPos in commaPositions) {
-                    if (offset > commaPos - commaPositions.indexOf(commaPos) - 1) {
-                        result++
+        // 포맷된 숫자 문자열 생성
+        val formattedString = decimalFormat.format(number)
+        val annotatedString = AnnotatedString(formattedString)
+
+        // 오프셋 매핑 생성
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                // 원본 텍스트에서 포맷된 텍스트로 오프셋 변환
+                // 소수점 이하 2자리까지만 입력 가능하게 제한
+
+                // 소수점 위치 찾기
+                val decimalPointIndex = input.indexOf('.')
+
+                // 소수점이 없거나 소수점 이전 위치면 컴마 고려하여 계산
+                if (decimalPointIndex == -1 || offset <= decimalPointIndex) {
+                    // 입력한 정수 부분에 해당하는 오프셋 계산 (컴마 고려)
+                    val integerPart = if (decimalPointIndex == -1) input else input.substring(
+                        0, decimalPointIndex
+                    )
+                    val commaCount = countCommasUpToPosition(formattedString, offset)
+                    return offset + commaCount
+                } else {
+                    // 소수점 이후 부분
+                    // 소수점 이하 2자리 이상 입력했는지 확인
+                    val decimalPartLength = input.length - decimalPointIndex - 1
+
+                    if (decimalPartLength > 2 && offset > decimalPointIndex + 2) {
+                        // 소수점 이하 2자리 이상 입력한 경우, 소수점 이하 2자리 위치로 오프셋 조정
+                        val integerCommaCount =
+                            countCommasUpToPosition(formattedString, formattedString.indexOf('.'))
+                        return formattedString.indexOf('.') + 3 // 소수점(1) + 소수점 이하 2자리(2)
+                    } else {
+                        // 일반적인 경우 (소수점 이하 2자리 이내)
+                        val integerCommaCount =
+                            countCommasUpToPosition(formattedString, formattedString.indexOf('.'))
+                        return offset + integerCommaCount
                     }
                 }
-                return result
             }
 
-            // 소수점 자체의 위치
-            if (hasFraction && offset == integerPartLength + 1) {
-                return formattedIntegerPartLength + 1
+            override fun transformedToOriginal(offset: Int): Int {
+                // 포맷된 텍스트에서 원본 텍스트로 오프셋 변환
+                val commaCount = countCommasUpToPosition(formattedString, offset)
+                return maxOf(0, offset - commaCount)
             }
 
-            // 소수점 이후 부분
-            if (hasFraction && offset > integerPartLength + 1) {
-                val fractionOffset = offset - integerPartLength - 1
-                if (fractionOffset <= maxFractionDigits) {
-                    return formattedIntegerPartLength + 1 + fractionOffset
+            // 특정 위치까지 컴마 개수 계산
+            private fun countCommasUpToPosition(text: String, position: Int): Int {
+                var count = 0
+                for (i in 0 until minOf(position, text.length)) {
+                    if (text[i] == ',') count++
                 }
-                return formattedText.length
+                return count
             }
-
-            return formattedText.length
         }
 
-        override fun transformedToOriginal(offset: Int): Int {
-            // 정수 부분
-            if (offset <= formattedIntegerPartLength) {
-                var result = offset
-                for (commaPos in commaPositions) {
-                    if (offset > commaPos) {
-                        result--
-                    }
-                }
-                return result
-            }
-
-            // 소수점 자체의 위치
-            if (hasFraction && offset == formattedIntegerPartLength + 1) {
-                return integerPartLength + 1
-            }
-
-            // 소수점 이후 부분
-            if (hasFraction && offset > formattedIntegerPartLength + 1) {
-                val fractionOffset = offset - formattedIntegerPartLength - 1
-                return integerPartLength + 1 + fractionOffset
-            }
-
-            return originalText.length
-        }
+        return TransformedText(annotatedString, offsetMapping)
     }
 }

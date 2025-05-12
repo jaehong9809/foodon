@@ -4,6 +4,7 @@ import android.net.Uri
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 
 data class MealInfo(
+    val mealId: Long? = null,
     val imageUri: Uri? = null,
     val imageFileName: String = "",
     val mealTime: String = "",

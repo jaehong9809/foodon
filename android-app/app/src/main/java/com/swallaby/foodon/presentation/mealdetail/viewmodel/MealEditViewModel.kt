@@ -54,8 +54,8 @@ class MealEditViewModel @Inject constructor(
                 }
 
                 is ResultState.Error -> {
-                    val errorMessage = result.messageRes
-                    _uiState.update { it.copy(mealEditState = ResultState.Error(messageRes = errorMessage)) }
+                    _events.emit(MealEditEvent.ShowErrorMessage(result.messageRes))
+                    _uiState.update { it.copy(mealEditState = ResultState.Error(messageRes = result.messageRes)) }
                 }
 
                 else -> {
@@ -147,6 +147,10 @@ class MealEditViewModel @Inject constructor(
         } else {
             Log.e(TAG, "Cannot delete food: Invalid state")
         }
+    }
+
+    fun destroyMeal() {
+        _uiState.update { it.copy(mealEditState = ResultState.Success(MealInfo())) }
     }
 
     private fun calculateTotalCarbs(items: List<MealItem>): Double {
