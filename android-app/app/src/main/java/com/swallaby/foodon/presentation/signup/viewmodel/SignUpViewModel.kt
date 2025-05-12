@@ -9,4 +9,8 @@ class SignUpViewModel @Inject constructor(
 
 ) : BaseViewModel<SignUpUiState>(SignUpUiState()) {
 
+    fun selectGender(gender: String) {
+        updateState { it.copy(selectedGender = gender) }
+    }
+
 }

@@ -3,7 +3,7 @@ package com.swallaby.foodon.presentation.signup.viewmodel
 import com.swallaby.foodon.core.presentation.UiState
 
 data class SignUpUiState(
-    val gender: String? = null,
+    val selectedGender: String? = null,
     val managementType: Long? = null,
     val activityType: Long? = null,
     val weight: Int? = null,
