@@ -1,9 +1,7 @@
 package com.swallaby.foodon.core.util
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
@@ -41,38 +39,32 @@ object DateUtil {
         daysInMonth: Int,
         isSelectedWeek: Boolean,
     ): RoundedCornerShape {
-        val targetTopStart = when {
-            isSelectedWeek && (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> 100.dp // 하루만 있는 경우
-            isSelectedWeek && (dayOfWeekFromDate == 0 || day == 1) -> 100.dp // Sunday 또는 월 첫째날
+        val topStart = when {
+            isSelectedWeek && (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> 100.dp
+            isSelectedWeek && (dayOfWeekFromDate == 0 || day == 1) -> 100.dp
             else -> 0.dp
         }
 
-        val targetBottomStart = when {
-            isSelectedWeek && (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> 100.dp // 하루만 있는 경우
-            isSelectedWeek && (dayOfWeekFromDate == 0 || day == 1) -> 100.dp // Sunday 또는 월 첫째날
+        val topEnd = when {
+            isSelectedWeek && (day == daysInMonth && dayOfWeekFromDate == 0) || (dayOfWeekFromDate == 6 || day == daysInMonth) -> 100.dp
             else -> 0.dp
         }
 
-        val targetTopEnd = when {
-            isSelectedWeek && (day == daysInMonth && dayOfWeekFromDate == 0) || (dayOfWeekFromDate == 6 || day == daysInMonth) -> 100.dp // Saturday 또는 월 마지막날
-            else -> 0.dp
-        }
-
-        val targetBottomEnd = when {
-            isSelectedWeek && (day == daysInMonth && dayOfWeekFromDate == 0) || (dayOfWeekFromDate == 6 || day == daysInMonth) -> 100.dp // Saturday 또는 월 마지막날
-            else -> 0.dp
-        }
-
-        val topStart by animateDpAsState(targetTopStart)
-        val bottomStart by animateDpAsState(targetBottomStart)
-        val topEnd by animateDpAsState(targetTopEnd)
-        val bottomEnd by animateDpAsState(targetBottomEnd)
+//        val targetTopStart by animateDpAsState(topStart)
+//        val targetTopEnd by animateDpAsState(topEnd)
+//
+//        return RoundedCornerShape(
+//            topStart = targetTopStart,
+//            topEnd = targetTopEnd,
+//            bottomEnd = targetTopEnd,
+//            bottomStart = targetTopStart
+//        )
 
         return RoundedCornerShape(
             topStart = topStart,
-            bottomStart = bottomStart,
             topEnd = topEnd,
-            bottomEnd = bottomEnd
+            bottomEnd = topEnd,
+            bottomStart = topStart
         )
     }
 

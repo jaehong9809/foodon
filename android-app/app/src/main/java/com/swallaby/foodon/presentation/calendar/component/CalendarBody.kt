@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.calendar.component
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -118,17 +116,17 @@ fun CalendarWeekBackground(
 ) {
     // 색상 애니메이션 처리
     val targetAlpha = if (calendarType == CalendarType.RECOMMENDATION && isSelectedWeek) 0.1f else 0f
-    val animatedAlpha by animateFloatAsState(
-        targetValue = targetAlpha,
-        label = "WeekBackgroundAlpha"
-    )
+//    val animatedAlpha by animateFloatAsState(
+//        targetValue = targetAlpha,
+//        label = "WeekBackgroundAlpha"
+//    )
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(41.dp)
             .background(
-                color = WB500.copy(alpha = animatedAlpha),
+                color = WB500.copy(alpha = targetAlpha),
                 shape = shape
             )
     )
