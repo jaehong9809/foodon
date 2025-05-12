@@ -1,9 +1,12 @@
 package com.foodon.foodon.meal.dto;
 
+import com.foodon.foodon.common.util.BigDecimalUtil;
 import com.foodon.foodon.food.domain.NutrientCode;
 
 import java.math.BigDecimal;
 import java.util.Map;
+
+import static com.foodon.foodon.common.util.BigDecimalUtil.round;
 
 public record NutrientProfile(
         BigDecimal kcal,
@@ -22,22 +25,21 @@ public record NutrientProfile(
         BigDecimal alcohol
 ) {
     public static NutrientProfile from(Map<NutrientCode, BigDecimal> nutrientMap) {
-
         return new NutrientProfile(
-                getOrZero(nutrientMap, NutrientCode.KCAL),
-                getOrZero(nutrientMap, NutrientCode.CARBS),
-                getOrZero(nutrientMap, NutrientCode.SUGAR),
-                getOrZero(nutrientMap, NutrientCode.FIBER),
-                getOrZero(nutrientMap, NutrientCode.PROTEIN),
-                getOrZero(nutrientMap, NutrientCode.FAT),
-                getOrZero(nutrientMap, NutrientCode.SATURATED_FAT),
-                getOrZero(nutrientMap, NutrientCode.TRANS_FAT),
-                getOrZero(nutrientMap, NutrientCode.FATTY_ACID),
-                getOrZero(nutrientMap, NutrientCode.UNSATURATED_FAT),
-                getOrZero(nutrientMap, NutrientCode.CHOLESTEROL),
-                getOrZero(nutrientMap, NutrientCode.SODIUM),
-                getOrZero(nutrientMap, NutrientCode.POTASSIUM),
-                getOrZero(nutrientMap, NutrientCode.ALCOHOL)
+                round(getOrZero(nutrientMap, NutrientCode.KCAL), 0),
+                round(getOrZero(nutrientMap, NutrientCode.CARBS), 1),
+                round(getOrZero(nutrientMap, NutrientCode.SUGAR), 1),
+                round(getOrZero(nutrientMap, NutrientCode.FIBER), 1),
+                round(getOrZero(nutrientMap, NutrientCode.PROTEIN), 1),
+                round(getOrZero(nutrientMap, NutrientCode.FAT), 1),
+                round(getOrZero(nutrientMap, NutrientCode.SATURATED_FAT), 1),
+                round(getOrZero(nutrientMap, NutrientCode.TRANS_FAT), 1),
+                round(getOrZero(nutrientMap, NutrientCode.FATTY_ACID), 1),
+                round(getOrZero(nutrientMap, NutrientCode.UNSATURATED_FAT), 1),
+                round(getOrZero(nutrientMap, NutrientCode.CHOLESTEROL), 1),
+                round(getOrZero(nutrientMap, NutrientCode.SODIUM), 1),
+                round(getOrZero(nutrientMap, NutrientCode.POTASSIUM), 1),
+                round(getOrZero(nutrientMap, NutrientCode.ALCOHOL), 1)
         );
     }
 

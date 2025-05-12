@@ -58,23 +58,23 @@ public class FoodService {
             Food food
     ) {
         List<Nutrient> nutrientList = nutrientRepository.findAll();
-        Map<NutrientCode, Long> nutrientIdMap = convertToTypeIdMap(nutrientList);
+        Map<NutrientCode, Long> nutrientCodeIdMap = getNutrientCodeIdMap(nutrientList);
 
-        nutrients.toMap().forEach((type, value) -> {
+        nutrients.toMap().forEach((code, value) -> {
             if (value == null) {
                 return;
             }
 
             FoodNutrient foodNutrient = FoodNutrient.createFoodNutrient(
                     food.getId(),
-                    nutrientIdMap.get(type),
+                    nutrientCodeIdMap.get(code),
                     value
             );
             foodNutrientRepository.save(foodNutrient);
         });
     }
 
-    private Map<NutrientCode, Long> convertToTypeIdMap(List<Nutrient> nutrientList) {
+    private Map<NutrientCode, Long> getNutrientCodeIdMap(List<Nutrient> nutrientList) {
         return nutrientList.stream()
                 .collect(Collectors.toMap(
                         Nutrient::getCode,
@@ -87,15 +87,18 @@ public class FoodService {
             FoodType type,
             Member member
     ) {
-        FoodWithNutrientInfo food = foodRepository.findFoodInfoWithNutrientByIdAndType(foodId, type, member);
-        return FoodDetailInfoResponse.from(food, convertToTypedValueMap(food.nutrients()));
+        FoodWithNutrientInfo foodInfo = foodRepository.findFoodInfoWithNutrientByIdAndType(foodId, type, member);
+        return FoodDetailInfoResponse.from(foodInfo, getNutrientValueMap(foodInfo));
     }
 
-    private Map<NutrientCode, BigDecimal> convertToTypedValueMap(List<NutrientInfo> nutrients) {
-        return nutrients.stream()
+    private Map<NutrientCode, BigDecimal> getNutrientValueMap(
+            FoodWithNutrientInfo foodInfo
+    ) {
+        return foodInfo.nutrients().stream()
                 .collect(Collectors.toMap(
                         NutrientInfo::code,
-                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                        NutrientInfo::value
+                        // 1회 제공량 함량으로 변환해서 주도록 수정하겠습니다. (변환 로직이 다른 PR 에 존재)
                 ));
     }
 

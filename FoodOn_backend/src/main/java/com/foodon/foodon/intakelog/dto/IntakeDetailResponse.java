@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static com.foodon.foodon.common.util.BigDecimalUtil.round;
 import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
 
 public record IntakeDetailResponse(
@@ -27,15 +28,15 @@ public record IntakeDetailResponse(
             LocalDate date
     ) {
         return new IntakeDetailResponse(
-                date,
-                nutrientGoal.getGoalKcal(),
-                intakeLog.getIntakeKcal(),
-                nutrientGoal.getGoalCarbs(),
-                intakeLog.getIntakeCarbs(),
-                nutrientGoal.getGoalProtein(),
-                intakeLog.getIntakeProtein(),
-                nutrientGoal.getGoalFat(),
-                intakeLog.getIntakeFat()
+                intakeLog.getDate(),
+                round(intakeLog.getGoalKcal(), 0),
+                round(intakeLog.getIntakeKcal(), 0),
+                round(nutrientTarget.goalCarbs(), 1),
+                round(intakeLog.getIntakeCarbs(), 1),
+                round(nutrientTarget.goalProtein(), 1),
+                round(intakeLog.getIntakeProtein(), 1),
+                round(nutrientTarget.goalFat(), 1),
+                round(intakeLog.getIntakeFat(), 1)
         );
     }
 
@@ -45,13 +46,13 @@ public record IntakeDetailResponse(
     ) {
         return new IntakeDetailResponse(
                 date,
-                nutrientGoal.getGoalKcal(),
+                round(nutrientGoal.getGoalKcal(), 0),
                 BigDecimal.ZERO,
-                nutrientGoal.getGoalCarbs(),
+                round(nutrientGoal.getGoalCarbs(), 1),
                 BigDecimal.ZERO,
-                nutrientGoal.getGoalProtein(),
+                round(nutrientGoal.getGoalProtein(), 1),
                 BigDecimal.ZERO,
-                nutrientGoal.getGoalFat(),
+                round(nutrientGoal.getGoalFat(), 1),
                 BigDecimal.ZERO
         );
     }

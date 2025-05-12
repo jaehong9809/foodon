@@ -71,10 +71,10 @@ public class MealService {
             MealDetectAiResponse detectedItems
     ) {
         List<MealItemInfo> mealItems = getMealItemsInfoList(detectedItems);
-        int totalKcal = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::kcal));
-        int totalCarbs = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::carbs));
-        int totalProtein = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::protein));
-        int totalFat = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::fat));
+        BigDecimal totalKcal = sumTotalIntake(mealItems, NutrientProfile::kcal);
+        BigDecimal totalCarbs = sumTotalIntake(mealItems, NutrientProfile::carbs);
+        BigDecimal totalProtein = sumTotalIntake(mealItems, NutrientProfile::protein);
+        BigDecimal totalFat = sumTotalIntake(mealItems, NutrientProfile::fat);
 
         return MealInfoResponse.from(
                 imageUrl,
@@ -127,7 +127,7 @@ public class MealService {
         return nutrients.stream()
                 .collect(Collectors.toMap(
                         NutrientInfo::code,
-                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                        NutrientInfo::value
                 ));
     }
 
