@@ -65,9 +65,9 @@ fun NutrientIntakeContent(
                 val fatRatio = it.intakeFat.toFloat() * 9 / it.goalKcal
 
                 listOf(
-                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs.toDouble(), carbsRatio),
-                    Nutrition(NutritionType.PROTEIN, it.intakeProtein.toDouble(), proteinRatio),
-                    Nutrition(NutritionType.FAT, it.intakeFat.toDouble(), fatRatio),
+                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs, carbsRatio),
+                    Nutrition(NutritionType.PROTEIN, it.intakeProtein, proteinRatio),
+                    Nutrition(NutritionType.FAT, it.intakeFat, fatRatio),
                 ).sortedByDescending { n -> n.amount }
             } ?: emptyList()
 
