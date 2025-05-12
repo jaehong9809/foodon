@@ -13,10 +13,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.WB500
+import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(
+    onNavigate : (NavRoutes) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -31,10 +34,4 @@ fun SplashScreen() {
             modifier = Modifier.size(188.dp)
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SplashScreenPreview(){
-    SplashScreen()
 }

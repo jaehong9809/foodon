@@ -33,4 +33,8 @@ sealed class NavRoutes(val route: String) {
     object LoginGraph : NavRoutes("login_graph")
     object Login : NavRoutes("login")
 
+    /* Splash */
+    object SplashGraph : NavRoutes("splash_graph")
+    object Splash : NavRoutes("splash")
+
 }
