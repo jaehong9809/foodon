@@ -55,7 +55,6 @@ fun CommonWideButton(
     ) {
         text?.let {
             Text(
-                modifier = modifier,
                 text = it,
                 style = NotoTypography.NotoMedium16,
                 color = if (isEnabled) MainWhite else G000,

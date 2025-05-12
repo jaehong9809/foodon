@@ -3,6 +3,7 @@ package com.swallaby.foodon.presentation.signup
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -29,11 +29,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.OnBoardingTopBar
 import com.swallaby.foodon.core.ui.theme.Bkg04
-import com.swallaby.foodon.core.ui.theme.MainWhite
+import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
@@ -44,7 +45,7 @@ import com.swallaby.foodon.domain.user.model.GenderOption
 fun GenderScreen(
     onBack: () -> Unit,
     onNext: () -> Unit,
-    viewModel: SignUpViewModel
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -61,39 +62,43 @@ fun GenderScreen(
         )
     )
 
-    OnBoardingTopBar(
-        curIdx = 1,
-        total = 5,
-        onBackClick = onBack
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 16.dp)
-    ) {
-        Text(
-            text = "성별을 선택해 주세요.",
-            style = Typography.displayLarge
+    Box(modifier = Modifier.fillMaxSize()) {
+        OnBoardingTopBar(
+            curIdx = 1,
+            total = 5,
+            onBackClick = onBack
         )
-        Spacer(modifier = Modifier.height(24.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 68.dp, start = 24.dp, end = 24.dp, bottom = 96.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            genderOptions.forEach { option ->
-                GenderOptionCard(
-                    option = option,
-                    selected = uiState.selectedGender == option,
-                    onClick = { viewModel.selectGender(option) }
-                )
+            Text(
+                text = "성별을 선택해 주세요.",
+                style = Typography.displayLarge
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                genderOptions.forEach { option ->
+                    GenderOptionCard(
+                        modifier = Modifier.weight(1f),
+                        option = option,
+                        selected = uiState.selectedGender == option,
+                        onClick = { viewModel.selectGender(option) }
+                    )
+                }
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
 
         CommonWideButton(
-            modifier = Modifier,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 24.dp),
             text = stringResource(R.string.btn_next),
             isEnabled = uiState.selectedGender != null,
             onClick = onNext
@@ -104,37 +109,35 @@ fun GenderScreen(
 
 @Composable
 fun GenderOptionCard(
+    modifier: Modifier,
     option: GenderOption,
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val border = if (selected) BorderStroke(1.dp, WB500) else null
-    val backgroundColor = MainWhite
-
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(192.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(10.dp),
-        border = border,
-        color = backgroundColor
+        border = BorderStroke(1.dp, Border02)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             GenderIconWithBackground(
                 imageResId = option.iconResId,
-                showCheck = selected
+                showCheck = selected,
+                showCircularBorder = selected
             )
 
             Text(
                 text = stringResource(option.displayTextResId),
-                style = Typography.displaySmall
+                style = Typography.displaySmall,
+
             )
         }
     }
@@ -146,24 +149,31 @@ fun GenderOptionCard(
 fun GenderIconWithBackground(
     imageResId: Int,
     backgroundColor: Color = Bkg04,
-    showCheck: Boolean = false
+    showCheck: Boolean = false,
+    showCircularBorder: Boolean = false
 ) {
     Box(
-        modifier = Modifier
-            .size(100.dp),
+        modifier = Modifier.size(100.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .clip(CircleShape)
-                .background(backgroundColor),
+                .then(
+                    if (showCircularBorder)
+                        Modifier.border(2.dp, WB500, CircleShape)
+                    else Modifier
+                ),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = null,
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(backgroundColor)
             )
         }
 
@@ -178,3 +188,5 @@ fun GenderIconWithBackground(
         }
     }
 }
+
+
