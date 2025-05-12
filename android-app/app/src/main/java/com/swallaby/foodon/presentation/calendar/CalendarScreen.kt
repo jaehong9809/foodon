@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,9 +55,9 @@ fun CalendarScreen(
     // 날짜 관리
     val today = uiState.today
     val baseYearMonth = remember { YearMonth.from(today) }
+    val selectedDate = uiState.selectedDate
 
     // 탭 상태 관리
-    val selectedDate = uiState.selectedDate
     val selectedTabIndex = uiState.selectedTabIndex
     val currentYearMonth = uiState.currentYearMonth
 
@@ -66,8 +65,6 @@ fun CalendarScreen(
     val weekCount = rememberWeekCount(currentYearMonth, today)
 
     // 캘린더 페이지 관리
-    var monthOffset by remember { mutableIntStateOf(0) }
-
     val nextMonth = currentYearMonth.plusMonths(1)
     val maxPage = if (nextMonth.isAfter(baseYearMonth)) 2 else 3
 
@@ -98,21 +95,24 @@ fun CalendarScreen(
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
             val delta = pagerState.currentPage - 1
-            monthOffset += delta
+            val newMonth = currentYearMonth.plusMonths(delta.toLong())
 
-            val newMonth = baseYearMonth.plusMonths(monthOffset.toLong())
             viewModel.updateYearMonth(newMonth)
-
             pagerState.scrollToPage(1)
         }
     }
 
-    LaunchedEffect(currentYearMonth) {
-        viewModel.updateCalendarData(calendarType, isSameMonth = currentYearMonth == baseYearMonth)
+    LaunchedEffect(Unit) {
+        viewModel.updateInitialLoaded(false)
     }
 
-    LaunchedEffect(selectedTabIndex) {
-        viewModel.updateCalendarData(calendarType, isTabChanged = true)
+    val previousTabIndex = remember { mutableIntStateOf(selectedTabIndex) }
+
+    LaunchedEffect(currentYearMonth, selectedTabIndex) {
+        val isTabChanged = selectedTabIndex != previousTabIndex.intValue
+        previousTabIndex.intValue = selectedTabIndex
+
+        viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged)
     }
 
     Scaffold(

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.CalendarDayItem
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 import org.threeten.bp.LocalDate
 
@@ -24,7 +25,8 @@ fun MainCalendarPager(
     pagerState: PagerState,
     currentWeekStart: LocalDate,
     mealItemMap: Map<String, CalendarItem>,
-    uiState: MainUiState,
+    mainUiState: MainUiState,
+    calendarUiState: CalendarUiState,
     onDateSelected: (LocalDate) -> Unit,
 ) {
 
@@ -57,8 +59,8 @@ fun MainCalendarPager(
                             calendarType = CalendarType.MEAL,
                             calendarItem = calendarItem,
                             date = date,
-                            today = uiState.today,
-                            isSelected = uiState.selectedDate == date,
+                            today = calendarUiState.today,
+                            isSelected = calendarUiState.selectedDate == date,
                             onClick = { onDateSelected(date) }
                         )
                     }

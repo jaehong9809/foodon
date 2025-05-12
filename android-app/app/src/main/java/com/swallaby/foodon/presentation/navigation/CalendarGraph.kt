@@ -16,6 +16,7 @@ fun NavGraphBuilder.calendarGraph(
     ) {
         composable(NavRoutes.Calendar.route) {
             calendarViewModel.selectTab(0)
+//            calendarViewModel.updateInitialLoaded(false)
             CalendarScreen(calendarViewModel)
         }
     }

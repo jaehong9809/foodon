@@ -22,16 +22,18 @@ import com.swallaby.foodon.core.util.DateUtil.formatDate
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
 fun NutrientIntakeContent(
-    uiState: MainUiState,
+    mainUiState: MainUiState,
+    calendarUiState: CalendarUiState,
 ) {
 
-    val today = uiState.today
-    val selectedDate = uiState.selectedDate
-    val intakeResult = uiState.intakeResult
+    val today = calendarUiState.today
+    val selectedDate = calendarUiState.selectedDate
+    val intakeResult = mainUiState.intakeResult
 
     Column(
         modifier = Modifier
