@@ -1,7 +1,10 @@
 package com.swallaby.foodon.presentation.foodedit.component
 
+import android.net.Uri
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,40 +15,97 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.ImageCropManager
+import com.swallaby.foodon.domain.food.model.MealItem
 
 
 @Composable
-fun FoodThumbnailList(modifier: Modifier = Modifier) {
+fun FoodThumbnailList(
+    modifier: Modifier = Modifier,
+    imageUri: Uri?,
+    foods: List<MealItem>,
+    selectedFoodId: Long = 0L,
+    selectFood: (foodId: Long) -> Unit = {},
+) {
     val scrollState = rememberScrollState()
-    Row(
-        modifier = modifier
-            .horizontalScroll(scrollState)
-            .padding(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        FoodThumbnail(modifier, isSelected = true, foodName = "피자")
-        FoodThumbnail(modifier, isSelected = false, foodName = "레드와인")
+
+    val context = LocalContext.current
+    val cropManager = ImageCropManager(context)
+
+
+    val positions = foods.mapNotNull { mealItem ->
+        mealItem.positions.firstOrNull()
     }
+    var isLoad by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        // 이미지 로드 및 크롭
+        cropManager.loadAndCropImage(
+            imageUri.toString(),
+            //"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+            positions
+        ) {
+            isLoad = true
+        }
+    }
+
+
+
+    if (isLoad) {
+        Row(
+            modifier = modifier
+                .horizontalScroll(scrollState)
+                .padding(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            repeat(foods.size) { index ->
+                FoodThumbnail(
+                    modifier,
+                    isSelected = foods[index].foodId == selectedFoodId,
+                    mealItem = foods[index],
+                    selectFood = selectFood,
+                    imageUri = imageUri,
+                    cropManager = cropManager
+                )
+            }
+        }
+    }
+
 }
 
 @Composable
 private fun FoodThumbnail(
     modifier: Modifier,
-    foodName: String,
+    imageUri: Uri?,
+    mealItem: MealItem,
     isSelected: Boolean = false,
+    selectFood: (foodId: Long) -> Unit = {},
+    cropManager: ImageCropManager = ImageCropManager(LocalContext.current),
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    val foodImage = mealItem.positions.firstOrNull()
+
+    Column(modifier = modifier.clickable(onClick = {
+        selectFood(mealItem.foodId)
+    }, indication = null, interactionSource = remember {
+        MutableInteractionSource()
+    }), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier
                 .border(
@@ -55,17 +115,23 @@ private fun FoodThumbnail(
                 )
                 .size(72.dp), contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
-                contentDescription = "음식 사진",
-                contentScale = ContentScale.FillBounds,
-                modifier = modifier
-                    .size(64.dp)
-                    .clip(shape = RoundedCornerShape(10.dp))
-            )
+            foodImage?.let {
+                AsyncImage(
+                    model = cropManager.getCroppedImageRequest(
+                        imageUri.toString(),//"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+                        it
+                    ),
+                    contentDescription = "음식 사진",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = modifier
+                        .size(64.dp)
+                        .clip(shape = RoundedCornerShape(10.dp))
+                )
+            }
+
         }
         Text(
-            foodName,
+            mealItem.foodName,
             style = NotoTypography.NotoBold14.copy(color = if (isSelected) WB500 else G900)
         )
     }
@@ -74,5 +140,14 @@ private fun FoodThumbnail(
 @Preview
 @Composable
 private fun FoodThumbnailListPreview() {
-    FoodThumbnailList()
+    FoodThumbnailList(
+        foods = listOf(
+            MealItem(
+                foodId = 1L,
+                foodName = "피자",
+            ),
+        ),
+        selectedFoodId = 1L,
+        imageUri = null,
+    )
 }

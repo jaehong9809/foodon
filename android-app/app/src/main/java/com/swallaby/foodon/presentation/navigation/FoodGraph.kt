@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.mealdetail.MealDetailScreen
@@ -20,13 +21,16 @@ import com.swallaby.foodon.presentation.mealrecord.MealRecordScreen
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
 import com.swallaby.foodon.presentation.nutritionedit.NutritionEditScreen
 
-fun NavGraphBuilder.mealGraph(navController: NavHostController) {
+fun NavGraphBuilder.mealGraph(
+    navController: NavHostController,
+    mealEditViewModel: MealEditViewModel,
+) {
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
         composable(NavRoutes.FoodGraph.FoodRecord.route, exitTransition = { ExitTransition.None }) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
-            val mealEditViewModel = hiltViewModel<MealEditViewModel>()
+
 
             MealRecordScreen(recordViewModel = recordViewModel,
                 editViewModel = mealEditViewModel,
@@ -45,18 +49,16 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
         composable(
             route = NavRoutes.FoodGraph.MealDetail.route,
         ) {
-            val backStackEntry = remember(navController.currentBackStackEntry) {
-                navController.getBackStackEntry(NavRoutes.FoodGraph.FoodRecord.route)
-            }
-            val mealEditViewModel: MealEditViewModel = hiltViewModel(backStackEntry)
 
-            MealDetailScreen(
-                viewModel = mealEditViewModel,
+
+            MealDetailScreen(viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))
                 },
-            )
+                onNavigateMain = {
+                    navController.popBackStack(NavRoutes.MainGraph.route, inclusive = false)
+                })
         }
 
         composable(
@@ -66,11 +68,7 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
             })
         ) {
             val foodId = it.arguments?.getLong(NavRoutes.FoodGraph.FoodEdit.FOOD_ID) ?: 0L
-            val backStackEntry = remember(navController.currentBackStackEntry) {
-                navController.getBackStackEntry(NavRoutes.FoodGraph.FoodRecord.route)
-            }
 
-            val mealEditViewModel: MealEditViewModel = hiltViewModel(backStackEntry)
             val mealEditUiState by mealEditViewModel.uiState.collectAsStateWithLifecycle()
             val mealInfo = (mealEditUiState.mealEditState as ResultState.Success).data
 
@@ -79,10 +77,8 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
                 initFood(mealInfo)
             }
 
-            FoodEditScreen(
-                viewModel = foodEditViewModel,
+            FoodEditScreen(viewModel = foodEditViewModel,
                 onBackClick = { navController.popBackStack() },
-                foodId = foodId,
                 onNutritionEditClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodNutritionEdit.createRoute(foodId))
                 },
@@ -96,11 +92,13 @@ fun NavGraphBuilder.mealGraph(navController: NavHostController) {
                     val food = updateMealInfo.mealItems.find { item -> item.foodId == foodId }
 
                     food?.let { it ->
-                        mealEditViewModel.updateFood(it)
-                        navController.popBackStack()
+                        foodEditViewModel.registerCustomFood(it)
                     }
                 },
-            )
+                onSuccessCustomFood = { mealItem ->
+                    mealEditViewModel.updateFood(mealItem.copy(type = FoodType.CUSTOM))
+                    navController.popBackStack()
+                })
         }
 
         composable(

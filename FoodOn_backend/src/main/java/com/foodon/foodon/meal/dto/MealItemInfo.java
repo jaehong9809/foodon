@@ -18,7 +18,6 @@ public record MealItemInfo(
         NutrientProfile nutrientInfo,
         List<PositionInfo> positions
 ) {
-
     public static MealItemInfo from(
             FoodWithNutrientInfo food,
             BigDecimal quantity,

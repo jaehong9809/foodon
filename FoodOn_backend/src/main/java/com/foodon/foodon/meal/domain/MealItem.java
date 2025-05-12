@@ -25,6 +25,7 @@ public class MealItem {
     @JoinColumn(name = "meal_id", nullable = false)
     private Meal meal;
 
+    @Enumerated(EnumType.STRING)
     private FoodType foodType;
 
     private Long foodId;

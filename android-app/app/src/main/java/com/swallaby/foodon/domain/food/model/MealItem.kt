@@ -1,7 +1,7 @@
 package com.swallaby.foodon.domain.food.model
 
 data class MealItem(
-    val type: String = "PUBLIC",
+    val type: FoodType = FoodType.PUBLIC,
     val foodId: Long = 0,
     val foodName: String = "",
     val unit: String = "",
