@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.signup.viewmodel
 
 import com.swallaby.foodon.core.presentation.BaseViewModel
+import com.swallaby.foodon.domain.user.model.ActivityTypeOption
 import com.swallaby.foodon.domain.user.model.GenderOption
 import com.swallaby.foodon.domain.user.model.ManagementTypeOption
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,11 +49,19 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun setManagementOptions(options: List<ManagementTypeOption>) {
-        _uiState.update { it.copy(managementOptions = options) }
+        updateState { it.copy(managementOptions = options) }
     }
 
     fun selectManagementType(id: Long) {
-        _uiState.update { it.copy(selectedManagementTypeId = id) }
+        updateState { it.copy(selectedManagementTypeId = id) }
+    }
+
+    fun setActivityOptions(options: List<ActivityTypeOption>) {
+        updateState { it.copy(activityTypeOptions = options) }
+    }
+
+    fun selectActivityType(id: Long) {
+        updateState { it.copy(selectedActivityTypeId = id) }
     }
 
 }
