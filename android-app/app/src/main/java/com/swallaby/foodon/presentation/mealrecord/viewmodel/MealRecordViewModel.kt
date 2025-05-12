@@ -26,23 +26,6 @@ class MealRecordViewModel @Inject constructor(
     private val _events = MutableSharedFlow<MealRecordEvent>()
     val events = _events.asSharedFlow()
 
-    private fun validateMultipartImageSize(part: MultipartBody.Part): Pair<Boolean, Long> {
-        val maxSizeBytes = 10 * 1024 * 1024 // 10MB in bytes
-        val fileSize = getImageSizeFromMultipartBodyPart(part)
-
-        return Pair(fileSize in 1..maxSizeBytes, fileSize)
-    }
-
-    private fun getImageSizeFromMultipartBodyPart(part: MultipartBody.Part): Long {
-        try {
-            val requestBody = part.body
-            val contentLength = requestBody.contentLength()
-            return contentLength
-        } catch (e: Exception) {
-            Log.e("ImageUtils", "Failed to get file size from MultipartBody.Part", e)
-            return 0L
-        }
-    }
 
     fun uploadMealImage(uri: Uri, context: Context) {
         val image = uri.toMultipartBodyPart(context)
@@ -83,6 +66,22 @@ class MealRecordViewModel @Inject constructor(
     fun resetMealRecordState() {
         _uiState.update {
             it.copy(mealRecordState = ResultState.Success(null))
+        }
+    }
+
+    private fun validateMultipartImageSize(part: MultipartBody.Part): Pair<Boolean, Long> {
+        val maxSizeBytes = 10 * 1024 * 1024 // 10MB in bytes
+        val fileSize = getImageSizeFromMultipartBodyPart(part)
+        return Pair(fileSize in 1..maxSizeBytes, fileSize)
+    }
+
+    private fun getImageSizeFromMultipartBodyPart(part: MultipartBody.Part): Long {
+        try {
+            val requestBody = part.body
+            val contentLength = requestBody.contentLength()
+            return contentLength
+        } catch (e: Exception) {
+            return 0L
         }
     }
 
