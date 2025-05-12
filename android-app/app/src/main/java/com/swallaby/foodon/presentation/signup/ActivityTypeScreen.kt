@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -53,15 +54,12 @@ fun ActivityTypeScreen(
                 .padding(top = 68.dp, start = 24.dp, end = 24.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text =  stringResource(R.string.activity_level_choice),
-                    style = Typography.displayLarge,
-                    color = G900
-                )
-            }
+            Text(
+                text =  stringResource(R.string.activity_level_choice),
+                style = Typography.displayLarge,
+                color = G900
+            )
+            Spacer(modifier = Modifier.height(24.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 uiState.activityTypeOptions.forEach { option ->
@@ -95,7 +93,7 @@ fun ActivityLevelOptionCard(
 
     Surface(
         modifier = Modifier
-            .height(80.dp)
+            .height(56.dp)
             .fillMaxWidth()
             .clickable { onClick() }
             .border(2.dp, borderColor, RoundedCornerShape(10.dp)),

@@ -37,7 +37,17 @@ class SignUpViewModel @Inject constructor(
             )
         )
 
-        _uiState.update { it.copy(managementOptions = dummyList) }
+        val dummyActivityTypes = listOf(
+            ActivityTypeOption(id = 1L, title = "주로 앉아서 생활, 별도 운동 없음"),
+            ActivityTypeOption(id = 2L, title = "가벼운 활동 또는 주 1~3회 운동"),
+            ActivityTypeOption(id = 3L, title = "활동적 직업 또는 주 4회 이상 운동")
+        )
+
+        _uiState.update { it.copy(
+                managementOptions = dummyList,
+                activityTypeOptions = dummyActivityTypes,
+            )
+        }
     }
 
     fun updateState(block: (SignUpUiState) -> SignUpUiState) {
