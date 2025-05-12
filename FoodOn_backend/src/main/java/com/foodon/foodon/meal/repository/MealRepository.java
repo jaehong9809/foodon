@@ -29,6 +29,7 @@ public interface MealRepository extends JpaRepository<Meal, Long>, MealRepositor
     @Query("""
         select m from Meal m
         join fetch m.mealItems mi
+        join fetch mi.positions p
         where m.member = :member
         and m.id = :mealId
     """)
