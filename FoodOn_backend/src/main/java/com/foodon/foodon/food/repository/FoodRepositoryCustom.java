@@ -1,7 +1,9 @@
 package com.foodon.foodon.food.repository;
 
+import com.foodon.foodon.food.dto.FoodWithNutrientClaimInfo;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.food.domain.FoodType;
+import com.foodon.foodon.food.dto.NutrientClaimInfo;
 import com.foodon.foodon.member.domain.Member;
 
 import java.util.List;
@@ -18,5 +20,8 @@ public interface FoodRepositoryCustom {
             Set<String> foodNames
     );
 
+    List<FoodWithNutrientInfo> findAllFoodInfo();
+
+    List<NutrientClaimInfo> findNutrientClaimsByFoodIds(List<Long> foodIds);
 
 }

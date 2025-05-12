@@ -38,7 +38,7 @@ fun IntakeDetail(
             .fillMaxWidth()
             .wrapContentHeight()
             .border(1.dp, color = Border02, shape = RoundedCornerShape(10.dp))
-            .padding(18.dp),
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         IntakeItem(NutritionType.CARBOHYDRATE, intake.intakeCarbs, intake.goalCarbs)

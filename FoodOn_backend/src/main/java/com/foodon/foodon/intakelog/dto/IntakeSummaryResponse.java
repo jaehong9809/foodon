@@ -2,23 +2,34 @@ package com.foodon.foodon.intakelog.dto;
 
 import com.foodon.foodon.intakelog.domain.IntakeLog;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import static com.foodon.foodon.common.util.BigDecimalUtil.round;
 import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
 
 
 public record IntakeSummaryResponse(
-        Long intakeLogId,
         LocalDate date,
-        int goalKcal,
-        int intakeKcal
+        BigDecimal goalKcal,
+        BigDecimal intakeKcal
 ) {
-    public static IntakeSummaryResponse of(IntakeLog intakeLog) {
+    public static IntakeSummaryResponse withIntakeLog(IntakeLog intakeLog) {
         return new IntakeSummaryResponse(
-                intakeLog.getId(),
                 intakeLog.getDate(),
-                toRoundedInt(intakeLog.getGoalKcal()),
-                toRoundedInt(intakeLog.getIntakeKcal())
+                round(intakeLog.getGoalKcal(), 0),
+                round(intakeLog.getIntakeKcal(), 0)
+        );
+    }
+
+    public static IntakeSummaryResponse withoutIntakeLog(
+            BigDecimal goalKcal,
+            LocalDate date
+    ) {
+        return new IntakeSummaryResponse(
+                date,
+                round(goalKcal, 0),
+                BigDecimal.ZERO
         );
     }
 }
