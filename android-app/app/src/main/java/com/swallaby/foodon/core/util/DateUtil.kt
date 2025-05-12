@@ -39,31 +39,33 @@ object DateUtil {
         daysInMonth: Int,
         isSelectedWeek: Boolean,
     ): RoundedCornerShape {
-        return if (isSelectedWeek) {
-            when {
-                (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> {
-                    RoundedCornerShape(100.dp) // 하루만 있는 경우
-                }
-
-                dayOfWeekFromDate == 0 || day == 1 -> { // Sunday 또는 월 첫째날
-                    RoundedCornerShape(
-                        topStart = 100.dp, bottomStart = 100.dp, topEnd = 0.dp, bottomEnd = 0.dp
-                    )
-                }
-
-                dayOfWeekFromDate == 6 || day == daysInMonth -> { // Saturday 또는 월 마지막날
-                    RoundedCornerShape(
-                        topStart = 0.dp, bottomStart = 0.dp, topEnd = 100.dp, bottomEnd = 100.dp
-                    )
-                }
-
-                else -> {
-                    RoundedCornerShape(0.dp)
-                }
-            }
-        } else {
-            RoundedCornerShape(0.dp)
+        val topStart = when {
+            isSelectedWeek && (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> 100.dp
+            isSelectedWeek && (dayOfWeekFromDate == 0 || day == 1) -> 100.dp
+            else -> 0.dp
         }
+
+        val topEnd = when {
+            isSelectedWeek && (day == daysInMonth && dayOfWeekFromDate == 0) || (dayOfWeekFromDate == 6 || day == daysInMonth) -> 100.dp
+            else -> 0.dp
+        }
+
+//        val targetTopStart by animateDpAsState(topStart)
+//        val targetTopEnd by animateDpAsState(topEnd)
+//
+//        return RoundedCornerShape(
+//            topStart = targetTopStart,
+//            topEnd = targetTopEnd,
+//            bottomEnd = targetTopEnd,
+//            bottomStart = targetTopStart
+//        )
+
+        return RoundedCornerShape(
+            topStart = topStart,
+            topEnd = topEnd,
+            bottomEnd = topEnd,
+            bottomStart = topStart
+        )
     }
 
     fun formatDate(localDate: LocalDate): String {
