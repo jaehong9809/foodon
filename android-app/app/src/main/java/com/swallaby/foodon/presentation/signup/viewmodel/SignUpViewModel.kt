@@ -3,7 +3,6 @@ package com.swallaby.foodon.presentation.signup.viewmodel
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.domain.user.model.GenderOption
 import com.swallaby.foodon.domain.user.model.ManagementTypeOption
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -12,6 +11,33 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
 
 ) : BaseViewModel<SignUpUiState>(SignUpUiState()) {
+
+    init { // UI Test를 위한 Init, 추후 API 붙이면 삭제 예정
+        val dummyList = listOf(
+            ManagementTypeOption(
+                id = 1L,
+                title = "고단백형",
+                description = "근손실 최소화와 체지방 감량, 운동 병행에 적합"
+            ),
+            ManagementTypeOption(
+                id = 2L,
+                title = "저당형",
+                description = "혈당 스파이크 방지, 인슐린 저항 개선"
+            ),
+            ManagementTypeOption(
+                id = 3L,
+                title = "저나트륨형",
+                description = "고혈압, 부종 개선에 도움"
+            ),
+            ManagementTypeOption(
+                id = 4L,
+                title = "건강 유지형",
+                description = "균형잡힌 식단으로 유지 또는 초보자에게 적합"
+            )
+        )
+
+        _uiState.update { it.copy(managementOptions = dummyList) }
+    }
 
     fun updateState(block: (SignUpUiState) -> SignUpUiState) {
         _uiState.update(block)
@@ -25,7 +51,7 @@ class SignUpViewModel @Inject constructor(
         _uiState.update { it.copy(managementOptions = options) }
     }
 
-    fun selectManagementType(id: String) {
+    fun selectManagementType(id: Long) {
         _uiState.update { it.copy(selectedManagementTypeId = id) }
     }
 

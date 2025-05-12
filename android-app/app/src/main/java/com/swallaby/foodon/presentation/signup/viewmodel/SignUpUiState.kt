@@ -7,7 +7,7 @@ import com.swallaby.foodon.domain.user.model.ManagementTypeOption
 data class SignUpUiState(
     val selectedGender: GenderOption? = null,
     val managementOptions: List<ManagementTypeOption> = emptyList(),
-    val selectedManagementTypeId: String? = null,
+    val selectedManagementTypeId: Long? = null,
     val activityType: Long? = null,
     val weight: Int? = null,
     val goalWeight: Int? = null,
