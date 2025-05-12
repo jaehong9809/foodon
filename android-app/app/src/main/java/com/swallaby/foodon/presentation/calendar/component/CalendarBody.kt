@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.calendar.component
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -72,17 +75,7 @@ fun CalendarBody(
                                     .heightIn(min = if (calendarType == CalendarType.MEAL) 82.dp else 68.dp),
                                 contentAlignment = Alignment.TopCenter
                             ) {
-                                if (calendarType == CalendarType.RECOMMENDATION && isSelectedWeek) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(41.dp)
-                                            .background(
-                                                color = WB500.copy(alpha = 0.1f),
-                                                shape = shape
-                                            )
-                                    )
-                                }
+                                CalendarWeekBackground(calendarType, isSelectedWeek, shape)
 
                                 Box(
                                     modifier = Modifier
@@ -116,3 +109,29 @@ fun CalendarBody(
         }
     }
 }
+
+@Composable
+fun CalendarWeekBackground(
+    calendarType: CalendarType,
+    isSelectedWeek: Boolean,
+    shape: RoundedCornerShape
+) {
+    // 색상 애니메이션 처리
+    val targetAlpha = if (calendarType == CalendarType.RECOMMENDATION && isSelectedWeek) 0.1f else 0f
+    val animatedAlpha by animateFloatAsState(
+        targetValue = targetAlpha,
+        label = "WeekBackgroundAlpha"
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(41.dp)
+            .background(
+                color = WB500.copy(alpha = animatedAlpha),
+                shape = shape
+            )
+    )
+}
+
+

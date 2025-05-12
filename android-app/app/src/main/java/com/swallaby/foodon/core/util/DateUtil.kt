@@ -1,7 +1,9 @@
 package com.swallaby.foodon.core.util
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
@@ -39,31 +41,39 @@ object DateUtil {
         daysInMonth: Int,
         isSelectedWeek: Boolean,
     ): RoundedCornerShape {
-        return if (isSelectedWeek) {
-            when {
-                (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> {
-                    RoundedCornerShape(100.dp) // 하루만 있는 경우
-                }
-
-                dayOfWeekFromDate == 0 || day == 1 -> { // Sunday 또는 월 첫째날
-                    RoundedCornerShape(
-                        topStart = 100.dp, bottomStart = 100.dp, topEnd = 0.dp, bottomEnd = 0.dp
-                    )
-                }
-
-                dayOfWeekFromDate == 6 || day == daysInMonth -> { // Saturday 또는 월 마지막날
-                    RoundedCornerShape(
-                        topStart = 0.dp, bottomStart = 0.dp, topEnd = 100.dp, bottomEnd = 100.dp
-                    )
-                }
-
-                else -> {
-                    RoundedCornerShape(0.dp)
-                }
-            }
-        } else {
-            RoundedCornerShape(0.dp)
+        val targetTopStart = when {
+            isSelectedWeek && (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> 100.dp // 하루만 있는 경우
+            isSelectedWeek && (dayOfWeekFromDate == 0 || day == 1) -> 100.dp // Sunday 또는 월 첫째날
+            else -> 0.dp
         }
+
+        val targetBottomStart = when {
+            isSelectedWeek && (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> 100.dp // 하루만 있는 경우
+            isSelectedWeek && (dayOfWeekFromDate == 0 || day == 1) -> 100.dp // Sunday 또는 월 첫째날
+            else -> 0.dp
+        }
+
+        val targetTopEnd = when {
+            isSelectedWeek && (day == daysInMonth && dayOfWeekFromDate == 0) || (dayOfWeekFromDate == 6 || day == daysInMonth) -> 100.dp // Saturday 또는 월 마지막날
+            else -> 0.dp
+        }
+
+        val targetBottomEnd = when {
+            isSelectedWeek && (day == daysInMonth && dayOfWeekFromDate == 0) || (dayOfWeekFromDate == 6 || day == daysInMonth) -> 100.dp // Saturday 또는 월 마지막날
+            else -> 0.dp
+        }
+
+        val topStart by animateDpAsState(targetTopStart)
+        val bottomStart by animateDpAsState(targetBottomStart)
+        val topEnd by animateDpAsState(targetTopEnd)
+        val bottomEnd by animateDpAsState(targetBottomEnd)
+
+        return RoundedCornerShape(
+            topStart = topStart,
+            bottomStart = bottomStart,
+            topEnd = topEnd,
+            bottomEnd = bottomEnd
+        )
     }
 
     fun formatDate(localDate: LocalDate): String {
