@@ -21,9 +21,11 @@ fun NavGraphBuilder.signUpGraph(
     ) {
         composable(NavRoutes.SignUpGender.route) {
             GenderScreen(
+                onBack = { /* 첫 번째 화면, 뒤로 가기 불가능 */ },
                 onNext = { navController.navigate(NavRoutes.SignUpManagement.route) },
                 viewModel = signUpViewModel
             )
+
         }
         composable(NavRoutes.SignUpManagement.route) {
             ManagementTypeScreen(
