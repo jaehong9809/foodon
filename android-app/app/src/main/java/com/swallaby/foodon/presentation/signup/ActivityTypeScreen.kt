@@ -59,7 +59,6 @@ fun ActivityTypeScreen(
                 style = Typography.displayLarge,
                 color = G900
             )
-            Spacer(modifier = Modifier.height(24.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 uiState.activityTypeOptions.forEach { option ->
