@@ -59,10 +59,10 @@ fun MainScreen(
 ) {
 
     val navController = LocalNavController.current
+
     val mainUiState by mainViewModel.uiState.collectAsState()
     val calendarUiState by calendarViewModel.uiState.collectAsState()
 
-    val today = calendarUiState.today
     val selectedDate = calendarUiState.selectedDate
     val currentYearMonth = calendarUiState.currentYearMonth
 
@@ -83,7 +83,7 @@ fun MainScreen(
 
     val nextWeekStart = currentWeekStart.plusWeeks(1)
     val maxPage = when {
-        nextWeekStart.isAfter(today) -> 2
+        nextWeekStart.isAfter(calendarUiState.today) -> 2
         else -> 3
     }
 
@@ -156,7 +156,6 @@ fun MainScreen(
                 pagerState = pagerState,
                 currentWeekStart = currentWeekStart,
                 mealItemMap = mealItemMap,
-                mainUiState = mainUiState,
                 calendarUiState = calendarUiState,
                 onDateSelected = { date ->
                     calendarViewModel.selectDate(date)

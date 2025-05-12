@@ -24,7 +24,7 @@ interface CalendarApi {
     @GET("calendar/recommendations")
     suspend fun getCalendarRecommendations(@Query(value = "date") date: String): BaseResponse<List<RecommendationResponse>>
 
-    @GET("recommendations")
+    @GET("recommend-foods")
     suspend fun getRecommendFoods(
         @Query(value = "yearMonth") yearMonth: String,
         @Query(value = "week") week: Int?

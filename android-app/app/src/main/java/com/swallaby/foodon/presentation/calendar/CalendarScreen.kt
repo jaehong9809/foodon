@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +31,6 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
-import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
@@ -54,19 +54,19 @@ fun CalendarScreen(
 
     // 날짜 관리
     val today = uiState.today
-    val baseYearMonth = remember { YearMonth.from(today) }
     val selectedDate = uiState.selectedDate
+
+    val currentYearMonth = uiState.currentYearMonth
+    val weekCount = rememberWeekCount(currentYearMonth, today)
 
     // 탭 상태 관리
     val selectedTabIndex = uiState.selectedTabIndex
-    val currentYearMonth = uiState.currentYearMonth
-
+    var previousTabIndex by remember { mutableIntStateOf(selectedTabIndex) }
     val calendarType = CalendarType.values()[selectedTabIndex]
-    val weekCount = rememberWeekCount(currentYearMonth, today)
 
     // 캘린더 페이지 관리
     val nextMonth = currentYearMonth.plusMonths(1)
-    val maxPage = if (nextMonth.isAfter(baseYearMonth)) 2 else 3
+    val maxPage = if (nextMonth.isAfter(YearMonth.from(today))) 2 else 3
 
     val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
@@ -92,6 +92,10 @@ fun CalendarScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.updateInitialLoaded(false)
+    }
+
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
             val delta = pagerState.currentPage - 1
@@ -102,15 +106,9 @@ fun CalendarScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.updateInitialLoaded(false)
-    }
-
-    val previousTabIndex = remember { mutableIntStateOf(selectedTabIndex) }
-
     LaunchedEffect(currentYearMonth, selectedTabIndex) {
-        val isTabChanged = selectedTabIndex != previousTabIndex.intValue
-        previousTabIndex.intValue = selectedTabIndex
+        val isTabChanged = selectedTabIndex != previousTabIndex
+        previousTabIndex = selectedTabIndex
 
         viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged)
     }
@@ -194,7 +192,5 @@ fun UnitContent(calendarType: CalendarType) {
 @Preview(showBackground = true)
 @Composable
 fun CalendarPreview() {
-    FoodonTheme {
-        CalendarScreen()
-    }
+    CalendarScreen()
 }

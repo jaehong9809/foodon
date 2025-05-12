@@ -6,8 +6,6 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.domain.calendar.model.CalendarType
-import com.swallaby.foodon.domain.calendar.model.Effect
-import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
@@ -153,50 +151,9 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(recommendFoods = ResultState.Loading) }
 
         viewModelScope.launch {
-//            val result = getRecommendFoodUseCase(yearMonth, week)
-//            updateState { it.copy(recommendFoods = result.toResultState()) }
-
-            val fakeData = createFakeRecommendFoods()
-
-            updateState {
-                it.copy(recommendFoods = ResultState.Success(fakeData))
-            }
+            val result = getRecommendFoodUseCase(yearMonth, week)
+            updateState { it.copy(recommendFoods = result.toResultState()) }
         }
-    }
-
-    private fun createFakeRecommendFoods(): List<RecommendFood> {
-        return listOf(
-            RecommendFood(
-                foodRecommendId = 1,
-                name = "고구마",
-                kcal = 120,
-                reason = "에너지원으로 좋아서 추천합니다.",
-                effects = listOf(
-                    Effect(label = "혈당 조절"),
-                    Effect(label = "소화 촉진")
-                )
-            ),
-            RecommendFood(
-                foodRecommendId = 2,
-                name = "닭가슴살",
-                kcal = 165,
-                reason = "단백질 섭취를 위해 추천합니다.",
-                effects = listOf(
-                    Effect(label = "근육 생성"),
-                    Effect(label = "포만감 증가")
-                )
-            ),
-            RecommendFood(
-                foodRecommendId = 3,
-                name = "아몬드",
-                kcal = 575,
-                reason = "건강한 지방 섭취를 위해 추천합니다.",
-                effects = listOf(
-                    Effect(label = "심장 건강"),
-                    Effect(label = "혈압 조절")
-                )
-            )
-        )
     }
 
 }
