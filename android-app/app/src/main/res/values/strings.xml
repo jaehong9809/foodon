@@ -56,6 +56,9 @@
     <string name="food_amount">음식양</string>
     <string name="nutritional_ingredients">영양 성분</string>
     <string name="format_g">%dg</string>
+    <string name="over_size_image">이미지가 너무 큽니다.</string>
+    <string name="notice_size_image">10MB 이하 이미지 파일만 업로드 가능합니다.</string>
+
 
     <!-- main -->
     <string name="main_today">오늘</string>
