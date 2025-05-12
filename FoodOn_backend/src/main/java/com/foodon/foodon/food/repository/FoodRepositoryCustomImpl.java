@@ -38,7 +38,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 FoodInfo.class,
                                 food.id,
                                 food.memberId,
-                                food.name,
+                                food.foodType,
+                                food.displayName,
                                 food.unit,
                                 food.servingSize
                         )
@@ -69,7 +70,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
 
         return new FoodWithNutrientInfo(
-                type,
+                foodInfo.foodType(),
                 foodInfo.id(),
                 foodInfo.name(),
                 foodInfo.unit(),
@@ -85,7 +86,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 FoodInfo.class,
                                 food.id,
                                 food.memberId,
-                                food.name,
+                                food.foodType,
+                                food.displayName,
                                 food.unit,
                                 food.servingSize
                         )
@@ -118,7 +120,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
         return foods.stream()
                 .map(food -> new FoodWithNutrientInfo(
-                        FoodType.PUBLIC,
+                        food.foodType(),
                         food.id(),
                         food.name(),
                         food.unit(),
@@ -135,7 +137,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 FoodInfo.class,
                                 food.id,
                                 food.memberId,
-                                food.name,
+                                food.foodType,
+                                food.displayName,
                                 food.unit,
                                 food.servingSize
                         )
@@ -162,7 +165,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
         return foods.stream()
                 .map(food -> new FoodWithNutrientInfo(
-                        FoodType.PUBLIC,
+                        food.foodType(),
                         food.id(),
                         food.name(),
                         food.unit(),
