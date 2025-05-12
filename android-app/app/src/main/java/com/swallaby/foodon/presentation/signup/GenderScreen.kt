@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonWideButton
@@ -36,22 +36,40 @@ import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
-import com.swallaby.foodon.presentation.signup.viewmodel.SignUpUiState
+import com.swallaby.foodon.domain.user.model.GenderOption
 
 
 @Composable
 fun GenderScreen(
-    uiState: SignUpUiState,
     onBack: () -> Unit,
     onNext: () -> Unit,
-    onGenderSelect: (String) -> Unit
+    viewModel: SignUpViewModel
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    val genderOptions = listOf(
+        GenderOption(
+            displayTextResId = R.string.gender_male_kr,
+            iconResId = R.drawable.icon_signup_man,
+            textValue = "MALE"
+        ),
+        GenderOption(
+            displayTextResId = R.string.gender_female_kr,
+            iconResId = R.drawable.icon_signup_woman,
+            textValue = "FEMALE"
+        )
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        OnBoardingTopBar(curIdx = 1, total = 5, onBackClick = onBack)
+        OnBoardingTopBar(
+            curIdx = 1,
+            total = 5,
+            onBackClick = onBack
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -66,25 +84,25 @@ fun GenderScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            GenderOptionCard(
-                gender = "남성",
-                imageResId = R.drawable.icon_signup_man,
-                selected = uiState.selectedGender == "남성",
-                onClick = { onGenderSelect("남성") }
-            )
-            GenderOptionCard(
-                gender = "여성",
-                imageResId = R.drawable.icon_signup_woman,
-                selected = uiState.selectedGender == "여성",
-                onClick = { onGenderSelect("여성") }
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                genderOptions.forEach { option ->
+                    GenderOptionCard(
+                        option = option,
+                        selected = uiState.selectedGender == option,
+                        onClick = { viewModel.selectGender(option) }
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         CommonWideButton(
             modifier = Modifier,
-            text = "다음",
+            text = stringResource(R.string.btn_next),
             isEnabled = uiState.selectedGender != null,
             onClick = onNext
         )
@@ -92,11 +110,9 @@ fun GenderScreen(
 }
 
 
-
 @Composable
 fun GenderOptionCard(
-    gender: String,
-    imageResId: Int,
+    option: GenderOption,
     selected: Boolean,
     onClick: () -> Unit
 ) {
@@ -119,11 +135,15 @@ fun GenderOptionCard(
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            GenderIconWithBackground(imageResId = imageResId)
-            Text(text = gender, style = Typography.displaySmall)
+            GenderIconWithBackground(imageResId = option.iconResId)
+            Text(
+                text = stringResource(option.displayTextResId),
+                style = Typography.displaySmall
+            )
         }
     }
 }
+
 
 
 @Composable
@@ -144,15 +164,4 @@ fun GenderIconWithBackground(
             modifier = Modifier.size(100.dp)
         )
     }
-}
-
-@Preview
-@Composable
-fun GenderScreenPreview() {
-    GenderScreen(
-        uiState = SignUpUiState(selectedGender = "남성"),
-        onBack = {},
-        onNext = {},
-        onGenderSelect = {}
-    )
 }

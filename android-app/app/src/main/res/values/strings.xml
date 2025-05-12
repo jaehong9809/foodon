@@ -82,4 +82,11 @@
     <!-- Kakao Login -->
     <string name="kakao_login">카카오톡으로 로그인</string>
 
+    <!-- Sign Up -->
+    <string name="gender_male_kr">남성</string>
+    <string name="gender_female_kr">여성</string>
+    <string name="gender_male_eng">MALE</string>
+    <string name="gender_female_eng">FEMALE</string>
+
+
 </resources>

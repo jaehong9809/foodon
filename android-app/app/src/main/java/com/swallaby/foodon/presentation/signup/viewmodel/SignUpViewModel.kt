@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.signup.viewmodel
 
 import com.swallaby.foodon.core.presentation.BaseViewModel
+import com.swallaby.foodon.domain.user.model.GenderOption
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -15,8 +16,8 @@ class SignUpViewModel @Inject constructor(
         _uiState.update(block)
     }
 
-    fun selectGender(gender: String) {
-        updateState { it.copy(selectedGender = gender) }
+    fun selectGender(option: GenderOption) {
+        updateState { it.copy(selectedGender = option) }
     }
 
 }
