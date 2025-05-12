@@ -31,11 +31,11 @@ public record IntakeDetailResponse(
                 intakeLog.getDate(),
                 round(intakeLog.getGoalKcal(), 0),
                 round(intakeLog.getIntakeKcal(), 0),
-                round(nutrientTarget.goalCarbs(), 1),
+                round(nutrientGoal.getGoalCarbs(), 1),
                 round(intakeLog.getIntakeCarbs(), 1),
-                round(nutrientTarget.goalProtein(), 1),
+                round(nutrientGoal.getGoalProtein(), 1),
                 round(intakeLog.getIntakeProtein(), 1),
-                round(nutrientTarget.goalFat(), 1),
+                round(nutrientGoal.getGoalFat(), 1),
                 round(intakeLog.getIntakeFat(), 1)
         );
     }
