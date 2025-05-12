@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -61,6 +62,10 @@ public class Member extends BaseTimeEntity {
             Gender gender
     ) {
         this.gender = gender;
+    }
+
+    public int getAge(){
+        return Period.between(birthday, LocalDate.now()).getYears();
     }
 
     public void markProfileUpdated() {

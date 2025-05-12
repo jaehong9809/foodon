@@ -22,7 +22,7 @@ public class ActivityLevel {
     @Column(nullable = false, name = "activity_level_description", length = 50)
     private String description;
 
-    @Column(nullable = false, precision = 4, scale = 3)
-    private BigDecimal value;
+    @Column(nullable = false)
+    private double value;
 
 }

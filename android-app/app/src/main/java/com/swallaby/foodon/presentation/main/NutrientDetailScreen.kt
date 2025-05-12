@@ -24,7 +24,7 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.main.model.NutrientManage
-import com.swallaby.foodon.domain.main.model.NutrientManageType
+import com.swallaby.foodon.domain.main.model.HealthEffect
 import com.swallaby.foodon.presentation.main.component.NutrientManageDetailItem
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 
@@ -37,8 +37,8 @@ fun NutrientDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     val nutrientList = (uiState.manageResult as? ResultState.Success)?.data.orEmpty()
-    val essentialList = nutrientList.filter { it.manageType == NutrientManageType.ESSENTIAL }
-    val limitedList = nutrientList.filter { it.manageType == NutrientManageType.LIMITED }
+    val essentialList = nutrientList.filter { it.healthEffect == HealthEffect.BENEFICIAL }
+    val limitedList = nutrientList.filter { it.healthEffect == HealthEffect.HARMFUL }
 
     Scaffold(
         topBar = {
@@ -54,11 +54,11 @@ fun NutrientDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
         ) {
-            NutrientDetailInfo(essentialList, NutrientManageType.ESSENTIAL)
+            NutrientDetailInfo(essentialList, HealthEffect.BENEFICIAL)
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
-            NutrientDetailInfo(limitedList, NutrientManageType.LIMITED)
+            NutrientDetailInfo(limitedList, HealthEffect.HARMFUL)
         }
     }
 
@@ -67,14 +67,14 @@ fun NutrientDetailScreen(
 @Composable
 fun NutrientDetailInfo(
     manageItems: List<NutrientManage>,
-    type: NutrientManageType
+    type: HealthEffect
 ) {
     Column(
         modifier = Modifier.padding(24.dp)
     ) {
         Text(
             text = stringResource(
-                if (type == NutrientManageType.ESSENTIAL) R.string.main_nutrient_manage_good_title
+                if (type == HealthEffect.BENEFICIAL) R.string.main_nutrient_manage_good_title
                 else R.string.main_nutrient_manage_bad_title
             ),
             color = G900,

@@ -89,14 +89,16 @@ fun NutrientManageContent(
             }
         }
 
+        if (manageItems.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(36.dp))
+            NutrientGrid(manageItems)
+        }
+
         if (manageItems.isEmpty()) {
             EmptyContentText(
                 emptyText = stringResource(R.string.main_nutrient_manage_empty),
                 icon = R.drawable.icon_manage_empty
             )
-        } else {
-            Spacer(modifier = Modifier.height(36.dp))
-            NutrientGrid(manageItems)
         }
     }
 

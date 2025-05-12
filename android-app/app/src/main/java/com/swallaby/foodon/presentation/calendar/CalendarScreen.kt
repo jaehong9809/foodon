@@ -34,7 +34,6 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
@@ -108,24 +107,12 @@ fun CalendarScreen(
         }
     }
 
-    // 현재 월, 선택 날짜 변경 처리
-    LaunchedEffect(currentYearMonth, selectedTabIndex) {
-        val isSameMonth = currentYearMonth == baseYearMonth
-        viewModel.selectDate(if (isSameMonth) today else currentYearMonth.atDay(1))
-
-        if (calendarType == CalendarType.RECOMMENDATION) {
-            val weekIndex = if (isSameMonth) getWeekOfMonth(today) else 0
-            viewModel.updateRecommendation(currentYearMonth, weekIndex)
-        }
-
-        viewModel.fetchCalendarData(calendarType, currentYearMonth.toString())
+    LaunchedEffect(currentYearMonth) {
+        viewModel.updateCalendarData(calendarType, isSameMonth = currentYearMonth == baseYearMonth)
     }
 
-    // 탭 전환 시 추가 데이터 로딩 (하단 콘텐츠)
     LaunchedEffect(selectedTabIndex) {
-        if (calendarType == CalendarType.WEIGHT) {
-            viewModel.fetchUserWeight()
-        }
+        viewModel.updateCalendarData(calendarType, isTabChanged = true)
     }
 
     Scaffold(
@@ -174,7 +161,7 @@ fun CalendarScreen(
                 weekCount = weekCount,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.updateRecommendation(currentYearMonth, weekIndex)
+                    viewModel.updateRecommendation(weekIndex)
                 }
             )
         }
