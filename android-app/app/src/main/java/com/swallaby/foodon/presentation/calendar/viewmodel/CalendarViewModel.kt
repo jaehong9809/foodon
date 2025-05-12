@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.model.Effect
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
@@ -44,7 +45,37 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(selectedWeekIndex = index) }
     }
 
-    fun updateRecommendation(currentYearMonth: YearMonth, weekIndex: Int) {
+    fun updateCalendarData(
+        calendarType: CalendarType,
+        isSameMonth: Boolean = false,
+        isTabChanged: Boolean = false
+    ) {
+        val state = uiState.value
+        val currentYearMonth = state.currentYearMonth
+
+        val targetDate = if (isTabChanged) {
+            state.selectedDate
+        } else {
+            if (isSameMonth) state.today else currentYearMonth.atDay(1)
+        }
+
+        selectDate(targetDate)
+
+        if (calendarType == CalendarType.RECOMMENDATION) {
+            val weekIndex = getWeekOfMonth(targetDate)
+            updateRecommendation(weekIndex)
+        }
+
+        if (isTabChanged && calendarType == CalendarType.WEIGHT) {
+            fetchUserWeight()
+        }
+
+        fetchCalendarData(calendarType, currentYearMonth.toString())
+    }
+
+    fun updateRecommendation(weekIndex: Int) {
+        val currentYearMonth = uiState.value.currentYearMonth
+
         selectWeek(weekIndex)
         fetchRecommendFoods(
             yearMonth = currentYearMonth.toString(),
@@ -52,7 +83,7 @@ class CalendarViewModel @Inject constructor(
         )
     }
 
-    fun fetchCalendarData(type: CalendarType, date: String) {
+    private fun fetchCalendarData(type: CalendarType, date: String) {
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -61,7 +92,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun fetchUserWeight() {
+    private fun fetchUserWeight() {
         updateState { it.copy(weightResult = ResultState.Loading) }
 
         viewModelScope.launch {

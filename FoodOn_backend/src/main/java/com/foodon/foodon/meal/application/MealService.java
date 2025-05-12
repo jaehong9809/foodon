@@ -1,7 +1,6 @@
 package com.foodon.foodon.meal.application;
 
 import com.foodon.foodon.common.util.NutrientCalculator;
-import com.foodon.foodon.common.util.NutrientTarget;
 import com.foodon.foodon.food.domain.Nutrient;
 import com.foodon.foodon.food.domain.RestrictionType;
 import com.foodon.foodon.food.domain.NutrientCode;
@@ -11,7 +10,10 @@ import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
 import com.foodon.foodon.image.application.LocalImageService;
 import com.foodon.foodon.image.application.S3ImageService;
+import com.foodon.foodon.intakelog.application.IntakeLogService;
+
 import com.foodon.foodon.meal.domain.ManageNutrient;
+
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.domain.MealItem;
 import com.foodon.foodon.meal.domain.Position;
@@ -54,6 +56,7 @@ public class MealService {
     private final MealDetectAiClient mealDetectAiClient;
     private final S3ImageService s3ImageService;
     private final LocalImageService localImageService;
+    private final IntakeLogService intakeLogService;
 
 
     public MealInfoResponse uploadAndDetect(MultipartFile multipartFile) {
@@ -68,10 +71,10 @@ public class MealService {
             MealDetectAiResponse detectedItems
     ) {
         List<MealItemInfo> mealItems = getMealItemsInfoList(detectedItems);
-        int totalKcal = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::kcal));
-        int totalCarbs = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::carbs));
-        int totalProtein = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::protein));
-        int totalFat = toRoundedInt(sumTotalIntake(mealItems, NutrientProfile::fat));
+        BigDecimal totalKcal = sumTotalIntake(mealItems, NutrientProfile::kcal);
+        BigDecimal totalCarbs = sumTotalIntake(mealItems, NutrientProfile::carbs);
+        BigDecimal totalProtein = sumTotalIntake(mealItems, NutrientProfile::protein);
+        BigDecimal totalFat = sumTotalIntake(mealItems, NutrientProfile::fat);
 
         return MealInfoResponse.from(
                 imageUrl,
@@ -124,7 +127,7 @@ public class MealService {
         return nutrients.stream()
                 .collect(Collectors.toMap(
                         NutrientInfo::code,
-                        info -> NutrientCalculator.convertToMilligram(info.value(), info.nutrientUnit())
+                        NutrientInfo::value
                 ));
     }
 
@@ -143,6 +146,7 @@ public class MealService {
         Meal meal = Meal.createMeal(member, imageUrl, request);
         addMealItemsToMeal(member, meal, request.mealItems());
         mealRepository.save(meal);
+        intakeLogService.saveIntakeLog(member, meal);
 
         return meal.getId();
     }

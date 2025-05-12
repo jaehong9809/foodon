@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -23,13 +24,13 @@ public class IntakeLogController {
 
     private final IntakeLogService intakeLogService;
 
-    @GetMapping
+    @GetMapping("/calendar")
     @Operation(summary = "달력 섭취 기록 조회")
-    public ResponseEntity<Response<List<IntakeSummaryResponse>>> getIntakeLogByMonth(
-            @RequestParam(name = "date") String date,
+    public ResponseEntity<Response<List<IntakeSummaryResponse>>> getIntakeLogCalendar(
+            @RequestParam(name = "yearMonth") YearMonth yearMonth,
             @Parameter(hidden = true) @AuthMember Member member
     ) {
-        List<IntakeSummaryResponse> result = intakeLogService.getIntakeLogsByMonth(date, member);
+        List<IntakeSummaryResponse> result = intakeLogService.getIntakeLogCalendar(yearMonth, member);
         return ResponseUtil.success(result);
     }
 

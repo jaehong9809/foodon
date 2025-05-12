@@ -15,6 +15,7 @@ fun NavGraphBuilder.calendarGraph(
         startDestination = NavRoutes.Calendar.route, route = NavRoutes.CalendarGraph.route
     ) {
         composable(NavRoutes.Calendar.route) {
+            calendarViewModel.selectTab(0)
             CalendarScreen(calendarViewModel)
         }
     }
