@@ -36,7 +36,7 @@ public class FoodController {
         return ResponseUtil.created();
     }
 
-    @PostMapping("/modify")
+    @PostMapping("/custom/modified")
     @Operation(summary = "식단 업로드 시 음식 정보 수정하기")
     public ResponseEntity<Response<CustomFoodCreateResponse>> modifyFood(
             @Valid @RequestBody CustomFoodCreateRequest request,
