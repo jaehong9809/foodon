@@ -23,6 +23,7 @@ import static lombok.AccessLevel.PROTECTED;
         name = "foods",
         indexes = {
                 @Index(name = "idx_food_name", columnList = "food_name"),
+                @Index(name = "idx_member_food_id", columnList = "member_id, food_id"),
                 @Index(name = "idx_food_member_name", columnList = "member_id, food_name")
         }
 )
