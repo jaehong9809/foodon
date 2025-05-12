@@ -138,11 +138,15 @@ fun DayBottomContent(calendarItem: CalendarItem?) {
             is CalendarItem.Meal -> {
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = formatKcal(it.data.intakeKcal),
-                    style = SpoqaTypography.SpoqaMedium11,
-                    color = G700
-                )
+                it.data.intakeKcal
+                    .takeIf { kcal -> kcal != 0 }
+                    ?.let { kcal ->
+                        Text(
+                            text = formatKcal(kcal),
+                            style = SpoqaTypography.SpoqaMedium11,
+                            color = G700
+                        )
+                    }
             }
             is CalendarItem.Weight -> {
                 Spacer(modifier = Modifier.height(4.dp))
