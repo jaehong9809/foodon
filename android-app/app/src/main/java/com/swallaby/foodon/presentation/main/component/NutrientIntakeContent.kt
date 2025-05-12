@@ -75,6 +75,8 @@ fun NutrientIntakeContent(
                 goal = calorie?.goalKcal ?: 0
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             IntakeDetail(calorie ?: NutrientIntake())
         }
     }

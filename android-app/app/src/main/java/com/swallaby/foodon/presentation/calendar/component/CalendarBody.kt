@@ -69,7 +69,7 @@ fun CalendarBody(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(min = if (calendarType == CalendarType.RECOMMENDATION) 67.dp else 82.dp),
+                                    .heightIn(min = if (calendarType == CalendarType.MEAL) 82.dp else 68.dp),
                                 contentAlignment = Alignment.TopCenter
                             ) {
                                 if (calendarType == CalendarType.RECOMMENDATION && isSelectedWeek) {

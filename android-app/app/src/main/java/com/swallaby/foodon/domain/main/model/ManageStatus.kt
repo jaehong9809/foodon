@@ -11,8 +11,8 @@ import com.swallaby.foodon.core.ui.theme.TextRed
 import com.swallaby.foodon.core.ui.theme.WB500
 
 enum class ManageStatus(val statusName: String, val textColor: Color, val bgColor: Color) {
-    NORMAL("적정", TextGreen, BGGreen),
-    LACK("부족", WB500, BGBlue),
+    ADEQUATE("적정", TextGreen, BGGreen),
+    DEFICIENT("부족", WB500, BGBlue),
     CAUTION("주의", TextRed, BGRed),
     DANGER("위험", G750, BG100);
 }

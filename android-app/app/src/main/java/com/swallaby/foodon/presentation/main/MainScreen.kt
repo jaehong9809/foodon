@@ -76,14 +76,19 @@ fun MainScreen(
 
     var weekOffset by remember { mutableIntStateOf(0) }
 
+    val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
+
     val currentWeekStart = remember(weekOffset) {
-        today.with(DayOfWeek.MONDAY).plusWeeks(weekOffset.toLong())
+        today.with(weekFields.dayOfWeek(), 1).plusWeeks(weekOffset.toLong())
     }
 
-    val weekOfMonth = currentWeekStart.get(WeekFields.ISO.weekOfMonth())
+    val weekOfMonth = currentWeekStart.get(weekFields.weekOfMonth())
 
     val nextWeekStart = currentWeekStart.plusWeeks(1)
-    val maxPage = if (nextWeekStart.isAfter(today)) 2 else 3
+    val maxPage = when {
+        nextWeekStart.isAfter(today) -> 2
+        else -> 3
+    }
 
     val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
@@ -99,7 +104,7 @@ fun MainScreen(
             val delta = pagerState.currentPage - 1
             weekOffset += delta
 
-            val newWeekStart = today.with(DayOfWeek.MONDAY).plusWeeks(weekOffset.toLong())
+            val newWeekStart = today.with(DayOfWeek.SUNDAY).plusWeeks(weekOffset.toLong())
             val newMonth = YearMonth.from(newWeekStart)
 
             viewModel.updateYearMonth(newMonth)
