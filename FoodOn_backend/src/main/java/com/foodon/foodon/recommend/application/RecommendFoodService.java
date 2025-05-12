@@ -9,6 +9,7 @@ import com.foodon.foodon.recommend.exception.RecommendFoodException.RecommendFoo
 import com.foodon.foodon.recommend.repository.RecommendFoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -28,7 +29,7 @@ public class RecommendFoodService {
     private final RecommendFoodRepository recommendFoodRepository;
     private final FoodRepository foodRepository;
 
-
+    @Transactional(readOnly = true)
     public List<RecommendFoodResponse> getRecommendFoodsByWeek(
             YearMonth yearMonth,
             int week,
