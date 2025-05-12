@@ -205,98 +205,89 @@ public class MealService {
         return meals.stream().map(MealSummaryResponse::of).toList();
     }
 
-
+    @Transactional(readOnly = true)
     public MealDetailInfoResponse getMealDetailInfo(
             Long mealId,
             Member member
     ){
-        // Meal 정보 조회
         Meal meal = findMealByIdAndMember(member, mealId);
-
-        // MealItems 정보 조회
         List<MealItem> mealItems = meal.getMealItems();
 
-        // MealItem 조회, 타입으로 그룹핑
-        Map<FoodType, List<MealItem>> mealItemTypeMap = mealItems.stream()
-                .collect(Collectors.groupingBy(MealItem::getFoodType));
+        Map<Long, List<MealItem>> mealItemMap = getMealItemMapByFoodId(mealItems);
+        Map<Long, FoodWithNutrientInfo> foodMap = getFoodInfoInMeal(mealItems, member);
 
-        // 공공데이터 음식 정보 조회
-        List<Long> publicFoodIds = mealItemTypeMap.getOrDefault(FoodType.PUBLIC, List.of()).stream()
-                .map(MealItem::getFoodId)
-                .toList();
-        List<FoodWithNutrientInfo> publicFoods = new ArrayList<>();
-        if(!publicFoodIds.isEmpty()) {
-            publicFoods.addAll(foodRepository.findAllBySearchCond(FoodSearchCond.create(publicFoodIds)));
-        }
-
-        // 커스텀 음식 조회 (memberId 포함)
-        List<Long> customFoodIds = Stream.of(
-                        mealItemTypeMap.getOrDefault(FoodType.CUSTOM, List.of()),
-                        mealItemTypeMap.getOrDefault(FoodType.CUSTOM_MODIFIED, List.of())
-                )
-                .flatMap(List::stream)
-                .map(MealItem::getFoodId)
-                .toList();
-        List<FoodWithNutrientInfo> customFoods = new ArrayList<>();
-        if(!customFoodIds.isEmpty()) {
-            customFoods.addAll(foodRepository.findAllBySearchCond(
-                    FoodSearchCond.create(customFoodIds, member)));
-        }
-
-        List<FoodWithNutrientInfo> totalFoods = Stream.concat(
-                publicFoods.stream(),
-                customFoods.stream()
-        ).toList();
-
-        // 음식 ID 별로 묶음
-        Map<Long, FoodWithNutrientInfo> totalFoodMap = totalFoods.stream()
-                .collect(Collectors.toMap(FoodWithNutrientInfo::foodId, Function.identity()));
-
-        // 음식 ID 별로 mealItem 묶음
-        Map<Long, List<MealItem>> grouped = mealItems.stream()
-                .collect(Collectors.groupingBy(MealItem::getFoodId));
-
-        List<MealItemInfo> mealItemInfos = grouped.entrySet().stream()
-                .map(entry -> {
-                    Long foodId = entry.getKey();
-                    List<MealItem> items = entry.getValue();
-                    FoodWithNutrientInfo food = totalFoodMap.get(foodId);
-                    if (food == null) return null;
-
-                    BigDecimal totalQuantity = items.stream()
-                            .map(MealItem::getQuantity)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                    List<Position> positions = items.stream()
-                            .map(MealItem::getPosition)
-                            .filter(Objects::nonNull)
-                            .toList();
-
-                    return MealItemInfo.from(
-                            food,
-                            totalQuantity,
-                            positions.stream()
-                                    .map(PositionInfo::of)
-                                    .toList(),
-                            convertToTypedValueMap(food.nutrients())
-                    );
-                })
-                .filter(Objects::nonNull)
-                .toList();
-
-        BigDecimal totalKcal = sumTotalIntake(mealItemInfos, NutrientProfile::kcal);
-        BigDecimal totalCarbs = sumTotalIntake(mealItemInfos, NutrientProfile::carbs);
-        BigDecimal totalProtein = sumTotalIntake(mealItemInfos, NutrientProfile::protein);
-        BigDecimal totalFat = sumTotalIntake(mealItemInfos, NutrientProfile::fat);
-
+        List<MealItemInfo> mealItemInfos = convertToMealItemResponse(mealItemMap, foodMap);
         return MealDetailInfoResponse.from(
                 meal,
-                totalKcal,
-                totalCarbs,
-                totalProtein,
-                totalFat,
+                sumTotalIntake(mealItemInfos, NutrientProfile::kcal),
+                sumTotalIntake(mealItemInfos, NutrientProfile::carbs),
+                sumTotalIntake(mealItemInfos, NutrientProfile::protein),
+                sumTotalIntake(mealItemInfos, NutrientProfile::fat),
                 mealItemInfos
         );
+    }
+
+    private List<MealItemInfo> convertToMealItemResponse(
+            Map<Long, List<MealItem>> mealItemMap,
+            Map<Long, FoodWithNutrientInfo> foodMap
+    ) {
+        return mealItemMap.entrySet().stream()
+                .map(entry -> createMealItemInfo(entry.getKey(), entry.getValue(), foodMap))
+                .flatMap(Optional::stream)
+                .toList();
+    }
+
+    private Optional<MealItemInfo> createMealItemInfo(
+            Long foodId,
+            List<MealItem> items,
+            Map<Long, FoodWithNutrientInfo> foodMap
+    ) {
+        FoodWithNutrientInfo food = foodMap.get(foodId);
+        if (food == null) return Optional.empty();
+
+        BigDecimal totalQuantity = items.stream()
+                .map(MealItem::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<PositionInfo> positions =  items.stream()
+                .map(MealItem::getPosition).filter(Objects::nonNull)
+                .map(PositionInfo::of).toList();
+        Map<NutrientCode, BigDecimal> nutrients = convertToTypedValueMap(food.nutrients());
+
+        return Optional.of(MealItemInfo.from(food, totalQuantity, positions, nutrients));
+    }
+
+    private Map<Long, List<MealItem>> getMealItemMapByFoodId(List<MealItem> mealItems) {
+        return mealItems.stream().collect(Collectors.groupingBy(MealItem::getFoodId));
+    }
+
+    private Map<Long, FoodWithNutrientInfo> getFoodInfoInMeal(
+            List<MealItem> mealItems,
+            Member member
+    ) {
+        Map<FoodType, List<MealItem>> foodTypeMap = groupMealItemsByType(mealItems);
+        List<Long> publicFoodIds = extractFoodIdsByType(foodTypeMap, List.of(FoodType.PUBLIC));
+        List<Long> customFoodIds = extractFoodIdsByType(foodTypeMap, FoodType.customTypes());
+
+        List<FoodWithNutrientInfo> publicFoods = publicFoodIds.isEmpty()
+                ? List.of()
+                : foodRepository.findAllBySearchCond(FoodSearchCond.of(publicFoodIds));
+
+        List<FoodWithNutrientInfo> customFoods = customFoodIds.isEmpty()
+                ? List.of()
+                : foodRepository.findAllBySearchCond(FoodSearchCond.of(customFoodIds, member));
+
+        return Stream.concat(publicFoods.stream(), customFoods.stream())
+                .collect(Collectors.toMap(FoodWithNutrientInfo::foodId, Function.identity()));
+    }
+
+    private List<Long> extractFoodIdsByType(Map<FoodType, List<MealItem>> map, List<FoodType> types) {
+        return types.stream()
+                .flatMap(type -> map.getOrDefault(type, List.of()).stream())
+                .map(MealItem::getFoodId)
+                .toList();
+    }
+
+    private Map<FoodType, List<MealItem>> groupMealItemsByType(List<MealItem> mealItems) {
+        return mealItems.stream().collect(Collectors.groupingBy(MealItem::getFoodType));
     }
 
     private Meal findMealByIdAndMember(Member member, Long mealId) {
