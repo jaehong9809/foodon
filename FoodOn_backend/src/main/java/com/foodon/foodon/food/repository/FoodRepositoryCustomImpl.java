@@ -206,7 +206,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 FoodWithNutrientInfo.class,
                                 food.foodType,
                                 food.id,
-                                food.name,
+                                food.displayName,
                                 food.unit,
                                 food.servingSize,
                                 GroupBy.list(Projections.constructor(
