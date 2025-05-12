@@ -6,7 +6,9 @@ import com.swallaby.foodon.domain.food.model.MealInfo
 
 sealed class MealRecordEvent {
     data class NavigateToDetail(val mealInfo: MealInfo) : MealRecordEvent()
+    data class ShowErrorMessage(val errorMessageRes: Int) : MealRecordEvent()
 }
+
 
 data class MealRecordUiState(
     val mealRecordState: ResultState<MealInfo?> = ResultState.Success(null),

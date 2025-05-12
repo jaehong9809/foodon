@@ -2,6 +2,7 @@ package com.swallaby.foodon.presentation.mealrecord.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
@@ -36,7 +37,10 @@ class MealRecordViewModel @Inject constructor(
             }
             // 성공 시 이벤트 발생
             if (result is ResultState.Success) {
+                Log.d("MealRecordViewModel", "isSuccess $result")
                 _events.emit(MealRecordEvent.NavigateToDetail(result.data.copy(imageUri = uri)))
+            } else if (result is ResultState.Error) {
+                _events.emit(MealRecordEvent.ShowErrorMessage(result.messageRes))
             }
         }
     }

@@ -71,11 +71,14 @@ import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil
 import com.swallaby.foodon.core.util.ImageCropManager
+import com.swallaby.foodon.core.util.ImageMetadataUtil
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
+import org.threeten.bp.LocalDateTime
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -89,8 +92,9 @@ fun MealRecordScreen(
     onSearchClick: () -> Unit,
     onNavigateToMealDetail: () -> Unit,
 ) {
+    val context = LocalContext.current
     val uiState by recordViewModel.uiState.collectAsStateWithLifecycle()
-    val cropManager = ImageCropManager(LocalContext.current)
+    val cropManager = ImageCropManager(context)
 
     // 이벤트 수집
     LaunchedEffect(Unit) {
@@ -99,6 +103,23 @@ fun MealRecordScreen(
                 is MealRecordEvent.NavigateToDetail -> {
                     // 이벤트에서 데이터 꺼내서 사용
                     editViewModel.initMeal(event.mealInfo)
+                    event.mealInfo.imageUri?.let {
+                        val metadata = ImageMetadataUtil.getMetadataFromUri(context, it)
+                        Log.d("MealRecordScreen", "metadata: $metadata")
+
+                        when (val time = metadata?.getFormattedCaptureTime()) {
+                            null -> {
+                                Log.d("MealRecordScreen", "time is null")
+                                editViewModel.updateMealTime(DateUtil.formatTimeToHHmm(LocalDateTime.now()))
+                            }
+
+                            else -> {
+                                Log.d("MealRecordScreen", "time: $time")
+                                editViewModel.updateMealTime(time.split(" ")[1])
+                            }
+                        }
+                    }
+
 
                     val positions = event.mealInfo.mealItems.mapNotNull { mealItem ->
                         mealItem.positions.firstOrNull()
@@ -114,6 +135,13 @@ fun MealRecordScreen(
                         // 모든 크롭 이미지가 준비됨
                         onNavigateToMealDetail()
                     }
+                }
+
+                is MealRecordEvent.ShowErrorMessage -> {
+                    // 에러 시 UI 표시
+                    Toast.makeText(
+                        context, event.errorMessageRes, Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -280,9 +308,7 @@ fun CameraAppScreen(
         }
 
         is ResultState.Error -> {
-            // 에러 시 UI 표시
-            val messageRes = uiState.mealRecordState.messageRes
-            Toast.makeText(context, stringResource(messageRes), Toast.LENGTH_SHORT).show()
+
         }
     }
 
