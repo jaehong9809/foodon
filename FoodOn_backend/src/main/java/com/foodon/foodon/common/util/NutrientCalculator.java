@@ -3,7 +3,6 @@ package com.foodon.foodon.common.util;
 import com.foodon.foodon.food.domain.NutrientUnit;
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.dto.NutrientProfile;
-import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.meal.dto.MealItemInfo;
 
 import java.math.BigDecimal;

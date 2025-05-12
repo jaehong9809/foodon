@@ -1,10 +1,6 @@
 package com.foodon.foodon.common.util;
 
-import com.foodon.foodon.activitylevel.domain.ActivityLevel;
-import com.foodon.foodon.member.domain.Gender;
-import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.member.domain.MemberStatus;
-import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
+import com.foodon.foodon.member.domain.*;
 import lombok.Getter;
 
 import java.math.BigDecimal;
