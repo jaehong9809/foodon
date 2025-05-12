@@ -45,7 +45,7 @@ import com.swallaby.foodon.domain.user.model.GenderOption
 fun GenderScreen(
     onBack: () -> Unit,
     onNext: () -> Unit,
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignUpViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -76,7 +76,7 @@ fun GenderScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Text(
-                text = "성별을 선택해 주세요.",
+                text = stringResource(R.string.gender_choice),
                 style = Typography.displayLarge
             )
 

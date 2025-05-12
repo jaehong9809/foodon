@@ -29,6 +29,7 @@ fun NavGraphBuilder.signUpGraph(
         }
         composable(NavRoutes.SignUpManagement.route) {
             ManagementTypeScreen(
+                onBack = { navController.popBackStack() },
                 onNext = { navController.navigate(NavRoutes.SignUpActivity.route) },
                 viewModel = signUpViewModel
             )
