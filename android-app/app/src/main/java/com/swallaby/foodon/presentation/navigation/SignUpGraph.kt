@@ -36,18 +36,21 @@ fun NavGraphBuilder.signUpGraph(
         }
         composable(NavRoutes.SignUpActivity.route) {
             ActivityTypeScreen(
+                onBack = { navController.popBackStack() },
                 onNext = { navController.navigate(NavRoutes.SignUpBodyInfo.route) },
                 viewModel = signUpViewModel
             )
         }
         composable(NavRoutes.SignUpBodyInfo.route) {
             BodyInfoInputScreen(
+                onBack = { navController.popBackStack() },
                 onNext = { navController.navigate(NavRoutes.SignUpGoalWeight.route) },
                 viewModel = signUpViewModel
             )
         }
         composable(NavRoutes.SignUpGoalWeight.route) {
             GoalWeightScreen(
+                onBack = { navController.popBackStack() },
                 onSubmit = {
                     //signUpViewModel.submitProfile()
                     navController.navigate(NavRoutes.MainGraph.route) {

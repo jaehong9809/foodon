@@ -6,6 +6,7 @@ import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 
 @Composable
 fun GoalWeightScreen(
+    onBack: () -> Unit,
     onSubmit: () -> Unit,
     viewModel: SignUpViewModel
 ) {

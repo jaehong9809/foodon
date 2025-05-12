@@ -6,6 +6,7 @@ import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 
 @Composable
 fun BodyInfoInputScreen(
+    onBack: () -> Unit,
     onNext: () -> Unit,
     viewModel: SignUpViewModel
 ) {
