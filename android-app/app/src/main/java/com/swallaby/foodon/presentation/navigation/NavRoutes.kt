@@ -38,7 +38,7 @@ sealed class NavRoutes(val route: String) {
     object SignUpGender : NavRoutes("sign_up_gender")
     object SignUpManagement : NavRoutes("sign_up_management")
     object SignUpActivity : NavRoutes("sign_up_activity")
-    object SignUpWeight : NavRoutes("sign_up_weight")
+    object SignUpBodyInfo : NavRoutes("sign_up_body_info")
     object SignUpGoalWeight : NavRoutes("sign_up_goal_weight")
 
 }

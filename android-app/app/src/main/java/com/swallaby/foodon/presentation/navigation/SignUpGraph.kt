@@ -5,10 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.swallaby.foodon.presentation.signup.ActivityTypeScreen
+import com.swallaby.foodon.presentation.signup.BodyInfoInputScreen
 import com.swallaby.foodon.presentation.signup.GenderScreen
 import com.swallaby.foodon.presentation.signup.GoalWeightScreen
 import com.swallaby.foodon.presentation.signup.ManagementTypeScreen
-import com.swallaby.foodon.presentation.signup.WeightScreen
 import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 
 fun NavGraphBuilder.signUpGraph(
@@ -36,12 +36,12 @@ fun NavGraphBuilder.signUpGraph(
         }
         composable(NavRoutes.SignUpActivity.route) {
             ActivityTypeScreen(
-                onNext = { navController.navigate(NavRoutes.SignUpWeight.route) },
+                onNext = { navController.navigate(NavRoutes.SignUpBodyInfo.route) },
                 viewModel = signUpViewModel
             )
         }
-        composable(NavRoutes.SignUpWeight.route) {
-            WeightScreen(
+        composable(NavRoutes.SignUpBodyInfo.route) {
+            BodyInfoInputScreen(
                 onNext = { navController.navigate(NavRoutes.SignUpGoalWeight.route) },
                 viewModel = signUpViewModel
             )
