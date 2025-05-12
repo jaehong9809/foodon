@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.WeekTabBar
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.G700
@@ -28,7 +29,7 @@ import com.swallaby.foodon.domain.calendar.model.RecommendFood
 fun RecommendationContent(
     weekCount: Int,
     selectedWeekIndex: Int,
-    recommendFoods: List<RecommendFood> = emptyList(),
+    recommendFoods: ResultState<List<RecommendFood>>,
     onWeeklyTabChanged: (Int) -> Unit
 ) {
     var selectedWeek by remember { mutableIntStateOf(0) }
@@ -37,6 +38,8 @@ fun RecommendationContent(
     LaunchedEffect(selectedWeekIndex) {
         selectedWeek = selectedWeekIndex
     }
+
+    val foods = (recommendFoods as? ResultState.Success)?.data.orEmpty()
 
     Column {
         WeekTabBar(
@@ -57,7 +60,7 @@ fun RecommendationContent(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            if (recommendFoods.isEmpty()) {
+            if (foods.isEmpty()) {
                 Text(
                     text = stringResource(R.string.main_recommend_food_empty),
                     style = NotoTypography.NotoMedium16.copy(color = G700),
@@ -65,12 +68,12 @@ fun RecommendationContent(
                 )
             }
 
-            if (recommendFoods.isNotEmpty()) {
+            if (foods.isNotEmpty()) {
                 Column(
                     modifier = Modifier.wrapContentHeight(),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    recommendFoods.forEach { item ->
+                    foods.forEach { item ->
                         RecommendFoodCompact(item)
                     }
                 }
@@ -83,5 +86,9 @@ fun RecommendationContent(
 @Preview(showBackground = true)
 @Composable
 fun RecommendationPreview() {
-    RecommendationContent(weekCount = 4, selectedWeekIndex = 0, onWeeklyTabChanged = {})
+    RecommendationContent(
+        weekCount = 4,
+        selectedWeekIndex = 0,
+        recommendFoods = ResultState.Loading,
+        onWeeklyTabChanged = {})
 }
