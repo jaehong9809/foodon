@@ -35,6 +35,7 @@ import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.OnBoardingTopBar
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.Border02
+import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
@@ -77,7 +78,8 @@ fun GenderScreen(
         ) {
             Text(
                 text = stringResource(R.string.gender_choice),
-                style = Typography.displayLarge
+                style = Typography.displayLarge,
+                color = G900
             )
 
             Row(
@@ -137,7 +139,7 @@ fun GenderOptionCard(
             Text(
                 text = stringResource(option.displayTextResId),
                 style = Typography.displaySmall,
-
+                color = G900
             )
         }
     }

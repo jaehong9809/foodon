@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -22,6 +23,9 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.OnBoardingTopBar
 import com.swallaby.foodon.core.ui.theme.Border02
+import com.swallaby.foodon.core.ui.theme.G700
+import com.swallaby.foodon.core.ui.theme.G750
+import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
@@ -56,15 +60,17 @@ fun ManagementTypeScreen(
             ) {
                 Text(
                     text =  stringResource(R.string.management_type_choice),
-                    style = Typography.displayLarge
+                    style = Typography.displayLarge,
+                    color = G900
                 )
                 Text(
                     text = stringResource(R.string.management_type_description),
-                    style = Typography.titleMedium
+                    style = Typography.titleMedium,
+                    color = G700
                 )
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 uiState.managementOptions.forEach { option ->
                     ManagementTypeOptionCard(
                         option = option,
@@ -96,18 +102,19 @@ fun ManagementTypeOptionCard(
 
     Surface(
         modifier = Modifier
+            .height(80.dp)
             .fillMaxWidth()
             .clickable { onClick() }
-            .border(1.dp, borderColor, RoundedCornerShape(8.dp)),
-        shape = RoundedCornerShape(8.dp),
+            .border(2.dp, borderColor, RoundedCornerShape(10.dp)),
+        shape = RoundedCornerShape(10.dp),
         color = MainWhite
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            Text(text = option.title, style = Typography.titleLarge)
-            Text(text = option.description, style = Typography.bodyMedium)
+            Text(text = option.title, style = Typography.titleLarge, color = G900)
+            Text(text = option.description, style = Typography.bodyMedium, color = G750)
         }
     }
 }
