@@ -33,6 +33,7 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.OnBoardingTopBar
 import com.swallaby.foodon.core.ui.theme.Bkg04
+import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
@@ -60,44 +61,35 @@ fun GenderScreen(
         )
     )
 
+    OnBoardingTopBar(
+        curIdx = 1,
+        total = 5,
+        onBackClick = onBack
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        OnBoardingTopBar(
-            curIdx = 1,
-            total = 5,
-            onBackClick = onBack
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
         Text(
             text = "성별을 선택해 주세요.",
             style = Typography.displayLarge
         )
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                genderOptions.forEach { option ->
-                    GenderOptionCard(
-                        option = option,
-                        selected = uiState.selectedGender == option,
-                        onClick = { viewModel.selectGender(option) }
-                    )
-                }
+            genderOptions.forEach { option ->
+                GenderOptionCard(
+                    option = option,
+                    selected = uiState.selectedGender == option,
+                    onClick = { viewModel.selectGender(option) }
+                )
             }
         }
-
         Spacer(modifier = Modifier.weight(1f))
 
         CommonWideButton(
@@ -117,11 +109,11 @@ fun GenderOptionCard(
     onClick: () -> Unit
 ) {
     val border = if (selected) BorderStroke(1.dp, WB500) else null
-    val backgroundColor = Color.White
+    val backgroundColor = MainWhite
 
     Surface(
         modifier = Modifier
-            .width(159.5.dp)
+            .fillMaxWidth()
             .height(192.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(10.dp),
@@ -135,7 +127,11 @@ fun GenderOptionCard(
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            GenderIconWithBackground(imageResId = option.iconResId)
+            GenderIconWithBackground(
+                imageResId = option.iconResId,
+                showCheck = selected
+            )
+
             Text(
                 text = stringResource(option.displayTextResId),
                 style = Typography.displaySmall
@@ -149,19 +145,36 @@ fun GenderOptionCard(
 @Composable
 fun GenderIconWithBackground(
     imageResId: Int,
-    backgroundColor: Color = Bkg04
+    backgroundColor: Color = Bkg04,
+    showCheck: Boolean = false
 ) {
     Box(
         modifier = Modifier
-            .size(100.dp)
-            .clip(CircleShape)
-            .background(backgroundColor),
+            .size(100.dp),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = imageResId),
-            contentDescription = null,
-            modifier = Modifier.size(100.dp)
-        )
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(CircleShape)
+                .background(backgroundColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = null,
+                modifier = Modifier.size(100.dp)
+            )
+        }
+
+        if (showCheck) {
+            Image(
+                painter = painterResource(id = R.drawable.icon_check_mark_blue),
+                contentDescription = "성별 선택",
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(24.dp)
+            )
+        }
     }
 }
