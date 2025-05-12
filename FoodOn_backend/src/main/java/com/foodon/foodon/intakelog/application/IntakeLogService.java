@@ -1,7 +1,5 @@
 package com.foodon.foodon.intakelog.application;
 
-import com.foodon.foodon.activitylevel.domain.ActivityLevel;
-import com.foodon.foodon.activitylevel.repository.ActivityLevelRepository;
 import com.foodon.foodon.common.util.NutrientGoal;
 import com.foodon.foodon.intakelog.domain.IntakeLog;
 import com.foodon.foodon.intakelog.dto.IntakeDetailResponse;
@@ -9,13 +7,15 @@ import com.foodon.foodon.intakelog.dto.IntakeSummaryResponse;
 import com.foodon.foodon.intakelog.exception.IntakeLogException.IntakeLogBadRequestException;
 import com.foodon.foodon.intakelog.repository.IntakeLogRepository;
 import com.foodon.foodon.meal.domain.Meal;
+import com.foodon.foodon.member.domain.ActivityLevel;
 import com.foodon.foodon.member.domain.MemberStatus;
+import com.foodon.foodon.member.domain.NutrientPlan;
 import com.foodon.foodon.member.exception.MemberErrorCode;
 import com.foodon.foodon.member.exception.MemberException;
+import com.foodon.foodon.member.repository.ActivityLevelRepository;
 import com.foodon.foodon.member.repository.MemberStatusRepository;
-import com.foodon.foodon.nutrientplan.domain.NutrientPlan;
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.nutrientplan.repository.NutrientPlanRepository;
+import com.foodon.foodon.member.repository.NutrientPlanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
