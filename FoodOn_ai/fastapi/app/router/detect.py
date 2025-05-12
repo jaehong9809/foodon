@@ -39,7 +39,7 @@ async def detect_objects(request: RequestSchema):
 
     # 후처리
     t6 = time.time()
-    food_items = postprocess(prediction, width, height, model_input_size=512)
+    food_items = postprocess(prediction, width, height, model_input_size=640)
     t7 = time.time()
     print(f"🔍 후처리 시간: {t7 - t6:.4f}초")
 
@@ -77,7 +77,7 @@ async def detect_objects_2(file: UploadFile = File(...)):
 
     # 후처리
     t6 = time.time()
-    food_items = postprocess(prediction, width, height, model_input_size=512)
+    food_items = postprocess(prediction, width, height, model_input_size=640)
     t7 = time.time()
     print(f"🔍 후처리 시간: {t7 - t6:.4f}초")
 
