@@ -87,6 +87,9 @@
     <string name="gender_female_kr">여성</string>
     <string name="gender_male_eng">MALE</string>
     <string name="gender_female_eng">FEMALE</string>
+    <string name="gender_choice">성별을 선택해 주세요</string>
+    <string name="management_type_choice">관리 유형을 선택해 주세요</string>
+    <string name="management_type_description">선택한 유형이 목표 식단과 영양 비율에 반영돼요.</string>
 
 
 </resources>
