@@ -1,4 +1,4 @@
-package com.foodon.foodon.nutrientplan.domain;
+package com.foodon.foodon.member.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

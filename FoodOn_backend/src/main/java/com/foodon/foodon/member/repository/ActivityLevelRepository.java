@@ -1,6 +1,6 @@
-package com.foodon.foodon.activitylevel.repository;
+package com.foodon.foodon.member.repository;
 
-import com.foodon.foodon.activitylevel.domain.ActivityLevel;
+import com.foodon.foodon.member.domain.ActivityLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -3,19 +3,22 @@ package com.foodon.foodon.member.application;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import com.foodon.foodon.member.domain.ActivityLevel;
 import com.foodon.foodon.member.domain.MemberStatus;
+import com.foodon.foodon.member.domain.NutrientPlan;
+import com.foodon.foodon.member.dto.*;
+import com.foodon.foodon.member.repository.ActivityLevelRepository;
+import com.foodon.foodon.member.repository.NutrientPlanRepository;
+
 import com.foodon.foodon.member.dto.ProfileRegisterRequest;
 import com.foodon.foodon.member.repository.MemberStatusRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.member.dto.WeightProfileResponse;
-import com.foodon.foodon.member.dto.WeightRecordResponse;
-import com.foodon.foodon.member.dto.WeightUpdateRequest;
 import com.foodon.foodon.member.exception.MemberErrorCode;
 import com.foodon.foodon.member.exception.MemberException;
 import com.foodon.foodon.member.repository.MemberRepository;
@@ -27,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final ActivityLevelRepository activityLevelRepository;
+	private final NutrientPlanRepository nutrientPlanRepository;
 	private final MemberStatusRepository memberStatusRepository;
 
 	@Transactional
@@ -99,6 +104,19 @@ public class MemberService {
 		}
 	}
 
+	public List<ActivityLevelResponse> getActivityLevels() {
+		List<ActivityLevel> activityLevels = activityLevelRepository.findAll();
+		return activityLevels.stream()
+				.map(ActivityLevelResponse::of)
+				.collect(Collectors.toList());
+	}
+
+	public List<NutrientPlanResponse> getNutrientPlans() {
+		List<NutrientPlan> nutrientPlans = nutrientPlanRepository.findAll();
+		return nutrientPlans.stream()
+				.map(NutrientPlanResponse::of)
+				.collect(Collectors.toList());
+	}
 
 	private MemberStatus getLatestStatusOrThrow(Member member) {
 		return memberStatusRepository.findTopByMemberIdOrderByCreatedAtDesc(member.getId())

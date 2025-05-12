@@ -1,10 +1,8 @@
-package com.foodon.foodon.activitylevel.domain;
+package com.foodon.foodon.member.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -23,6 +21,6 @@ public class ActivityLevel {
     private String description;
 
     @Column(nullable = false)
-    private double value;
+    private float value;
 
 }
