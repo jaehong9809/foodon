@@ -52,7 +52,7 @@ fun NavGraphBuilder.signUpGraph(
             GoalWeightScreen(
                 onBack = { navController.popBackStack() },
                 onSubmit = {
-                    //signUpViewModel.submitProfile()
+                    // signUpViewModel.submitProfile()
                     navController.navigate(NavRoutes.MainGraph.route) {
                         popUpTo(NavRoutes.SignUpGraph.route) { inclusive = true }
                     }

@@ -1,11 +1,13 @@
 package com.swallaby.foodon.presentation.signup.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.domain.user.model.ActivityTypeOption
 import com.swallaby.foodon.domain.user.model.GenderOption
 import com.swallaby.foodon.domain.user.model.ManagementTypeOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,5 +82,9 @@ class SignUpViewModel @Inject constructor(
 
     fun onWeightChange(newWeight: Int) {
         updateState { it.copy(weight = newWeight) }
+    }
+
+    fun onGoalWeightChange(newGoal: Int) {
+        updateState { it.copy(goalWeight = newGoal) }
     }
 }
