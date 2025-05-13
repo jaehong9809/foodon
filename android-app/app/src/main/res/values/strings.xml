@@ -93,6 +93,11 @@
     <string name="activity_level_choice">활동량을 선택해 주세요</string>
     <string name="body_info_input">현재 키와 체중을 입력해 주세요</string>
     <string name="goal_weight_input">목표 체중을 입력해 주세요</string>
+    <string name="height">키</string>
+    <string name="weight">체중</string>
+    <string name="maintain_weight">현재 체중 유지</string>
+    <string name="loss_weight">체중 감량</string>
+    <string name="gain_weight">체중 증량</string>
 
 
 </resources>
