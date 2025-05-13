@@ -1,15 +1,12 @@
 package com.foodon.foodon.food.domain;
 
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
-import com.foodon.foodon.meal.domain.MealItem;
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -45,6 +42,8 @@ public class Food {
     @Column(nullable = false)
     private Unit unit;
 
+    @Column(nullable = false)
+    private Boolean isRecommended;
 
     private Food(
             Long memberId,

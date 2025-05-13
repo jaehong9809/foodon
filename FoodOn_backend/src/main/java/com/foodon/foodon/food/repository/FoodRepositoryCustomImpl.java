@@ -1,10 +1,9 @@
 package com.foodon.foodon.food.repository;
 
-import com.foodon.foodon.food.domain.QFoodNutrientClaim;
-import com.foodon.foodon.food.domain.QNutrientClaim;
 import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.member.domain.Member;
+import com.foodon.foodon.recommend.dto.RecommendedFood;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -127,6 +126,56 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 ))
                 .toList();
     }
+
+	@Override
+	public List<RecommendedFood> findRecommendedFoodsWithNutrientInfo() {
+		List<FoodInfo> foods = queryFactory
+			.select(Projections.constructor(
+					FoodInfo.class,
+					food.id,
+					food.memberId,
+					food.name,
+					food.unit,
+					food.servingSize
+				)
+			)
+			.from(food)
+			.where(
+				food.memberId.isNull(),
+				food.isRecommended.isTrue()
+			)
+			.fetch();
+
+		List<Long> foodIds = foods.stream().map(FoodInfo::id).toList();
+
+		List<NutrientInfo> nutrientList = queryFactory
+			.select(Projections.constructor(
+				NutrientInfo.class,
+				foodNutrient.foodId,
+				foodNutrient.id,
+				nutrient.name,
+				nutrient.code,
+				nutrient.nutrientUnit,
+				foodNutrient.value
+			))
+			.from(foodNutrient)
+			.join(nutrient).on(foodNutrient.nutrientId.eq(nutrient.id))
+			.where(foodNutrient.foodId.in(foodIds))
+			.fetch();
+
+		Map<Long, List<NutrientInfo>> nutrientsByFoodId = nutrientList.stream()
+			.collect(Collectors.groupingBy(NutrientInfo::foodId));
+
+		return foods.stream()
+			.map(food -> RecommendedFood.from(
+				food.id(),
+				food.name(),
+				food.servingSize(),
+				food.unit(),
+				nutrientsByFoodId.getOrDefault(food.id(), List.of())
+			))
+			.toList();
+	}
 
     @Override
     public List<FoodWithNutrientInfo> findAllFoodInfo() {
