@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
@@ -37,6 +38,7 @@ public class MealItem {
     @Column(precision = 2, scale = 1)
     private BigDecimal quantity;
 
+    @BatchSize(size = 10)
     @OneToMany(mappedBy = "mealItem", cascade = CascadeType.PERSIST)
     private List<Position> positions = new ArrayList<>();
 
