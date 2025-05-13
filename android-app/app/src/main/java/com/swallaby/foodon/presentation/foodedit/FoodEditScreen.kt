@@ -71,7 +71,7 @@ fun FoodEditScreen(
     mealId: Long = 0,
     viewModel: FoodEditViewModel,
     onBackClick: () -> Unit,
-    onFoodDeleteClick: () -> Unit = {},
+    onFoodDeleteClick: (foodId: Long) -> Unit = {},
     onFoodUpdateClick: () -> Unit = {},
     onNutritionEditClick: () -> Unit = {},
     onSuccessCustomFood: (mealItem: MealItem) -> Unit = {},
@@ -158,7 +158,7 @@ fun FoodEditScreen(
             modifier = modifier.padding(
                 horizontal = 24.dp
             ),
-            onDeleteClick = onFoodDeleteClick,
+            onDeleteClick = { onFoodDeleteClick(food.foodId) },
             onUpdateClick = onFoodUpdateClick,
         )
     }

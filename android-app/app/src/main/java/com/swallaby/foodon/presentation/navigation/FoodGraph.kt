@@ -100,7 +100,7 @@ fun NavGraphBuilder.mealGraph(
                     )
                 },
                 onFoodDeleteClick = {
-                    mealEditViewModel.deleteFood(foodId)
+                    mealEditViewModel.deleteFood(it)
                     navController.popBackStack()
                 },
                 onFoodUpdateClick = {
