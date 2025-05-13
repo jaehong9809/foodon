@@ -91,9 +91,7 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(selectedDate) {
-        mainViewModel.fetchRecordData(selectedDate.toString())
-        mainViewModel.fetchIntakeData(selectedDate.toString())
-        mainViewModel.fetchManageData(selectedDate.toString())
+        mainViewModel.updateDailyData(selectedDate)
     }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
