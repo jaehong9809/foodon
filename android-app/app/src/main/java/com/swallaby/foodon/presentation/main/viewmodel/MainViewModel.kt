@@ -24,10 +24,16 @@ class MainViewModel @Inject constructor(
         _uiState.update(block)
     }
 
+    private var lastExecutedDate: LocalDate? = null
+
     fun updateDailyData(date: LocalDate) {
-        fetchRecordData(date)
-        fetchIntakeData(date)
-        fetchManageData(date)
+        if (lastExecutedDate != date) {
+            lastExecutedDate = date
+
+            fetchRecordData(date)
+            fetchIntakeData(date)
+            fetchManageData(date)
+        }
     }
 
     private fun fetchRecordData(date: LocalDate) {
