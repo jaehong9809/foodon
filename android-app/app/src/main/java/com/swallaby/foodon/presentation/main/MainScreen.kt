@@ -21,10 +21,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -172,17 +172,19 @@ fun MainScreen(
             )
 
             HorizontalDivider(thickness = 1.dp, color = Bkg04)
-            NutrientField(
-                modifier = Modifier.height(100.dp),
-                value = value,
-                onValueChange = { newValue ->
-                    Log.d("NutrientField", "newValue: $newValue")
-                    value = cleanDoubleInput(newValue)
-                    Log.d("NutrientField", "value: $value")
-                },
-                nutrient = "탄수화물",
-                unit = "g",
-            )
+            
+            // todo formfield 테스트 용으로 넣어놔서 나중에 지우겠습니다!
+//            NutrientField(
+//                modifier = Modifier.height(100.dp),
+//                value = value,
+//                onValueChange = { newValue ->
+//                    Log.d("NutrientField", "newValue: $newValue")
+//                    value = cleanDoubleInput(newValue)
+//                    Log.d("NutrientField", "value: $value")
+//                },
+//                nutrient = "탄수화물",
+//                unit = "g",
+//            )
 
             MainContentPager(mainUiState, calendarUiState)
 
@@ -190,7 +192,8 @@ fun MainScreen(
 
             MealRecordContent(
                 mainUiState = mainUiState,
-                calendarUiState = calendarUiState) { mealId ->
+                calendarUiState = calendarUiState
+            ) { mealId ->
                 navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
             }
 
