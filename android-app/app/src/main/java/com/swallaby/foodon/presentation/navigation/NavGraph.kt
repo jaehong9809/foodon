@@ -13,7 +13,9 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
+import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
+
 
 @Composable
 fun NavGraph(
@@ -24,6 +26,7 @@ fun NavGraph(
 
         val mainViewModel: MainViewModel = hiltViewModel()
         val calendarViewModel: CalendarViewModel = hiltViewModel()
+        val signUpViewModel : SignUpViewModel = hiltViewModel()
         val mealEditViewModel: MealEditViewModel = hiltViewModel()
 
         // todo 수정 예정
@@ -56,8 +59,8 @@ fun NavGraph(
             mainGraph(navController, mainViewModel, calendarViewModel)
             loginGraph(navController)
             calendarGraph(calendarViewModel)
+            signUpGraph(navController, signUpViewModel)
             mealGraph(navController, mealEditViewModel)
         }
     }
-
 }
