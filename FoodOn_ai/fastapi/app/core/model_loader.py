@@ -12,24 +12,24 @@ import os
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def create_model(num_classes: int):
+def create_model(num_classes: int = 68):
     weights = FasterRCNN_ResNet50_FPN_Weights.DEFAULT
     model = fasterrcnn_resnet50_fpn(weights=weights)
 
-    # layer4만 학습되도록 설정
+    # for param in model.backbone.body.parameters():
+    #     param.requires_grad = False
     for name, param in model.backbone.body.named_parameters():
-        param.requires_grad = "layer4" in name
+        if "layer3" in name or "layer4" in name:
+            param.requires_grad = True
 
-    # 기존 box predictor를 새로 교체
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-
     return model
 
 
 def load_model():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(base_dir, "best_model.pth")
+    model_path = os.path.join(base_dir, "best_model_0513.pth")
     num_classes = len(names)  # names = {0: ..., 1: ..., ...}
 
     model = create_model(num_classes)
