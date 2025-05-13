@@ -74,4 +74,11 @@ class SignUpViewModel @Inject constructor(
         updateState { it.copy(selectedActivityTypeId = id) }
     }
 
+    fun onHeightChange(newHeight: Int) {
+        updateState { it.copy(height = newHeight) }
+    }
+
+    fun onWeightChange(newWeight: Int) {
+        updateState { it.copy(weight = newWeight) }
+    }
 }

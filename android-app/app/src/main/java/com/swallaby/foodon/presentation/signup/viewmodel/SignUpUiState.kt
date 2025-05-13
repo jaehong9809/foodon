@@ -14,8 +14,8 @@ data class SignUpUiState(
     val activityTypeOptions: List<ActivityTypeOption> = emptyList(),
     val selectedActivityTypeId: Long? = null,
 
-    val height: Int? = null,
-    val weight: Int? = null,
+    val height: Int = 170,
+    val weight: Int = 65,
     val goalWeight: Int? = null,
 
     val currentStep: Int = 1
