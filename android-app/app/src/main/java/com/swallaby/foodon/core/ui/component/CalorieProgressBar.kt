@@ -44,8 +44,14 @@ fun CalorieProgressBar(
 
     val stroke = with(LocalDensity.current) { strokeWidth.toPx() }
 
-    val totalKcal = if (goal > 0) consumed.toFloat() / goal.toFloat() else 0f
-    val limitedKcalRatio = totalKcal.coerceAtMost(1f)
+    val totalKcalRatio = if (goal > 0) consumed.toFloat() / goal else 0f
+    val clampedKcalRatio = totalKcalRatio.coerceAtMost(1f)
+
+    val totalNutrientRatio = nutrients.sumOf { it.ratio.toDouble() }.toFloat().coerceAtLeast(1f)
+    val normalizedNutrients = nutrients.map {
+        val adjustedRatio = (it.ratio / totalNutrientRatio) * clampedKcalRatio
+        it.copy(ratio = adjustedRatio)
+    }
 
     val arcHeightRatio = sin(Math.toRadians((sweepAngle / 2).toDouble())).toFloat()
 
@@ -60,7 +66,6 @@ fun CalorieProgressBar(
             val arcSize = Size(radius * 2, radius * 2)
             val topLeft = Offset(0f, radius - arcHeight)
 
-            // 배경 반원
             drawArc(
                 color = backgroundColor,
                 startAngle = startAngle,
@@ -71,10 +76,9 @@ fun CalorieProgressBar(
                 topLeft = topLeft
             )
 
-            // 누적된 진행각
             var currentAngle = startAngle
-            nutrients.forEach { nutrient ->
-                val segmentSweep = sweepAngle * nutrient.ratio.coerceAtMost(limitedKcalRatio)
+            normalizedNutrients.forEach { nutrient ->
+                val segmentSweep = sweepAngle * nutrient.ratio
                 drawArc(
                     color = nutrient.nutritionType.color,
                     startAngle = currentAngle,
@@ -88,7 +92,6 @@ fun CalorieProgressBar(
             }
         }
 
-        // 총 칼로리 정보
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)

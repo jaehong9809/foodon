@@ -12,10 +12,13 @@ data class CalendarUiState(
     val calendarResult: ResultState<List<CalendarItem>> = ResultState.Loading,
     val weightResult: ResultState<UserWeight> = ResultState.Loading,
     val recommendFoods: ResultState<List<RecommendFood>> = ResultState.Loading,
-    val selectedDate: LocalDate = LocalDate.now(),
-    val today: LocalDate = LocalDate.now(),
+
+    val isInitialLoaded: Boolean = false,
     val selectedTabIndex: Int = 0,
+
+    val today: LocalDate = LocalDate.now(),
+    val selectedDate: LocalDate = LocalDate.now(),
+
     val currentYearMonth: YearMonth = YearMonth.now(),
     val selectedWeekIndex: Int = 0,
-    val isInitialLoaded: Boolean = false,
 ): UiState

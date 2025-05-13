@@ -57,7 +57,7 @@ import org.threeten.bp.temporal.WeekFields
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     calendarViewModel: CalendarViewModel = hiltViewModel(),
-    onRecordClick: () -> Unit = {},
+    onRecordClick: () -> Unit = {}
 ) {
 
     val navController = LocalNavController.current
