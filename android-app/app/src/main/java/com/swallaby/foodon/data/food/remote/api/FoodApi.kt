@@ -1,6 +1,7 @@
 package com.swallaby.foodon.data.food.remote.api
 
 import com.swallaby.foodon.core.data.remote.BaseResponse
+import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 import com.swallaby.foodon.data.food.remote.dto.response.MealInfoResponse
 import okhttp3.MultipartBody
@@ -23,8 +24,10 @@ interface FoodApi {
         @Body request: RecordMealRequest,
     ): BaseResponse<Unit>
 
-    @POST("custom")
-    suspend fun postFood(): BaseResponse<MealInfoResponse>
+    @POST("foods/custom")
+    suspend fun postCustomFood(
+        @Body request: CustomFoodRequest,
+    ): BaseResponse<Unit>
 
     @GET("foods/{foodId}")
     suspend fun getFood(

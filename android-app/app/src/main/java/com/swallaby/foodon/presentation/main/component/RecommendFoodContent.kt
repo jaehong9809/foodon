@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.ui.component.EmptyContentText
 import com.swallaby.foodon.core.ui.theme.BG300
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
@@ -34,10 +35,10 @@ import com.swallaby.foodon.presentation.calendar.component.RecommendFoodDetail
 
 @Composable
 fun RecommendFoodContent(
-    recommendMealResult: ResultState<List<RecommendFood>>
+    recommendFoodResult: ResultState<List<RecommendFood>>
 ) {
 
-    val meals = (recommendMealResult as? ResultState.Success)?.data.orEmpty()
+    val foods = (recommendFoodResult as? ResultState.Success)?.data.orEmpty()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(top = 24.dp, start = 24.dp, end = 24.dp),
@@ -49,28 +50,39 @@ fun RecommendFoodContent(
             style = NotoTypography.NotoBold18
         )
 
-        // 2개보다 많아질 경우 2개씩 표시
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            for (rowItems in meals.chunked(2)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    rowItems.forEach {
-                        RecommendFoodDetail(modifier = Modifier.weight(1f), it)
-                    }
+        if (foods.isNotEmpty()) {
+            RecommendFoodGrid(foods)
+            RecommendReason(foods.map { it.reason })
+        }
+
+        if (foods.isEmpty()) {
+            EmptyContentText(
+                emptyText = stringResource(R.string.main_recommend_food_empty),
+                icon = R.drawable.icon_recommend_empty
+            )
+        }
+    }
+}
+
+@Composable
+fun RecommendFoodGrid(foods: List<RecommendFood>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        for (rowItems in foods.chunked(2)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowItems.forEach {
+                    RecommendFoodDetail(modifier = Modifier.weight(1f), it)
                 }
             }
         }
-
-        val reasons = meals.map { it.reason }
-        RecommendReason(reasons)
     }
 }
 

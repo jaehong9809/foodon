@@ -12,6 +12,7 @@ import static com.foodon.foodon.common.util.BigDecimalUtil.round;
 import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
 
 public record MealSummaryResponse(
+        Long mealId,
         String imageUrl,
         MealTimeType mealTimeType,
         String mealTime,
@@ -23,6 +24,7 @@ public record MealSummaryResponse(
 ) {
     public static MealSummaryResponse of(Meal meal) {
         return new MealSummaryResponse(
+                meal.getId(),
                 meal.getMealImage(),
                 meal.getMealTimeType(),
                 meal.getMealTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")),

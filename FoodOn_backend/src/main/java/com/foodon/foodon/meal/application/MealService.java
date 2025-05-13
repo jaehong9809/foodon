@@ -1,9 +1,8 @@
 package com.foodon.foodon.meal.application;
 
 import com.foodon.foodon.common.util.NutrientCalculator;
-import com.foodon.foodon.food.domain.Nutrient;
-import com.foodon.foodon.food.domain.RestrictionType;
-import com.foodon.foodon.food.domain.NutrientCode;
+import com.foodon.foodon.food.domain.*;
+import com.foodon.foodon.food.dto.FoodSearchCond;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.food.repository.FoodRepository;
@@ -18,7 +17,9 @@ import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.domain.MealItem;
 import com.foodon.foodon.meal.domain.Position;
 import com.foodon.foodon.meal.dto.*;
+import com.foodon.foodon.meal.exception.MealException;
 import com.foodon.foodon.meal.exception.MealException.MealBadRequestException;
+import com.foodon.foodon.meal.exception.MealException.MealNotFoundException;
 import com.foodon.foodon.meal.infrastructure.DetectedFoodInfo;
 import com.foodon.foodon.meal.infrastructure.MealDetectAiClient;
 import com.foodon.foodon.meal.infrastructure.MealDetectAiResponse;
@@ -38,10 +39,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.foodon.foodon.common.util.BigDecimalUtil.toRoundedInt;
 import static com.foodon.foodon.common.util.NutrientCalculator.sumTotalIntake;
 import static com.foodon.foodon.meal.exception.MealErrorCode.MEAL_ITEM_IS_NULL;
+import static com.foodon.foodon.meal.exception.MealErrorCode.NOT_FOUND_MEAL;
 
 @Slf4j
 @Service
@@ -202,6 +205,95 @@ public class MealService {
         return meals.stream().map(MealSummaryResponse::of).toList();
     }
 
+    @Transactional(readOnly = true)
+    public MealDetailInfoResponse getMealDetailInfo(
+            Long mealId,
+            Member member
+    ){
+        Meal meal = findMealByIdAndMember(member, mealId);
+        List<MealItem> mealItems = meal.getMealItems();
+
+        Map<Long, List<MealItem>> mealItemMap = getMealItemMapByFoodId(mealItems);
+        Map<Long, FoodWithNutrientInfo> foodMap = getFoodInfoInMeal(mealItems, member);
+
+        List<MealItemInfo> mealItemInfos = convertToMealItemResponse(mealItemMap, foodMap);
+        return MealDetailInfoResponse.from(
+                meal,
+                sumTotalIntake(mealItemInfos, NutrientProfile::kcal),
+                sumTotalIntake(mealItemInfos, NutrientProfile::carbs),
+                sumTotalIntake(mealItemInfos, NutrientProfile::protein),
+                sumTotalIntake(mealItemInfos, NutrientProfile::fat),
+                mealItemInfos
+        );
+    }
+
+    private List<MealItemInfo> convertToMealItemResponse(
+            Map<Long, List<MealItem>> mealItemMap,
+            Map<Long, FoodWithNutrientInfo> foodMap
+    ) {
+        return mealItemMap.entrySet().stream()
+                .map(entry -> createMealItemInfo(entry.getKey(), entry.getValue(), foodMap))
+                .flatMap(Optional::stream)
+                .toList();
+    }
+
+    private Optional<MealItemInfo> createMealItemInfo(
+            Long foodId,
+            List<MealItem> items,
+            Map<Long, FoodWithNutrientInfo> foodMap
+    ) {
+        FoodWithNutrientInfo food = foodMap.get(foodId);
+        if (food == null) return Optional.empty();
+
+        BigDecimal totalQuantity = items.stream()
+                .map(MealItem::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<PositionInfo> positions =  items.stream()
+                .map(MealItem::getPosition).filter(Objects::nonNull)
+                .map(PositionInfo::of).toList();
+        Map<NutrientCode, BigDecimal> nutrients = convertToTypedValueMap(food.nutrients());
+
+        return Optional.of(MealItemInfo.from(food, totalQuantity, positions, nutrients));
+    }
+
+    private Map<Long, List<MealItem>> getMealItemMapByFoodId(List<MealItem> mealItems) {
+        return mealItems.stream().collect(Collectors.groupingBy(MealItem::getFoodId));
+    }
+
+    private Map<Long, FoodWithNutrientInfo> getFoodInfoInMeal(
+            List<MealItem> mealItems,
+            Member member
+    ) {
+        Map<FoodType, List<MealItem>> foodTypeMap = groupMealItemsByType(mealItems);
+        List<Long> publicFoodIds = extractFoodIdsByType(foodTypeMap, List.of(FoodType.PUBLIC));
+        List<Long> customFoodIds = extractFoodIdsByType(foodTypeMap, FoodType.customTypes());
+
+        List<FoodWithNutrientInfo> publicFoods = publicFoodIds.isEmpty()
+                ? List.of()
+                : foodRepository.findAllBySearchCond(FoodSearchCond.of(publicFoodIds));
+
+        List<FoodWithNutrientInfo> customFoods = customFoodIds.isEmpty()
+                ? List.of()
+                : foodRepository.findAllBySearchCond(FoodSearchCond.of(customFoodIds, member));
+
+        return Stream.concat(publicFoods.stream(), customFoods.stream())
+                .collect(Collectors.toMap(FoodWithNutrientInfo::foodId, Function.identity()));
+    }
+
+    private List<Long> extractFoodIdsByType(Map<FoodType, List<MealItem>> map, List<FoodType> types) {
+        return types.stream()
+                .flatMap(type -> map.getOrDefault(type, List.of()).stream())
+                .map(MealItem::getFoodId)
+                .toList();
+    }
+
+    private Map<FoodType, List<MealItem>> groupMealItemsByType(List<MealItem> mealItems) {
+        return mealItems.stream().collect(Collectors.groupingBy(MealItem::getFoodType));
+    }
+
+    private Meal findMealByIdAndMember(Member member, Long mealId) {
+        return mealRepository.findByMealIdFetchWithMealItems(member, mealId)
+                .orElseThrow(() -> new MealNotFoundException(NOT_FOUND_MEAL));
+    }
 
     public List<ManageNutrientResponse> getManageNutrientsByDate(
             LocalDate date,

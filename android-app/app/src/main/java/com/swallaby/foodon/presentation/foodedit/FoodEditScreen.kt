@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.foodedit
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,16 +23,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
@@ -50,6 +54,7 @@ import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
+import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientItem
 import com.swallaby.foodon.domain.food.model.NutrientType
@@ -57,6 +62,7 @@ import com.swallaby.foodon.presentation.foodedit.component.FoodAmountComponent
 import com.swallaby.foodon.presentation.foodedit.component.FoodChip
 import com.swallaby.foodon.presentation.foodedit.component.FoodThumbnailList
 import com.swallaby.foodon.presentation.foodedit.component.SearchChip
+import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 
 @Composable
@@ -64,17 +70,36 @@ fun FoodEditScreen(
     modifier: Modifier = Modifier,
     viewModel: FoodEditViewModel,
     onBackClick: () -> Unit,
-    foodId: Long = 0,
     onFoodDeleteClick: () -> Unit = {},
     onFoodUpdateClick: () -> Unit = {},
     onNutritionEditClick: () -> Unit = {},
+    onSuccessCustomFood: (mealItem: MealItem) -> Unit = {},
 ) {
-
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
+
+
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is FoodEditEvent.SuccessCustomFood -> {
+                    onSuccessCustomFood(event.mealItem)
+                }
+
+                is FoodEditEvent.FailedCustomFood -> {
+                    Toast.makeText(context, event.messageRes, Toast.LENGTH_SHORT).show()
+                }
+
+                else -> {
+                }
+            }
+        }
+    }
     val food = mealInfo.mealItems.find { item ->
-        item.foodId == foodId
+        item.foodId == uiState.selectedFoodId
     }!!
 
     // food.nutrientInfo 대신 uiState 자체를 의존성으로 설정
@@ -97,7 +122,12 @@ fun FoodEditScreen(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            FoodThumbnailList()
+            FoodThumbnailList(
+                foods = mealInfo.mealItems,
+                imageUri = mealInfo.imageUri,
+                selectedFoodId = uiState.selectedFoodId,
+                selectFood = viewModel::selectFood
+            )
             HorizontalDivider(
                 modifier = modifier.padding(horizontal = 24.dp), thickness = 1.dp, color = Border02
             )
@@ -286,6 +316,6 @@ fun FoodSearch(
 @Composable
 fun FoodEditScreenPreview() {
     FoodonTheme {
-        FoodEditScreen(onBackClick = {}, viewModel = FoodEditViewModel())
+        FoodEditScreen(onBackClick = {}, viewModel = hiltViewModel())
     }
 }

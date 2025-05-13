@@ -58,6 +58,15 @@ public class ResponseUtil {
                         .build());
     }
 
+    public static <T> ResponseEntity<Response<T>> created(T data) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Response.<T>builder()
+                        .code("00000")
+                        .message("정상적으로 처리되었습니다.")
+                        .data(data)
+                        .build());
+    }
+
     public static <T> ResponseEntity<Response<T>> failure(
         MethodArgumentNotValidException e,
         String message

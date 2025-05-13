@@ -16,5 +16,6 @@ data class CalendarUiState(
     val today: LocalDate = LocalDate.now(),
     val selectedTabIndex: Int = 0,
     val currentYearMonth: YearMonth = YearMonth.now(),
-    val selectedWeekIndex: Int = 0
+    val selectedWeekIndex: Int = 0,
+    val isInitialLoaded: Boolean = false,
 ): UiState

@@ -50,8 +50,8 @@ fun IntakeDetail(
 @Composable
 fun IntakeItem(
     nutritionType: NutritionType,
-    nutrientIntake: Int,
-    nutrientTarget: Int
+    nutrientIntake: Double,
+    nutrientTarget: Double
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

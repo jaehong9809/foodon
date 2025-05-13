@@ -5,6 +5,7 @@ import com.swallaby.foodon.core.data.remote.getOrThrowNull
 import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.safeApiCall
 import com.swallaby.foodon.data.food.remote.api.FoodApi
+import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 import com.swallaby.foodon.data.food.remote.dto.response.toDomain
 import com.swallaby.foodon.domain.food.model.MealInfo
@@ -20,7 +21,12 @@ class FoodRemoteRepositoryImpl @Inject constructor(
             foodApi.postFoodImage(image).getOrThrow { it.toDomain() }
         }
 
-    override suspend fun postFoodHistory(request: RecordMealRequest): ApiResult<Unit> = safeApiCall {
-        foodApi.postFoodHistory(request).getOrThrowNull { }
+    override suspend fun postFoodHistory(request: RecordMealRequest): ApiResult<Unit> =
+        safeApiCall {
+            foodApi.postFoodHistory(request).getOrThrowNull { }
+        }
+
+    override suspend fun postCustomFood(request: CustomFoodRequest): ApiResult<Unit> = safeApiCall {
+        foodApi.postCustomFood(request).getOrThrowNull { }
     }
 }

@@ -2,21 +2,22 @@ package com.foodon.foodon.food.application;
 
 import com.foodon.foodon.common.util.NutrientCalculator;
 import com.foodon.foodon.food.domain.*;
-import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
-import com.foodon.foodon.food.dto.FoodDetailInfoResponse;
-import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
-import com.foodon.foodon.food.dto.NutrientInfo;
+import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
 import com.foodon.foodon.food.repository.FoodNutrientRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
 import com.foodon.foodon.meal.dto.NutrientProfile;
 import com.foodon.foodon.member.domain.Member;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class FoodService {
     private final NutrientRepository nutrientRepository;
 
     @Transactional
-    public long saveCustomFood(
+    public CustomFoodCreateResponse saveCustomFood(
             CustomFoodCreateRequest request,
             Member member
     ) {
@@ -41,7 +42,25 @@ public class FoodService {
         foodRepository.save(food);
         registerFoodNutrients(request.nutrients(), food);
 
-        return food.getId();
+        return CustomFoodCreateResponse.from(food, request.nutrients());
+    }
+
+    @Transactional
+    public CustomFoodCreateResponse saveModifiedFood(
+            CustomFoodCreateRequest request,
+            Member member
+    ){
+        String registerName = getRegisterNameWithOrigName(request.foodName(), LocalDateTime.now());
+        checkDuplicateCustomFood(registerName, member);
+        Food food = Food.createCustomFoodModifiedByMember(request, registerName, member);
+        foodRepository.save(food);
+        registerFoodNutrients(request.nutrients(), food);
+
+        return CustomFoodCreateResponse.from(food, request.nutrients());
+    }
+
+    private String getRegisterNameWithOrigName(String foodName, LocalDateTime dateTime) {
+        return foodName + "_" + dateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 
     private void checkDuplicateCustomFood(
@@ -57,9 +76,7 @@ public class FoodService {
             NutrientProfile nutrients,
             Food food
     ) {
-        List<Nutrient> nutrientList = nutrientRepository.findAll();
-        Map<NutrientCode, Long> nutrientCodeIdMap = getNutrientCodeIdMap(nutrientList);
-
+        Map<NutrientCode, Long> nutrientCodeIdMap = getNutrientCodeMap();
         nutrients.toMap().forEach((code, value) -> {
             if (value == null) {
                 return;
@@ -74,8 +91,8 @@ public class FoodService {
         });
     }
 
-    private Map<NutrientCode, Long> getNutrientCodeIdMap(List<Nutrient> nutrientList) {
-        return nutrientList.stream()
+    private Map<NutrientCode, Long> getNutrientCodeMap() {
+        return nutrientRepository.findAll().stream()
                 .collect(Collectors.toMap(
                         Nutrient::getCode,
                         Nutrient::getId

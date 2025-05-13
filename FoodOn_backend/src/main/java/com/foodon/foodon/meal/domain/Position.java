@@ -14,18 +14,20 @@ public class Position {
     private double y;
     private double width;
     private double height;
+    private double confidence;
 
     private Position(
             double x,
             double y,
             double width,
-            double height
+            double height,
+            double confidence
     ) {
-
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.confidence = confidence;
     }
 
     public static Position of(PositionInfo positionInfo) {
@@ -33,7 +35,8 @@ public class Position {
                 positionInfo.x(),
                 positionInfo.y(),
                 positionInfo.width(),
-                positionInfo.height()
+                positionInfo.height(),
+                positionInfo.confidence()
         );
     }
 

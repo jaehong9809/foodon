@@ -19,17 +19,19 @@ import com.swallaby.foodon.core.ui.component.LoadingProgress
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.formatDate
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
 fun MealRecordContent(
-    uiState: MainUiState,
+    mainUiState: MainUiState,
+    calendarUiState: CalendarUiState,
     onMealClick: (Long) -> Unit
 ) {
 
-    val today = uiState.today
-    val selectedDate = uiState.selectedDate
-    val recordState = uiState.recordResult
+    val today = calendarUiState.today
+    val selectedDate = calendarUiState.selectedDate
+    val recordState = mainUiState.recordResult
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(24.dp)
