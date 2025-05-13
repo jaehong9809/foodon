@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 
 @Entity
@@ -36,10 +37,13 @@ public class Member extends BaseTimeEntity {
 
     private Gender gender;
 
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     private Member (
-            String nickname,
-            String email,
-            String profileImgUrl
+        String nickname,
+        String email,
+        String profileImgUrl
     ){
         this.nickname = nickname;
         this.email = email;
@@ -47,19 +51,19 @@ public class Member extends BaseTimeEntity {
     }
 
     public static Member createMember(
-            String nickname,
-            String email,
-            String profileImgUrl
+        String nickname,
+        String email,
+        String profileImgUrl
     ) {
         return new Member(
-                nickname,
-                email,
-                profileImgUrl
+            nickname,
+            email,
+            profileImgUrl
         );
     }
 
     public void updateProfile(
-            Gender gender
+        Gender gender
     ) {
         this.gender = gender;
     }
@@ -70,5 +74,9 @@ public class Member extends BaseTimeEntity {
 
     public void markProfileUpdated() {
         this.profileUpdated = true;
+    }
+
+    public void updateLastLoginTime() {
+        this.lastLoginAt = LocalDateTime.now();
     }
 }
