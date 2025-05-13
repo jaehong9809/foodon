@@ -12,16 +12,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
@@ -35,6 +36,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientInfo
+import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
 
@@ -46,6 +48,7 @@ fun NutritionEditScreen(
     foodId: Long = 0,
     onFoodUpdateClick: (nutrientInfo: NutrientInfo) -> Unit = {},
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
     val food = mealInfo.mealItems.find { item ->
@@ -54,6 +57,18 @@ fun NutritionEditScreen(
 
     var nutritions by remember(uiState) {
         mutableStateOf(NutrientConverter.convertToHierarchy(food.nutrientInfo))
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is FoodEditEvent.SuccessUpdateFood -> {
+                    onBackClick()
+                }
+
+                else -> {}
+            }
+        }
     }
 
     val scrollState = rememberScrollState()
@@ -100,7 +115,8 @@ fun NutritionEditScreen(
                         modifier = modifier,
                         value = item.value.toString(),
                         onValueChange = { newValue ->
-                            val updatedValue = newValue.filter { it.isDigit() }.toIntOrNull() ?: 0
+                            val updatedValue =
+                                newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
                             // 업데이트된 아이템 생성
                             val updatedItem = item.copy(value = updatedValue)
                             // 리스트에서 해당 아이템 교체
@@ -120,7 +136,7 @@ fun NutritionEditScreen(
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
                                 val updatedValue =
-                                    newValue.filter { it.isDigit() }.toIntOrNull() ?: 0
+                                    newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
                                 // 업데이트된 자식 아이템 생성
                                 val updatedChildItem = childItem.copy(value = updatedValue)
                                 // 부모 아이템의 자식 목록 업데이트
@@ -162,6 +178,6 @@ fun NutritionEditScreen(
 @Preview(showBackground = true)
 @Composable
 fun NutritionEditScreenPreview() {
-    NutritionEditScreen(onBackClick = {}, viewModel = FoodEditViewModel())
+    NutritionEditScreen(onBackClick = {}, viewModel = hiltViewModel())
 }
 

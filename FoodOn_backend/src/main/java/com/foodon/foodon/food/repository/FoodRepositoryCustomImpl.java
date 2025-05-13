@@ -1,10 +1,9 @@
 package com.foodon.foodon.food.repository;
 
-import com.foodon.foodon.food.dto.FoodInfo;
-import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.domain.FoodType;
-import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.member.domain.Member;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,7 +17,9 @@ import java.util.stream.Collectors;
 
 import static com.foodon.foodon.food.domain.QFood.food;
 import static com.foodon.foodon.food.domain.QFoodNutrient.foodNutrient;
+import static com.foodon.foodon.food.domain.QFoodNutrientClaim.foodNutrientClaim;
 import static com.foodon.foodon.food.domain.QNutrient.nutrient;
+import static com.foodon.foodon.food.domain.QNutrientClaim.nutrientClaim;
 
 @RequiredArgsConstructor
 public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
@@ -36,25 +37,28 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 FoodInfo.class,
                                 food.id,
                                 food.memberId,
+                                food.foodType,
                                 food.name,
-                                food.unit
+                                food.unit,
+                                food.servingSize
                         )
                 )
                 .from(food)
                 .where(
                         food.id.eq(id),
-                        eqMemberId(type, member.getId())
+                        eqMemberId(member)
                 )
                 .fetchOne();
 
         List<NutrientInfo> nutrients = queryFactory
                 .select(Projections.constructor(
-                                NutrientInfo.class,
-                                foodNutrient.foodId,
-                                foodNutrient.id,
-                                nutrient.type,
-                                nutrient.nutrientUnit,
-                                foodNutrient.value
+                        NutrientInfo.class,
+                        foodNutrient.foodId,
+                        foodNutrient.id,
+                        nutrient.name,
+                        nutrient.code,
+                        nutrient.nutrientUnit,
+                        foodNutrient.value
                 ))
                 .from(foodNutrient)
                 .join(nutrient).on(foodNutrient.nutrientId.eq(nutrient.id))
@@ -65,10 +69,11 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
 
         return new FoodWithNutrientInfo(
-                type,
+                foodInfo.foodType(),
                 foodInfo.id(),
                 foodInfo.name(),
                 foodInfo.unit(),
+                foodInfo.servingSize(),
                 nutrients
         );
     }
@@ -80,8 +85,10 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                                 FoodInfo.class,
                                 food.id,
                                 food.memberId,
+                                food.foodType,
                                 food.name,
-                                food.unit
+                                food.unit,
+                                food.servingSize
                         )
                 )
                 .from(food)
@@ -93,40 +100,146 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
         List<Long> foodIds = foods.stream().map(FoodInfo::id).toList();
 
-        List<NutrientInfo> nutrientList = queryFactory
+        List<NutrientInfo> nutrients = queryFactory
                 .select(Projections.constructor(
-                                NutrientInfo.class,
-                                foodNutrient.foodId,
-                                foodNutrient.id,
-                                nutrient.type,
-                                nutrient.nutrientUnit,
-                                foodNutrient.value
+                        NutrientInfo.class,
+                        foodNutrient.foodId,
+                        foodNutrient.id,
+                        nutrient.name,
+                        nutrient.code,
+                        nutrient.nutrientUnit,
+                        foodNutrient.value
                 ))
                 .from(foodNutrient)
                 .join(nutrient).on(foodNutrient.nutrientId.eq(nutrient.id))
                 .where(foodNutrient.foodId.in(foodIds))
                 .fetch();
 
-        Map<Long, List<NutrientInfo>> nutrientsByFoodId = nutrientList.stream()
-                .collect(Collectors.groupingBy(NutrientInfo::foodId));
+        Map<Long, List<NutrientInfo>> nutrientsByFoodId = groupByFoodId(nutrients);
 
         return foods.stream()
                 .map(food -> new FoodWithNutrientInfo(
-                        FoodType.PUBLIC,
+                        food.foodType(),
                         food.id(),
                         food.name(),
                         food.unit(),
+                        food.servingSize(),
                         nutrientsByFoodId.getOrDefault(food.id(), List.of())
                 ))
                 .toList();
     }
 
-    private BooleanExpression eqMemberId(FoodType type, Long memberId) {
-        if(Objects.isNull(type) || type.equals(FoodType.PUBLIC)){
+    @Override
+    public List<FoodWithNutrientInfo> findAllFoodInfo() {
+        List<FoodInfo> foods = queryFactory
+                .select(Projections.constructor(
+                                FoodInfo.class,
+                                food.id,
+                                food.memberId,
+                                food.foodType,
+                                food.name,
+                                food.unit,
+                                food.servingSize
+                        )
+                )
+                .from(food)
+                .where(food.memberId.isNull())
+                .fetch();
+
+        List<NutrientInfo> nutrients = queryFactory
+                .select(Projections.constructor(
+                        NutrientInfo.class,
+                        foodNutrient.foodId,
+                        foodNutrient.id,
+                        nutrient.name,
+                        nutrient.code,
+                        nutrient.nutrientUnit,
+                        foodNutrient.value
+                ))
+                .from(foodNutrient)
+                .join(nutrient).on(foodNutrient.nutrientId.eq(nutrient.id))
+                .fetch();
+
+        Map<Long, List<NutrientInfo>> nutrientsByFoodId = groupByFoodId(nutrients);
+
+        return foods.stream()
+                .map(food -> new FoodWithNutrientInfo(
+                        food.foodType(),
+                        food.id(),
+                        food.name(),
+                        food.unit(),
+                        food.servingSize(),
+                        nutrientsByFoodId.getOrDefault(food.id(), List.of())
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<NutrientClaimInfo> findNutrientClaimsByFoodIds(List<Long> foodIds) {
+        return queryFactory
+                .select(Projections.constructor(
+                        NutrientClaimInfo.class,
+                        foodNutrientClaim.foodId,
+                        nutrientClaim.id,
+                        nutrientClaim.name,
+                        nutrientClaim.type
+                ))
+                .from(foodNutrientClaim)
+                .join(nutrientClaim).on(nutrientClaim.id.eq(foodNutrientClaim.nutrientClaimId))
+                .where(foodNutrientClaim.id.in(foodIds))
+                .fetch();
+    }
+
+    @Override
+    public List<FoodWithNutrientInfo> findAllBySearchCond(FoodSearchCond cond) {
+        return queryFactory
+                .from(food)
+                .leftJoin(foodNutrient).on(food.id.eq(foodNutrient.foodId))
+                .leftJoin(nutrient).on(foodNutrient.nutrientId.eq(nutrient.id))
+                .where(
+                        containsId(cond.getFoodIds()),
+                        eqMemberId(cond.getMember())
+                )
+                .transform(
+                    GroupBy.groupBy(food.id).list(
+                        Projections.constructor(
+                                FoodWithNutrientInfo.class,
+                                food.foodType,
+                                food.id,
+                                food.displayName,
+                                food.unit,
+                                food.servingSize,
+                                GroupBy.list(Projections.constructor(
+                                        NutrientInfo.class,
+                                        foodNutrient.foodId,
+                                        foodNutrient.id,
+                                        nutrient.name,
+                                        nutrient.code,
+                                        nutrient.nutrientUnit,
+                                        foodNutrient.value
+                                ))
+                        )
+                    ));
+    }
+
+    private BooleanExpression containsId(List<Long> foodIds) {
+        if(Objects.isNull(foodIds) || foodIds.isEmpty()) {
             return null;
         }
 
-        return food.memberId.eq(memberId);
+        return food.id.in(foodIds);
+    }
+
+    public static Map<Long, List<NutrientInfo>> groupByFoodId(List<NutrientInfo> nutrients) {
+        return nutrients.stream().collect(Collectors.groupingBy(NutrientInfo::foodId));
+    }
+
+    private BooleanExpression eqMemberId(Member member) {
+        if(Objects.isNull(member) || member.getId() == 0) {
+            return null;
+        }
+
+        return food.memberId.eq(member.getId());
     }
 
 }

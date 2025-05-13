@@ -130,9 +130,6 @@ fun Picker(
 }
 
 @Composable
-private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
-
-@Composable
 fun ScrollTimePicker(
     modifier: Modifier = Modifier,
     initAmPmIndex: Int = 0,

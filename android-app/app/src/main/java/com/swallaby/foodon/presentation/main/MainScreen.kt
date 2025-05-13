@@ -37,9 +37,10 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.core.util.DateUtil.calculateWeeksOfMonth
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
 import com.swallaby.foodon.presentation.main.component.MainCalendarPager
 import com.swallaby.foodon.presentation.main.component.MainContentPager
@@ -48,20 +49,26 @@ import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import kotlinx.coroutines.launch
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.YearMonth
+import org.threeten.bp.temporal.WeekFields
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
+    calendarViewModel: CalendarViewModel = hiltViewModel(),
     onRecordClick: () -> Unit = {},
 ) {
 
     val navController = LocalNavController.current
-    val uiState by viewModel.uiState.collectAsState()
 
-    val selectedDate = uiState.selectedDate
-    val currentYearMonth = uiState.currentYearMonth
+    val mainUiState by mainViewModel.uiState.collectAsState()
+    val calendarUiState by calendarViewModel.uiState.collectAsState()
 
-    val calendarItems = (uiState.calendarResult as? ResultState.Success)?.data.orEmpty()
+    val selectedDate = calendarUiState.selectedDate
+    val currentYearMonth = calendarUiState.currentYearMonth
+
+    val calendarItems = (calendarUiState.calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val mealItemMap by remember(calendarItems) {
         derivedStateOf {
@@ -71,36 +78,43 @@ fun MainScreen(
         }
     }
 
-    val weeksInMonth = remember(uiState.currentYearMonth) {
-        calculateWeeksOfMonth(uiState.currentYearMonth)
+    val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
+
+    val currentWeekStart = calendarViewModel.currentWeekStart
+    val weekOfMonth = currentWeekStart.get(weekFields.weekOfMonth())
+
+    val nextWeekStart = currentWeekStart.plusWeeks(1)
+    val maxPage = when {
+        nextWeekStart.isAfter(calendarUiState.today) -> 2
+        else -> 3
     }
 
-    val initialPage = weeksInMonth.indexOfFirst { week ->
-        uiState.today in week
-    }.coerceAtLeast(0)
-
-    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { weeksInMonth.size })
+    val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchCalendarData(currentYearMonth.toString())
-
-        viewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
-            week = 1
-        )
-    }
-
     LaunchedEffect(selectedDate) {
-        viewModel.fetchRecordData(selectedDate.toString())
-        viewModel.fetchIntakeData(selectedDate.toString())
-        viewModel.fetchManageData(selectedDate.toString())
+        mainViewModel.fetchRecordData(selectedDate.toString())
+        mainViewModel.fetchIntakeData(selectedDate.toString())
+        mainViewModel.fetchManageData(selectedDate.toString())
     }
 
-    LaunchedEffect(pagerState.currentPage) {
-        viewModel.fetchRecommendFoods(
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
+            val delta = pagerState.currentPage - 1
+
+            calendarViewModel.goToWeek(delta)
+            pagerState.scrollToPage(1)
+        }
+    }
+
+    LaunchedEffect(currentYearMonth) {
+        calendarViewModel.fetchCalendarData(CalendarType.MEAL, currentYearMonth.toString())
+    }
+
+    LaunchedEffect(currentWeekStart) {
+        calendarViewModel.fetchRecommendFoods(
             yearMonth = currentYearMonth.toString(),
-            week = (pagerState.currentPage) + 1
+            week = weekOfMonth
         )
     }
 
@@ -130,10 +144,10 @@ fun MainScreen(
                     navController.navigate(NavRoutes.Calendar.route)
                 },
                 onTodayClick = {
-                    viewModel.selectDate(uiState.today)
+                    calendarViewModel.resetToTodayWeek()
 
                     scope.launch {
-                        pagerState.scrollToPage(initialPage)
+                        pagerState.scrollToPage(1)
                     }
                 }
             )
@@ -142,20 +156,25 @@ fun MainScreen(
 
             MainCalendarPager(
                 pagerState = pagerState,
-                weeksInMonth = weeksInMonth,
+                currentWeekStart = currentWeekStart,
                 mealItemMap = mealItemMap,
-                uiState = uiState,
-                onDateSelected = viewModel::selectDate
+                calendarUiState = calendarUiState,
+                onDateSelected = { date ->
+                    calendarViewModel.selectDate(date)
+                    calendarViewModel.updateYearMonth(YearMonth.from(date))
+                }
             )
 
             HorizontalDivider(thickness = 1.dp, color = Bkg04)
 
-            MainContentPager(uiState)
+            MainContentPager(mainUiState, calendarUiState)
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
-            MealRecordContent(uiState = uiState) { mealId ->
-                navController.navigate(NavRoutes.FoodGraph.MealDetail)
+            MealRecordContent(
+                mainUiState = mainUiState,
+                calendarUiState = calendarUiState) { mealId ->
+                navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
             }
 
             Column(

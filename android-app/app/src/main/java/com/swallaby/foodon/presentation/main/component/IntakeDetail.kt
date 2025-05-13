@@ -24,8 +24,8 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.core.util.StringUtil.formatNutrition
 import com.swallaby.foodon.core.util.StringUtil.formatNutritionNumber
+import com.swallaby.foodon.core.util.StringUtil.formatNutritionOrigin
 import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 
@@ -38,7 +38,7 @@ fun IntakeDetail(
             .fillMaxWidth()
             .wrapContentHeight()
             .border(1.dp, color = Border02, shape = RoundedCornerShape(10.dp))
-            .padding(18.dp),
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         IntakeItem(NutritionType.CARBOHYDRATE, intake.intakeCarbs, intake.goalCarbs)
@@ -50,8 +50,8 @@ fun IntakeDetail(
 @Composable
 fun IntakeItem(
     nutritionType: NutritionType,
-    nutrientIntake: Int,
-    nutrientTarget: Int
+    nutrientIntake: Double,
+    nutrientTarget: Double
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -96,7 +96,7 @@ fun IntakeItem(
             )
 
             Text(
-                text = "/${formatNutrition(nutrientTarget)}",
+                text = "/${formatNutritionOrigin(nutrientTarget)}",
                 style = SpoqaTypography.SpoqaMedium16.copy(color = G500)
             )
         }

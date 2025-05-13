@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.WB500F1A
@@ -26,8 +28,13 @@ import com.swallaby.foodon.domain.calendar.model.UserWeight
 
 @Composable
 fun WeightContent(
-    userWeight: UserWeight = UserWeight()
+    weightResult: ResultState<UserWeight>
 ) {
+    val userWeight = when (weightResult) {
+        is ResultState.Success -> weightResult.data
+        else -> UserWeight()
+    }
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
@@ -40,7 +47,7 @@ fun WeightContent(
 @Composable
 fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
     TabContentLayout(
-        modifier = modifier,
+        modifier = modifier.heightIn(min = 78.dp),
         title = stringResource(R.string.tab_content_title_goal_weight),
         bgColor = Bkg04
     ) {
@@ -55,10 +62,11 @@ fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
 @Composable
 fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
     TabContentLayout(
-        modifier = modifier,
+        modifier = modifier.heightIn(min = 78.dp),
         title = stringResource(R.string.tab_content_title_cur_weight),
         bgColor = WB500F1A,
         bottomPadding = 11.dp,
+        contentPadding = 3.dp,
         icon = R.drawable.icon_cur_weight
     ) {
         Row(
@@ -93,5 +101,5 @@ fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
 @Preview(showBackground = true)
 @Composable
 fun WeightPreview() {
-    WeightContent()
+    WeightContent(weightResult = ResultState.Loading)
 }

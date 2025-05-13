@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface MealRepository extends JpaRepository<Meal, Long> {
+public interface MealRepository extends JpaRepository<Meal, Long>, MealRepositoryCustom {
 
     @Query("""
         select m from Meal m
@@ -23,5 +24,16 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
             @Param("member") Member member,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+        select m from Meal m
+        join fetch m.mealItems mi
+        where m.member = :member
+        and m.id = :mealId
+    """)
+    Optional<Meal> findByMealIdFetchWithMealItems(
+            @Param("member") Member member,
+            @Param("mealId") Long mealId
     );
 }

@@ -3,7 +3,7 @@ package com.foodon.foodon.member.presentation;
 import java.time.YearMonth;
 import java.util.List;
 
-import com.foodon.foodon.member.dto.ProfileRegisterRequest;
+import com.foodon.foodon.member.dto.*;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,6 @@ import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.member.application.MemberService;
 import com.foodon.foodon.member.domain.Member;
-import com.foodon.foodon.member.dto.WeightProfileResponse;
-import com.foodon.foodon.member.dto.WeightRecordResponse;
-import com.foodon.foodon.member.dto.WeightUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +65,24 @@ public class MemberController {
 	) {
 		memberService.updateCurrentWeight(member, weightUpdateRequest);
 		return ResponseUtil.success();
+	}
+
+	@GetMapping("/profile/activity-levels")
+	@Operation(summary = "관리 유형 목록 조회")
+	public ResponseEntity<Response<List<ActivityLevelResponse>>> getActivityLevels(
+			@Parameter(hidden = true) @AuthMember Member member
+	){
+		List<ActivityLevelResponse> result = memberService.getActivityLevels();
+		return ResponseUtil.success(result);
+	}
+
+	@GetMapping("/profile/nutrient-plans")
+	@Operation(summary = "활동량 유형 목록 조회")
+	public ResponseEntity<Response<List<NutrientPlanResponse>>> getNutrientPlans(
+			@Parameter(hidden = true) @AuthMember Member member
+	){
+		List<NutrientPlanResponse> result = memberService.getNutrientPlans();
+		return ResponseUtil.success(result);
 	}
 
 }

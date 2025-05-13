@@ -15,7 +15,7 @@
     <string name="format_calendar_date">%d년 %d월</string>
     <string name="format_hour">%s시</string>
     <string name="format_min">%s분</string>
-
+    <string name="format_cm">%dcm</string>
 
     <!-- button -->
     <string name="btn_next">다음</string>
@@ -40,6 +40,7 @@
     <string name="tab_recommend">추천</string>
     <string name="tab_weekly">%d주차</string>
     <string name="tab_content_title_meal">하루 목표 섭취량</string>
+    <string name="tab_content_title_meal_intake">섭취 칼로리</string>
     <string name="tab_content_title_goal_weight">목표 체중</string>
     <string name="tab_content_title_cur_weight">현재 체중</string>
     <string name="tab_content_title_recommend">이 주의 추천 음식</string>
@@ -48,6 +49,8 @@
     <string name="tab_weight_bottom">체중 변화(kg)</string>
 
     <!-- food -->
+    <string name="select_gallery">앨범 선택</string>
+    <string name="food_search">음식 검색</string>
     <string name="total_intake">전체 섭취량</string>
     <string name="food_info_check">음식 정보를 확인해 보세요!</string>
     <string name="food_amount">음식양</string>
@@ -61,7 +64,10 @@
     <string name="main_meal_record_empty">기록된 식단이 없습니다.</string>
     <string name="main_nutrient_intake_today_title">오늘 섭취량</string>
     <string name="main_nutrient_intake_date_title">%s 섭취량</string>
+    <string name="main_meal_intake_empty">기록된 식단이 없습니다.</string>
     <string name="main_nutrient_manage_title">관리 영양소</string>
+    <string name="main_nutrient_manage_empty">섭취한 영양소가 없습니다.</string>
+    <string name="main_recommend_food_empty">추천 음식이 없습니다.</string>
     <string name="main_nutrient_manage_detail_title">자세히보기</string>
     <string name="main_nutrient_manage_good_title">몸에 꼭 필요한 영양소</string>
     <string name="main_nutrient_manage_bad_title">몸에 부담을 줄 수 있는 영양소</string>
@@ -71,7 +77,14 @@
     <string name="main_pager_bad_nutrient_range">%s%s 이하</string>
     <string name="main_food_recommend_title">이번 주, 이 음식 어때요?</string>
     <string name="main_food_recommend_content">지난주 식단 기록을 분석해 추천해드렸어요</string>
-
+    <string name="main_goal_manage_title">목표 관리</string>
+    <string name="main_profile_manage_title">신체 정보</string>
+    <string name="main_goal_manage_type">관리 유형</string>
+    <string name="main_goal_manage_calorie">목표 칼로리</string>
+    <string name="main_goal_manage_nutrient">목표 탄단지</string>
+    <string name="main_goal_manage_height">키</string>
+    <string name="main_goal_manage_cur_weight">현재 체중</string>
+    <string name="main_goal_manage_goal_weight">목표 체중</string>
 
     <!-- food search -->
     <string name="enter_food_name">음식명을 입력해 주세요</string>

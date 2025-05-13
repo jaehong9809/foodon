@@ -12,23 +12,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.theme.BG300
 import com.swallaby.foodon.core.ui.theme.WB500
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
 fun MainContentPager(
-    uiState: MainUiState
+    mainUiState: MainUiState,
+    calendarUiState: CalendarUiState
 ) {
 
-    val selectedTabIndex = 0
-
-    val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { 4 })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 4 })
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -38,13 +37,13 @@ fun MainContentPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(375.dp) // 고정 길이 사용
+                .height(350.dp) // 고정 길이 사용
         ) { page ->
             when (page) {
-                0 -> NutrientIntakeContent(uiState)
-                1 -> NutrientManageContent(uiState.manageResult)
-                2 -> RecommendFoodContent(uiState.recommendMealResult)
-                3 -> Text("목표 관리 페이지")
+                0 -> NutrientIntakeContent(mainUiState, calendarUiState)
+                1 -> NutrientManageContent(mainUiState.manageResult)
+                2 -> RecommendFoodContent(calendarUiState.recommendFoods)
+                3 -> GoalManageContent()
             }
         }
 

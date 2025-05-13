@@ -21,16 +21,19 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.formatDate
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
+import com.swallaby.foodon.domain.main.model.NutrientIntake
+import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
 import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
 
 @Composable
 fun NutrientIntakeContent(
-    uiState: MainUiState,
+    mainUiState: MainUiState,
+    calendarUiState: CalendarUiState,
 ) {
 
-    val today = uiState.today
-    val selectedDate = uiState.selectedDate
-    val intakeResult = uiState.intakeResult
+    val today = calendarUiState.today
+    val selectedDate = calendarUiState.selectedDate
+    val intakeResult = mainUiState.intakeResult
 
     Column(
         modifier = Modifier
@@ -39,44 +42,44 @@ fun NutrientIntakeContent(
         verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = if (selectedDate != today) stringResource(R.string.main_nutrient_intake_date_title, formatDate(selectedDate))
-                    else stringResource(R.string.main_nutrient_intake_today_title),
+            text = if (selectedDate != today) stringResource(
+                R.string.main_nutrient_intake_date_title,
+                formatDate(selectedDate)
+            )
+            else stringResource(R.string.main_nutrient_intake_today_title),
             color = G900,
             style = NotoTypography.NotoBold18
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column (
+        Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (intakeResult) {
-                is ResultState.Success ->  {
-                    val calorie = intakeResult.data
+            val calorie: NutrientIntake? = (intakeResult as? ResultState.Success)?.data
 
-                    val carbsRatio = calorie.intakeCarbs.toFloat() * 4 / calorie.goalKcal
-                    val proteinRatio = calorie.intakeProtein.toFloat() * 4 / calorie.goalKcal
-                    val fatRatio = calorie.intakeFat.toFloat() * 9 / calorie.goalKcal
+            val nutrients = calorie?.let {
+                val carbsRatio = it.intakeCarbs.toFloat() * 4 / it.goalKcal
+                val proteinRatio = it.intakeProtein.toFloat() * 4 / it.goalKcal
+                val fatRatio = it.intakeFat.toFloat() * 9 / it.goalKcal
 
-                    val nutrients = listOf(
-                        Nutrition(NutritionType.CARBOHYDRATE, calorie.intakeCarbs, carbsRatio),
-                        Nutrition(NutritionType.PROTEIN, calorie.intakeProtein, proteinRatio),
-                        Nutrition(NutritionType.FAT, calorie.intakeFat, fatRatio),
-                    ).sortedByDescending { it.amount }
+                listOf(
+                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs, carbsRatio),
+                    Nutrition(NutritionType.PROTEIN, it.intakeProtein, proteinRatio),
+                    Nutrition(NutritionType.FAT, it.intakeFat, fatRatio),
+                ).sortedByDescending { n -> n.amount }
+            } ?: emptyList()
 
-                    CalorieProgressBar(
-                        nutrients = nutrients,
-                        consumed = calorie.intakeKcal,
-                        goal = calorie.goalKcal
-                    )
+            CalorieProgressBar(
+                nutrients = nutrients,
+                consumed = calorie?.intakeKcal ?: 0,
+                goal = calorie?.goalKcal ?: 0
+            )
 
-                    IntakeDetail(calorie)
-                }
-                else -> {
-                    CalorieProgressBar()
-                }
-            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            IntakeDetail(calorie ?: NutrientIntake())
         }
     }
 
