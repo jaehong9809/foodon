@@ -36,13 +36,13 @@ object StringUtil {
         }
     }
 
-    fun formatNutritionNumber(amount: Int): String {
+    fun formatNutritionNumber(amount: Double): String {
         val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
         return formatter.format(amount)
     }
 
     @Composable
-    fun formatNutritionOrigin(amount: Int): String {
+    fun formatNutritionOrigin(amount: Double): String {
         val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
         return stringResource(R.string.format_nutrition_g, formatter.format(amount))
     }

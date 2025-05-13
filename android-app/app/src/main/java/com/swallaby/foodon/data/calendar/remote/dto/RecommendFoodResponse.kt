@@ -4,7 +4,7 @@ import com.swallaby.foodon.domain.calendar.model.Effect
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 
 data class RecommendFoodResponse(
-    val foodRecommendId: Long = 0,
+    val foodId: Long = 0,
     val foodName: String = "",
     val kcal: Int = 0,
     val reason: String = "",
@@ -13,7 +13,7 @@ data class RecommendFoodResponse(
 
 fun RecommendFoodResponse.toDomain(): RecommendFood {
     return RecommendFood(
-        foodRecommendId = this.foodRecommendId,
+        foodId = this.foodId,
         name = this.foodName,
         kcal = this.kcal,
         reason = this.reason,

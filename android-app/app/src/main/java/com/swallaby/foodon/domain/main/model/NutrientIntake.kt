@@ -5,10 +5,10 @@ data class NutrientIntake(
     val date: String = "",
     val intakeKcal: Int = 0,
     val goalKcal: Int = 0,
-    val intakeCarbs: Int = 0,
-    val goalCarbs: Int = 0,
-    val intakeProtein: Int = 0,
-    val goalProtein: Int = 0,
-    val intakeFat: Int = 0,
-    val goalFat: Int = 0
+    val intakeCarbs: Double = 0.0,
+    val goalCarbs: Double = 0.0,
+    val intakeProtein: Double = 0.0,
+    val goalProtein: Double = 0.0,
+    val intakeFat: Double = 0.0,
+    val goalFat: Double = 0.0
 )
