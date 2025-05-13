@@ -33,7 +33,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.swallaby.foodon.core.ui.theme.BGWheel
 import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
@@ -59,6 +58,11 @@ fun NumberWheelPicker(
     val listState = rememberLazyListState(initIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
+    // 첫 스크롤 위치 초기화
+    LaunchedEffect(initIndex) {
+        listState.scrollToItem(initIndex)
+    }
+
     val selectedIndex by remember {
         derivedStateOf { listState.firstVisibleItemIndex }
     }
@@ -66,7 +70,7 @@ fun NumberWheelPicker(
         derivedStateOf { items.getOrNull(selectedIndex) ?: initialValue }
     }
 
-    // Snapping 패딩 계산
+    // 패딩 계산
     var parentWidthPx by remember { mutableStateOf(0) }
     val halfPad = with(LocalDensity.current) {
         (parentWidthPx.toDp() / 2) - tickWidth / 2
@@ -88,8 +92,7 @@ fun NumberWheelPicker(
                 style = SpoqaMedium32,
                 color = G900
             )
-            Spacer(modifier = Modifier.width(4.dp))
-
+            Spacer(Modifier.width(4.dp))
             Text(
                 text = unit,
                 style = SpoqaMedium16,
@@ -98,6 +101,7 @@ fun NumberWheelPicker(
             )
         }
 
+        // WheelPicker
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,13 +122,12 @@ fun NumberWheelPicker(
                     val lineColor = if (isSelected) WB500 else BGWheel
 
                     Box(
-                        modifier = Modifier
+                        Modifier
                             .width(tickWidth)
                             .height(lineH)
                             .offset(y = offsetY)
-                            .background(lineColor, shape = RoundedCornerShape(10.dp)),
-                        contentAlignment = Alignment.TopCenter
-                    ){}
+                            .background(lineColor, shape = RoundedCornerShape(10.dp))
+                    )
                 }
             }
         }
