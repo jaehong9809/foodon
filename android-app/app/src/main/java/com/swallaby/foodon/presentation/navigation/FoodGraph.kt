@@ -42,16 +42,20 @@ fun NavGraphBuilder.mealGraph(
                 },
                 onNavigateToMealDetail = {
                     recordViewModel.resetMealRecordState()
-                    navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
+                    navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0))
                 })
         }
 
         composable(
             route = NavRoutes.FoodGraph.MealDetail.route,
+            arguments = listOf(navArgument(NavRoutes.FoodGraph.MealDetail.MEAL_ID) {
+                type = NavType.LongType
+            })
         ) {
+            val mealId = it.arguments?.getLong("mealId")
 
-
-            MealDetailScreen(viewModel = mealEditViewModel,
+            MealDetailScreen(mealId = mealId,
+                viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodEdit.createRoute(it))

@@ -1,9 +1,10 @@
 package com.swallaby.foodon.data.food.remote.dto.response
 
+import androidx.core.net.toUri
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.MealType
-import org.threeten.bp.LocalDateTime
+
 data class MealDetailInfoResponse(
     val mealId: Long = 0,
     val mealDateTime: String = "",// LocalDateTime.now(),
@@ -17,6 +18,7 @@ data class MealDetailInfoResponse(
 )
 
 fun MealDetailInfoResponse.toDomain(): MealInfo = MealInfo(
+    imageUri = imageFileName.toUri(),
     mealId = mealId,
     mealTime = mealDateTime,
     mealTimeType = mealTimeType,

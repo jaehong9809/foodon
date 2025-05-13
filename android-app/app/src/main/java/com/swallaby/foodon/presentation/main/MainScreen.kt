@@ -191,7 +191,7 @@ fun MainScreen(
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
             MealRecordContent(uiState = uiState) { mealId ->
-                navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
+                navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(mealId))
             }
 
             Column(

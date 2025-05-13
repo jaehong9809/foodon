@@ -26,7 +26,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -67,6 +66,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealDetailScreen(
+    mealId: Long? = null,
     viewModel: MealEditViewModel,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
@@ -75,6 +75,12 @@ fun MealDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    LaunchedEffect(mealId) {
+        if (mealId != null && mealId != 0L) {
+            viewModel.fetchMealDetailInfo(mealId)
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
@@ -131,8 +137,7 @@ fun MealDetailScreen(
                     )
 
                     // 영양소 정보 컴포넌트
-                    NutritionalIngredientsComponent(
-                        modifier = modifier,
+                    NutritionalIngredientsComponent(modifier = modifier,
                         mealType = mealInfo.mealTimeType,
                         mealTime = mealInfo.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
@@ -159,7 +164,7 @@ fun MealDetailScreen(
                     )
                 }
 
-                CommonWideButton(
+                if (mealId == null || mealId == 0L) CommonWideButton(
                     modifier.padding(horizontal = 24.dp),
                     text = stringResource(R.string.btn_record_complete),
                     onClick = viewModel::recordMeal
@@ -217,8 +222,7 @@ fun MealDetailScreen(
                                 )
                             }
                         }
-                        ScrollTimePicker(
-                            initTimeIndex = selectedMinIndex,
+                        ScrollTimePicker(initTimeIndex = selectedMinIndex,
                             initHourIndex = selectedHourIndex,
                             initAmPmIndex = selectedAmPmIndex,
                             onTimeChanged = {
@@ -342,8 +346,7 @@ private fun DisplayFoodLabels(
             val centerX = relativeX + (partialWidth / 2)
             val centerY = relativeY + (partialHeight / 2)
 
-            FoodLabelButton(
-                position = position,
+            FoodLabelButton(position = position,
                 originalImageSize = originalImageSize,
                 centerPosition = Size(centerX.toFloat(), centerY.toFloat()),  // 중앙 좌표 전달
                 foodName = mealItem.foodName,

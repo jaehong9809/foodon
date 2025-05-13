@@ -11,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface FoodApi {
@@ -37,7 +38,7 @@ interface FoodApi {
 
     @GET("meals/detail/{mealId}")
     suspend fun getMealDetail(
-        @Query("mealId") mealId: Long,
+        @Path("mealId") mealId: Long,
     ): BaseResponse<MealDetailInfoResponse>
 
 }
