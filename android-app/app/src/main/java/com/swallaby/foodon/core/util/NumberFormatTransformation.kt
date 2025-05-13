@@ -1,5 +1,6 @@
 package com.swallaby.foodon.core.util
 
+import android.util.Log
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
@@ -132,7 +133,9 @@ class DoubleVisualTransformation : VisualTransformation {
 
             override fun transformedToOriginal(offset: Int): Int {
                 // 포맷된 텍스트에서 원본 텍스트로 오프셋 변환
+
                 val commaCount = countCommasUpToPosition(formattedString, offset)
+                Log.d("DoubleVisualTransformation", "offset - commaCount: ${offset - commaCount}")
                 return maxOf(0, offset - commaCount)
             }
 

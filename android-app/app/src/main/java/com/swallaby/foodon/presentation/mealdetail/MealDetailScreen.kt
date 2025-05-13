@@ -335,8 +335,8 @@ private fun DisplayFoodLabels(
             val relativeY = position.y / originalImageSize.height
 
             // 부분 이미지의 너비와 높이 (비율)
-            val partialWidth = position.width  // 이미 비율이라고 가정
-            val partialHeight = position.height  // 이미 비율이라고 가정
+            val partialWidth = position.width
+            val partialHeight = position.height
 
             // 부분 이미지의 중앙 좌표 (비율)
             val centerX = relativeX + (partialWidth / 2)

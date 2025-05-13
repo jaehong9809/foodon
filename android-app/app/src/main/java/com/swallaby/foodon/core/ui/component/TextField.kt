@@ -61,17 +61,16 @@ fun NutritionTextField(
     val numberFormatTransformation = remember(formatPattern) {
         if (formatPattern == NumberFormatPattern.DOUBLE_THOUSAND_COMMA) DoubleVisualTransformation()
         else DoubleVisualTransformation()
-//        NumberFormatTransformation(formatPattern)
     }
-    OutLineTextField(
-        value = value,
+
+    OutLineTextField(value = value,
         modifier = Modifier
             .height(44.dp)
             .width(140.dp),
         onValueChange = onValueChange,
         keyboardOptions = numberKeyboardOptions,
         keyboardActions = KeyboardActions(),
-        visualTransformation = numberFormatTransformation,
+//        visualTransformation = numberFormatTransformation,
         placeholder = {
             Text(
                 modifier = modifier.fillMaxWidth(),
@@ -183,8 +182,7 @@ fun BaseTextField(
         }
     }
 
-    BasicTextField(
-        value = internalTextFieldValue.value,
+    BasicTextField(value = internalTextFieldValue.value,
         modifier = modifier.onFocusChanged { focusState ->
             // 처음 포커스를 받았을 때만 커서 위치를 끝으로 설정
             if (focusState.isFocused && !hasFocused) {
@@ -213,8 +211,7 @@ fun BaseTextField(
         maxLines = maxLines,
         minLines = minLines,
         decorationBox = @Composable { innerTextField ->
-            OutlinedTextFieldDefaults.DecorationBox(
-                value = internalTextFieldValue.value.text,
+            OutlinedTextFieldDefaults.DecorationBox(value = internalTextFieldValue.value.text,
                 visualTransformation = visualTransformation,
                 innerTextField = innerTextField,
                 placeholder = placeholder,
