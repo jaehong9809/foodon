@@ -13,16 +13,22 @@ sealed class NavRoutes(val route: String) {
 
     /* Food */
     object FoodGraph : NavRoutes("food_graph") {
-        object MealDetail : NavRoutes("food_detail")
-
-        object FoodEdit : NavRoutes("food_edit/{foodId}") {
-            const val FOOD_ID = "foodId"
-            fun createRoute(foodId: Long) = "food_edit/$foodId"
+        object MealDetail : NavRoutes("meal_detail/{mealId}") {
+            const val MEAL_ID = "mealId"
+            fun createRoute(mealId: Long) = "meal_detail/$mealId"
         }
 
-        object FoodNutritionEdit : NavRoutes("food_nutrition_edit/{foodId}") {
+        object FoodEdit : NavRoutes("meal_detail/{mealId}/food_edit/{foodId}") {
             const val FOOD_ID = "foodId"
-            fun createRoute(foodId: Long) = "food_nutrition_edit/$foodId"
+            const val MEAL_ID = "mealId"
+            fun createRoute(mealId: Long, foodId: Long) = "meal_detail/$mealId/food_edit/$foodId"
+        }
+
+        object FoodNutritionEdit : NavRoutes("meal_detail/{mealId}/food_nutrition_edit/{foodId}") {
+            const val FOOD_ID = "foodId"
+            const val MEAL_ID = "mealId"
+            fun createRoute(mealId: Long, foodId: Long) =
+                "meal_detail/$mealId/food_nutrition_edit/$foodId"
         }
 
 

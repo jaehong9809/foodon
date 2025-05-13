@@ -14,6 +14,7 @@ public record MealItemInfo(
         Long foodId,
         String foodName,
         Unit unit,
+        BigDecimal servingSize,
         BigDecimal quantity,
         NutrientProfile nutrientInfo,
         List<PositionInfo> positions
@@ -30,6 +31,7 @@ public record MealItemInfo(
                 food.foodId(),
                 food.foodName(),
                 food.unit(),
+                food.servingSize(),
                 quantity,
                 NutrientProfile.from(nutrientMap),
                 positions
