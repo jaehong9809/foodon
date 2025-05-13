@@ -8,14 +8,15 @@ from PIL import Image
 from io import BytesIO
 from dotenv import load_dotenv
 import os
-load_dotenv() 
+
+load_dotenv()
 # 로거 설정
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
 def generate_dataset_from_df(
-    df, image_dir="../dataset/images", label_dir="../dataset/labels"
+    df, image_dir="../train/dataset/images", label_dir="../train/dataset/labels"
 ):
     os.makedirs(image_dir, exist_ok=True)
     os.makedirs(label_dir, exist_ok=True)
@@ -43,11 +44,11 @@ def generate_dataset_from_df(
 
             annotations.append(
                 {
-                    "food_name": row["food_name"],
                     "x": abs_x,
                     "y": abs_y,
                     "width": abs_w,
                     "height": abs_h,
+                    "class_id": row["food_name"],
                 }
             )
 
@@ -65,7 +66,7 @@ def generate_dataset_from_df(
         logger.info(f"📄 라벨 저장 완료: {label_path}")
 
 
-def load_data_from_db(min_count=1):
+def load_data_from_db(min_count=100):
     logger.info("📦 DB 연결 시도 중...")
 
     conn = pymysql.connect(
