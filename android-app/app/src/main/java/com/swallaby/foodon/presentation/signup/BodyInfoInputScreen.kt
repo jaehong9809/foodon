@@ -121,7 +121,6 @@ fun BodyInfoInputScreen(
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 24.dp),
             text = stringResource(R.string.btn_next),
-            isEnabled = uiState.selectedActivityTypeId != null,
             onClick = onNext
         )
     }
