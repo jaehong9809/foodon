@@ -18,4 +18,8 @@ interface FoodRepository {
     suspend fun postCustomFood(
         request: CustomFoodRequest,
     ): ApiResult<Unit>
+
+    suspend fun getMealDetail(
+        mealId: Long,
+    ): ApiResult<MealInfo>
 }

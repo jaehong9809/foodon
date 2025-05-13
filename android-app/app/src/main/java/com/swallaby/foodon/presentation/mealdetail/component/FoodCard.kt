@@ -66,6 +66,7 @@ fun FoodCard(
     imageUri: Uri?,
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
+    enabledDeleteButton: Boolean = true,
     cropManager: ImageCropManager = ImageCropManager(LocalContext.current),
 ) {
     val nutrients: List<Nutrition> = food.nutrientInfo.toNutrient()
@@ -96,22 +97,20 @@ fun FoodCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // todo position 으로 수정
-                    foodImage?.let {
+                    foodImage?.let { image ->
                         AsyncImage(
                             model = cropManager.getCroppedImageRequest(
-                                imageUri.toString(),//"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
-                                it
+                                imageUri.toString(), image
                             ),
                             contentDescription = "음식 사진",
                             contentScale = ContentScale.FillBounds,
                             modifier = modifier
-                                .height(64.dp)
-                                .width(64.dp)
-                                .clip(shape = RoundedCornerShape(10.dp))
+                                .size(64.dp)
+                                .clip(RoundedCornerShape(10.dp))
                         )
-
-                    }
+                    } ?: Box(
+                        modifier = modifier.size(64.dp)
+                    )
 
                     Spacer(modifier.width(12.dp))
                     Column {
@@ -165,7 +164,7 @@ fun FoodCard(
                     }
                 }
             }
-            Box {
+            if (enabledDeleteButton) Box {
                 Box(
                     modifier = modifier
                         .padding(end = 2.dp)
@@ -238,8 +237,12 @@ fun FoodCard(
                                 .width(popupWidth)
                                 .height(popupHeight)
                                 .uiCardShadow()
-                                .border(1.dp, color = Border02, shape = RoundedCornerShape(10.dp))
-                                .background(color = Color.White, shape = RoundedCornerShape(10.dp))
+                                .border(
+                                    1.dp, color = Border02, shape = RoundedCornerShape(10.dp)
+                                )
+                                .background(
+                                    color = Color.White, shape = RoundedCornerShape(10.dp)
+                                )
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null,

@@ -1,12 +1,8 @@
 package com.swallaby.foodon.core.ui.component
 
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,26 +12,20 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -44,16 +34,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G500
-import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.OutlinedTextFieldStyle
-import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.core.util.DoubleVisualTransformation
 import com.swallaby.foodon.core.util.NumberFormatPattern
-import com.swallaby.foodon.core.util.NumberFormatTransformation
-
 
 
 @Composable
@@ -62,28 +48,29 @@ fun NutritionTextField(
     value: String,
     onValueChange: (String) -> Unit,
     unit: String = "g",
-    formatPattern: NumberFormatPattern = NumberFormatPattern.THOUSAND_COMMA,
-    isLastField: Boolean = true
+    formatPattern: NumberFormatPattern = NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
+    isLastField: Boolean = true,
 ) {
     // 숫자 키보드 설정
     val numberKeyboardOptions = KeyboardOptions(
-        keyboardType = KeyboardType.Number,
+        keyboardType = KeyboardType.Decimal,
         imeAction = if (isLastField) ImeAction.Done else ImeAction.Next
     )
 
     // VisualTransformation 생성
     val numberFormatTransformation = remember(formatPattern) {
-        NumberFormatTransformation(formatPattern)
+        if (formatPattern == NumberFormatPattern.DOUBLE_THOUSAND_COMMA) DoubleVisualTransformation()
+        else DoubleVisualTransformation()
     }
-    OutLineTextField(
-        value = value,
+
+    OutLineTextField(value = value,
         modifier = Modifier
             .height(44.dp)
             .width(140.dp),
         onValueChange = onValueChange,
         keyboardOptions = numberKeyboardOptions,
         keyboardActions = KeyboardActions(),
-        visualTransformation = numberFormatTransformation,
+//        visualTransformation = numberFormatTransformation,
         placeholder = {
             Text(
                 modifier = modifier.fillMaxWidth(),
@@ -163,7 +150,7 @@ fun BaseTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(6.dp),
-    colors: TextFieldColors = OutlinedTextFieldDefaults.colors()
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
 ) {
     // 내부 상태를 사용하여 TextFieldValue 관리
     val internalTextFieldValue = remember {
@@ -190,14 +177,12 @@ fun BaseTextField(
             }
 
             internalTextFieldValue.value = TextFieldValue(
-                text = value,
-                selection = newSelection
+                text = value, selection = newSelection
             )
         }
     }
 
-    BasicTextField(
-        value = internalTextFieldValue.value,
+    BasicTextField(value = internalTextFieldValue.value,
         modifier = modifier.onFocusChanged { focusState ->
             // 처음 포커스를 받았을 때만 커서 위치를 끝으로 설정
             if (focusState.isFocused && !hasFocused) {
@@ -226,8 +211,7 @@ fun BaseTextField(
         maxLines = maxLines,
         minLines = minLines,
         decorationBox = @Composable { innerTextField ->
-            OutlinedTextFieldDefaults.DecorationBox(
-                value = internalTextFieldValue.value.text,
+            OutlinedTextFieldDefaults.DecorationBox(value = internalTextFieldValue.value.text,
                 visualTransformation = visualTransformation,
                 innerTextField = innerTextField,
                 placeholder = placeholder,
@@ -247,8 +231,6 @@ fun BaseTextField(
                     OutlinedTextFieldDefaults.ContainerBox(
                         enabled, isError, interactionSource, colors, shape
                     )
-                }
-            )
-        }
-    )
+                })
+        })
 }

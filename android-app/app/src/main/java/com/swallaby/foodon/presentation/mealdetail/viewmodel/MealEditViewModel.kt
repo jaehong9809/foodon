@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.core.util.UriUtils
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.domain.food.model.toRequest
+import com.swallaby.foodon.domain.food.usecase.FetchMealDetailInfoUseCase
 import com.swallaby.foodon.domain.food.usecase.RecordMealUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,12 +22,38 @@ import javax.inject.Inject
 @HiltViewModel
 class MealEditViewModel @Inject constructor(
     private val recordMealUseCase: RecordMealUseCase,
+    private val fetchMealDetailInfoUseCase: FetchMealDetailInfoUseCase,
 ) : BaseViewModel<MealEditUiState>(MealEditUiState()) {
     private val _events = MutableSharedFlow<MealEditEvent>()
     val events = _events.asSharedFlow()
 
     init {
         Log.d("MealEditViewModel", "init called")
+    }
+
+    fun fetchMealDetailInfo(mealId: Long) {
+        Log.d(TAG, "Fetching meal detail info for mealId: $mealId")
+        _uiState.update {
+            it.copy(mealEditState = ResultState.Loading)
+        }
+        viewModelScope.launch {
+            when (val result = fetchMealDetailInfoUseCase(mealId).toResultState()) {
+                is ResultState.Success -> {
+                    UriUtils
+                    _uiState.update {
+                        it.copy(mealEditState = ResultState.Success(result.data))
+                    }
+                }
+
+                is ResultState.Error -> {
+                    _uiState.update {
+                        it.copy(mealEditState = ResultState.Error(result.messageRes))
+                    }
+                }
+
+                else -> {}
+            }
+        }
     }
 
     fun initMeal(mealInfo: MealInfo) {
@@ -54,8 +82,8 @@ class MealEditViewModel @Inject constructor(
                 }
 
                 is ResultState.Error -> {
-                    val errorMessage = result.messageRes
-                    _uiState.update { it.copy(mealEditState = ResultState.Error(messageRes = errorMessage)) }
+                    _events.emit(MealEditEvent.ShowErrorMessage(result.messageRes))
+//                    _uiState.update { it.copy(mealEditState = ResultState.Error(messageRes = result.messageRes)) }
                 }
 
                 else -> {
@@ -147,6 +175,10 @@ class MealEditViewModel @Inject constructor(
         } else {
             Log.e(TAG, "Cannot delete food: Invalid state")
         }
+    }
+
+    fun destroyMeal() {
+        _uiState.update { it.copy(mealEditState = ResultState.Success(MealInfo())) }
     }
 
     private fun calculateTotalCarbs(items: List<MealItem>): Double {
