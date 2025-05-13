@@ -96,12 +96,12 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     // androidx library
-    implementation(libs.androidx.foundation.layout.android)
-    implementation(libs.androidx.datastore.core.android)
-    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.foundation.layout)
 
-    // javapoet
-    //implementation("com.squareup:javapoet:1.13.0")
+    // datastore
+    implementation(libs.androidx.datastore.core.android)
+    implementation(libs.androidx.datastore.preferences)
 
     // navigation
     implementation(libs.androidx.navigation.compose)
@@ -111,14 +111,13 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.compose)
 
+    // accompanist
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
 
+    // time
     implementation(libs.threetenabp)
-
-    // dataStore
-    implementation(libs.datastore.preferences)
 
     // kakao
     implementation(libs.kakao.user)
