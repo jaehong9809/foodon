@@ -290,27 +290,6 @@ fun CameraAppScreen(
         ImageCapture.Builder().setFlashMode(flashMode).build()
     }
 
-    when (uiState.mealRecordState) {
-        is ResultState.Loading -> {
-            // 로딩 중 UI 표시
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .pointerInteropFilter { event ->
-                        true
-                    }, contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-
-        is ResultState.Success -> {
-        }
-
-        is ResultState.Error -> {
-
-        }
-    }
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -370,8 +349,7 @@ fun CameraAppScreen(
                 .fillMaxWidth()
         ) {
             if (uiState.failImageUpload) Box(
-                modifier = modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 Text(
                     stringResource(R.string.notice_size_image),
@@ -449,6 +427,29 @@ fun CameraAppScreen(
         }
 
     }
+    when (uiState.mealRecordState) {
+        is ResultState.Loading -> {
+            // 로딩 중 UI 표시
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = .5f))
+                    .pointerInteropFilter { event ->
+                        true
+                    }, contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is ResultState.Success -> {
+        }
+
+        is ResultState.Error -> {
+
+        }
+    }
+
 }
 
 @Composable

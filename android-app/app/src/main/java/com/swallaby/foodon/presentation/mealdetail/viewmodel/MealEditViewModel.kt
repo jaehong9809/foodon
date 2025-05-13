@@ -55,7 +55,7 @@ class MealEditViewModel @Inject constructor(
 
                 is ResultState.Error -> {
                     _events.emit(MealEditEvent.ShowErrorMessage(result.messageRes))
-                    _uiState.update { it.copy(mealEditState = ResultState.Error(messageRes = result.messageRes)) }
+//                    _uiState.update { it.copy(mealEditState = ResultState.Error(messageRes = result.messageRes)) }
                 }
 
                 else -> {
