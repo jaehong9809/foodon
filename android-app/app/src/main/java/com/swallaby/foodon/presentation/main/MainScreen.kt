@@ -104,12 +104,12 @@ fun MainScreen(
     }
 
     LaunchedEffect(currentYearMonth) {
-        calendarViewModel.fetchCalendarData(CalendarType.MEAL, currentYearMonth.toString())
+        calendarViewModel.fetchCalendarData(CalendarType.MEAL, currentYearMonth)
     }
 
     LaunchedEffect(currentWeekStart) {
         calendarViewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
+            yearMonth = currentYearMonth,
             week = weekOfMonth
         )
     }

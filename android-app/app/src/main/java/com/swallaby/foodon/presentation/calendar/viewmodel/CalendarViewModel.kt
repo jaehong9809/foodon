@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.calendar.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
@@ -10,6 +11,8 @@ import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.DayOfWeek
@@ -116,7 +119,7 @@ class CalendarViewModel @Inject constructor(
             fetchUserWeight()
         }
 
-        fetchCalendarData(calendarType, currentYearMonth.toString())
+        fetchCalendarData(calendarType, currentYearMonth)
     }
 
     fun updateRecommendation(weekIndex: Int) {
@@ -124,12 +127,12 @@ class CalendarViewModel @Inject constructor(
 
         selectWeek(weekIndex)
         fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
+            yearMonth = currentYearMonth,
             week = weekIndex + 1
         )
     }
 
-    fun fetchCalendarData(type: CalendarType, date: String) {
+    fun fetchCalendarData(type: CalendarType, date: YearMonth) {
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -147,13 +150,43 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
+    fun fetchRecommendFoods(yearMonth: YearMonth, week: Int? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
 
         viewModelScope.launch {
             val result = getRecommendFoodUseCase(yearMonth, week)
             updateState { it.copy(recommendFoods = result.toResultState()) }
         }
+    }
+
+    init {
+        observeSelectedDate()
+    }
+
+    fun observeSelectedDate() {
+        viewModelScope.launch {
+            _uiState
+                .map { it.selectedDate }
+                .distinctUntilChanged()
+                .collect { date ->
+                    Log.d("MainScreen", "update")
+                    fetchRecordData(date)
+                    fetchIntakeData(date)
+                    fetchManageData(date)
+                }
+        }
+    }
+
+    private fun fetchRecordData(date: LocalDate) {
+        Log.d("CalendarViewModel", "Fetching record data for $date")
+    }
+
+    private fun fetchIntakeData(date: LocalDate) {
+        Log.d("CalendarViewModel", "Fetching intake data for $date")
+    }
+
+    private fun fetchManageData(date: LocalDate) {
+        Log.d("CalendarViewModel", "Fetching manage data for $date")
     }
 
 }
