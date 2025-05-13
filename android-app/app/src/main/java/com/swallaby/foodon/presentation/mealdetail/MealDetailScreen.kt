@@ -81,6 +81,10 @@ fun MealDetailScreen(
         }
     }
 
+    val enabledUpdate = remember(mealId) {
+        mealId == null || mealId == 0L
+    }
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
@@ -160,11 +164,12 @@ fun MealDetailScreen(
                         onClick = onFoodClick,
                         foods = mealInfo.mealItems,
                         imageUri = mealInfo.imageUri,
-                        onDelete = viewModel::deleteFood
+                        onDelete = viewModel::deleteFood,
+                        enabledDeleteButton = enabledUpdate
                     )
                 }
 
-                if (mealId == null || mealId == 0L) CommonWideButton(
+                if (enabledUpdate) CommonWideButton(
                     modifier.padding(horizontal = 24.dp),
                     text = stringResource(R.string.btn_record_complete),
                     onClick = viewModel::recordMeal

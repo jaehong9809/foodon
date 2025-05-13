@@ -33,6 +33,7 @@ fun FoodInfoComponent(
     foods: List<MealItem> = emptyList(),
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
+    enabledDeleteButton: Boolean = true,
 ) {
     // todo 크롭 매니저 처리 리팩토링
     val cropManager = ImageCropManager(LocalContext.current)
@@ -70,7 +71,8 @@ fun FoodInfoComponent(
                         food = foods[index],
                         onClick = onClick,
                         onDelete = onDelete,
-                        imageUri = imageUri
+                        imageUri = imageUri,
+                        enabledDeleteButton = enabledDeleteButton
                     )
                 }
             }

@@ -26,12 +26,22 @@ class FoodEditViewModel @Inject constructor(
     private val _events = MutableSharedFlow<FoodEditEvent>()
     val events = _events.asSharedFlow()
 
-    fun initFood(mealInfo: MealInfo) {
+    fun initFood(mealInfo: MealInfo, foodId: Long) {
         if (!isInitialized) {
+            // 선택된 음식을 가장 앞으로 이동 그 후 이름 순 정렬
+            val sortedMealItems = mealInfo.mealItems.sortedWith(compareBy<MealItem> {
+                it.foodId != foodId
+            }.thenBy {
+                it.foodName
+            })
+
             _uiState.update {
                 it.copy(
-                    foodEditState = ResultState.Success(mealInfo),
-                    selectedFoodId = mealInfo.mealItems.firstOrNull()?.foodId ?: 0
+                    foodEditState = ResultState.Success(
+                        mealInfo.copy(
+                            mealItems = sortedMealItems
+                        )
+                    ), selectedFoodId = foodId
                 )
             }
             isInitialized = true
