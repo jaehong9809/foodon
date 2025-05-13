@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -74,6 +75,16 @@ public class MealController {
             @Parameter(hidden = true) @AuthMember Member member
     ){
         MealDetailInfoResponse result = mealService.getMealDetailInfo(mealId, member);
+        return ResponseUtil.success(result);
+    }
+
+    @GetMapping("/calendar/recommendations")
+    @Operation(summary = "달력 추천 식단 조회")
+    public ResponseEntity<Response<List<MealCalendarResponse>>> getRecommendMealRecords(
+            @RequestParam(name = "yearMonth") YearMonth yearMonth,
+            @Parameter(hidden = true) @AuthMember Member member
+    ){
+        List<MealCalendarResponse> result = mealService.getRecommendMealRecords(yearMonth, member);
         return ResponseUtil.success(result);
     }
 
