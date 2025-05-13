@@ -5,7 +5,7 @@ from ..core.coco_dataset_name import COCO_CATEGORIES
 from collections import defaultdict
 from ..core.food_dataset_name import names  # int형 key일 경우엔 문자열로 처리 필요
 
-def postprocess(prediction, orig_w, orig_h, threshold=0.7, model_input_size=640):
+def postprocess(prediction, orig_w, orig_h, threshold=0.6, model_input_size=640):
     
     boxes = prediction['boxes']
     scores = prediction['scores']
