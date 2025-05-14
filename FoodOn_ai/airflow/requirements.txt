@@ -9,3 +9,4 @@ pymysql
 pillow
 python-dotenv
 pycocotools
+tqdm
