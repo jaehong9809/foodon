@@ -13,8 +13,8 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
-import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
+import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 
 
 @Composable
@@ -56,7 +56,7 @@ fun NavGraph(
             startDestination = NavRoutes.MainGraph.route,
             modifier = modifier
         ) {
-            mainGraph(navController, mainViewModel, calendarViewModel)
+            mainGraph(navController, mainViewModel)
             loginGraph(navController)
             calendarGraph(calendarViewModel)
             signUpGraph(navController, signUpViewModel)

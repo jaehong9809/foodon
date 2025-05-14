@@ -6,15 +6,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import com.swallaby.foodon.presentation.main.MainScreen
 import com.swallaby.foodon.presentation.main.NutrientDetailScreen
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 
 fun NavGraphBuilder.mainGraph(
     navController: NavHostController,
-    mainViewModel: MainViewModel,
-    calendarViewModel: CalendarViewModel
+    mainViewModel: MainViewModel
 ) {
 
     navigation(
@@ -23,7 +21,6 @@ fun NavGraphBuilder.mainGraph(
         composable(NavRoutes.Main.route) {
             MainScreen(
                 mainViewModel,
-                calendarViewModel,
                 onRecordClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodRecord.route)
                 }

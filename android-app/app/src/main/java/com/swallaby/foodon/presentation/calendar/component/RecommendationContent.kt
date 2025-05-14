@@ -24,26 +24,26 @@ import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 
 @Composable
 fun RecommendationContent(
-    weekCount: Int,
-    selectedWeekIndex: Int,
+    calendarStatus: CalendarStatus,
     recommendFoods: ResultState<List<RecommendFood>>,
     onWeeklyTabChanged: (Int) -> Unit
 ) {
     var selectedWeek by remember { mutableIntStateOf(0) }
 
     // 달이 바뀔 때마다 선택된 week 초기화
-    LaunchedEffect(selectedWeekIndex) {
-        selectedWeek = selectedWeekIndex
+    LaunchedEffect(calendarStatus.selectedWeekIndex) {
+        selectedWeek = calendarStatus.selectedWeekIndex
     }
 
     val foods = (recommendFoods as? ResultState.Success)?.data.orEmpty()
 
     Column {
         WeekTabBar(
-            weeks = (1..weekCount).map { stringResource(R.string.tab_weekly, it) },
+            weeks = (1..calendarStatus.weekCount).map { stringResource(R.string.tab_weekly, it) },
             selectedIndex = selectedWeek,
             onTabSelected = {
                 selectedWeek = it
@@ -86,9 +86,9 @@ fun RecommendationContent(
 @Preview(showBackground = true)
 @Composable
 fun RecommendationPreview() {
-    RecommendationContent(
-        weekCount = 4,
-        selectedWeekIndex = 0,
-        recommendFoods = ResultState.Loading,
-        onWeeklyTabChanged = {})
+//    RecommendationContent(
+//        weekCount = 4,
+//        selectedWeekIndex = 0,
+//        recommendFoods = ResultState.Loading,
+//        onWeeklyTabChanged = {})
 }

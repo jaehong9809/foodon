@@ -41,6 +41,7 @@ import com.swallaby.foodon.presentation.calendar.component.CalendarPager
 import com.swallaby.foodon.presentation.calendar.component.TabContentPager
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.calendar.component.WeightBox
+import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import kotlinx.coroutines.launch
 import org.threeten.bp.YearMonth
@@ -51,12 +52,13 @@ fun CalendarScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val sharedState = viewModel.calendarSharedState
 
     // 날짜 관리
-    val today = uiState.today
-    val selectedDate = uiState.selectedDate
+    val today by sharedState.today.collectAsState()
+    val selectedDate by sharedState.selectedDate.collectAsState()
+    val currentYearMonth by sharedState.currentYearMonth.collectAsState()
 
-    val currentYearMonth = uiState.currentYearMonth
     val weekCount = rememberWeekCount(currentYearMonth, today)
 
     // 탭 상태 관리
@@ -72,7 +74,8 @@ fun CalendarScreen(
     val scope = rememberCoroutineScope()
 
     // 날짜와 연관된 데이터 관리
-    val calendarItems = (uiState.calendarResult as? ResultState.Success)?.data.orEmpty()
+    val calendarResult by sharedState.calendarResult.collectAsState()
+    val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val calendarItemMap by remember(calendarItems) {
         derivedStateOf {
@@ -92,6 +95,15 @@ fun CalendarScreen(
         }
     }
 
+    val calendarStatus = CalendarStatus(
+        today = today,
+        selectedDate = selectedDate,
+        currentYearMonth = currentYearMonth,
+        selectedTabIndex = selectedTabIndex,
+        selectedWeekIndex = uiState.selectedWeekIndex,
+        weekCount = weekCount
+    )
+
     LaunchedEffect(Unit) {
         viewModel.updateInitialLoaded(false)
     }
@@ -101,7 +113,7 @@ fun CalendarScreen(
             val delta = pagerState.currentPage - 1
             val newMonth = currentYearMonth.plusMonths(delta.toLong())
 
-            viewModel.updateYearMonth(newMonth)
+            sharedState.updateMonth(newMonth)
             pagerState.scrollToPage(1)
         }
     }
@@ -141,8 +153,8 @@ fun CalendarScreen(
             CalendarPager(
                 pagerState = pagerState,
                 calendarItemMap = calendarItemMap,
-                uiState = uiState,
-                onDateSelected = viewModel::selectDate
+                calendarStatus = calendarStatus,
+                onDateSelected = sharedState::updateDate
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -154,12 +166,13 @@ fun CalendarScreen(
             HorizontalDivider(color = Border025, thickness = 1.dp)
 
             TabContentPager(
-                uiState = uiState,
                 selectedMeal = selectedMeal,
-                weekCount = weekCount,
+                weightResult = uiState.weightResult,
+                recommendFoods = uiState.recommendFoods,
+                calendarStatus = calendarStatus,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1, indexChanged = true)
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
                 }
             )
         }
