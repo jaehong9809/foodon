@@ -59,7 +59,7 @@ import org.threeten.bp.temporal.WeekFields
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     calendarViewModel: CalendarViewModel = hiltViewModel(),
-    onRecordClick: () -> Unit = {},
+    onRecordClick: () -> Unit = {}
 ) {
 
     val navController = LocalNavController.current
@@ -96,12 +96,6 @@ fun MainScreen(
 
     var value by remember { mutableStateOf("") }
 
-    LaunchedEffect(selectedDate) {
-        mainViewModel.fetchRecordData(selectedDate.toString())
-        mainViewModel.fetchIntakeData(selectedDate.toString())
-        mainViewModel.fetchManageData(selectedDate.toString())
-    }
-
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
             val delta = pagerState.currentPage - 1
@@ -111,13 +105,17 @@ fun MainScreen(
         }
     }
 
+    LaunchedEffect(selectedDate) {
+        mainViewModel.updateDailyData(selectedDate)
+    }
+
     LaunchedEffect(currentYearMonth) {
-        calendarViewModel.fetchCalendarData(CalendarType.MEAL, currentYearMonth.toString())
+        calendarViewModel.fetchCalendarData(CalendarType.MEAL, currentYearMonth)
     }
 
     LaunchedEffect(currentWeekStart) {
         calendarViewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
+            yearMonth = currentYearMonth,
             week = weekOfMonth
         )
     }

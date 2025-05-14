@@ -6,15 +6,16 @@ import com.swallaby.foodon.domain.calendar.model.CalendarRecommendation
 import com.swallaby.foodon.domain.calendar.model.CalendarWeight
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.model.UserWeight
+import org.threeten.bp.YearMonth
 
 interface CalendarRepository {
-    suspend fun getCalendarMeals(date: String): ApiResult<List<CalendarMeal>>
+    suspend fun getCalendarMeals(date: YearMonth): ApiResult<List<CalendarMeal>>
 
-    suspend fun getCalendarWeights(date: String): ApiResult<List<CalendarWeight>>
+    suspend fun getCalendarWeights(date: YearMonth): ApiResult<List<CalendarWeight>>
 
-    suspend fun getCalendarRecommendations(date: String): ApiResult<List<CalendarRecommendation>>
+    suspend fun getCalendarRecommendations(date: YearMonth): ApiResult<List<CalendarRecommendation>>
 
     suspend fun getUserWeight(): ApiResult<UserWeight>
 
-    suspend fun getRecommendFood(yearMonth: String, week: Int?): ApiResult<List<RecommendFood>>
+    suspend fun getRecommendFood(yearMonth: YearMonth, week: Int?): ApiResult<List<RecommendFood>>
 }

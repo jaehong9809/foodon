@@ -10,6 +10,7 @@ import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +24,19 @@ class MainViewModel @Inject constructor(
         _uiState.update(block)
     }
 
-    fun fetchRecordData(date: String) {
+    private var lastExecutedDate: LocalDate? = null
+
+    fun updateDailyData(date: LocalDate) {
+        if (lastExecutedDate != date) {
+            lastExecutedDate = date
+
+            fetchRecordData(date)
+            fetchIntakeData(date)
+            fetchManageData(date)
+        }
+    }
+
+    private fun fetchRecordData(date: LocalDate) {
         updateState { it.copy(recordResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -32,7 +45,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchIntakeData(date: String) {
+    private fun fetchIntakeData(date: LocalDate) {
         updateState { it.copy(intakeResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -41,7 +54,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchManageData(date: String) {
+    private fun fetchManageData(date: LocalDate) {
         updateState { it.copy(manageResult = ResultState.Loading) }
 
         viewModelScope.launch {

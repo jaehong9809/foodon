@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.calendar.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
@@ -10,6 +11,8 @@ import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.DayOfWeek
@@ -25,14 +28,29 @@ class CalendarViewModel @Inject constructor(
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
 
-    fun updateState(block: (CalendarUiState) -> CalendarUiState) {
-        _uiState.update(block)
-    }
-
     private val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
 
     val currentWeekStart: LocalDate
         get() = uiState.value.selectedDate.with(weekFields.dayOfWeek(), 1)
+
+    init {
+        observeSelectedDate()
+    }
+
+    fun observeSelectedDate() {
+        viewModelScope.launch {
+            _uiState
+                .map { it.selectedDate }
+                .distinctUntilChanged()
+                .collect { date ->
+                    Log.d("CalendarViewModel", "update")
+                }
+        }
+    }
+
+    fun updateState(block: (CalendarUiState) -> CalendarUiState) {
+        _uiState.update(block)
+    }
 
     fun goToWeek(delta: Int) {
         val today = uiState.value.today
@@ -77,10 +95,6 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(currentYearMonth = yearMonth) }
     }
 
-    private fun selectWeek(index: Int) {
-        updateState { it.copy(selectedWeekIndex = index) }
-    }
-
     fun updateInitialLoaded(state: Boolean) {
         updateState { it.copy(isInitialLoaded = state) }
     }
@@ -116,7 +130,11 @@ class CalendarViewModel @Inject constructor(
             fetchUserWeight()
         }
 
-        fetchCalendarData(calendarType, currentYearMonth.toString())
+        fetchCalendarData(calendarType, currentYearMonth)
+    }
+
+    private fun selectWeek(index: Int) {
+        updateState { it.copy(selectedWeekIndex = index) }
     }
 
     fun updateRecommendation(weekIndex: Int) {
@@ -124,12 +142,12 @@ class CalendarViewModel @Inject constructor(
 
         selectWeek(weekIndex)
         fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
+            yearMonth = currentYearMonth,
             week = weekIndex + 1
         )
     }
 
-    fun fetchCalendarData(type: CalendarType, date: String) {
+    fun fetchCalendarData(type: CalendarType, date: YearMonth) {
         updateState { it.copy(calendarResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -147,7 +165,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
+    fun fetchRecommendFoods(yearMonth: YearMonth, week: Int? = null) {
         updateState { it.copy(recommendFoods = ResultState.Loading) }
 
         viewModelScope.launch {
