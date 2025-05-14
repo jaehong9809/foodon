@@ -67,7 +67,7 @@ services:
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
     volumes:
-      - - /home/ubuntu/mlflow:/mlflow/mlruns
+      - /home/ubuntu/mlflow:/mlflow/mlruns
       - shared-model-volume:/shared_model  
 
 volumes:
