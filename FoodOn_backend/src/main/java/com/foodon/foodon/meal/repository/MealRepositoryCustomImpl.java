@@ -71,6 +71,7 @@ public class MealRepositoryCustomImpl implements MealRepositoryCustom{
                         mealItem.id,
                         meal.mealTime,
                         mealItem.foodName,
+                        meal.mealImage,
                         Projections.constructor(
                                 PositionInfo.class,
                                 position.x,

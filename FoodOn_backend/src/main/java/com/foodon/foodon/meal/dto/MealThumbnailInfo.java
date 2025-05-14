@@ -7,6 +7,7 @@ public record MealThumbnailInfo(
         Long mealItemId,
         LocalDateTime mealTime,
         String foodName,
+        String mealImage,
         PositionInfo positionInfo
 ) {
 }
