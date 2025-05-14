@@ -159,7 +159,7 @@ fun CalendarScreen(
                 weekCount = weekCount,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.updateRecommendation(weekIndex)
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1, indexChanged = true)
                 }
             )
         }

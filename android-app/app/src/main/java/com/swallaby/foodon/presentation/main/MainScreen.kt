@@ -39,6 +39,7 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
@@ -51,9 +52,7 @@ import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import kotlinx.coroutines.launch
-import org.threeten.bp.DayOfWeek
 import org.threeten.bp.YearMonth
-import org.threeten.bp.temporal.WeekFields
 
 @Composable
 fun MainScreen(
@@ -67,9 +66,6 @@ fun MainScreen(
     val mainUiState by mainViewModel.uiState.collectAsState()
     val calendarUiState by calendarViewModel.uiState.collectAsState()
 
-    val selectedDate = calendarUiState.selectedDate
-    val currentYearMonth = calendarUiState.currentYearMonth
-
     val calendarItems = (calendarUiState.calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val mealItemMap by remember(calendarItems) {
@@ -80,10 +76,9 @@ fun MainScreen(
         }
     }
 
-    val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
-
+    val selectedDate = calendarUiState.selectedDate
+    val currentYearMonth = calendarUiState.currentYearMonth
     val currentWeekStart = calendarViewModel.currentWeekStart
-    val weekOfMonth = currentWeekStart.get(weekFields.weekOfMonth())
 
     val nextWeekStart = currentWeekStart.plusWeeks(1)
     val maxPage = when {
@@ -114,10 +109,7 @@ fun MainScreen(
     }
 
     LaunchedEffect(currentWeekStart) {
-        calendarViewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth,
-            week = weekOfMonth
-        )
+        calendarViewModel.updateRecommendation(currentYearMonth, getWeekOfMonth(currentWeekStart))
     }
 
     Scaffold(
