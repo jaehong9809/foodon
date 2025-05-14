@@ -11,3 +11,4 @@ python-dotenv
 pycocotools
 tqdm
 torchmetrics
+albumentations
