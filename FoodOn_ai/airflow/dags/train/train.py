@@ -104,11 +104,27 @@ def train_and_log_with_mlflow():
     model_path = os.path.join(base_dir, "best_model_0513.pth")
     map_location = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    if os.path.exists(model_path):
-        model.load_state_dict(torch.load(model_path, map_location=map_location))
-        print(f"✅ 사전 가중치를 로드했습니다: {model_path}")
-    else:
-        print("⚠️ 사전 가중치 파일이 없습니다. 새로운 모델로 학습을 시작합니다.")
+    loaded = False
+
+    try:
+        # MLflow에서 Production 모델 로드 시도
+        model = mlflow.pytorch.load_model("models:/food_detection/Production").to(device)
+        print("✅ MLflow에서 Production 모델을 로드했습니다.")
+        loaded = True
+    except Exception as e:
+        print(f"⚠️ MLflow 모델 로드 실패: {e}")
+        if os.path.exists(model_path):
+            try:
+                model = create_model(num_classes=68).to(device)
+                model.load_state_dict(torch.load(model_path, map_location=map_location))
+                print(f"✅ 로컬 모델을 로드했습니다: {model_path}")
+                loaded = True
+            except Exception as e:
+                print(f"🚨 로컬 모델 로딩 실패: {e}")
+
+    if not loaded:
+        print("🆕 사전 모델이 없어 새 모델로 학습을 시작합니다.")
+        model = create_model(num_classes=68).to(device)
 
     optimizer = optim.SGD([p for p in model.parameters() if p.requires_grad], lr=0.005, momentum=0.9, weight_decay=0.0005)
 
