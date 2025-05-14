@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -115,52 +117,55 @@ fun FoodEditScreen(
     Log.d("Screen", "FoodEditScreen ViewModel identity: ${System.identityHashCode(viewModel)}")
     Log.d("Screen", "FoodEditScreen Food.nutrientInfo: ${food.nutrientInfo}")
 
-
-    Column {
-        CommonBackTopBar(
-            title = stringResource(R.string.top_bar_food_info_update), onBackClick = onBackClick
-        )
-        Column(
-            modifier = modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-        ) {
-            FoodThumbnailList(
-                foods = mealInfo.mealItems,
-                imageUri = mealInfo.imageUri,
-                selectedFoodId = uiState.selectedFoodId,
-                selectFood = viewModel::selectFood
+    Scaffold { innerPadding ->
+        Column(modifier = modifier.padding(innerPadding)) {
+            CommonBackTopBar(
+                title = stringResource(R.string.top_bar_food_info_update), onBackClick = onBackClick
             )
-            HorizontalDivider(
-                modifier = modifier.padding(horizontal = 24.dp), thickness = 1.dp, color = Border02
-            )
-            FoodSearch(
-                foodName = food.foodName
-            )
-            Spacer(
+            Column(
                 modifier = modifier
-                    .height(8.dp)
-                    .fillMaxWidth()
-                    .background(color = Bkg04)
-            )
-            FoodAmountComponent(
-                food = food,
-            )
-            NutritionComponent(
-                modifier = modifier,
-                nutrientInfo = nutrientInfo,
-                onNutritionEditClick = onNutritionEditClick,
-                enabledUpdate
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+            ) {
+                FoodThumbnailList(
+                    foods = mealInfo.mealItems,
+                    imageUri = mealInfo.imageUri,
+                    selectedFoodId = uiState.selectedFoodId,
+                    selectFood = viewModel::selectFood
+                )
+                HorizontalDivider(
+                    modifier = modifier.padding(horizontal = 24.dp),
+                    thickness = 1.dp,
+                    color = Border02
+                )
+                FoodSearch(
+                    foodName = food.foodName
+                )
+                Spacer(
+                    modifier = modifier
+                        .height(8.dp)
+                        .fillMaxWidth()
+                        .background(color = Bkg04)
+                )
+                FoodAmountComponent(
+                    food = food,
+                )
+                NutritionComponent(
+                    modifier = modifier,
+                    nutrientInfo = nutrientInfo,
+                    onNutritionEditClick = onNutritionEditClick,
+                    enabledUpdate
+                )
+            }
+            // todo 음식 상세 화면에서도 수정 가능한지 확인
+            if (enabledUpdate) UpdateFoodButton(
+                modifier = modifier.padding(
+                    horizontal = 24.dp
+                ),
+                onDeleteClick = { onFoodDeleteClick(food.foodId) },
+                onUpdateClick = onFoodUpdateClick,
             )
         }
-        // todo 음식 상세 화면에서도 수정 가능한지 확인
-        if (enabledUpdate) UpdateFoodButton(
-            modifier = modifier.padding(
-                horizontal = 24.dp
-            ),
-            onDeleteClick = { onFoodDeleteClick(food.foodId) },
-            onUpdateClick = onFoodUpdateClick,
-        )
     }
 
 
@@ -257,7 +262,7 @@ private fun ParentNutritionInfo(
     modifier: Modifier = Modifier,
     nutritionName: String,
     amount: String,
-    amountColor: androidx.compose.ui.graphics.Color = G900,
+    amountColor: Color = G900,
     hasChild: Boolean = false,
 ) {
     BaseNutritionInfo(modifier = if (hasChild) modifier.bottomBorder() else modifier, nutrition = {

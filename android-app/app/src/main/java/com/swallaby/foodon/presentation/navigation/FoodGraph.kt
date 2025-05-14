@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.navigation
 
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,10 +29,14 @@ fun NavGraphBuilder.mealGraph(
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
-        composable(NavRoutes.FoodGraph.FoodRecord.route, exitTransition = { ExitTransition.None }) {
+        composable(
+            NavRoutes.FoodGraph.FoodRecord.route,
+            exitTransition = { ExitTransition.None },
+            enterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+        ) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
-
-
             MealRecordScreen(recordViewModel = recordViewModel,
                 editViewModel = mealEditViewModel,
                 onBackClick = {
@@ -48,6 +53,10 @@ fun NavGraphBuilder.mealGraph(
 
         composable(
             route = NavRoutes.FoodGraph.MealDetail.route,
+            exitTransition = { ExitTransition.None },
+            enterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
             arguments = listOf(navArgument(NavRoutes.FoodGraph.MealDetail.MEAL_ID) {
                 type = NavType.LongType
             })
@@ -75,7 +84,11 @@ fun NavGraphBuilder.mealGraph(
                 type = NavType.LongType
             }, navArgument(NavRoutes.FoodGraph.FoodEdit.MEAL_ID) {
                 type = NavType.LongType
-            })
+            }),
+            exitTransition = { ExitTransition.None },
+            enterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
         ) {
             val foodId = it.arguments?.getLong(NavRoutes.FoodGraph.FoodEdit.FOOD_ID) ?: 0L
             val mealId = it.arguments?.getLong(NavRoutes.FoodGraph.FoodEdit.MEAL_ID) ?: 0L
@@ -88,8 +101,7 @@ fun NavGraphBuilder.mealGraph(
                 initFood(mealInfo, foodId)
             }
 
-            FoodEditScreen(
-                mealId = mealId,
+            FoodEditScreen(mealId = mealId,
                 viewModel = foodEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onNutritionEditClick = {

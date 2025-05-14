@@ -24,6 +24,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -37,6 +38,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -147,17 +149,27 @@ fun MealRecordScreen(
         }
     }
 
-    WithPermission(
-        modifier = modifier, permission = Manifest.permission.CAMERA
-    ) {
-        CameraAppScreen(
-            modifier = modifier,
-            uiState = uiState,
-            onBackClick = onBackClick,
-            uploadMealImage = recordViewModel::uploadMealImage,
-            onSearchClick = onSearchClick,
-        )
+    Scaffold { innerPadding ->
+        Box(
+            modifier = modifier.fillMaxSize()
+//                .padding(innerPadding)
+        ) {
+            WithPermission(
+                modifier = modifier, permission = Manifest.permission.CAMERA
+            ) {
+                CameraAppScreen(
+                    modifier = modifier,
+                    uiState = uiState,
+                    onBackClick = onBackClick,
+                    uploadMealImage = recordViewModel::uploadMealImage,
+                    onSearchClick = onSearchClick,
+                    innerPadding = innerPadding
+                )
+            }
+        }
+
     }
+
 }
 
 // 재사용 가능한 이미지 프리뷰 컴포넌트
@@ -266,6 +278,7 @@ fun CameraAppScreen(
     onBackClick: () -> Unit,
     uploadMealImage: (uri: Uri, context: Context) -> Unit,
     onSearchClick: () -> Unit,
+    innerPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val context = LocalContext.current
 
@@ -292,10 +305,14 @@ fun CameraAppScreen(
 
 
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+    ) {
         // 상단 버튼 행
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
             horizontalArrangement = Arrangement.Absolute.SpaceBetween
@@ -344,12 +361,12 @@ fun CameraAppScreen(
             }
         }
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
             if (uiState.failImageUpload) Box(
-                modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 Text(
                     stringResource(R.string.notice_size_image),
@@ -359,13 +376,13 @@ fun CameraAppScreen(
 
             // 하단 액션 버튼 행
             Row(
-                modifier = modifier
+                modifier = Modifier
                     .matchParentSize()
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // 앨범 선택 버튼
-                Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                     ActionButton(iconResId = R.drawable.icon_gallery,
                         text = stringResource(R.string.select_gallery),
                         onClick = { galleryLauncher.launch("image/*") })
@@ -416,7 +433,7 @@ fun CameraAppScreen(
                 })
 
                 // 음식 검색 버튼
-                Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                     ActionButton(
                         iconResId = R.drawable.icon_search,
                         text = stringResource(R.string.food_search),

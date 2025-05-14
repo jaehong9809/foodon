@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +31,6 @@ import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
-import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
@@ -77,9 +76,11 @@ fun NutritionEditScreen(
     val scrollState = rememberScrollState()
 
 
-    Surface(color = MainWhite) {
+    Scaffold { innerPadding ->
         Column(
-            modifier = modifier.fillMaxSize()
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             CommonBackTopBar(
                 title = stringResource(R.string.top_bar_nutrient_input), onBackClick = onBackClick

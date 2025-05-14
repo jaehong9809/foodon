@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -55,6 +59,7 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.BackIconImage
 import com.swallaby.foodon.core.ui.component.CommonWideButton
+import com.swallaby.foodon.core.ui.component.StatusBarConfig
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.domain.food.model.MealItem
@@ -67,10 +72,6 @@ import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-enum class ImageStatus {
-    COLLAPSE, OPEN
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealDetailScreen(
@@ -81,6 +82,11 @@ fun MealDetailScreen(
     onFoodClick: (foodId: Long) -> Unit,
     onNavigateMain: () -> Unit = {},
 ) {
+    StatusBarConfig(
+        darkIcons = false,  // 흰색 아이콘
+        statusBarColor = Color.Transparent
+    )
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     LaunchedEffect(mealId) {
@@ -205,6 +211,7 @@ fun MealDetailScreen(
             }
             Box(
                 modifier = modifier
+                    .windowInsetsPadding(WindowInsets.statusBars)
                     .fillMaxWidth()
                     .height(52.dp)
                     .background(
@@ -216,7 +223,7 @@ fun MealDetailScreen(
                     modifier = Modifier.align(Alignment.CenterStart),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BackIconImage(modifier = Modifier, onBackClick)
+                    BackIconImage(modifier = Modifier, onBackClick, color = Color.White)
                 }
             }
 
@@ -324,24 +331,44 @@ fun MealImageWithFoodLabels(
         val imageUrl = imageUri.toString()
 //        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
 
-        // 이미지 표시
-        AsyncImage(
-            model = ImageRequest.Builder(context).data(imageUrl).crossfade(true)
-                .listener(onSuccess = { _, result ->
-                    val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
-                    if (bitmap != null && !isImageLoaded) {
-                        originalImageSize = Size(
-                            bitmap.width.toFloat(), bitmap.height.toFloat()
-                        )
-                        isImageLoaded = true
-                    }
-                }).build(),
-            contentDescription = "음식 사진",
-            contentScale = imageContentScale,
-            modifier = Modifier
+        Box(
+            modifier = modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-        )
+        ) {
+
+            // 이미지 표시
+            AsyncImage(
+                model = ImageRequest.Builder(context).data(imageUrl).crossfade(true)
+                    .listener(onSuccess = { _, result ->
+                        val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
+                        if (bitmap != null && !isImageLoaded) {
+                            originalImageSize = Size(
+                                bitmap.width.toFloat(), bitmap.height.toFloat()
+                            )
+                            isImageLoaded = true
+                        }
+                    }).build(),
+                contentDescription = "음식 사진",
+                contentScale = imageContentScale,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+            )
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.3f)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = .6f), Color.Black.copy(alpha = 0f)
+                            )
+                        )
+                    )
+            )
+        }
+
 
         // 이미지 로드 완료 후 음식 이름 버튼 표시
         if (isImageLoaded) {

@@ -13,8 +13,8 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
-import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
+import com.swallaby.foodon.presentation.signup.viewmodel.SignUpViewModel
 
 
 @Composable
@@ -23,10 +23,27 @@ fun NavGraph(
     modifier: Modifier = Modifier,
 ) {
     NavControllerProvider(navController = navController) {
+//        val currentBackStackEntry by navController.currentBackStackEntryFlow.collectAsStateWithLifecycle(
+//            initialValue = navController.currentBackStackEntry
+//        )
+//
+//        val isMealDetailScreen = remember(currentBackStackEntry) {
+//            navController.currentDestination?.let {
+//                Log.d("NavGraph", "currentDestination: $it")
+//                it.route == NavRoutes.FoodGraph.MealDetail.route
+//            } ?: false
+//        }
+//
+//        val allInsets =
+//            WindowInsets.statusBars.union(WindowInsets.navigationBars).union(WindowInsets.ime)
+//                .asPaddingValues()
+//
+//        Log.d("NavGraph", "isMealDetailScreen: $isMealDetailScreen")
+
 
         val mainViewModel: MainViewModel = hiltViewModel()
         val calendarViewModel: CalendarViewModel = hiltViewModel()
-        val signUpViewModel : SignUpViewModel = hiltViewModel()
+        val signUpViewModel: SignUpViewModel = hiltViewModel()
         val mealEditViewModel: MealEditViewModel = hiltViewModel()
 
         // todo 수정 예정
@@ -54,7 +71,10 @@ fun NavGraph(
         NavHost(
             navController = navController,
             startDestination = NavRoutes.MainGraph.route,
-            modifier = modifier
+//            modifier = modifier.padding(
+//                top = if (isMealDetailScreen) 0.dp else allInsets.calculateTopPadding(),
+//                bottom = allInsets.calculateBottomPadding()
+//            )
         ) {
             mainGraph(navController, mainViewModel, calendarViewModel)
             loginGraph(navController)
