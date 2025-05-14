@@ -8,6 +8,7 @@ from PIL import Image
 from io import BytesIO
 from dotenv import load_dotenv
 import os
+import shutil
 
 load_dotenv()
 # 로거 설정
@@ -66,7 +67,7 @@ def generate_dataset_from_df(
         logger.info(f"📄 라벨 저장 완료: {label_path}")
 
 
-def load_data_from_db(min_count=100):
+def load_data_from_db(min_count=50):
     logger.info("📦 DB 연결 시도 중...")
 
     conn = pymysql.connect(
@@ -93,14 +94,15 @@ def load_data_from_db(min_count=100):
         logger.info("✅ 충분한 데이터 확보, 데이터 불러오는 중...")
 
         query = """
-        SELECT 
-            m.meal_id AS meal_id,
-            m.meal_image,
-            mi.food_name,
-            mi.x, mi.y, mi.width, mi.height
-        FROM meals m
-        JOIN meal_items mi ON m.meal_id = mi.meal_id
-        ORDER BY m.meal_id
+            SELECT 
+                m.meal_id AS meal_id,
+                m.meal_image,
+                mi.food_name,
+                mi.x, mi.y, mi.width, mi.height
+            FROM meals m
+            JOIN meal_items mi ON m.meal_id = mi.meal_id
+            WHERE m.meal_time >= NOW() - INTERVAL 7 DAY
+            ORDER BY m.meal_id
         """
         df = pd.read_sql(query, conn)
 
@@ -119,3 +121,12 @@ def load_data_from_db(min_count=100):
     finally:
         conn.close()
         logger.info("🔌 DB 연결 종료")
+
+def delete_data():
+    folder_path = "../train/dataset"
+
+    if os.path.isdir(folder_path):
+        shutil.rmtree(folder_path)
+        print(f"🗑️ 전체 삭제 완료: {folder_path}")
+    else:
+        print(f"❌ 폴더가 존재하지 않음: {folder_path}")    

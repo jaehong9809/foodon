@@ -5,7 +5,7 @@ import json
 import numpy as np
 from pathlib import Path
 import torchvision.transforms as T
-
+from names_id import class_id_to_index, names
 
 class FoodDetectionDataset(Dataset):
     def __init__(self, root_dir: str, transforms=None):
@@ -30,7 +30,7 @@ class FoodDetectionDataset(Dataset):
         image = Image.open(image_path).convert("RGB")
         image = ImageOps.exif_transpose(image)
 
-        with open(label_path) as f:
+        with open(label_path, encoding="utf-8") as f:
             data = json.load(f)
 
         anns = data["annotations"]

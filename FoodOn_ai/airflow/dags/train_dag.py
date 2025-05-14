@@ -10,7 +10,9 @@ import shutil
 import os
 import logging
 
-from data_loader import load_data_from_db
+from data_loader import load_data_from_db, delete_data
+from ..train.train import train_and_log_with_mlflow
+
 
 # 기본 설정
 default_args = {
@@ -26,22 +28,23 @@ def train_log_save_model():
     logger.info("✅ [시작] 모델 학습 준비 시작")
 
     # 데이터 로딩
-    df = load_data_from_db(min_count=100)
+    df = load_data_from_db(min_count=50)
     if df is None or df.empty:
         logger.warning("⚠️ [중단] 데이터 부족으로 학습 건너뜀")
         return
 
     logger.info("✅ [조건만족] 모델 학습 조건 만족")
-    logger.info("ℹ️ [상태] 현재는 학습 기능이 비활성화 상태입니다")
+    
+    train_and_log_with_mlflow()
 
-    # 아래는 향후 학습 로직 확장 시 삽입 가능한 로그 예시
-    logger.debug("📊 [데이터프리뷰] 상위 5개:\n%s", df.head())
+    delete_data()
+    
 
 with DAG(
     dag_id='train_register_and_save_model',
     default_args=default_args,
     start_date=datetime(2025, 4, 28),
-    schedule_interval='*/10 * * * *',  # 10분마다 실행
+    schedule_interval='0 0 * * 1',  # 매주 월요일 00:00
     catchup=False,
     tags=['ml', 'mlflow', 'shared_model'],
 ) as dag:

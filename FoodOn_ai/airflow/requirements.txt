@@ -8,3 +8,4 @@ protobuf<5.0.0
 pymysql
 pillow
 python-dotenv
+pycocotools
