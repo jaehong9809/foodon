@@ -138,12 +138,12 @@ public class RecommendFoodService {
                 for (NutrientCode code : NUTRIENT_CODES) {
                     NutrientInfo nutrientInfo = food.nutrients().get(code);
                     BigDecimal value = nutrientInfo == null ? BigDecimal.ZERO : nutrientInfo.value();
-                    BigDecimal totalValuye = BigDecimalUtil.divide(
+                    BigDecimal totalValue = BigDecimalUtil.divide(
                         BigDecimalUtil.multiply(value, food.servingSize()),
                         BigDecimal.valueOf(100)
                     );
-                    if (totalValuye.compareTo(minimumNutrientGoal.getGoalKcal(code)) < 0
-                        || totalValuye.compareTo(maximumNutrientGoal.getGoalKcal(code)) > 0
+                    if (totalValue.compareTo(minimumNutrientGoal.getGoalKcal(code)) < 0
+                        || totalValue.compareTo(maximumNutrientGoal.getGoalKcal(code)) > 0
                     ) {
                         return false;
                     }
