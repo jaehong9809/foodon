@@ -74,7 +74,7 @@ fun NavGraphBuilder.mealGraph(
                     )
                 },
                 onNavigateMain = {
-                    navController.popBackStack(NavRoutes.MainGraph.route, inclusive = false)
+                    navController.popBackStack(NavRoutes.Main.route, inclusive = false)
                 })
         }
 

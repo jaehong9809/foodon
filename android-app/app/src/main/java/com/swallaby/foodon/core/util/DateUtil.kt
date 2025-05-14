@@ -34,19 +34,19 @@ object DateUtil {
 
     @Composable
     fun getDateShape(
-        dayOfWeekFromDate: Int,
+        dayOfWeek: Int,
         day: Int,
         daysInMonth: Int,
         isSelectedWeek: Boolean,
     ): RoundedCornerShape {
         val topStart = when {
-            isSelectedWeek && (day == 1 && dayOfWeekFromDate == 6) || (day == daysInMonth && dayOfWeekFromDate == 0) -> 100.dp
-            isSelectedWeek && (dayOfWeekFromDate == 0 || day == 1) -> 100.dp
+            isSelectedWeek && (day == 1 && dayOfWeek == 6) || (day == daysInMonth && dayOfWeek == 0) -> 100.dp
+            isSelectedWeek && (dayOfWeek == 0 || day == 1) -> 100.dp
             else -> 0.dp
         }
 
         val topEnd = when {
-            isSelectedWeek && (day == daysInMonth && dayOfWeekFromDate == 0) || (dayOfWeekFromDate == 6 || day == daysInMonth) -> 100.dp
+            isSelectedWeek && (day == daysInMonth && dayOfWeek == 0) || (dayOfWeek == 6 || day == daysInMonth) -> 100.dp
             else -> 0.dp
         }
 

@@ -28,7 +28,6 @@ fun CalendarBody(
     uiState: CalendarUiState,
     onDateSelected: (LocalDate) -> Unit
 ) {
-
     val calendarType = CalendarType.values()[uiState.selectedTabIndex]
     val yearMonth = uiState.currentYearMonth
 
@@ -36,7 +35,6 @@ fun CalendarBody(
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
     val daysInMonth = yearMonth.lengthOfMonth()
 
-    // 달력 그리기
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,65 +42,89 @@ fun CalendarBody(
     ) {
         var dayCounter = 1
 
-        repeat(6) { week ->
-            val isSelectedWeek = week == uiState.selectedWeekIndex
+        repeat(6) { weekIndex ->
+            val isSelectedWeek = weekIndex == uiState.selectedWeekIndex
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 for (dayOfWeek in 0..6) {
-                    val day = when {
-                        week == 0 && dayOfWeek < firstDayOfWeek -> null
-                        else -> dayCounter
-                    }
+                    val day = if (weekIndex == 0 && dayOfWeek < firstDayOfWeek) null else dayCounter
 
                     if (day != null && day <= daysInMonth) {
                         val date = yearMonth.atDay(day)
                         val calendarItem = calendarItemMap[date.toString()]
-                        val dayOfWeekFromDate = date.dayOfWeek.value % 7
-                        val shape = getDateShape(dayOfWeekFromDate, day, daysInMonth, isSelectedWeek)
+                        val shape = getDateShape(
+                            dayOfWeek = date.dayOfWeek.value % 7,
+                            day = day,
+                            daysInMonth = daysInMonth,
+                            isSelectedWeek = isSelectedWeek
+                        )
 
-                        // 캘린더 안에 내용
-                        Box(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = if (calendarType == CalendarType.MEAL) 82.dp else 68.dp),
-                                contentAlignment = Alignment.TopCenter
-                            ) {
-                                CalendarWeekBackground(calendarType, isSelectedWeek, shape)
-
-                                Box(
-                                    modifier = Modifier
-                                        .then(
-                                            if (calendarType == CalendarType.RECOMMENDATION) {
-                                                Modifier.height(41.dp)
-                                            } else {
-                                                Modifier
-                                            }
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CalendarDayItem(
-                                        calendarType = calendarType,
-                                        calendarItem = calendarItem,
-                                        date = date,
-                                        today = uiState.today,
-                                        isSelected = uiState.selectedDate == date,
-                                        onClick = { onDateSelected(date) }
-                                    )
-                                }
-                            }
-                        }
+                        CalendarDateCell(
+                            modifier = Modifier.weight(1f),
+                            date = date,
+                            calendarItem = calendarItem,
+                            calendarType = calendarType,
+                            shape = shape,
+                            isSelectedWeek = isSelectedWeek,
+                            isSelectedDate = uiState.selectedDate == date,
+                            today = uiState.today,
+                            onClick = onDateSelected
+                        )
 
                         dayCounter++
                     } else {
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CalendarDateCell(
+    modifier: Modifier,
+    date: LocalDate,
+    calendarItem: CalendarItem?,
+    calendarType: CalendarType,
+    shape: RoundedCornerShape,
+    isSelectedWeek: Boolean,
+    isSelectedDate: Boolean,
+    today: LocalDate,
+    onClick: (LocalDate) -> Unit
+) {
+    Box(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = if (calendarType == CalendarType.MEAL) 82.dp else 68.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            CalendarWeekBackground(
+                calendarType = calendarType,
+                isSelectedWeek = isSelectedWeek,
+                shape = shape
+            )
+
+            Box(
+                modifier = if (calendarType == CalendarType.RECOMMENDATION) {
+                    Modifier.height(41.dp)
+                } else {
+                    Modifier
+                },
+                contentAlignment = Alignment.Center
+            ) {
+                CalendarDayItem(
+                    calendarType = calendarType,
+                    calendarItem = calendarItem,
+                    date = date,
+                    today = today,
+                    isSelected = isSelectedDate,
+                    onClick = { onClick(date) }
+                )
             }
         }
     }
