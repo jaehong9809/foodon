@@ -58,13 +58,21 @@ fun CalendarScreen(
     val today by sharedState.today.collectAsState()
     val selectedDate by sharedState.selectedDate.collectAsState()
     val currentYearMonth by sharedState.currentYearMonth.collectAsState()
-
     val weekCount = rememberWeekCount(currentYearMonth, today)
 
     // 탭 상태 관리
     val selectedTabIndex = uiState.selectedTabIndex
     var previousTabIndex by remember { mutableIntStateOf(selectedTabIndex) }
     val calendarType = CalendarType.values()[selectedTabIndex]
+
+    val calendarStatus = CalendarStatus(
+        today = today,
+        selectedDate = selectedDate,
+        currentYearMonth = currentYearMonth,
+        selectedTabIndex = selectedTabIndex,
+        selectedWeekIndex = uiState.selectedWeekIndex,
+        weekCount = weekCount
+    )
 
     // 캘린더 페이지 관리
     val nextMonth = currentYearMonth.plusMonths(1)
@@ -94,15 +102,6 @@ fun CalendarScreen(
             calendarItemMap[selectedDate.toString()] as? CalendarItem.Meal
         }
     }
-
-    val calendarStatus = CalendarStatus(
-        today = today,
-        selectedDate = selectedDate,
-        currentYearMonth = currentYearMonth,
-        selectedTabIndex = selectedTabIndex,
-        selectedWeekIndex = uiState.selectedWeekIndex,
-        weekCount = weekCount
-    )
 
     LaunchedEffect(Unit) {
         viewModel.updateInitialLoaded(false)

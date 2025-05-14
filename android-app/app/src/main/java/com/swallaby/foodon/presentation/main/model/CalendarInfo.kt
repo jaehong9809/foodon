@@ -6,5 +6,6 @@ import org.threeten.bp.YearMonth
 data class CalendarInfo(
     val today: LocalDate,
     val selectedDate: LocalDate,
-    val currentYearMonth: YearMonth
+    val currentYearMonth: YearMonth,
+    val currentWeekStart: LocalDate
 )

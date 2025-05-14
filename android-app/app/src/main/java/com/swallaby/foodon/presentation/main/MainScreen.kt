@@ -63,6 +63,13 @@ fun MainScreen(
     val mainUiState by mainViewModel.uiState.collectAsState()
     val sharedState = mainViewModel.calendarSharedState
 
+    val calendarInfo = CalendarInfo(
+        today = sharedState.selectedDate.collectAsState().value,
+        selectedDate = sharedState.selectedDate.collectAsState().value,
+        currentYearMonth = sharedState.currentYearMonth.collectAsState().value,
+        currentWeekStart = sharedState.currentWeekStart.collectAsState().value
+    )
+
     val calendarResult by sharedState.calendarResult.collectAsState()
     val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
@@ -74,26 +81,14 @@ fun MainScreen(
         }
     }
 
-    val today by sharedState.today.collectAsState()
-
-    val selectedDate by sharedState.selectedDate.collectAsState()
-    val currentYearMonth by sharedState.currentYearMonth.collectAsState()
-    val currentWeekStart by sharedState.currentWeekStart.collectAsState()
-
-    val nextWeekStart = currentWeekStart.plusWeeks(1)
+    val nextWeekStart = calendarInfo.currentWeekStart.plusWeeks(1)
     val maxPage = when {
-        nextWeekStart.isAfter(today) -> 2
+        nextWeekStart.isAfter(calendarInfo.today) -> 2
         else -> 3
     }
 
     val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
-
-    val calendarInfo = CalendarInfo(
-        today = today,
-        selectedDate = selectedDate,
-        currentYearMonth = currentYearMonth
-    )
 
     var value by remember { mutableStateOf("") }
 
@@ -106,16 +101,19 @@ fun MainScreen(
         }
     }
 
-    LaunchedEffect(selectedDate) {
-        mainViewModel.updateDailyData(selectedDate)
+    LaunchedEffect(calendarInfo.selectedDate) {
+        mainViewModel.updateDailyData(calendarInfo.selectedDate)
     }
 
-    LaunchedEffect(currentYearMonth) {
-        mainViewModel.fetchCalendarData(currentYearMonth)
+    LaunchedEffect(calendarInfo.currentYearMonth) {
+        mainViewModel.fetchCalendarData(calendarInfo.currentYearMonth)
     }
 
-    LaunchedEffect(currentWeekStart) {
-        mainViewModel.fetchRecommendation(currentYearMonth, getWeekOfMonth(currentWeekStart))
+    LaunchedEffect(calendarInfo.currentWeekStart) {
+        mainViewModel.fetchRecommendation(
+            calendarInfo.currentYearMonth,
+            getWeekOfMonth(calendarInfo.currentWeekStart)
+        )
     }
 
     Scaffold(
@@ -139,7 +137,7 @@ fun MainScreen(
         ) {
 
             MainCalendarHeader(
-                currentYearMonth = currentYearMonth,
+                currentYearMonth = calendarInfo.currentYearMonth,
                 onMonthlyClick = {
                     navController.navigate(NavRoutes.Calendar.route)
                 },
@@ -156,10 +154,8 @@ fun MainScreen(
 
             MainCalendarPager(
                 pagerState = pagerState,
-                currentWeekStart = currentWeekStart,
                 mealItemMap = mealItemMap,
-                today = today,
-                selectedDate = selectedDate,
+                calendarInfo = calendarInfo,
                 onDateSelected = { date ->
                     sharedState.updateDate(date)
                 }
