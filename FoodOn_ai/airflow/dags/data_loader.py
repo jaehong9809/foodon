@@ -17,7 +17,7 @@ logger.setLevel(logging.INFO)
 
 
 def generate_dataset_from_df(
-    df, image_dir="../train/dataset/images", label_dir="../train/dataset/labels"
+    df, image_dir="train/dataset/images", label_dir="train/dataset/labels"
 ):
     os.makedirs(image_dir, exist_ok=True)
     os.makedirs(label_dir, exist_ok=True)
@@ -123,7 +123,7 @@ def load_data_from_db(min_count=50):
         logger.info("🔌 DB 연결 종료")
 
 def delete_data():
-    folder_path = "../train/dataset"
+    folder_path = "train/dataset"
 
     if os.path.isdir(folder_path):
         shutil.rmtree(folder_path)
