@@ -10,6 +10,7 @@ import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
+import com.swallaby.foodon.presentation.sharedstate.AppSharedState
 import com.swallaby.foodon.presentation.sharedstate.CalendarSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -23,6 +24,7 @@ class CalendarViewModel @Inject constructor(
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getUserWeightUseCase: GetUserWeightUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
+    private val appSharedState: AppSharedState,
     val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
 
@@ -78,10 +80,10 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun fetchCalendarData(type: CalendarType, yearMonth: YearMonth) {
-        if (yearMonthTracker.shouldFetch(yearMonth)) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
                 calendarSharedState.updateCalendarResult(ResultState.Loading)
-                val result = getCalendarUseCase(type, yearMonth)
+                val result = getCalendarUseCase(CalendarType.MEAL, yearMonth)
                 calendarSharedState.updateCalendarResult(result.toResultState())
             }
         }
@@ -97,8 +99,8 @@ class CalendarViewModel @Inject constructor(
     }
 
     private fun fetchRecommendFoods(yearMonth: YearMonth, week: Int) {
-        if (recommendationTracker.shouldFetch(yearMonth to week)) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            appSharedState.withLoginAndFetch(yearMonth to week, recommendationTracker) {
                 calendarSharedState.updateRecommendFoods(ResultState.Loading)
                 val result = getRecommendFoodUseCase(yearMonth, week)
                 calendarSharedState.updateRecommendFoods(result.toResultState())
@@ -107,11 +109,11 @@ class CalendarViewModel @Inject constructor(
     }
 
     private fun fetchUserWeight() {
-        updateState { it.copy(weightResult = ResultState.Loading) }
-
         viewModelScope.launch {
-            val result = getUserWeightUseCase()
-            updateState { it.copy(weightResult = result.toResultState()) }
+            appSharedState.withLogin {
+                val result = getUserWeightUseCase()
+                updateState { it.copy(weightResult = result.toResultState()) }
+            }
         }
     }
 

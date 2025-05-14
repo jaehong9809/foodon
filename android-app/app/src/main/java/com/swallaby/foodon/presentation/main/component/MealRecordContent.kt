@@ -45,9 +45,6 @@ fun MealRecordContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         when (recordResult) {
-            is ResultState.Loading -> {
-                LoadingProgress()
-            }
             is ResultState.Success -> {
                 if (recordResult.data.isEmpty()) {
                     EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
