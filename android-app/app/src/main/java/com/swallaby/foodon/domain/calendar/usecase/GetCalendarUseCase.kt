@@ -11,15 +11,15 @@ import javax.inject.Inject
 class GetCalendarUseCase @Inject constructor(
     private val repository: CalendarRepository
 ) {
-    suspend operator fun invoke(type: CalendarType, date: YearMonth): ApiResult<List<CalendarItem>> {
+    suspend operator fun invoke(type: CalendarType, yearMonth: YearMonth): ApiResult<List<CalendarItem>> {
         return when (type) {
-            CalendarType.MEAL -> repository.getCalendarMeals(date).map { meals ->
+            CalendarType.MEAL -> repository.getCalendarMeals(yearMonth).map { meals ->
                 meals.map { CalendarItem.Meal(it) }
             }
-            CalendarType.WEIGHT -> repository.getCalendarWeights(date).map { weights ->
+            CalendarType.WEIGHT -> repository.getCalendarWeights(yearMonth).map { weights ->
                 weights.map { CalendarItem.Weight(it) }
             }
-            CalendarType.RECOMMENDATION -> repository.getCalendarRecommendations(date).map { recs ->
+            CalendarType.RECOMMENDATION -> repository.getCalendarRecommendations(yearMonth).map { recs ->
                 recs.map { CalendarItem.Recommendation(it) }
             }
         }

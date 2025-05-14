@@ -13,7 +13,7 @@ import retrofit2.http.Query
 interface CalendarApi {
 
     @GET("intake/calendar")
-    suspend fun getCalendarMeals(@Query(value = "yearMonth") date: String): BaseResponse<List<MealResponse>>
+    suspend fun getCalendarMeals(@Query(value = "yearMonth") yearMonth: String): BaseResponse<List<MealResponse>>
 
     @GET("members/weights/calendar/{yearMonth}")
     suspend fun getCalendarWeights(@Path("yearMonth") date: String): BaseResponse<List<WeightResponse>>
@@ -22,7 +22,7 @@ interface CalendarApi {
     suspend fun getUserWeight(): BaseResponse<UserWeightResponse>
 
     @GET("calendar/recommendations")
-    suspend fun getCalendarRecommendations(@Query(value = "date") date: String): BaseResponse<List<RecommendationResponse>>
+    suspend fun getCalendarRecommendations(@Query(value = "yearMonth") yearMonth: String): BaseResponse<List<RecommendationResponse>>
 
     @GET("recommend-foods")
     suspend fun getRecommendFoods(

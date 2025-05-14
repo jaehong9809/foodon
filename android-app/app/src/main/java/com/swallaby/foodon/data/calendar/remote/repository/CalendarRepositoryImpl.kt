@@ -18,16 +18,16 @@ class CalendarRepositoryImpl @Inject constructor(
     private val api: CalendarApi
 ): CalendarRepository {
 
-    override suspend fun getCalendarMeals(date: YearMonth): ApiResult<List<CalendarMeal>> = safeApiCall {
-        api.getCalendarMeals(date.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getCalendarMeals(yearMonth: YearMonth): ApiResult<List<CalendarMeal>> = safeApiCall {
+        api.getCalendarMeals(yearMonth.toString()).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
-    override suspend fun getCalendarWeights(date: YearMonth): ApiResult<List<CalendarWeight>> = safeApiCall {
-        api.getCalendarWeights(date.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getCalendarWeights(yearMonth: YearMonth): ApiResult<List<CalendarWeight>> = safeApiCall {
+        api.getCalendarWeights(yearMonth.toString()).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
-    override suspend fun getCalendarRecommendations(date: YearMonth): ApiResult<List<CalendarRecommendation>> = safeApiCall {
-        api.getCalendarRecommendations(date.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getCalendarRecommendations(yearMonth: YearMonth): ApiResult<List<CalendarRecommendation>> = safeApiCall {
+        api.getCalendarRecommendations(yearMonth.toString()).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
     override suspend fun getUserWeight(): ApiResult<UserWeight> = safeApiCall {
