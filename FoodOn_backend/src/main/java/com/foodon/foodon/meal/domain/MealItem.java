@@ -6,9 +6,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,7 +38,9 @@ public class MealItem {
     @Column(precision = 2, scale = 1)
     private BigDecimal quantity;
 
-    private Position position; // 사진상에서의 위치
+    @BatchSize(size = 10)
+    @OneToMany(mappedBy = "mealItem", cascade = CascadeType.PERSIST)
+    private List<Position> positions = new ArrayList<>();
 
     @Column(nullable = false)
     @ColumnDefault(value = "false")
@@ -51,7 +56,6 @@ public class MealItem {
             Long foodId,
             String foodName,
             BigDecimal quantity,
-            Position position,
             boolean isRecommended
     ) {
         this.meal = meal;
@@ -59,14 +63,12 @@ public class MealItem {
         this.foodId = foodId;
         this.foodName = foodName;
         this.quantity = quantity;
-        this.position = position;
         this.isRecommended = isRecommended;
     }
 
     public static MealItem createMealItem(
             Meal meal,
             MealItemInfo mealItemInfo,
-            Position position,
             boolean isRecommended
     ) {
         MealItem mealItem = new MealItem(
@@ -75,7 +77,6 @@ public class MealItem {
                 mealItemInfo.foodId(),
                 mealItemInfo.foodName(),
                 mealItemInfo.quantity(),
-                position,
                 isRecommended
         );
 
@@ -83,5 +84,8 @@ public class MealItem {
         return mealItem;
     }
 
+    public void addPosition(Position position) {
+        this.positions.add(position);
+    }
 
 }

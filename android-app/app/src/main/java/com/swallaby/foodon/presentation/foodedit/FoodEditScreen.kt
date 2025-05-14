@@ -68,9 +68,10 @@ import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 @Composable
 fun FoodEditScreen(
     modifier: Modifier = Modifier,
+    mealId: Long = 0,
     viewModel: FoodEditViewModel,
     onBackClick: () -> Unit,
-    onFoodDeleteClick: () -> Unit = {},
+    onFoodDeleteClick: (foodId: Long) -> Unit = {},
     onFoodUpdateClick: () -> Unit = {},
     onNutritionEditClick: () -> Unit = {},
     onSuccessCustomFood: (mealItem: MealItem) -> Unit = {},
@@ -80,7 +81,9 @@ fun FoodEditScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
 
-
+    val enabledUpdate = remember(mealId) {
+        mealId == 0L
+    }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -146,14 +149,16 @@ fun FoodEditScreen(
             NutritionComponent(
                 modifier = modifier,
                 nutrientInfo = nutrientInfo,
-                onNutritionEditClick = onNutritionEditClick
+                onNutritionEditClick = onNutritionEditClick,
+                enabledUpdate
             )
         }
-        UpdateFoodButton(
+        // todo 음식 상세 화면에서도 수정 가능한지 확인
+        if (enabledUpdate) UpdateFoodButton(
             modifier = modifier.padding(
                 horizontal = 24.dp
             ),
-            onDeleteClick = onFoodDeleteClick,
+            onDeleteClick = { onFoodDeleteClick(food.foodId) },
             onUpdateClick = onFoodUpdateClick,
         )
     }
@@ -166,6 +171,7 @@ fun NutritionComponent(
     modifier: Modifier = Modifier,
     nutrientInfo: List<NutrientItem>,
     onNutritionEditClick: () -> Unit = {},
+    enabledUpdate: Boolean = true,
 ) {
     Column(modifier.padding(horizontal = 24.dp)) {
         Text(
@@ -205,7 +211,7 @@ fun NutritionComponent(
             }
         }
 
-        Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        if (enabledUpdate) Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             TextButton(
                 onClick = onNutritionEditClick,
                 modifier = modifier

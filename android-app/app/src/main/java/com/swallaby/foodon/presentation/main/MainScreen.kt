@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -19,8 +21,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -89,6 +93,8 @@ fun MainScreen(
 
     val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
+
+    var value by remember { mutableStateOf("") }
 
     LaunchedEffect(selectedDate) {
         mainViewModel.fetchRecordData(selectedDate.toString())
@@ -165,14 +171,28 @@ fun MainScreen(
 
             HorizontalDivider(thickness = 1.dp, color = Bkg04)
 
+            // todo formfield 테스트 용으로 넣어놔서 나중에 지우겠습니다!
+//            NutrientField(
+//                modifier = Modifier.height(100.dp),
+//                value = value,
+//                onValueChange = { newValue ->
+//                    Log.d("NutrientField", "newValue: $newValue")
+//                    value = cleanDoubleInput(newValue)
+//                    Log.d("NutrientField", "value: $value")
+//                },
+//                nutrient = "탄수화물",
+//                unit = "g",
+//            )
+
             MainContentPager(mainUiState, calendarUiState)
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
             MealRecordContent(
                 mainUiState = mainUiState,
-                calendarUiState = calendarUiState) { mealId ->
-                navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
+                calendarUiState = calendarUiState
+            ) { mealId ->
+                navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(mealId))
             }
 
             Column(
@@ -191,11 +211,25 @@ fun MainScreen(
                         style = NotoTypography.NotoMedium20
                     )
                 }
-            }
 
+                // 임시 테스트
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(modifier = Modifier
+                    .background(WB500)
+                    .clickable {
+                        navController.navigate(NavRoutes.SignUpGraph.route)
+                    }) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = "등록 화면 시작",
+                        color = MainWhite,
+                        style = NotoTypography.NotoMedium20
+                    )
+                }
+            }
         }
     }
-
 }
 
 @Preview(showBackground = true)

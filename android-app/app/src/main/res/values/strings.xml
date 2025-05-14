@@ -56,6 +56,9 @@
     <string name="food_amount">음식양</string>
     <string name="nutritional_ingredients">영양 성분</string>
     <string name="format_g">%dg</string>
+    <string name="over_size_image">이미지가 너무 큽니다.</string>
+    <string name="notice_size_image">10MB 이하 이미지 파일만 업로드 가능합니다.</string>
+
 
     <!-- main -->
     <string name="main_today">오늘</string>
@@ -94,5 +97,23 @@
 
     <!-- Kakao Login -->
     <string name="kakao_login">카카오톡으로 로그인</string>
+
+    <!-- Sign Up -->
+    <string name="gender_male_kr">남성</string>
+    <string name="gender_female_kr">여성</string>
+    <string name="gender_male_eng">MALE</string>
+    <string name="gender_female_eng">FEMALE</string>
+    <string name="gender_choice">성별을 선택해 주세요</string>
+    <string name="management_type_choice">관리 유형을 선택해 주세요</string>
+    <string name="management_type_description">선택한 유형이 목표 식단과 영양 비율에 반영돼요.</string>
+    <string name="activity_level_choice">활동량을 선택해 주세요</string>
+    <string name="body_info_input">현재 키와 체중을 입력해 주세요</string>
+    <string name="goal_weight_input">목표 체중을 입력해 주세요</string>
+    <string name="height">키</string>
+    <string name="weight">체중</string>
+    <string name="maintain_weight">현재 체중 유지</string>
+    <string name="loss_weight">체중 감량</string>
+    <string name="gain_weight">체중 증량</string>
+
 
 </resources>

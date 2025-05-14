@@ -3,6 +3,7 @@ package com.swallaby.foodon.presentation.mealdetail
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,6 +66,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealDetailScreen(
+    mealId: Long? = null,
     viewModel: MealEditViewModel,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
@@ -72,6 +74,16 @@ fun MealDetailScreen(
     onNavigateMain: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(mealId) {
+        if (mealId != null && mealId != 0L) {
+            viewModel.fetchMealDetailInfo(mealId)
+        }
+    }
+
+    val enabledUpdate = remember(mealId) {
+        mealId == null || mealId == 0L
+    }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -79,9 +91,19 @@ fun MealDetailScreen(
                 is MealEditEvent.NavigateToMain -> {
                     onNavigateMain()
                 }
+
+                is MealEditEvent.ShowErrorMessage -> {
+                    Toast.makeText(context, event.errorMessageRes, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
+
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            viewModel.destroyMeal()
+//        }
+//    }
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
@@ -142,11 +164,12 @@ fun MealDetailScreen(
                         onClick = onFoodClick,
                         foods = mealInfo.mealItems,
                         imageUri = mealInfo.imageUri,
-                        onDelete = viewModel::deleteFood
+                        onDelete = viewModel::deleteFood,
+                        enabledDeleteButton = enabledUpdate
                     )
                 }
 
-                CommonWideButton(
+                if (enabledUpdate) CommonWideButton(
                     modifier.padding(horizontal = 24.dp),
                     text = stringResource(R.string.btn_record_complete),
                     onClick = viewModel::recordMeal
@@ -321,8 +344,8 @@ private fun DisplayFoodLabels(
             val relativeY = position.y / originalImageSize.height
 
             // 부분 이미지의 너비와 높이 (비율)
-            val partialWidth = position.width  // 이미 비율이라고 가정
-            val partialHeight = position.height  // 이미 비율이라고 가정
+            val partialWidth = position.width
+            val partialHeight = position.height
 
             // 부분 이미지의 중앙 좌표 (비율)
             val centerX = relativeX + (partialWidth / 2)
@@ -355,7 +378,7 @@ fun dismissModalBottomSheet(
 
 @Preview(showBackground = true)
 @Composable
-fun FoodDetailScreenPreview() {
+fun MealDetailScreenPreview() {
     FoodonTheme {
         MealDetailScreen(
             viewModel = hiltViewModel(),

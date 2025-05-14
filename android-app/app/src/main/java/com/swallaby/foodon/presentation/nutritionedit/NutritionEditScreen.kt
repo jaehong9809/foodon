@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.nutritionedit
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,8 +35,10 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.core.util.NumberFormatPattern
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientInfo
+import com.swallaby.foodon.domain.food.model.NutrientType
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
@@ -114,15 +117,25 @@ fun NutritionEditScreen(
                     NutrientField(
                         modifier = modifier,
                         value = item.value.toString(),
+                        formatPattern = if (item.nutrientType == NutrientType.KCAL) NumberFormatPattern.INT_THOUSAND_COMMA else NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
                         onValueChange = { newValue ->
-                            val updatedValue =
-                                newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
-                            // 업데이트된 아이템 생성
-                            val updatedItem = item.copy(value = updatedValue)
-                            // 리스트에서 해당 아이템 교체
-                            val updatedNutritions = nutritions.toMutableList()
-                            updatedNutritions[index] = updatedItem
-                            nutritions = updatedNutritions
+                            val cleaned = newValue.filter { it.isDigit() || it == '.' }
+
+                            Log.d("updatedValue", "Input Value = $cleaned")
+//                            val updatedValue = newValue.toBigDecimalOrNull()?.toDouble() ?: 0.0
+//                            Log.d(
+//                                "updatedValue", "updatedValue: ${
+//                                    updatedValue.toBigDecimal().stripTrailingZeros().toPlainString()
+//                                }"
+//                            )
+////                            val updatedValue =
+////                                newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
+//                            // 업데이트된 아이템 생성
+//                            val updatedItem = item.copy(value = updatedValue)
+//                            // 리스트에서 해당 아이템 교체
+//                            val updatedNutritions = nutritions.toMutableList()
+//                            updatedNutritions[index] = updatedItem
+//                            nutritions = updatexdNutritions
                         },
                         nutrient = item.name,
                         unit = item.unit,
@@ -135,21 +148,23 @@ fun NutritionEditScreen(
                             modifier = modifier,
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
-                                val updatedValue =
-                                    newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
-                                // 업데이트된 자식 아이템 생성
-                                val updatedChildItem = childItem.copy(value = updatedValue)
-                                // 부모 아이템의 자식 목록 업데이트
-                                val updatedChildItems = item.childItems.toMutableList()
-                                updatedChildItems[childIndex] = updatedChildItem
-
-                                // 부모 아이템 업데이트
-                                val updatedItem = item.copy(childItems = updatedChildItems)
-
-                                // 전체 리스트 업데이트
-                                val updatedNutritions = nutritions.toMutableList()
-                                updatedNutritions[index] = updatedItem
-                                nutritions = updatedNutritions
+//                                val updatedValue = newValue.toBigDecimalOrNull()?.toDouble() ?: 0.0
+//
+////                            val updatedValue =
+////                                newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
+//                                // 업데이트된 자식 아이템 생성
+//                                val updatedChildItem = childItem.copy(value = updatedValue)
+//                                // 부모 아이템의 자식 목록 업데이트
+//                                val updatedChildItems = item.childItems.toMutableList()
+//                                updatedChildItems[childIndex] = updatedChildItem
+//
+//                                // 부모 아이템 업데이트
+//                                val updatedItem = item.copy(childItems = updatedChildItems)
+//
+//                                // 전체 리스트 업데이트
+//                                val updatedNutritions = nutritions.toMutableList()
+//                                updatedNutritions[index] = updatedItem
+//                                nutritions = updatedNutritions
                             },
                             nutrient = childItem.name,
                             unit = childItem.unit,

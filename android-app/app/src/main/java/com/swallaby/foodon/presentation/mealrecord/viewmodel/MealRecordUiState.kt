@@ -12,4 +12,5 @@ sealed class MealRecordEvent {
 
 data class MealRecordUiState(
     val mealRecordState: ResultState<MealInfo?> = ResultState.Success(null),
+    val failImageUpload: Boolean = false,
 ) : UiState

@@ -41,9 +41,9 @@ public class Member extends BaseTimeEntity {
     private LocalDateTime lastLoginAt;
 
     private Member (
-        String nickname,
-        String email,
-        String profileImgUrl
+            String nickname,
+            String email,
+            String profileImgUrl
     ){
         this.nickname = nickname;
         this.email = email;
@@ -51,19 +51,19 @@ public class Member extends BaseTimeEntity {
     }
 
     public static Member createMember(
-        String nickname,
-        String email,
-        String profileImgUrl
+            String nickname,
+            String email,
+            String profileImgUrl
     ) {
         return new Member(
-            nickname,
-            email,
-            profileImgUrl
+                nickname,
+                email,
+                profileImgUrl
         );
     }
 
     public void updateProfile(
-        Gender gender
+            Gender gender
     ) {
         this.gender = gender;
     }

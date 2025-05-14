@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.foodon.foodon.food.domain.FoodType.PUBLIC;
 import static lombok.AccessLevel.PROTECTED;
@@ -58,6 +56,9 @@ public class Food {
 
     @Column(nullable = false)
     private boolean searchable;
+
+    @Column(nullable = false)
+    private Boolean isRecommended;
 
     private Food(
             Long memberId,
