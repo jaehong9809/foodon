@@ -19,15 +19,15 @@ class CalendarRepositoryImpl @Inject constructor(
 ): CalendarRepository {
 
     override suspend fun getCalendarMeals(yearMonth: YearMonth): ApiResult<List<CalendarMeal>> = safeApiCall {
-        api.getCalendarMeals(yearMonth.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+        api.getCalendarMeals(yearMonth).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
     override suspend fun getCalendarWeights(yearMonth: YearMonth): ApiResult<List<CalendarWeight>> = safeApiCall {
-        api.getCalendarWeights(yearMonth.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+        api.getCalendarWeights(yearMonth).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
     override suspend fun getCalendarRecommendations(yearMonth: YearMonth): ApiResult<List<CalendarRecommendation>> = safeApiCall {
-        api.getCalendarRecommendations(yearMonth.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+        api.getCalendarRecommendations(yearMonth).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
     override suspend fun getUserWeight(): ApiResult<UserWeight> = safeApiCall {
@@ -38,7 +38,7 @@ class CalendarRepositoryImpl @Inject constructor(
         yearMonth: YearMonth,
         week: Int?,
     ): ApiResult<List<RecommendFood>> = safeApiCall {
-        api.getRecommendFoods(yearMonth.toString(), week).getOrThrow { it.map { data -> data.toDomain() } }
+        api.getRecommendFoods(yearMonth, week).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
 }

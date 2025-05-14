@@ -14,6 +14,7 @@ import com.swallaby.foodon.presentation.sharedstate.CalendarSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import javax.inject.Inject
 
@@ -46,7 +47,7 @@ class CalendarViewModel @Inject constructor(
         calendarType: CalendarType,
         isTabChanged: Boolean = false
     ) {
-        val today = calendarSharedState.today.value
+        val today = LocalDate.now()
         val currentYearMonth = calendarSharedState.currentYearMonth.value
         val isSameMonth = YearMonth.from(today) == currentYearMonth
 

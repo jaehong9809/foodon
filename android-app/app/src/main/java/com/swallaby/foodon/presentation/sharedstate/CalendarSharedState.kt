@@ -23,8 +23,6 @@ class CalendarSharedState @Inject constructor() {
 
     private val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
 
-    val today: StateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
-
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate
 
@@ -55,19 +53,21 @@ class CalendarSharedState @Inject constructor() {
     }
 
     fun goToWeek(delta: Int) {
-        val todayValue = today.value
+        val today = LocalDate.now()
         val targetWeekStart = selectedDate.value.plusWeeks(delta.toLong()).with(weekFields.dayOfWeek(), 1)
-        val todayWeekStart = todayValue.with(weekFields.dayOfWeek(), 1)
+        val todayWeekStart = today.with(weekFields.dayOfWeek(), 1)
 
-        val newDate = if (targetWeekStart == todayWeekStart) todayValue else targetWeekStart
+        val newDate = if (targetWeekStart == todayWeekStart) today else targetWeekStart
 
         _selectedDate.value = newDate
         _currentYearMonth.value = YearMonth.from(newDate)
     }
 
     fun resetToTodayWeek() {
-        _selectedDate.value = today.value
-        _currentYearMonth.value = YearMonth.from(today.value)
+        val today = LocalDate.now()
+
+        _selectedDate.value = today
+        _currentYearMonth.value = YearMonth.from(today)
     }
 
     fun updateCalendarResult(result: ResultState<List<CalendarItem>>) {

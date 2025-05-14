@@ -40,6 +40,7 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
+import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
@@ -51,6 +52,7 @@ import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 
 @Composable
 fun MainScreen(
@@ -64,7 +66,7 @@ fun MainScreen(
     val sharedState = mainViewModel.calendarSharedState
 
     val calendarInfo = CalendarInfo(
-        today = sharedState.selectedDate.collectAsState().value,
+        today = LocalDate.now(),
         selectedDate = sharedState.selectedDate.collectAsState().value,
         currentYearMonth = sharedState.currentYearMonth.collectAsState().value,
         currentWeekStart = sharedState.currentWeekStart.collectAsState().value
@@ -74,11 +76,7 @@ fun MainScreen(
     val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val mealItemMap by remember(calendarItems) {
-        derivedStateOf {
-            calendarItems
-                .filterIsInstance<CalendarItem.Meal>()
-                .associateBy { it.data.date }
-        }
+        derivedStateOf { calendarItems.toCalendarItemMap() }
     }
 
     val nextWeekStart = calendarInfo.currentWeekStart.plusWeeks(1)

@@ -34,6 +34,7 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
+import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.CalendarHeader
@@ -44,6 +45,7 @@ import com.swallaby.foodon.presentation.calendar.component.WeightBox
 import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
 @Composable
@@ -55,7 +57,7 @@ fun CalendarScreen(
     val sharedState = viewModel.calendarSharedState
 
     // 날짜 관리
-    val today by sharedState.today.collectAsState()
+    val today = LocalDate.now()
     val selectedDate by sharedState.selectedDate.collectAsState()
     val currentYearMonth by sharedState.currentYearMonth.collectAsState()
     val weekCount = rememberWeekCount(currentYearMonth, today)
@@ -86,15 +88,7 @@ fun CalendarScreen(
     val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val calendarItemMap by remember(calendarItems) {
-        derivedStateOf {
-            calendarItems.associateBy {
-                when (it) {
-                    is CalendarItem.Meal -> it.data.date
-                    is CalendarItem.Weight -> it.data.date
-                    is CalendarItem.Recommendation -> it.data.date
-                }
-            }
-        }
+        derivedStateOf { calendarItems.toCalendarItemMap() }
     }
 
     val selectedMeal by remember(calendarItemMap, selectedDate) {
