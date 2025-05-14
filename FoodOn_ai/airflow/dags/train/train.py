@@ -14,9 +14,9 @@ from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from torchvision.models.detection import fasterrcnn_resnet50_fpn, FasterRCNN_ResNet50_FPN_Weights
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
-from names_id import names, class_id_to_index
-from transform import get_transform
-from FoodDetectionDataset import FoodDetectionDataset
+from .names_id import names, class_id_to_index
+from .transform import get_transform
+from .FoodDetectionDataset import FoodDetectionDataset
 
 
 def create_model(num_classes: int = 68):
