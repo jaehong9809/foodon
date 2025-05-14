@@ -8,5 +8,6 @@ data class MealThumbnailInfo(
     val mealItemId: Long = 0,
     val mealTime: LocalDateTime = LocalDateTime.now(),
     val foodName: String = "",
+    val mealImage: String = "",
     val positionInfo: Position = Position()
 )

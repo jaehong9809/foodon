@@ -166,7 +166,7 @@ fun DayBottomContent(calendarItem: CalendarItem?) {
 
 @Composable
 fun RecommendationFoodImage(
-    image: MealThumbnailInfo
+    meal: MealThumbnailInfo
 ) {
     Box(
         modifier = Modifier
@@ -176,7 +176,7 @@ fun RecommendationFoodImage(
 
         AsyncImage(
             model = ImageCropManager(LocalContext.current).getCroppedImageRequest(
-                "", image.positionInfo
+                meal.mealImage, meal.positionInfo
             ),
             contentDescription = "추천 음식 사진",
             contentScale = ContentScale.Crop,
