@@ -5,7 +5,7 @@ import json
 import numpy as np
 from pathlib import Path
 import torchvision.transforms as T
-from names_id import class_id_to_index, names
+from .names_id import class_id_to_index, names
 
 class FoodDetectionDataset(Dataset):
     def __init__(self, root_dir: str, transforms=None):
