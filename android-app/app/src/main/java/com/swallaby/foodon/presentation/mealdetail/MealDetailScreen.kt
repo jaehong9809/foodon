@@ -4,6 +4,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,8 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +66,10 @@ import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditEvent
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+enum class ImageStatus {
+    COLLAPSE, OPEN
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,6 +120,23 @@ fun MealDetailScreen(
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
 
+
+    val density = LocalDensity.current
+    val screenWidthPx = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+    val topAppbarHeightPx = with(density) { 52.dp.toPx() }
+
+    val isCollapse = remember(scrollState.value) {
+        Log.d(
+            "MealDetailScreen",
+            "remainScroll.value: ${scrollState.value - (screenWidthPx - topAppbarHeightPx)}, toolbarHeight = ${topAppbarHeightPx}"
+        )
+        if (scrollState.value < screenWidthPx - topAppbarHeightPx) 0f
+        else ((scrollState.value - (screenWidthPx - topAppbarHeightPx)) / topAppbarHeightPx).coerceIn(
+            0f, 1f
+        )
+    }
+
+
     when (uiState.mealEditState) {
         is ResultState.Loading -> {
             LoadingState()
@@ -135,6 +160,7 @@ fun MealDetailScreen(
                 ) {
                     // 음식 이미지와 음식 이름 버튼 영역
                     MealImageWithFoodLabels(
+                        scrollState = scrollState,
                         mealItems = mealInfo.mealItems,
                         onFoodClick = onFoodClick,
                         imageUri = mealInfo.imageUri
@@ -167,6 +193,7 @@ fun MealDetailScreen(
                         onDelete = viewModel::deleteFood,
                         enabledDeleteButton = enabledUpdate
                     )
+
                 }
 
                 if (enabledUpdate) CommonWideButton(
@@ -174,11 +201,15 @@ fun MealDetailScreen(
                     text = stringResource(R.string.btn_record_complete),
                     onClick = viewModel::recordMeal
                 )
+
             }
             Box(
                 modifier = modifier
                     .fillMaxWidth()
                     .height(52.dp)
+                    .background(
+                        color = Color.White.copy(alpha = isCollapse)
+                    )
                     .padding(start = 16.dp, end = 16.dp)
             ) {
                 Row(
@@ -278,13 +309,16 @@ private fun ErrorState(message: String) {
 @Composable
 fun MealImageWithFoodLabels(
     modifier: Modifier = Modifier,
+    scrollState: ScrollState,
     imageUri: Uri?,
     mealItems: List<MealItem>, onFoodClick: (foodId: Long) -> Unit,
 ) {
     var originalImageSize by remember { mutableStateOf(Size(0f, 0f)) }
     var isImageLoaded by remember { mutableStateOf(false) }
 
-    Box {
+    Box(modifier = modifier.graphicsLayer {
+        translationY += (scrollState.value.toFloat() / 2)
+    }) {
         val imageContentScale = ContentScale.FillBounds
         val context = LocalContext.current
         val imageUrl = imageUri.toString()
