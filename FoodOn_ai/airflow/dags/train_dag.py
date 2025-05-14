@@ -11,7 +11,7 @@ import os
 import logging
 
 from data_loader import load_data_from_db, delete_data
-from ..train.train import train_and_log_with_mlflow
+from train.train import train_and_log_with_mlflow
 
 
 # 기본 설정
