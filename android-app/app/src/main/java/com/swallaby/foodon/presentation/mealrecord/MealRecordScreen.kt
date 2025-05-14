@@ -74,6 +74,7 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil
+import com.swallaby.foodon.core.util.ImageConverter
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.ImageMetadataUtil
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
@@ -161,7 +162,14 @@ fun MealRecordScreen(
                     modifier = modifier,
                     uiState = uiState,
                     onBackClick = onBackClick,
-                    uploadMealImage = recordViewModel::uploadMealImage,
+                    uploadMealImage = { uri, context ->
+                        ImageConverter.convertUriToWebP(
+                            context = context, imageUri = uri, quality = 10
+                        )
+                        recordViewModel.uploadMealImage(
+                            uri, context
+                        )
+                    },
                     onSearchClick = onSearchClick,
                     innerPadding = innerPadding
                 )

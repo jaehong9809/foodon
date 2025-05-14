@@ -12,13 +12,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -82,10 +82,7 @@ fun MealDetailScreen(
     onFoodClick: (foodId: Long) -> Unit,
     onNavigateMain: () -> Unit = {},
 ) {
-    StatusBarConfig(
-        darkIcons = false,  // 흰색 아이콘
-        statusBarColor = Color.Transparent
-    )
+
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -141,7 +138,10 @@ fun MealDetailScreen(
             0f, 1f
         )
     }
-
+    StatusBarConfig(
+        darkIcons = isCollapse == 1f,  // 흰색 아이콘
+        statusBarColor = Color.Transparent
+    )
 
     when (uiState.mealEditState) {
         is ResultState.Loading -> {
@@ -200,6 +200,7 @@ fun MealDetailScreen(
                         enabledDeleteButton = enabledUpdate
                     )
 
+                    Box(modifier = modifier.height(1000.dp))
                 }
 
                 if (enabledUpdate) CommonWideButton(
@@ -211,19 +212,28 @@ fun MealDetailScreen(
             }
             Box(
                 modifier = modifier
-                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .height(
+                        52.dp + WindowInsets.systemBars
+                            .asPaddingValues()
+                            .calculateTopPadding()
+                    )// .statusBars.getTop(density)
                     .fillMaxWidth()
-                    .height(52.dp)
                     .background(
                         color = Color.White.copy(alpha = isCollapse)
                     )
                     .padding(start = 16.dp, end = 16.dp)
             ) {
                 Row(
-                    modifier = Modifier.align(Alignment.CenterStart),
+                    modifier = Modifier
+                        .height(52.dp)
+                        .align(Alignment.BottomStart),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BackIconImage(modifier = Modifier, onBackClick, color = Color.White)
+                    BackIconImage(
+                        modifier = Modifier,
+                        onBackClick,
+                        color = if (isCollapse == 1f) Color.Black else Color.White
+                    )
                 }
             }
 
