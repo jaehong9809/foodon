@@ -1,5 +1,6 @@
 package com.foodon.foodon.common.util;
 
+import com.foodon.foodon.food.domain.NutrientCode;
 import com.foodon.foodon.member.domain.*;
 import lombok.Getter;
 
@@ -131,4 +132,13 @@ public class NutrientGoal {
         return calculateGoalByKcal(goalKcal, nutrientPlan.getFatRatio(), KCAL_PER_GRAM_FAT);
     }
 
+    public BigDecimal getGoalKcal(NutrientCode code) {
+        return switch (code){
+            case KCAL -> goalKcal;
+            case CARBS -> goalCarbs;
+            case PROTEIN -> goalProtein;
+            case FAT -> goalFat;
+            default -> throw new IllegalStateException("Unexpected value: " + code);
+        };
+    }
 }
