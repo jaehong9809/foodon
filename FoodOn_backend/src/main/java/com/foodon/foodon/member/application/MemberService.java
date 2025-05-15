@@ -129,4 +129,24 @@ public class MemberService {
 	public void updateLastLoginTime(Member member) {
 		member.updateLastLoginTime();
 	}
+
+
+	@Transactional(readOnly = true)
+	public GoalManagementResponse getGoalManagementProfile(Member member) {
+		MemberStatus status = getLatestStatusOrThrow(member);
+		ActivityLevel activity = getActivityLevelOrThrow(status);
+		NutrientPlan plan = getNutrientPlanOrThrow(status);
+
+		return GoalManagementResponse.from(member, status, activity, plan);
+	}
+
+	private ActivityLevel getActivityLevelOrThrow(MemberStatus status) {
+		return activityLevelRepository.findById(status.getActivityLevelId())
+				.orElseThrow(() -> new MemberException.MemberBadRequestException(MemberErrorCode.ACTIVITY_LEVEL_NOT_FOUND));
+	}
+
+	private NutrientPlan getNutrientPlanOrThrow(MemberStatus status) {
+		return nutrientPlanRepository.findById(status.getNutrientPlanId())
+				.orElseThrow(() -> new MemberException.MemberBadRequestException(MemberErrorCode.NUTRIENT_PLAN_NOT_FOUND));
+	}
 }
