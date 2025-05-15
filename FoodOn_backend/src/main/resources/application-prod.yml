@@ -15,7 +15,7 @@ spring:
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     hikari:
-      maximum-pool-size: 15
+      maximum-pool-size: 16
 
   data:
     redis:
@@ -39,6 +39,10 @@ spring:
       access-token-expiry: ${JWT_ACCESS_TOKEN_EXPIRY}
       refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY}
       super-token-expiry: 2592000000   # 30일 기한: 30 * 24 * 60 * 60 * 1000
+
+  tomcat:
+    mbeanregistry:
+      enabled: true
 
 cloud:
   aws:
@@ -89,4 +93,11 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
 
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, metrics
+  endpoint:
+    prometheus:
+      enabled: true

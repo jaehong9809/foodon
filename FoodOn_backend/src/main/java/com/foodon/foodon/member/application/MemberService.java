@@ -130,7 +130,6 @@ public class MemberService {
 		member.updateLastLoginTime();
 	}
 
-
 	@Transactional(readOnly = true)
 	public GoalManagementResponse getGoalManagementProfile(Member member) {
 		MemberStatus status = getLatestStatusOrThrow(member);
@@ -148,5 +147,9 @@ public class MemberService {
 	private NutrientPlan getNutrientPlanOrThrow(MemberStatus status) {
 		return nutrientPlanRepository.findById(status.getNutrientPlanId())
 				.orElseThrow(() -> new MemberException.MemberBadRequestException(MemberErrorCode.NUTRIENT_PLAN_NOT_FOUND));
+	}
+
+	public Boolean getMemberProfileUpdated(Member member) {
+		return member.isProfileUpdated();
 	}
 }
