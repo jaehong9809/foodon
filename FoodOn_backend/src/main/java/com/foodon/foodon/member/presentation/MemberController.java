@@ -98,7 +98,7 @@ public class MemberController {
 	@Operation(summary = "목표 관리를 위한 관리 유형과 섭취 정보, 신체 정보 제공")
 	public ResponseEntity<Response<GoalManagementResponse>> getGoalManagementProfile(
 			@Parameter(hidden = true) @AuthMember Member member
-	){
+	) {
 		GoalManagementResponse response = memberService.getGoalManagementProfile(member);
 		return ResponseUtil.success(response);
 	}
