@@ -27,6 +27,7 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
       - AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8787
+      - AIRFLOW__WEBSERVER__SECRET_KEY=s3cr3t_k3y_4irfl0w_1234567890      
     ports:
       - "8787:8787"
     command: webserver
@@ -43,6 +44,7 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      - AIRFLOW__WEBSERVER__SECRET_KEY=s3cr3t_k3y_4irfl0w_1234567890
     command: scheduler
     volumes:
       - shared-model-volume:/shared_model  
