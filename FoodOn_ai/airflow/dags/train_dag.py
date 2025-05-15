@@ -9,7 +9,7 @@ import torch.optim as optim
 import shutil
 import os
 import logging
-
+from airflow.operators.bash import BashOperator
 from data_loader import load_data_from_db, delete_data
 from train.train import train_and_log_with_mlflow
 
@@ -53,5 +53,8 @@ with DAG(
         task_id='train_log_save_model',
         python_callable=train_log_save_model,
     )
-
+    restart_fastapi = BashOperator(
+        task_id='restart_fastapi_container',
+        bash_command='docker restart fastapi_server',
+    )
     train_and_save
