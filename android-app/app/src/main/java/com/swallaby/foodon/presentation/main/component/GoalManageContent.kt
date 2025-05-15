@@ -21,36 +21,57 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
-import com.swallaby.foodon.domain.main.model.GoalInfo
-import com.swallaby.foodon.domain.main.model.GoalSection
+import com.swallaby.foodon.presentation.main.model.GoalInfo
+import com.swallaby.foodon.domain.main.model.GoalManage
+import com.swallaby.foodon.presentation.main.model.GoalSection
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
-fun GoalManageContent() {
-    val sections = listOf(
-        GoalSection(
-            title = stringResource(R.string.main_goal_manage_title),
-            items = listOf(
-                GoalInfo(stringResource(R.string.main_goal_manage_type), "고단백형", NavRoutes.SignUpManagement),
-                GoalInfo(stringResource(R.string.main_goal_manage_calorie), stringResource(R.string.format_kcal, formatKcal(1000)), NavRoutes.SignUpManagement),
-                GoalInfo(stringResource(R.string.main_goal_manage_nutrient), "48:28:24", NavRoutes.SignUpManagement)
+fun GoalManageContent(
+    goalManageResult: ResultState<GoalManage>
+) {
+
+    val sections = when (goalManageResult) {
+        is ResultState.Success -> {
+            val data = goalManageResult.data
+
+            listOf(
+                GoalSection(
+                    title = stringResource(R.string.main_goal_manage_title),
+                    items = listOf(
+                        GoalInfo(stringResource(R.string.main_goal_manage_type), data.managementType, NavRoutes.SignUpManagement),
+                        GoalInfo(
+                            stringResource(R.string.main_goal_manage_calorie),
+                            stringResource(R.string.format_kcal, formatKcal(data.targetCalories)),
+                            NavRoutes.SignUpManagement
+                        ),
+                        GoalInfo(
+                            stringResource(R.string.main_goal_manage_nutrient),
+                            "${data.carbRatio}:${data.proteinRatio}:${data.fatRatio}",
+                            NavRoutes.SignUpManagement
+                        )
+                    )
+                ),
+                GoalSection(
+                    title = stringResource(R.string.main_profile_manage_title),
+                    items = listOf(
+                        GoalInfo(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, data.height), NavRoutes.SignUpBodyInfo),
+                        GoalInfo(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, data.currentWeight), NavRoutes.SignUpBodyInfo),
+                        GoalInfo(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, data.goalWeight), NavRoutes.SignUpGoalWeight)
+                    )
+                )
             )
-        ),
-        GoalSection(
-            title = stringResource(R.string.main_profile_manage_title),
-            items = listOf(
-                GoalInfo(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, 174), NavRoutes.SignUpBodyInfo),
-                GoalInfo(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, 60), NavRoutes.SignUpBodyInfo),
-                GoalInfo(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, 60), NavRoutes.SignUpGoalWeight)
-            )
-        )
-    )
+        }
+
+        else -> emptyList()
+    }
 
     Column(
         modifier = Modifier
@@ -59,7 +80,6 @@ fun GoalManageContent() {
     ) {
         sections.forEach { section ->
             Section(title = section.title, items = section.items)
-
             Spacer(modifier = Modifier.height(11.5.dp))
         }
     }
@@ -74,7 +94,6 @@ fun Section(title: String, items: List<GoalInfo>) {
 
     Spacer(modifier = Modifier.height(4.dp))
 
-    // TODO: 프로필 UI 추가되면 그 화면 사용
     items.forEach { item ->
         InfoItem(title = item.title, content = item.content, navRoutes = item.route)
     }

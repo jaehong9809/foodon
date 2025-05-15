@@ -174,10 +174,11 @@ fun MainScreen(
 //            )
 
             MainContentPager(
-                mainUiState.intakeResult,
-                mainUiState.nutrientManageResult,
-                sharedState.recommendFoods.collectAsStateWithLifecycle().value,
-                calendarInfo
+                intakeResult = mainUiState.intakeResult,
+                nutrientManageResult = mainUiState.nutrientManageResult,
+                recommendFoods = sharedState.recommendFoods.collectAsStateWithLifecycle().value,
+                goalManageResult = mainUiState.goalManageResult,
+                calendarInfo = calendarInfo
             )
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)

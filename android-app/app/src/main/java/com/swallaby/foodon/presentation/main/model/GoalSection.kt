@@ -1,4 +1,4 @@
-package com.swallaby.foodon.domain.main.model
+package com.swallaby.foodon.presentation.main.model
 
 data class GoalSection(
     val title: String = "",

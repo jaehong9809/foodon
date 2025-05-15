@@ -20,6 +20,7 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.BG300
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.main.model.GoalManage
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.presentation.main.model.CalendarInfo
@@ -27,8 +28,9 @@ import com.swallaby.foodon.presentation.main.model.CalendarInfo
 @Composable
 fun MainContentPager(
     intakeResult: ResultState<NutrientIntake>,
-    manageResult: ResultState<List<NutrientManage>>,
+    nutrientManageResult: ResultState<List<NutrientManage>>,
     recommendFoods: ResultState<List<RecommendFood>>,
+    goalManageResult: ResultState<GoalManage>,
     calendarInfo: CalendarInfo
 ) {
 
@@ -46,9 +48,9 @@ fun MainContentPager(
         ) { page ->
             when (page) {
                 0 -> NutrientIntakeContent(intakeResult, calendarInfo)
-                1 -> NutrientManageContent(manageResult)
+                1 -> NutrientManageContent(nutrientManageResult)
                 2 -> RecommendFoodContent(recommendFoods)
-                3 -> GoalManageContent()
+                3 -> GoalManageContent(goalManageResult)
             }
         }
 

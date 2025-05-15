@@ -1,4 +1,4 @@
-package com.swallaby.foodon.domain.main.model
+package com.swallaby.foodon.presentation.main.model
 
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 
