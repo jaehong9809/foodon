@@ -9,9 +9,9 @@ import com.foodon.foodon.member.domain.NutrientPlan;
 public record GoalManagementResponse(
         String managementTypeDescription,
         int targetCalories,
-        int carbRatio,    // %
-        int proteinRatio, // %
-        int fatRatio,     // %
+        int carbRatio,
+        int proteinRatio,
+        int fatRatio,
         int height,
         int currentWeight,
         int goalWeight
