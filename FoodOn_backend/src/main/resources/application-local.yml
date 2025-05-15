@@ -88,4 +88,11 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
 
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, metrics
+  endpoint:
+    prometheus:
+      enabled: true
