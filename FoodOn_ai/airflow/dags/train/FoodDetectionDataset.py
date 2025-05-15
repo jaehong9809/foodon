@@ -66,6 +66,5 @@ class FoodDetectionDataset(Dataset):
         return image, target
 
     def __len__(self):
-        logger.info(f"📂 라벨 경로: {self.root_dir}/labels")
-        logger.info(f"📄 라벨 파일 수: {len(self.label_paths)}")
+
         return len(self.items)
