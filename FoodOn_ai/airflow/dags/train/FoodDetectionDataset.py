@@ -6,6 +6,9 @@ import numpy as np
 from pathlib import Path
 import torchvision.transforms as T
 from .names_id import class_id_to_index, names
+import logging
+
+logger = logging.getLogger(__name__)
 
 class FoodDetectionDataset(Dataset):
     def __init__(self, root_dir: str, transforms=None):
@@ -63,4 +66,6 @@ class FoodDetectionDataset(Dataset):
         return image, target
 
     def __len__(self):
+        logger.info(f"📂 라벨 경로: {self.root_dir}/labels")
+        logger.info(f"📄 라벨 파일 수: {len(self.label_paths)}")
         return len(self.items)

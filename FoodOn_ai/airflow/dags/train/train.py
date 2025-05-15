@@ -75,7 +75,7 @@ def train_and_log_with_mlflow():
     model = create_model(num_classes=68).to(device)
     print("모델 완성")
     # 데이터셋 구성
-    full_dataset = FoodDetectionDataset("./dataset", transforms=get_transform(train=True))
+    full_dataset = FoodDetectionDataset("train/dataset", transforms=get_transform(train=True))
     print("dataset완료")
     train_size = int(0.8 * len(full_dataset))
     val_size = len(full_dataset) - train_size
