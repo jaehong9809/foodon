@@ -28,7 +28,7 @@ def train_log_save_model():
     logger.info("✅ [시작] 모델 학습 준비 시작")
 
     # 데이터 로딩
-    df = load_data_from_db(min_count=50)
+    df = load_data_from_db(min_count=20)
     if df is None or df.empty:
         logger.warning("⚠️ [중단] 데이터 부족으로 학습 건너뜀")
         return

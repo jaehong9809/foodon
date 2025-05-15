@@ -17,32 +17,49 @@ logger.setLevel(logging.INFO)
 
 
 def generate_dataset_from_df(
-    df, image_dir="train/dataset/images", label_dir="train/dataset/labels"
+    df,
+    image_dir="train/dataset/images",
+    label_dir="train/dataset/labels",
+    conf_min=0.3,
+    conf_max=0.7,
 ):
     os.makedirs(image_dir, exist_ok=True)
     os.makedirs(label_dir, exist_ok=True)
 
     for meal_id, group in df.groupby("meal_id"):
         image_url = group.iloc[0]["meal_image"]
-        image_path = os.path.join(image_dir, f"{meal_id}.jpg")
 
+        # 필터링 먼저 수행
+        filtered_rows = [
+            row for _, row in group.iterrows()
+            if conf_min <= row.get("confidence", 1.0) <= conf_max
+        ]
+
+        if not filtered_rows:
+            logger.info(f"🚫 confidence 조건을 만족하는 라벨 없음: {meal_id}")
+            continue  # 이미지 및 라벨 모두 저장하지 않음
+
+        # 이미지 다운로드
         try:
             response = requests.get(image_url, timeout=5)
             image = Image.open(BytesIO(response.content)).convert("RGB")
-            image.save(image_path)
             width, height = image.size
-            logger.info(f"✅ 이미지 저장 완료: {image_path}")
         except Exception as e:
             logger.warning(f"⚠️ 이미지 다운로드 실패 ({meal_id}): {e}")
             continue
 
+        # 이미지 저장
+        image_path = os.path.join(image_dir, f"{meal_id}.jpg")
+        image.save(image_path)
+        logger.info(f"✅ 이미지 저장 완료: {image_path}")
+
+        # 라벨 생성
         annotations = []
-        for _, row in group.iterrows():
+        for row in filtered_rows:
             abs_x = int(row["x"] * width)
             abs_y = int(row["y"] * height)
             abs_w = int(row["width"] * width)
             abs_h = int(row["height"] * height)
-
             annotations.append(
                 {
                     "x": abs_x,
@@ -67,7 +84,9 @@ def generate_dataset_from_df(
         logger.info(f"📄 라벨 저장 완료: {label_path}")
 
 
-def load_data_from_db(min_count=50):
+
+
+def load_data_from_db(min_count=20):
     logger.info("📦 DB 연결 시도 중...")
 
     conn = pymysql.connect(
@@ -94,15 +113,16 @@ def load_data_from_db(min_count=50):
         logger.info("✅ 충분한 데이터 확보, 데이터 불러오는 중...")
 
         query = """
-            SELECT 
-                m.meal_id AS meal_id,
-                m.meal_image,
-                mi.food_name,
-                mi.x, mi.y, mi.width, mi.height
-            FROM meals m
-            JOIN meal_items mi ON m.meal_id = mi.meal_id
-            WHERE m.meal_time >= NOW() - INTERVAL 7 DAY
-            ORDER BY m.meal_id
+                SELECT 
+                    m.meal_id AS meal_id,
+                    m.meal_image,
+                    mi.food_name,
+                    p.x, p.y, p.width, p.height
+                FROM meals m
+                JOIN meal_items mi ON m.meal_id = mi.meal_id
+                JOIN positions p ON mi.meal_item_id = p.meal_item_id
+                WHERE m.meal_time >= NOW() - INTERVAL 7 DAY
+                ORDER BY m.meal_id
         """
         df = pd.read_sql(query, conn)
 
