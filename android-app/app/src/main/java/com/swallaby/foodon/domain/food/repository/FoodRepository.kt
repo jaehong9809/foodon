@@ -3,6 +3,7 @@ package com.swallaby.foodon.domain.food.repository
 import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
+import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.MealInfo
 import okhttp3.MultipartBody
 
@@ -18,6 +19,10 @@ interface FoodRepository {
     suspend fun postCustomFood(
         request: CustomFoodRequest,
     ): ApiResult<Unit>
+
+    suspend fun postCustomFoodUpdate(
+        request: CustomFoodRequest,
+    ): ApiResult<FoodInfoWithId>
 
     suspend fun getMealDetail(
         mealId: Long,

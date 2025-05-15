@@ -1,7 +1,6 @@
 package com.swallaby.foodon.presentation.foodedit
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,19 +14,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
+import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.UpdateFoodButton
 import com.swallaby.foodon.core.ui.theme.BG100
 import com.swallaby.foodon.core.ui.theme.Bkg04
@@ -56,7 +61,6 @@ import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
-import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientItem
 import com.swallaby.foodon.domain.food.model.NutrientType
@@ -64,9 +68,11 @@ import com.swallaby.foodon.presentation.foodedit.component.FoodAmountComponent
 import com.swallaby.foodon.presentation.foodedit.component.FoodChip
 import com.swallaby.foodon.presentation.foodedit.component.FoodThumbnailList
 import com.swallaby.foodon.presentation.foodedit.component.SearchChip
-import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
+import com.swallaby.foodon.presentation.foodregister.UnitTypeBottomSheet
+import com.swallaby.foodon.presentation.mealdetail.dismissModalBottomSheet
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodEditScreen(
     modifier: Modifier = Modifier,
@@ -76,7 +82,6 @@ fun FoodEditScreen(
     onFoodDeleteClick: (foodId: Long) -> Unit = {},
     onFoodUpdateClick: () -> Unit = {},
     onNutritionEditClick: () -> Unit = {},
-    onSuccessCustomFood: (mealItem: MealItem) -> Unit = {},
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -87,25 +92,11 @@ fun FoodEditScreen(
         mealId == 0L
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                is FoodEditEvent.SuccessCustomFood -> {
-                    onSuccessCustomFood(event.mealItem)
-                }
 
-                is FoodEditEvent.FailedCustomFood -> {
-                    Toast.makeText(context, event.messageRes, Toast.LENGTH_SHORT).show()
-                }
-
-                else -> {
-                }
-            }
-        }
-    }
     val food = mealInfo.mealItems.find { item ->
         item.foodId == uiState.selectedFoodId
     }!!
+
 
     // food.nutrientInfo 대신 uiState 자체를 의존성으로 설정
     var nutrientInfo by remember(uiState) {
@@ -116,7 +107,11 @@ fun FoodEditScreen(
 
     Log.d("Screen", "FoodEditScreen ViewModel identity: ${System.identityHashCode(viewModel)}")
     Log.d("Screen", "FoodEditScreen Food.nutrientInfo: ${food.nutrientInfo}")
-
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val scope = rememberCoroutineScope()
     Scaffold { innerPadding ->
         Column(modifier = modifier.padding(innerPadding)) {
             CommonBackTopBar(
@@ -149,6 +144,9 @@ fun FoodEditScreen(
                 )
                 FoodAmountComponent(
                     food = food,
+                    onClickUnitType = {
+                        showBottomSheet = true
+                    }
                 )
                 NutritionComponent(
                     modifier = modifier,
@@ -165,6 +163,71 @@ fun FoodEditScreen(
                 onDeleteClick = { onFoodDeleteClick(food.foodId) },
                 onUpdateClick = onFoodUpdateClick,
             )
+        }
+
+        if (showBottomSheet) {
+            ModalBottomSheet(dragHandle = null, sheetState = sheetState, onDismissRequest = {
+                showBottomSheet = false
+            }) {
+
+                var selectedUnitType by remember {
+                    mutableStateOf(food.unit)
+                }
+
+                Column(
+                    modifier = modifier
+                        .wrapContentHeight()
+                        .background(Color.White)
+                ) {
+                    Row(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(onClick = {
+                            dismissModalBottomSheet(
+                                scope = scope,
+                                sheetState = sheetState,
+                                callback = {
+                                    showBottomSheet = false
+                                },
+                            )
+                        }) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_close),
+                                contentDescription = "close"
+                            )
+                        }
+                    }
+
+                    UnitTypeBottomSheet(
+                        initUnitType = food.unit,
+                        onUnitSelected = {
+                            selectedUnitType = it
+                        },
+                    )
+
+                    CommonWideButton(
+                        modifier = Modifier.padding(horizontal = 24.dp),
+                        text = "확인",
+                        onClick = {
+                            viewModel.updateUnitType(
+                                food.foodId, selectedUnitType
+                            )
+                            dismissModalBottomSheet(
+                                scope = scope,
+                                sheetState = sheetState,
+                                callback = {
+                                    showBottomSheet = false
+                                },
+                            )
+                        },
+                    )
+
+                }
+
+            }
         }
     }
 

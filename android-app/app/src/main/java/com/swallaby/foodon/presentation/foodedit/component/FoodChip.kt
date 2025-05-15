@@ -2,6 +2,8 @@ package com.swallaby.foodon.presentation.foodedit.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -24,13 +27,19 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 @Composable
 private fun DefaultChip(
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     Box(
         modifier = modifier
             .height(32.dp)
             .border(width = 1.dp, color = Border025, shape = RoundedCornerShape(100.dp))
-            .padding(horizontal = 12.dp), contentAlignment = Alignment.Center
+            .padding(horizontal = 12.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ), contentAlignment = Alignment.Center
     ) {
         content()
     }
@@ -39,7 +48,7 @@ private fun DefaultChip(
 
 @Composable
 fun SearchChip(modifier: Modifier = Modifier) {
-    DefaultChip(modifier) {
+    DefaultChip(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(R.drawable.icon_search), contentDescription = "search"
@@ -51,13 +60,18 @@ fun SearchChip(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FoodChip(modifier: Modifier = Modifier, foodName: String, isSelected: Boolean = false) {
+fun FoodChip(
+    modifier: Modifier = Modifier,
+    foodName: String,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {},
+) {
     DefaultChip(
-        modifier.border(
+        modifier = modifier.border(
             width = 1.dp,
             color = if (isSelected) WB500 else Border025,
             shape = RoundedCornerShape(100.dp)
-        )
+        ), onClick = onClick
     ) {
         Text(
             foodName,

@@ -59,7 +59,7 @@ import org.threeten.bp.temporal.WeekFields
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     calendarViewModel: CalendarViewModel = hiltViewModel(),
-    onRecordClick: () -> Unit = {}
+    onRecordClick: () -> Unit = {},
 ) {
 
     val navController = LocalNavController.current
@@ -221,6 +221,22 @@ fun MainScreen(
                     Text(
                         modifier = Modifier.padding(16.dp),
                         text = "등록 화면 시작",
+                        color = MainWhite,
+                        style = NotoTypography.NotoMedium20
+                    )
+                }
+
+                // 임시 테스트
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(modifier = Modifier
+                    .background(WB500)
+                    .clickable {
+                        navController.navigate(NavRoutes.FoodGraph.FoodRegister.route)
+                    }) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = "음식 등록",
                         color = MainWhite,
                         style = NotoTypography.NotoMedium20
                     )

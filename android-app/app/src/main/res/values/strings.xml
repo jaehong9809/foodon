@@ -58,6 +58,9 @@
     <string name="format_g">%dg</string>
     <string name="over_size_image">이미지가 너무 큽니다.</string>
     <string name="notice_size_image">10MB 이하 이미지 파일만 업로드 가능합니다.</string>
+    <string name="food_name">음식명</string>
+    <string name="food_quantity">내용량</string>
+    <string name="food_name_placeholder">음식 이름을 입력해 주세요</string>
 
 
     <!-- main -->

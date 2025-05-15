@@ -8,6 +8,7 @@ import com.swallaby.foodon.data.food.remote.api.FoodApi
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 import com.swallaby.foodon.data.food.remote.dto.response.toDomain
+import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.repository.FoodRepository
 import okhttp3.MultipartBody
@@ -29,6 +30,12 @@ class FoodRemoteRepositoryImpl @Inject constructor(
     override suspend fun postCustomFood(request: CustomFoodRequest): ApiResult<Unit> = safeApiCall {
         foodApi.postCustomFood(request).getOrThrowNull { }
     }
+
+    override suspend fun postCustomFoodUpdate(request: CustomFoodRequest): ApiResult<FoodInfoWithId> =
+        safeApiCall {
+            foodApi.postCustomFoodUpdate(request).getOrThrow { it.toDomain() }
+        }
+
 
     override suspend fun getMealDetail(mealId: Long): ApiResult<MealInfo> = safeApiCall {
         foodApi.getMealDetail(mealId).getOrThrow { it.toDomain() }

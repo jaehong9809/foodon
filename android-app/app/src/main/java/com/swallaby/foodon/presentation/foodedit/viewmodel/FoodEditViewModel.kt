@@ -9,7 +9,8 @@ import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.NutrientInfo
-import com.swallaby.foodon.domain.food.usecase.RegisterCustomFoodUseCase
+import com.swallaby.foodon.domain.food.model.UnitType
+import com.swallaby.foodon.domain.food.usecase.UpdateCustomFoodUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -19,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FoodEditViewModel @Inject constructor(
-    private val registerCustomFoodUseCase: RegisterCustomFoodUseCase,
+    private val updateCustomFoodUseCase: UpdateCustomFoodUseCase,
 ) : BaseViewModel<FoodEditUiState>(FoodEditUiState()) {
     private var isInitialized = false
 
@@ -48,7 +49,7 @@ class FoodEditViewModel @Inject constructor(
         }
     }
 
-    fun registerCustomFood(mealItem: MealItem) {
+    fun updateCustomFood(mealItem: MealItem) {
         viewModelScope.launch {
             val request = CustomFoodRequest(
                 foodName = mealItem.foodName,
@@ -57,7 +58,7 @@ class FoodEditViewModel @Inject constructor(
                 unit = mealItem.unit
             )
 
-            when (val result = registerCustomFoodUseCase(
+            when (val result = updateCustomFoodUseCase(
                 request = request
             ).toResultState()) {
                 is ResultState.Success -> {
@@ -66,7 +67,7 @@ class FoodEditViewModel @Inject constructor(
                 }
 
                 is ResultState.Error -> {
-                    Log.d("FoodEditViewModel", "Error registerCustomFood: ${result.messageRes}")
+                    Log.d("FoodEditViewModel", "Error updateCustomFood: ${result.messageRes}")
                     _events.emit(FoodEditEvent.FailedCustomFood(result.messageRes))
                 }
 
@@ -102,6 +103,27 @@ class FoodEditViewModel @Inject constructor(
                 )
             }
 
+        }
+    }
+
+    fun updateUnitType(foodId: Long, unit: UnitType) {
+        val currentUiState = _uiState.value
+        if (currentUiState.foodEditState is ResultState.Success) {
+            val mealInfo = currentUiState.foodEditState.data
+            val updatedItems = mealInfo.mealItems.map { item ->
+                if (item.foodId == foodId) {
+                    val newItem = item.copy(unit = unit)
+                    newItem
+                } else {
+                    item
+                }
+            }
+            val updatedMealInfo = mealInfo.copy(mealItems = updatedItems)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    foodEditState = ResultState.Success(updatedMealInfo)
+                )
+            }
         }
     }
 
