@@ -14,7 +14,7 @@ import javax.inject.Inject
 class AuthRemoteRepositoryImpl @Inject constructor(
     private val api: AuthApi
 ): AuthRepository {
-    override suspend fun loginWithKakao(accessToken: String): ApiResult<KakaoLoginResponse> {
+    override suspend fun loginWithKakao(accessToken: String): ApiResult<TokenResponse> {
         return safeApiCall {
             api.loginWithKakao(KakaoLoginRequest(accessToken)).getOrThrow { it }
         }

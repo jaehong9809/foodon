@@ -25,6 +25,7 @@ import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.WB500
+import com.swallaby.foodon.data.auth.remote.result.AuthFlowResult
 
 @Composable
 fun LoginScreen(
@@ -96,8 +97,17 @@ fun LoginScreen(
     LaunchedEffect(uiState.loginResult) {
         when (val result = uiState.loginResult) {
             is ResultState.Success -> {
-                navController.navigate(NavRoutes.Main.route) {
-                    popUpTo(NavRoutes.Login.route) { inclusive = true }
+                when (result.data) {
+                    AuthFlowResult.NavigateToMain -> {
+                        navController.navigate(NavRoutes.Main.route) {
+                            popUpTo(NavRoutes.Login.route) { inclusive = true }
+                        }
+                    }
+                    AuthFlowResult.NavigateToSignUp -> {
+                        navController.navigate(NavRoutes.SignUpGraph.route) {
+                            popUpTo(NavRoutes.Login.route) { inclusive = true }
+                        }
+                    }
                 }
             }
             is ResultState.Error -> {
@@ -106,4 +116,5 @@ fun LoginScreen(
             else -> Unit
         }
     }
+
 }

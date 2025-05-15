@@ -6,6 +6,6 @@ import com.swallaby.foodon.data.auth.remote.dto.response.TokenResponse
 
 
 interface AuthRepository {
-    suspend fun loginWithKakao(accessToken: String) : ApiResult<KakaoLoginResponse>
+    suspend fun loginWithKakao(accessToken: String) : ApiResult<TokenResponse>
     suspend fun validateToken(accessToken: String, refreshToken: String): ApiResult<TokenResponse>
 }
