@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.RoundedCircularProgress
 import com.swallaby.foodon.core.ui.theme.G500
@@ -33,9 +32,11 @@ import com.swallaby.foodon.core.ui.theme.MainBlack
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
+import com.swallaby.foodon.domain.calendar.model.MealThumbnailInfo
 import org.threeten.bp.LocalDate
 
 @Composable
@@ -48,8 +49,7 @@ fun CalendarDayItem(
     onClick: () -> Unit
 ) {
     val isFutureDay = date.isAfter(today)
-    val recommendationImageUrl = (calendarItem as? CalendarItem.Recommendation)?.data?.thumbnailImage.orEmpty()
-    val hasRecommendationImage = recommendationImageUrl.isNotBlank()
+    val recommendMeal = (calendarItem as? CalendarItem.Recommendation)?.data?.meals?.firstOrNull()
 
     Column(
         modifier = Modifier
@@ -79,8 +79,8 @@ fun CalendarDayItem(
                     )
                 }
                 CalendarType.RECOMMENDATION -> {
-                    if (hasRecommendationImage) {
-                        RecommendationFoodImage(recommendationImageUrl)
+                    if (recommendMeal != null) {
+                        RecommendationFoodImage(recommendMeal)
                     }
                 }
                 else -> {
@@ -92,7 +92,7 @@ fun CalendarDayItem(
                 day = date.dayOfMonth,
                 isSelected = isSelected,
                 isFutureDay = isFutureDay,
-                textColor = if (hasRecommendationImage) MainWhite else G900
+                textColor = if (recommendMeal != null) MainWhite else G900
             )
         }
 
@@ -166,18 +166,18 @@ fun DayBottomContent(calendarItem: CalendarItem?) {
 
 @Composable
 fun RecommendationFoodImage(
-    imageUrl: String
+    meal: MealThumbnailInfo
 ) {
     Box(
         modifier = Modifier
             .size(32.dp)
             .clip(CircleShape)
     ) {
+
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl)
-                .crossfade(true)
-                .build(),
+            model = ImageCropManager(LocalContext.current).getCroppedImageRequest(
+                meal.mealImage, meal.positionInfo
+            ),
             contentDescription = "추천 음식 사진",
             contentScale = ContentScale.Crop,
             modifier = Modifier

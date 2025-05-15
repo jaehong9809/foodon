@@ -76,7 +76,7 @@ fun NavGraph(
 //                bottom = allInsets.calculateBottomPadding()
 //            )
         ) {
-            mainGraph(navController, mainViewModel, calendarViewModel)
+            mainGraph(navController, mainViewModel)
             loginGraph(navController)
             calendarGraph(calendarViewModel)
             signUpGraph(navController, signUpViewModel)

@@ -16,15 +16,15 @@ class MainRepositoryImpl @Inject constructor(
     private val api: MainApi
 ): MainRepository {
     override suspend fun getMealRecord(date: LocalDate): ApiResult<List<MealRecord>> = safeApiCall {
-        api.getMealRecord(date.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+        api.getMealRecord(date).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
     override suspend fun getNutrientIntake(date: LocalDate): ApiResult<NutrientIntake> = safeApiCall {
-        api.getNutrientIntake(date.toString()).getOrThrow { it.toDomain() }
+        api.getNutrientIntake(date).getOrThrow { it.toDomain() }
     }
 
     override suspend fun getNutrientManage(date: LocalDate): ApiResult<List<NutrientManage>> = safeApiCall {
-        api.getNutrientManage(date.toString()).getOrThrow { it.map { data -> data.toDomain() } }
+        api.getNutrientManage(date).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
 }

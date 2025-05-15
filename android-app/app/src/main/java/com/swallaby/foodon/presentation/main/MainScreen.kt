@@ -18,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.FloatingButton
@@ -39,55 +39,48 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.domain.calendar.model.CalendarItem
-import com.swallaby.foodon.domain.calendar.model.CalendarType
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
+import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
 import com.swallaby.foodon.presentation.main.component.MainCalendarPager
 import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
+import com.swallaby.foodon.presentation.main.model.CalendarInfo
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import kotlinx.coroutines.launch
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.YearMonth
-import org.threeten.bp.temporal.WeekFields
+import org.threeten.bp.LocalDate
 
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    calendarViewModel: CalendarViewModel = hiltViewModel(),
-    onRecordClick: () -> Unit = {},
+    onRecordClick: () -> Unit = {}
 ) {
 
     val navController = LocalNavController.current
 
-    val mainUiState by mainViewModel.uiState.collectAsState()
-    val calendarUiState by calendarViewModel.uiState.collectAsState()
+    val mainUiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+    val sharedState = mainViewModel.calendarSharedState
 
-    val selectedDate = calendarUiState.selectedDate
-    val currentYearMonth = calendarUiState.currentYearMonth
+    val calendarInfo = CalendarInfo(
+        today = LocalDate.now(),
+        selectedDate = sharedState.selectedDate.collectAsStateWithLifecycle().value,
+        currentYearMonth = sharedState.currentYearMonth.collectAsStateWithLifecycle().value,
+        currentWeekStart = sharedState.currentWeekStart.collectAsStateWithLifecycle().value
+    )
 
-    val calendarItems = (calendarUiState.calendarResult as? ResultState.Success)?.data.orEmpty()
+    val calendarResult by sharedState.calendarResult.collectAsStateWithLifecycle()
+    val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val mealItemMap by remember(calendarItems) {
-        derivedStateOf {
-            calendarItems
-                .filterIsInstance<CalendarItem.Meal>()
-                .associateBy { it.data.date }
-        }
+        derivedStateOf { calendarItems.toCalendarItemMap() }
     }
 
-    val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
-
-    val currentWeekStart = calendarViewModel.currentWeekStart
-    val weekOfMonth = currentWeekStart.get(weekFields.weekOfMonth())
-
-    val nextWeekStart = currentWeekStart.plusWeeks(1)
+    val nextWeekStart = calendarInfo.currentWeekStart.plusWeeks(1)
     val maxPage = when {
-        nextWeekStart.isAfter(calendarUiState.today) -> 2
+        nextWeekStart.isAfter(calendarInfo.today) -> 2
         else -> 3
     }
 
@@ -100,23 +93,23 @@ fun MainScreen(
         if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
             val delta = pagerState.currentPage - 1
 
-            calendarViewModel.goToWeek(delta)
+            sharedState.goToWeek(delta)
             pagerState.scrollToPage(1)
         }
     }
 
-    LaunchedEffect(selectedDate) {
-        mainViewModel.updateDailyData(selectedDate)
+    LaunchedEffect(calendarInfo.selectedDate) {
+        mainViewModel.updateDailyData(calendarInfo.selectedDate)
     }
 
-    LaunchedEffect(currentYearMonth) {
-        calendarViewModel.fetchCalendarData(CalendarType.MEAL, currentYearMonth)
+    LaunchedEffect(calendarInfo.currentYearMonth) {
+        mainViewModel.fetchCalendarData(calendarInfo.currentYearMonth)
     }
 
-    LaunchedEffect(currentWeekStart) {
-        calendarViewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth,
-            week = weekOfMonth
+    LaunchedEffect(calendarInfo.currentWeekStart) {
+        mainViewModel.fetchRecommendation(
+            calendarInfo.currentYearMonth,
+            getWeekOfMonth(calendarInfo.currentWeekStart)
         )
     }
 
@@ -141,12 +134,12 @@ fun MainScreen(
         ) {
 
             MainCalendarHeader(
-                currentYearMonth = currentYearMonth,
+                currentYearMonth = calendarInfo.currentYearMonth,
                 onMonthlyClick = {
                     navController.navigate(NavRoutes.Calendar.route)
                 },
                 onTodayClick = {
-                    calendarViewModel.resetToTodayWeek()
+                    sharedState.resetToTodayWeek()
 
                     scope.launch {
                         pagerState.scrollToPage(1)
@@ -158,12 +151,10 @@ fun MainScreen(
 
             MainCalendarPager(
                 pagerState = pagerState,
-                currentWeekStart = currentWeekStart,
                 mealItemMap = mealItemMap,
-                calendarUiState = calendarUiState,
+                calendarInfo = calendarInfo,
                 onDateSelected = { date ->
-                    calendarViewModel.selectDate(date)
-                    calendarViewModel.updateYearMonth(YearMonth.from(date))
+                    sharedState.updateDate(date)
                 }
             )
 
@@ -182,13 +173,18 @@ fun MainScreen(
 //                unit = "g",
 //            )
 
-            MainContentPager(mainUiState, calendarUiState)
+            MainContentPager(
+                mainUiState.intakeResult,
+                mainUiState.manageResult,
+                sharedState.recommendFoods.collectAsStateWithLifecycle().value,
+                calendarInfo
+            )
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
             MealRecordContent(
-                mainUiState = mainUiState,
-                calendarUiState = calendarUiState
+                mainUiState.recordResult,
+                calendarInfo
             ) { mealId ->
                 navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(mealId))
             }

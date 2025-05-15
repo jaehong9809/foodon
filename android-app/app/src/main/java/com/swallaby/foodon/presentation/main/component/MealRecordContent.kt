@@ -19,19 +19,18 @@ import com.swallaby.foodon.core.ui.component.LoadingProgress
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.formatDate
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
-import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
+import com.swallaby.foodon.domain.main.model.MealRecord
+import com.swallaby.foodon.presentation.main.model.CalendarInfo
 
 @Composable
 fun MealRecordContent(
-    mainUiState: MainUiState,
-    calendarUiState: CalendarUiState,
+    recordResult: ResultState<List<MealRecord>>,
+    calendarInfo: CalendarInfo,
     onMealClick: (Long) -> Unit
 ) {
 
-    val today = calendarUiState.today
-    val selectedDate = calendarUiState.selectedDate
-    val recordState = mainUiState.recordResult
+    val today = calendarInfo.today
+    val selectedDate = calendarInfo.selectedDate
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(24.dp)
@@ -45,19 +44,16 @@ fun MealRecordContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (recordState) {
-            is ResultState.Loading -> {
-                LoadingProgress()
-            }
+        when (recordResult) {
             is ResultState.Success -> {
-                if (recordState.data.isEmpty()) {
+                if (recordResult.data.isEmpty()) {
                     EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
                 } else {
                     Column(
                         modifier = Modifier.wrapContentHeight(),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        recordState.data.forEach { item ->
+                        recordResult.data.forEach { item ->
                             MealRecordItem(meal = item, onClick = onMealClick)
                         }
                     }
