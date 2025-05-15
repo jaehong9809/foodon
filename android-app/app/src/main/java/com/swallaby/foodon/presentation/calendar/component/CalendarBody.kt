@@ -19,17 +19,17 @@ import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.util.DateUtil.getDateShape
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
+import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import org.threeten.bp.LocalDate
 
 @Composable
 fun CalendarBody(
     calendarItemMap: Map<String, CalendarItem>,
-    uiState: CalendarUiState,
+    calendarStatus: CalendarStatus,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val calendarType = CalendarType.values()[uiState.selectedTabIndex]
-    val yearMonth = uiState.currentYearMonth
+    val calendarType = CalendarType.values()[calendarStatus.selectedTabIndex]
+    val yearMonth = calendarStatus.currentYearMonth
 
     val firstDayOfMonth = yearMonth.atDay(1)
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
@@ -43,7 +43,7 @@ fun CalendarBody(
         var dayCounter = 1
 
         repeat(6) { weekIndex ->
-            val isSelectedWeek = weekIndex == uiState.selectedWeekIndex
+            val isSelectedWeek = weekIndex == calendarStatus.selectedWeekIndex
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -69,8 +69,8 @@ fun CalendarBody(
                             calendarType = calendarType,
                             shape = shape,
                             isSelectedWeek = isSelectedWeek,
-                            isSelectedDate = uiState.selectedDate == date,
-                            today = uiState.today,
+                            isSelectedDate = calendarStatus.selectedDate == date,
+                            today = calendarStatus.today,
                             onClick = onDateSelected
                         )
 

@@ -12,14 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
+import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import org.threeten.bp.LocalDate
 
 @Composable
 fun CalendarPager(
     pagerState: PagerState,
     calendarItemMap: Map<String, CalendarItem>,
-    uiState: CalendarUiState,
+    calendarStatus: CalendarStatus,
     onDateSelected: (LocalDate) -> Unit,
 ) {
     HorizontalPager(
@@ -34,7 +34,7 @@ fun CalendarPager(
         ) {
             CalendarBody(
                 calendarItemMap = calendarItemMap,
-                uiState = uiState,
+                calendarStatus = calendarStatus,
                 onDateSelected = onDateSelected
             )
         }

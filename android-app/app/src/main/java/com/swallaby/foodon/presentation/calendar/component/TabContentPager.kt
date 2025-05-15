@@ -13,22 +13,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarMeal
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.calendar.model.UserWeight
+import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import kotlinx.coroutines.launch
 
 @Composable
 fun TabContentPager(
     modifier: Modifier = Modifier,
-    uiState: CalendarUiState,
     selectedMeal: CalendarItem?,
-    weekCount: Int,
+    weightResult: ResultState<UserWeight>,
+    recommendFoods: ResultState<List<RecommendFood>>,
+    calendarStatus: CalendarStatus,
     onTabChanged: (Int) -> Unit,
     onWeeklyTabChanged: (Int) -> Unit
 ) {
 
-    val selectedTabIndex = uiState.selectedTabIndex
+    val selectedTabIndex = calendarStatus.selectedTabIndex
 
     val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { 3 })
     val scope = rememberCoroutineScope()
@@ -51,13 +55,12 @@ fun TabContentPager(
                     MealContent(calendarMeal = meal)
                 }
                 1 -> {
-                    WeightContent(uiState.weightResult)
+                    WeightContent(weightResult)
                 }
                 2 -> {
                     RecommendationContent(
-                        weekCount = weekCount,
-                        selectedWeekIndex = uiState.selectedWeekIndex,
-                        recommendFoods = uiState.recommendFoods,
+                        calendarStatus = calendarStatus,
+                        recommendFoods = recommendFoods,
                         onWeeklyTabChanged = {
                             onWeeklyTabChanged(it)
                         }
