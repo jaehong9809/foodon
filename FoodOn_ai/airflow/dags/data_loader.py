@@ -117,7 +117,7 @@ def load_data_from_db(min_count=10):
                     m.meal_id AS meal_id,
                     m.meal_image,
                     mi.food_name,
-                    p.x, p.y, p.width, p.height
+                    p.x, p.y, p.width, p.height, p.confidence
                 FROM meals m
                 JOIN meal_items mi ON m.meal_id = mi.meal_id
                 JOIN positions p ON mi.meal_item_id = p.meal_item_id
