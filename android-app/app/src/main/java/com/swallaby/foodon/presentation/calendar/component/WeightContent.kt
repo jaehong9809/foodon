@@ -25,12 +25,11 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.WB500F1A
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.domain.calendar.model.UserWeight
-import com.swallaby.foodon.presentation.navigation.LocalNavController
-import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun WeightContent(
-    weightResult: ResultState<UserWeight>
+    weightResult: ResultState<UserWeight>,
+    onUpdateWeight: () -> Unit
 ) {
     val userWeight = when (weightResult) {
         is ResultState.Success -> weightResult.data
@@ -42,7 +41,11 @@ fun WeightContent(
         modifier = Modifier.fillMaxWidth()
     ) {
         GoalWeight(modifier = Modifier.weight(1f), userWeight.goalWeight)
-        CurrentWeight(modifier = Modifier.weight(1f), userWeight.currentWeight)
+        CurrentWeight(
+            modifier = Modifier.weight(1f),
+            weight = userWeight.currentWeight,
+            onUpdateWeight = onUpdateWeight
+        )
     }
 }
 
@@ -62,9 +65,11 @@ fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
 }
 
 @Composable
-fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
-    val navController = LocalNavController.current
-
+fun CurrentWeight(
+    modifier: Modifier = Modifier,
+    weight: Int,
+    onUpdateWeight: () -> Unit
+) {
     TabContentLayout(
         modifier = modifier.heightIn(min = 78.dp),
         title = stringResource(R.string.tab_content_title_cur_weight),
@@ -91,9 +96,7 @@ fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = {
-                            navController.navigate(NavRoutes.CurrentWeight.route)
-                        }
+                        onClick = onUpdateWeight
                     ),
                 painter = painterResource(id = R.drawable.icon_bg_pencil),
                 contentDescription = null,
@@ -105,5 +108,5 @@ fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
 @Preview(showBackground = true)
 @Composable
 fun WeightPreview() {
-    WeightContent(weightResult = ResultState.Loading)
+    WeightContent(weightResult = ResultState.Loading, onUpdateWeight = {})
 }

@@ -51,6 +51,7 @@ import org.threeten.bp.YearMonth
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
+    onUpdateWeight: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -166,7 +167,8 @@ fun CalendarScreen(
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
                     viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
-                }
+                },
+                onUpdateWeight = onUpdateWeight
             )
         }
     }
@@ -198,5 +200,5 @@ fun UnitContent(calendarType: CalendarType) {
 @Preview(showBackground = true)
 @Composable
 fun CalendarPreview() {
-    CalendarScreen()
+    CalendarScreen(onUpdateWeight = {})
 }

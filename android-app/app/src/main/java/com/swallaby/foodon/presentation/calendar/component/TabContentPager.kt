@@ -29,7 +29,8 @@ fun TabContentPager(
     recommendFoods: ResultState<List<RecommendFood>>,
     calendarStatus: CalendarStatus,
     onTabChanged: (Int) -> Unit,
-    onWeeklyTabChanged: (Int) -> Unit
+    onWeeklyTabChanged: (Int) -> Unit,
+    onUpdateWeight: () -> Unit
 ) {
 
     val selectedTabIndex = calendarStatus.selectedTabIndex
@@ -55,7 +56,7 @@ fun TabContentPager(
                     MealContent(calendarMeal = meal)
                 }
                 1 -> {
-                    WeightContent(weightResult)
+                    WeightContent(weightResult, onUpdateWeight)
                 }
                 2 -> {
                     RecommendationContent(

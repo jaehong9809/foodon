@@ -44,7 +44,17 @@ fun NavGraphBuilder.calendarGraph(
                 )
             }
         ) {
-            CalendarScreen(calendarViewModel)
+            CalendarScreen(
+                viewModel = calendarViewModel,
+                onUpdateWeight = {
+                    navController.navigate(
+                        if (calendarViewModel.appSharedState.isLoggedIn.value)
+                            NavRoutes.CurrentWeight.route
+                        else
+                            NavRoutes.Login.route
+                    )
+                }
+            )
         }
 
         composable(

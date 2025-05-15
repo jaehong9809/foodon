@@ -28,7 +28,7 @@ fun NavGraphBuilder.mainGraph(
 
         composable(NavRoutes.Main.route) {
             MainScreen(
-                mainViewModel,
+                viewModel = mainViewModel,
                 onRecordClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodRecord.route)
                 }

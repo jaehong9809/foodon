@@ -27,7 +27,7 @@ class CalendarViewModel @Inject constructor(
     private val getUserWeightUseCase: GetUserWeightUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
     private val updateUserWeightUseCase: UpdateUserWeightUseCase,
-    private val appSharedState: AppSharedState,
+    val appSharedState: AppSharedState,
     val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
 
