@@ -18,6 +18,7 @@ import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.foodregister.FoodRegisterScreen
 import com.swallaby.foodon.presentation.foodregister.viewmodel.FoodRegisterViewModel
+import com.swallaby.foodon.presentation.foodsearch.FoodSearchScreen
 import com.swallaby.foodon.presentation.mealdetail.MealDetailScreen
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.MealRecordScreen
@@ -45,7 +46,7 @@ fun NavGraphBuilder.mealGraph(
                     navController.popBackStack()
                 },
                 onSearchClick = {
-                    // TODO: navigate SearchScreen
+                    navController.navigate(NavRoutes.FoodGraph.FoodSearch.route)
                 },
                 onNavigateToMealDetail = {
                     recordViewModel.resetMealRecordState()
@@ -130,6 +131,9 @@ fun NavGraphBuilder.mealGraph(
                     }
                     navController.popBackStack()
                 },
+                onSearchClick = {
+                    navController.navigate(NavRoutes.FoodGraph.FoodSearch.route)
+                }
 //                onSuccessCustomFood = { mealItem ->
 //                    mealEditViewModel.updateFood(mealItem.copy(type = FoodType.CUSTOM))
 //                }
@@ -155,21 +159,15 @@ fun NavGraphBuilder.mealGraph(
                 )
             }
             val foodEditViewModel: FoodEditViewModel = hiltViewModel(backStackEntry)
-            NutritionEditScreen(
-                viewModel = foodEditViewModel,
-                foodId = foodId,
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onFoodUpdateClick = { mealItem ->
-                    foodEditViewModel.updateCustomFood(mealItem)
+            NutritionEditScreen(viewModel = foodEditViewModel, foodId = foodId, onBackClick = {
+                navController.popBackStack()
+            }, onFoodUpdateClick = { mealItem ->
+                foodEditViewModel.updateCustomFood(mealItem)
 //                    foodEditViewModel.updateFoodNutrients(foodId, nutrientInfo)
 //                    navController.popBackStack()
-                },
-                onSuccessCustomFood = {
-                    navController.popBackStack()
-                }
-            )
+            }, onSuccessCustomFood = {
+                navController.popBackStack()
+            })
         }
 
         composable(
@@ -182,6 +180,12 @@ fun NavGraphBuilder.mealGraph(
                 },
                 viewModel = registerViewModel,
             )
+        }
+
+        composable(
+            NavRoutes.FoodGraph.FoodSearch.route,
+        ) {
+            FoodSearchScreen()
         }
     }
 }

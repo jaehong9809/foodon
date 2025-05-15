@@ -82,6 +82,7 @@ fun FoodEditScreen(
     onFoodDeleteClick: (foodId: Long) -> Unit = {},
     onFoodUpdateClick: () -> Unit = {},
     onNutritionEditClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -134,7 +135,7 @@ fun FoodEditScreen(
                     color = Border02
                 )
                 FoodSearch(
-                    foodName = food.foodName
+                    foodName = food.foodName, onSearchClick = onSearchClick
                 )
                 Spacer(
                     modifier = modifier
@@ -142,12 +143,9 @@ fun FoodEditScreen(
                         .fillMaxWidth()
                         .background(color = Bkg04)
                 )
-                FoodAmountComponent(
-                    food = food,
-                    onClickUnitType = {
-                        showBottomSheet = true
-                    }
-                )
+                FoodAmountComponent(food = food, onClickUnitType = {
+                    showBottomSheet = true
+                })
                 NutritionComponent(
                     modifier = modifier,
                     nutrientInfo = nutrientInfo,
@@ -358,7 +356,7 @@ private fun ChildNutritionInfo(
 
 @Composable
 fun FoodSearch(
-    modifier: Modifier = Modifier, foodName: String,
+    modifier: Modifier = Modifier, foodName: String, onSearchClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier.padding(top = 16.dp, bottom = 24.dp)) {
@@ -377,7 +375,7 @@ fun FoodSearch(
                 .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            SearchChip(modifier)
+            SearchChip(modifier, onClick = onSearchClick)
             FoodChip(modifier, foodName = "피자", isSelected = true)
             FoodChip(modifier, foodName = "불고기 피자")
             FoodChip(modifier, foodName = "페페로니 피자")
