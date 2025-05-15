@@ -83,16 +83,21 @@ public class Meal {
     public static Meal createMeal(
             Member member,
             String imageUrl,
-            MealCreateRequest request
+            BigDecimal totalKcal,
+            BigDecimal totalCarbs,
+            BigDecimal totalProtein,
+            BigDecimal totalFat,
+            MealTimeType mealTimeType,
+            String mealTime
     ) {
         return new Meal(
                 member,
-                request.mealTimeType(),
-                request.totalKcal(),
-                request.totalCarbs(),
-                request.totalProtein(),
-                request.totalFat(),
-                LocalDate.now().atTime(parse(request.mealTime())),
+                mealTimeType,
+                totalKcal,
+                totalCarbs,
+                totalProtein,
+                totalFat,
+                LocalDate.now().atTime(parse(mealTime)),
                 imageUrl
         );
     }

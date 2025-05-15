@@ -1,6 +1,9 @@
 package com.foodon.foodon.common.util;
 
+import com.foodon.foodon.food.domain.NutrientCode;
 import com.foodon.foodon.food.domain.NutrientUnit;
+import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.NutrientInfo;
 import com.foodon.foodon.meal.domain.Meal;
 import com.foodon.foodon.meal.dto.NutrientProfile;
 import com.foodon.foodon.meal.dto.MealItemInfo;
@@ -29,6 +32,25 @@ public class NutrientCalculator {
                     BigDecimal quantity = item.quantity();
                     return multiply(valuePerUnit, quantity);
                 })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public static BigDecimal sumNutrientByCodeAndQuantity(
+            Map<Long, FoodWithNutrientInfo> foodMap,
+            Map<Long, BigDecimal> quantityMap,
+            NutrientCode targetCode
+    ) {
+        return foodMap.values().stream()
+                .flatMap(food -> food.nutrients().stream()
+                        .filter(nutrient -> nutrient.code() == targetCode)
+                        .map(nutrient ->
+                                // 1회 제공 영양성분 함량 x 먹은 양
+                                calculateNutrientPerServing(
+                                        food.servingSize(),
+                                        nutrient.value()
+                                ).multiply(quantityMap.getOrDefault(food.foodId(), BigDecimal.ZERO))
+                        )
+                )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
