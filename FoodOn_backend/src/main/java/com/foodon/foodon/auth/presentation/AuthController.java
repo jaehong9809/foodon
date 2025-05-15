@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final KakaoAuthService kakaoAuthService;
-    private final JwtUtil jwtUtil;
     private final AuthService authService;
 
     @PostMapping("/kakao")
