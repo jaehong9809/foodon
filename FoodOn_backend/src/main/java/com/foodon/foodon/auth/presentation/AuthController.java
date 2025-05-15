@@ -1,5 +1,6 @@
 package com.foodon.foodon.auth.presentation;
 
+import com.foodon.foodon.auth.application.AuthService;
 import com.foodon.foodon.auth.application.KakaoAuthService;
 import com.foodon.foodon.auth.dto.MemberTokens;
 import com.foodon.foodon.auth.dto.request.KakaoLoginRequest;
@@ -19,6 +20,7 @@ public class AuthController {
 
     private final KakaoAuthService kakaoAuthService;
     private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
     @PostMapping("/kakao")
     @Operation(summary = "카카오 로그인 후 서버 자체 인증 토큰 발급")
@@ -34,8 +36,17 @@ public class AuthController {
     public ResponseEntity<Response<MemberTokens>> createSuperToken(
             @RequestParam String userId
     ) {
-        MemberTokens superTokens = jwtUtil.createSuperToken(userId);
+        MemberTokens superTokens = authService.createSuperToken(userId);
         return ResponseUtil.success(superTokens);
+    }
+
+    @PostMapping("/token/validate")
+    @Operation(summary = "자동 로그인을 위한 토큰 검증")
+    public ResponseEntity<Response<MemberTokens>> validateTokens(
+            @RequestBody MemberTokens memberTokens
+    ) {
+        MemberTokens tokens = authService.validateAndReissueTokens(memberTokens);
+        return ResponseUtil.success(tokens);
     }
 
 }
