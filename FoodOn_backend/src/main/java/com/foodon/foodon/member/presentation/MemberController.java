@@ -93,4 +93,13 @@ public class MemberController {
 		memberService.updateLastLoginTime(member);
 		return ResponseUtil.success();
 	}
+
+	@GetMapping("/me/profile/status")
+	@Operation(summary = "자신의 건강 정보가 DB에 등록되어있는지 상태 확인")
+	public ResponseEntity<Response<Boolean>> getMemberProfileUpdated(
+			@Parameter(hidden = true) @AuthMember Member member
+	) {
+		Boolean isUpdated = memberService.getMemberProfileUpdated(member);
+		return ResponseUtil.success(isUpdated);
+	}
 }

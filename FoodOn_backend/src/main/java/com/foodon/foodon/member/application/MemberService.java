@@ -129,4 +129,8 @@ public class MemberService {
 	public void updateLastLoginTime(Member member) {
 		member.updateLastLoginTime();
 	}
+
+	public Boolean getMemberProfileUpdated(Member member) {
+		return member.isProfileUpdated();
+	}
 }
