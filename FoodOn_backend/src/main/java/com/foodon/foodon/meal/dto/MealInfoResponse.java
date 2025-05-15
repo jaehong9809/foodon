@@ -23,7 +23,6 @@ public record MealInfoResponse(
             BigDecimal totalFat,
             List<MealItemInfo> mealItems
     ) {
-
         return new MealInfoResponse(
                 imageFileName,
                 round(totalKcal, 0),

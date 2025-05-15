@@ -11,22 +11,23 @@ import com.swallaby.foodon.domain.calendar.model.CalendarWeight
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.model.UserWeight
 import com.swallaby.foodon.domain.calendar.repository.CalendarRepository
+import org.threeten.bp.YearMonth
 import javax.inject.Inject
 
 class CalendarRepositoryImpl @Inject constructor(
     private val api: CalendarApi
 ): CalendarRepository {
 
-    override suspend fun getCalendarMeals(date: String): ApiResult<List<CalendarMeal>> = safeApiCall {
-        api.getCalendarMeals(date).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getCalendarMeals(yearMonth: YearMonth): ApiResult<List<CalendarMeal>> = safeApiCall {
+        api.getCalendarMeals(yearMonth).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
-    override suspend fun getCalendarWeights(date: String): ApiResult<List<CalendarWeight>> = safeApiCall {
-        api.getCalendarWeights(date).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getCalendarWeights(yearMonth: YearMonth): ApiResult<List<CalendarWeight>> = safeApiCall {
+        api.getCalendarWeights(yearMonth).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
-    override suspend fun getCalendarRecommendations(date: String): ApiResult<List<CalendarRecommendation>> = safeApiCall {
-        api.getCalendarRecommendations(date).getOrThrow { it.map { data -> data.toDomain() } }
+    override suspend fun getCalendarRecommendations(yearMonth: YearMonth): ApiResult<List<CalendarRecommendation>> = safeApiCall {
+        api.getCalendarRecommendations(yearMonth).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
     override suspend fun getUserWeight(): ApiResult<UserWeight> = safeApiCall {
@@ -34,7 +35,7 @@ class CalendarRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRecommendFood(
-        yearMonth: String,
+        yearMonth: YearMonth,
         week: Int?,
     ): ApiResult<List<RecommendFood>> = safeApiCall {
         api.getRecommendFoods(yearMonth, week).getOrThrow { it.map { data -> data.toDomain() } }

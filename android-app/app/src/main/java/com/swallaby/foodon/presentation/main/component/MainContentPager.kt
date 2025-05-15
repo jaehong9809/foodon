@@ -16,13 +16,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.BG300
 import com.swallaby.foodon.core.ui.theme.WB500
-import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.main.model.NutrientIntake
+import com.swallaby.foodon.domain.main.model.NutrientManage
+import com.swallaby.foodon.presentation.main.model.CalendarInfo
 
 @Composable
 fun MainContentPager(
-    uiState: MainUiState
+    intakeResult: ResultState<NutrientIntake>,
+    manageResult: ResultState<List<NutrientManage>>,
+    recommendFoods: ResultState<List<RecommendFood>>,
+    calendarInfo: CalendarInfo
 ) {
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 4 })
@@ -38,9 +45,9 @@ fun MainContentPager(
                 .height(350.dp) // 고정 길이 사용
         ) { page ->
             when (page) {
-                0 -> NutrientIntakeContent(uiState)
-                1 -> NutrientManageContent(uiState.manageResult)
-                2 -> RecommendFoodContent(uiState.recommendMealResult)
+                0 -> NutrientIntakeContent(intakeResult, calendarInfo)
+                1 -> NutrientManageContent(manageResult)
+                2 -> RecommendFoodContent(recommendFoods)
                 3 -> GoalManageContent()
             }
         }

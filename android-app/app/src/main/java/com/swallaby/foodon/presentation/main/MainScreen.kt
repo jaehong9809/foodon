@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -16,10 +18,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.FloatingButton
@@ -37,90 +39,77 @@ import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
+import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
 import com.swallaby.foodon.presentation.main.component.MainCalendarPager
 import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
+import com.swallaby.foodon.presentation.main.model.CalendarInfo
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import kotlinx.coroutines.launch
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.YearMonth
-import org.threeten.bp.temporal.WeekFields
+import org.threeten.bp.LocalDate
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel(),
-    onRecordClick: () -> Unit = {},
+    mainViewModel: MainViewModel = hiltViewModel(),
+    onRecordClick: () -> Unit = {}
 ) {
 
     val navController = LocalNavController.current
-    val uiState by viewModel.uiState.collectAsState()
 
-    val today = uiState.today
-    val selectedDate = uiState.selectedDate
-    val currentYearMonth = uiState.currentYearMonth
+    val mainUiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+    val sharedState = mainViewModel.calendarSharedState
 
-    val calendarItems = (uiState.calendarResult as? ResultState.Success)?.data.orEmpty()
+    val calendarInfo = CalendarInfo(
+        today = LocalDate.now(),
+        selectedDate = sharedState.selectedDate.collectAsStateWithLifecycle().value,
+        currentYearMonth = sharedState.currentYearMonth.collectAsStateWithLifecycle().value,
+        currentWeekStart = sharedState.currentWeekStart.collectAsStateWithLifecycle().value
+    )
+
+    val calendarResult by sharedState.calendarResult.collectAsStateWithLifecycle()
+    val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val mealItemMap by remember(calendarItems) {
-        derivedStateOf {
-            calendarItems
-                .filterIsInstance<CalendarItem.Meal>()
-                .associateBy { it.data.date }
-        }
+        derivedStateOf { calendarItems.toCalendarItemMap() }
     }
 
-    var weekOffset by remember { mutableIntStateOf(0) }
-
-    val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
-
-    val currentWeekStart = remember(weekOffset) {
-        today.with(weekFields.dayOfWeek(), 1).plusWeeks(weekOffset.toLong())
-    }
-
-    val weekOfMonth = currentWeekStart.get(weekFields.weekOfMonth())
-
-    val nextWeekStart = currentWeekStart.plusWeeks(1)
+    val nextWeekStart = calendarInfo.currentWeekStart.plusWeeks(1)
     val maxPage = when {
-        nextWeekStart.isAfter(today) -> 2
+        nextWeekStart.isAfter(calendarInfo.today) -> 2
         else -> 3
     }
 
     val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(selectedDate) {
-        viewModel.fetchRecordData(selectedDate.toString())
-        viewModel.fetchIntakeData(selectedDate.toString())
-        viewModel.fetchManageData(selectedDate.toString())
-    }
+    var value by remember { mutableStateOf("") }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
             val delta = pagerState.currentPage - 1
-            weekOffset += delta
 
-            val newWeekStart = today.with(DayOfWeek.SUNDAY).plusWeeks(weekOffset.toLong())
-            val newMonth = YearMonth.from(newWeekStart)
-
-            viewModel.updateYearMonth(newMonth)
-
+            sharedState.goToWeek(delta)
             pagerState.scrollToPage(1)
         }
     }
 
-    LaunchedEffect(currentYearMonth) {
-        viewModel.fetchCalendarData(currentYearMonth.toString())
+    LaunchedEffect(calendarInfo.selectedDate) {
+        mainViewModel.updateDailyData(calendarInfo.selectedDate)
     }
 
-    LaunchedEffect(currentWeekStart) {
-        viewModel.fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
-            week = weekOfMonth
+    LaunchedEffect(calendarInfo.currentYearMonth) {
+        mainViewModel.fetchCalendarData(calendarInfo.currentYearMonth)
+    }
+
+    LaunchedEffect(calendarInfo.currentWeekStart) {
+        mainViewModel.fetchRecommendation(
+            calendarInfo.currentYearMonth,
+            getWeekOfMonth(calendarInfo.currentWeekStart)
         )
     }
 
@@ -145,20 +134,15 @@ fun MainScreen(
         ) {
 
             MainCalendarHeader(
-                currentYearMonth = currentYearMonth,
+                currentYearMonth = calendarInfo.currentYearMonth,
                 onMonthlyClick = {
                     navController.navigate(NavRoutes.Calendar.route)
                 },
                 onTodayClick = {
-                    viewModel.selectDate(uiState.today)
+                    sharedState.resetToTodayWeek()
 
-                    weekOffset = 0
                     scope.launch {
                         pagerState.scrollToPage(1)
-
-                        val newWeekStart = today.with(DayOfWeek.MONDAY)
-                        val newMonth = YearMonth.from(newWeekStart)
-                        viewModel.updateYearMonth(newMonth)
                     }
                 }
             )
@@ -167,20 +151,42 @@ fun MainScreen(
 
             MainCalendarPager(
                 pagerState = pagerState,
-                currentWeekStart = currentWeekStart,
                 mealItemMap = mealItemMap,
-                uiState = uiState,
-                onDateSelected = viewModel::selectDate
+                calendarInfo = calendarInfo,
+                onDateSelected = { date ->
+                    sharedState.updateDate(date)
+                }
             )
 
             HorizontalDivider(thickness = 1.dp, color = Bkg04)
 
-            MainContentPager(uiState)
+            // todo formfield 테스트 용으로 넣어놔서 나중에 지우겠습니다!
+//            NutrientField(
+//                modifier = Modifier.height(100.dp),
+//                value = value,
+//                onValueChange = { newValue ->
+//                    Log.d("NutrientField", "newValue: $newValue")
+//                    value = cleanDoubleInput(newValue)
+//                    Log.d("NutrientField", "value: $value")
+//                },
+//                nutrient = "탄수화물",
+//                unit = "g",
+//            )
+
+            MainContentPager(
+                mainUiState.intakeResult,
+                mainUiState.manageResult,
+                sharedState.recommendFoods.collectAsStateWithLifecycle().value,
+                calendarInfo
+            )
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
-            MealRecordContent(uiState = uiState) { mealId ->
-                navController.navigate(NavRoutes.FoodGraph.MealDetail.route)
+            MealRecordContent(
+                mainUiState.recordResult,
+                calendarInfo
+            ) { mealId ->
+                navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(mealId))
             }
 
             Column(
@@ -199,11 +205,25 @@ fun MainScreen(
                         style = NotoTypography.NotoMedium20
                     )
                 }
-            }
 
+                // 임시 테스트
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(modifier = Modifier
+                    .background(WB500)
+                    .clickable {
+                        navController.navigate(NavRoutes.SignUpGraph.route)
+                    }) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = "등록 화면 시작",
+                        color = MainWhite,
+                        style = NotoTypography.NotoMedium20
+                    )
+                }
+            }
         }
     }
-
 }
 
 @Preview(showBackground = true)

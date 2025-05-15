@@ -125,4 +125,8 @@ public class MemberService {
 				);
 	}
 
+	@Transactional
+	public void updateLastLoginTime(Member member) {
+		member.updateLastLoginTime();
+	}
 }

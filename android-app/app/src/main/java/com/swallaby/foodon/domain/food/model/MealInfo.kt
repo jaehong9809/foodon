@@ -4,10 +4,11 @@ import android.net.Uri
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 
 data class MealInfo(
+    val mealId: Long? = null,
     val imageUri: Uri? = null,
     val imageFileName: String = "",
     val mealTime: String = "",
-    val mealTimeType: String = "",
+    val mealTimeType: MealType = MealType.BREAKFAST,
     val totalCarbs: Double = 0.0,
     val totalFat: Double = 0.0,
     val totalKcal: Int = 0,
@@ -18,6 +19,7 @@ data class MealInfo(
 fun MealInfo.toRequest(): RecordMealRequest = RecordMealRequest(
     imageFileName = imageFileName,
     mealTime = mealTime,
+    mealTimeType = mealTimeType,
     totalCarbs = totalCarbs,
     totalFat = totalFat,
     totalKcal = totalKcal,

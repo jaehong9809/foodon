@@ -18,6 +18,7 @@ import com.swallaby.foodon.core.ui.component.NutritionTextField
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.NumberFormatPattern
 
 
 @Composable
@@ -27,6 +28,7 @@ fun NutrientField(
     onValueChange: (String) -> Unit,
     nutrient: String,
     unit: String,
+    formatPattern: NumberFormatPattern = NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
     isChildField: Boolean = false,
     isLastField: Boolean = false,
 ) {
@@ -54,6 +56,7 @@ fun NutrientField(
         NutritionTextField(
             value = value,
             onValueChange = onValueChange,
+            formatPattern = formatPattern,
             isLastField = isLastField,
             unit = unit,
         )

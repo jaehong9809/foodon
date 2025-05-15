@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,14 +26,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
-import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
+import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.component.CalendarHeader
@@ -42,8 +42,10 @@ import com.swallaby.foodon.presentation.calendar.component.CalendarPager
 import com.swallaby.foodon.presentation.calendar.component.TabContentPager
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.calendar.component.WeightBox
+import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
 @Composable
@@ -51,42 +53,42 @@ fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val sharedState = viewModel.calendarSharedState
 
     // 날짜 관리
-    val today = uiState.today
-    val baseYearMonth = remember { YearMonth.from(today) }
-
-    // 탭 상태 관리
-    val selectedDate = uiState.selectedDate
-    val selectedTabIndex = uiState.selectedTabIndex
-    val currentYearMonth = uiState.currentYearMonth
-
-    val calendarType = CalendarType.values()[selectedTabIndex]
+    val today = LocalDate.now()
+    val selectedDate by sharedState.selectedDate.collectAsStateWithLifecycle()
+    val currentYearMonth by sharedState.currentYearMonth.collectAsStateWithLifecycle()
     val weekCount = rememberWeekCount(currentYearMonth, today)
 
-    // 캘린더 페이지 관리
-    var monthOffset by remember { mutableIntStateOf(0) }
+    // 탭 상태 관리
+    val selectedTabIndex = uiState.selectedTabIndex
+    var previousTabIndex by remember { mutableIntStateOf(selectedTabIndex) }
+    val calendarType = CalendarType.values()[selectedTabIndex]
 
+    val calendarStatus = CalendarStatus(
+        today = today,
+        selectedDate = selectedDate,
+        currentYearMonth = currentYearMonth,
+        selectedTabIndex = selectedTabIndex,
+        selectedWeekIndex = uiState.selectedWeekIndex,
+        weekCount = weekCount
+    )
+
+    // 캘린더 페이지 관리
     val nextMonth = currentYearMonth.plusMonths(1)
-    val maxPage = if (nextMonth.isAfter(baseYearMonth)) 2 else 3
+    val maxPage = if (nextMonth.isAfter(YearMonth.from(today))) 2 else 3
 
     val pagerState = rememberPagerState(initialPage = 1, pageCount = { maxPage })
     val scope = rememberCoroutineScope()
 
     // 날짜와 연관된 데이터 관리
-    val calendarItems = (uiState.calendarResult as? ResultState.Success)?.data.orEmpty()
+    val calendarResult by sharedState.calendarResult.collectAsStateWithLifecycle()
+    val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val calendarItemMap by remember(calendarItems) {
-        derivedStateOf {
-            calendarItems.associateBy {
-                when (it) {
-                    is CalendarItem.Meal -> it.data.date
-                    is CalendarItem.Weight -> it.data.date
-                    is CalendarItem.Recommendation -> it.data.date
-                }
-            }
-        }
+        derivedStateOf { calendarItems.toCalendarItemMap() }
     }
 
     val selectedMeal by remember(calendarItemMap, selectedDate) {
@@ -95,24 +97,25 @@ fun CalendarScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.updateInitialLoaded(false)
+    }
+
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress && pagerState.currentPage != 1) {
             val delta = pagerState.currentPage - 1
-            monthOffset += delta
+            val newMonth = currentYearMonth.plusMonths(delta.toLong())
 
-            val newMonth = baseYearMonth.plusMonths(monthOffset.toLong())
-            viewModel.updateYearMonth(newMonth)
-
+            sharedState.updateMonth(newMonth)
             pagerState.scrollToPage(1)
         }
     }
 
-    LaunchedEffect(currentYearMonth) {
-        viewModel.updateCalendarData(calendarType, isSameMonth = currentYearMonth == baseYearMonth)
-    }
+    LaunchedEffect(currentYearMonth, selectedTabIndex) {
+        val isTabChanged = selectedTabIndex != previousTabIndex
+        previousTabIndex = selectedTabIndex
 
-    LaunchedEffect(selectedTabIndex) {
-        viewModel.updateCalendarData(calendarType, isTabChanged = true)
+        viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged)
     }
 
     Scaffold(
@@ -143,8 +146,8 @@ fun CalendarScreen(
             CalendarPager(
                 pagerState = pagerState,
                 calendarItemMap = calendarItemMap,
-                uiState = uiState,
-                onDateSelected = viewModel::selectDate
+                calendarStatus = calendarStatus,
+                onDateSelected = sharedState::updateDate
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -156,12 +159,13 @@ fun CalendarScreen(
             HorizontalDivider(color = Border025, thickness = 1.dp)
 
             TabContentPager(
-                uiState = uiState,
                 selectedMeal = selectedMeal,
-                weekCount = weekCount,
+                weightResult = uiState.weightResult,
+                recommendFoods = uiState.recommendFoods,
+                calendarStatus = calendarStatus,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.updateRecommendation(weekIndex)
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
                 }
             )
         }
@@ -194,7 +198,5 @@ fun UnitContent(calendarType: CalendarType) {
 @Preview(showBackground = true)
 @Composable
 fun CalendarPreview() {
-    FoodonTheme {
-        CalendarScreen()
-    }
+    CalendarScreen()
 }

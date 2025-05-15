@@ -3,6 +3,7 @@ package com.swallaby.foodon.presentation.mealdetail
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +58,7 @@ import com.swallaby.foodon.presentation.foodedit.component.ScrollTimePicker
 import com.swallaby.foodon.presentation.mealdetail.component.FoodInfoComponent
 import com.swallaby.foodon.presentation.mealdetail.component.FoodLabelButton
 import com.swallaby.foodon.presentation.mealdetail.component.NutritionalIngredientsComponent
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditEvent
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -63,12 +66,44 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealDetailScreen(
+    mealId: Long? = null,
     viewModel: MealEditViewModel,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
+    onNavigateMain: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(mealId) {
+        if (mealId != null && mealId != 0L) {
+            viewModel.fetchMealDetailInfo(mealId)
+        }
+    }
+
+    val enabledUpdate = remember(mealId) {
+        mealId == null || mealId == 0L
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is MealEditEvent.NavigateToMain -> {
+                    onNavigateMain()
+                }
+
+                is MealEditEvent.ShowErrorMessage -> {
+                    Toast.makeText(context, event.errorMessageRes, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            viewModel.destroyMeal()
+//        }
+//    }
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
@@ -107,8 +142,8 @@ fun MealDetailScreen(
 
                     // 영양소 정보 컴포넌트
                     NutritionalIngredientsComponent(modifier = modifier,
-                        mealType = uiState.mealType,
-                        mealTime = uiState.mealTime,
+                        mealType = mealInfo.mealTimeType,
+                        mealTime = mealInfo.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
                         totalFat = mealInfo.totalFat,
                         totalKcal = mealInfo.totalKcal,
@@ -129,11 +164,12 @@ fun MealDetailScreen(
                         onClick = onFoodClick,
                         foods = mealInfo.mealItems,
                         imageUri = mealInfo.imageUri,
-                        onDelete = viewModel::deleteFood
+                        onDelete = viewModel::deleteFood,
+                        enabledDeleteButton = enabledUpdate
                     )
                 }
 
-                CommonWideButton(
+                if (enabledUpdate) CommonWideButton(
                     modifier.padding(horizontal = 24.dp),
                     text = stringResource(R.string.btn_record_complete),
                     onClick = viewModel::recordMeal
@@ -159,7 +195,7 @@ fun MealDetailScreen(
                 }) {
                     // todo 이미지 파일
                     var selectedTime by remember { mutableStateOf("08:00") }
-                    val times = uiState.mealTime.split(":")
+                    val times = mealInfo.mealTime.split(":")
 
                     val selectedAmPmIndex by remember { mutableIntStateOf(if (times[0].toInt() < 12) 0 else 1) }
                     val selectedHourIndex by remember { mutableIntStateOf(times[0].toInt() % 12 - 1) }
@@ -308,20 +344,18 @@ private fun DisplayFoodLabels(
             val relativeY = position.y / originalImageSize.height
 
             // 부분 이미지의 너비와 높이 (비율)
-            val partialWidth = position.width  // 이미 비율이라고 가정
-            val partialHeight = position.height  // 이미 비율이라고 가정
+            val partialWidth = position.width
+            val partialHeight = position.height
 
             // 부분 이미지의 중앙 좌표 (비율)
             val centerX = relativeX + (partialWidth / 2)
             val centerY = relativeY + (partialHeight / 2)
 
-            FoodLabelButton(
-                position = position,
+            FoodLabelButton(position = position,
                 originalImageSize = originalImageSize,
                 centerPosition = Size(centerX.toFloat(), centerY.toFloat()),  // 중앙 좌표 전달
                 foodName = mealItem.foodName,
-                onClick = { onFoodClick(mealItem.foodId) }
-            )
+                onClick = { onFoodClick(mealItem.foodId) })
         }
     }
 }
@@ -344,7 +378,7 @@ fun dismissModalBottomSheet(
 
 @Preview(showBackground = true)
 @Composable
-fun FoodDetailScreenPreview() {
+fun MealDetailScreenPreview() {
     FoodonTheme {
         MealDetailScreen(
             viewModel = hiltViewModel(),

@@ -22,16 +22,20 @@ import com.swallaby.foodon.core.util.DateUtil.formatDate
 import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.NutritionType
 import com.swallaby.foodon.domain.main.model.NutrientIntake
-import com.swallaby.foodon.presentation.main.viewmodel.MainUiState
+import com.swallaby.foodon.presentation.main.model.CalendarInfo
 
 @Composable
 fun NutrientIntakeContent(
-    uiState: MainUiState,
+    intakeResult: ResultState<NutrientIntake>,
+    calendarInfo: CalendarInfo
 ) {
 
-    val today = uiState.today
-    val selectedDate = uiState.selectedDate
-    val intakeResult = uiState.intakeResult
+//    val today = calendarUiState.today
+//    val selectedDate = calendarUiState.selectedDate
+//    val intakeResult = mainUiState.intakeResult
+
+    val today = calendarInfo.today
+    val selectedDate = calendarInfo.selectedDate
 
     Column(
         modifier = Modifier
@@ -63,9 +67,9 @@ fun NutrientIntakeContent(
                 val fatRatio = it.intakeFat.toFloat() * 9 / it.goalKcal
 
                 listOf(
-                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs.toDouble(), carbsRatio),
-                    Nutrition(NutritionType.PROTEIN, it.intakeProtein.toDouble(), proteinRatio),
-                    Nutrition(NutritionType.FAT, it.intakeFat.toDouble(), fatRatio),
+                    Nutrition(NutritionType.CARBOHYDRATE, it.intakeCarbs, carbsRatio),
+                    Nutrition(NutritionType.PROTEIN, it.intakeProtein, proteinRatio),
+                    Nutrition(NutritionType.FAT, it.intakeFat, fatRatio),
                 ).sortedByDescending { n -> n.amount }
             } ?: emptyList()
 

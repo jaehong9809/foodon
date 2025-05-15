@@ -4,10 +4,7 @@ import com.foodon.foodon.auth.annotation.AuthMember;
 import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.meal.application.MealService;
-import com.foodon.foodon.meal.dto.ManageNutrientResponse;
-import com.foodon.foodon.meal.dto.MealCreateRequest;
-import com.foodon.foodon.meal.dto.MealInfoResponse;
-import com.foodon.foodon.meal.dto.MealSummaryResponse;
+import com.foodon.foodon.meal.dto.*;
 import com.foodon.foodon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -69,4 +67,25 @@ public class MealController {
         List<ManageNutrientResponse> result = mealService.getManageNutrientsByDate(date, member);
         return ResponseUtil.success(result);
     }
+
+    @GetMapping("/detail/{mealId}")
+    @Operation(summary = "식단 기록 정보 상세 조회")
+    public ResponseEntity<Response<MealDetailInfoResponse>> getMealDetailInfo(
+            @PathVariable(name = "mealId") Long mealId,
+            @Parameter(hidden = true) @AuthMember Member member
+    ){
+        MealDetailInfoResponse result = mealService.getMealDetailInfo(mealId, member);
+        return ResponseUtil.success(result);
+    }
+
+    @GetMapping("/calendar/recommendations")
+    @Operation(summary = "달력 추천 식단 조회")
+    public ResponseEntity<Response<List<MealCalendarResponse>>> getRecommendMealRecords(
+            @RequestParam(name = "yearMonth") YearMonth yearMonth,
+            @Parameter(hidden = true) @AuthMember Member member
+    ){
+        List<MealCalendarResponse> result = mealService.getRecommendMealRecords(yearMonth, member);
+        return ResponseUtil.success(result);
+    }
+
 }

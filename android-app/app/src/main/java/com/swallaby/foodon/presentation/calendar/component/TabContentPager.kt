@@ -15,20 +15,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
-import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarUiState
+import com.swallaby.foodon.domain.calendar.model.CalendarMeal
+import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.calendar.model.UserWeight
+import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import kotlinx.coroutines.launch
 
 @Composable
 fun TabContentPager(
     modifier: Modifier = Modifier,
-    uiState: CalendarUiState,
     selectedMeal: CalendarItem?,
-    weekCount: Int,
+    weightResult: ResultState<UserWeight>,
+    recommendFoods: ResultState<List<RecommendFood>>,
+    calendarStatus: CalendarStatus,
     onTabChanged: (Int) -> Unit,
     onWeeklyTabChanged: (Int) -> Unit
 ) {
 
-    val selectedTabIndex = uiState.selectedTabIndex
+    val selectedTabIndex = calendarStatus.selectedTabIndex
 
     val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { 3 })
     val scope = rememberCoroutineScope()
@@ -47,18 +51,16 @@ fun TabContentPager(
         ) {
             when (page) {
                 0 -> {
-                    if (selectedMeal is CalendarItem.Meal) {
-                        MealContent(calendarMeal = selectedMeal.data)
-                    }
+                    val meal = (selectedMeal as? CalendarItem.Meal)?.data ?: CalendarMeal()
+                    MealContent(calendarMeal = meal)
                 }
-                1 -> uiState.weightResult.takeIf { it is ResultState.Success }?.let {
-                    WeightContent(userWeight = (it as ResultState.Success).data)
+                1 -> {
+                    WeightContent(weightResult)
                 }
-                2 -> uiState.recommendFoods.takeIf { it is ResultState.Success }?.let {
+                2 -> {
                     RecommendationContent(
-                        weekCount = weekCount,
-                        selectedWeekIndex = uiState.selectedWeekIndex,
-                        recommendFoods = (it as ResultState.Success).data,
+                        calendarStatus = calendarStatus,
+                        recommendFoods = recommendFoods,
                         onWeeklyTabChanged = {
                             onWeeklyTabChanged(it)
                         }

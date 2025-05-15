@@ -1,17 +1,19 @@
 package com.swallaby.foodon.presentation.main.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.swallaby.foodon.core.data.TokenDataStore
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.core.util.FetchTracker
 import com.swallaby.foodon.domain.calendar.model.CalendarType
-import com.swallaby.foodon.domain.calendar.model.Effect
-import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
+import com.swallaby.foodon.presentation.sharedstate.AppSharedState
+import com.swallaby.foodon.presentation.sharedstate.CalendarSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,32 +26,39 @@ class MainViewModel @Inject constructor(
     private val getMealRecordUseCase: GetMealRecordUseCase,
     private val getNutrientIntakeUseCase: GetNutrientIntakeUseCase,
     private val getNutrientManageUseCase: GetNutrientManageUseCase,
-    private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
     private val getCalendarUseCase: GetCalendarUseCase,
+    private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
+    private val tokenDataStore: TokenDataStore,
+    private val appSharedState: AppSharedState,
+    val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
+
+    private val dateTracker = FetchTracker<LocalDate>()
+    private val yearMonthTracker = FetchTracker<YearMonth>()
+    private val recommendationTracker = FetchTracker<Pair<YearMonth, Int>>()
+
+    // TODO: 일단 임시로 MainViewModel에 초기화 -> SplashScreen을 따로 만든다면 해당 뷰모델에서 초기화하고 이건 삭제
+    init {
+        viewModelScope.launch {
+            appSharedState.observeToken(tokenDataStore)
+        }
+    }
 
     fun updateState(block: (MainUiState) -> MainUiState) {
         _uiState.update(block)
     }
 
-    fun selectDate(date: LocalDate) {
-        updateState { it.copy(selectedDate = date) }
-    }
-
-    fun updateYearMonth(yearMonth: YearMonth) {
-        updateState { it.copy(currentYearMonth = yearMonth) }
-    }
-
-    fun fetchCalendarData(date: String) {
-        updateState { it.copy(calendarResult = ResultState.Loading) }
-
+    fun updateDailyData(date: LocalDate) {
         viewModelScope.launch {
-            val result = getCalendarUseCase(CalendarType.MEAL, date)
-            updateState { it.copy(calendarResult = result.toResultState()) }
+            appSharedState.withLoginAndFetch(date, dateTracker) {
+                fetchRecordData(date)
+                fetchIntakeData(date)
+                fetchManageData(date)
+            }
         }
     }
 
-    fun fetchRecordData(date: String) {
+    private fun fetchRecordData(date: LocalDate) {
         updateState { it.copy(recordResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -58,7 +67,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchIntakeData(date: String) {
+    private fun fetchIntakeData(date: LocalDate) {
         updateState { it.copy(intakeResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -67,7 +76,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchManageData(date: String) {
+    private fun fetchManageData(date: LocalDate) {
         updateState { it.copy(manageResult = ResultState.Loading) }
 
         viewModelScope.launch {
@@ -76,44 +85,24 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
-        updateState { it.copy(recommendMealResult = ResultState.Loading) }
-
+    fun fetchCalendarData(yearMonth: YearMonth) {
         viewModelScope.launch {
-//            val result = getRecommendFoodUseCase(yearMonth, week)
-//            updateState { it.copy(recommendMealResult = result.toResultState()) }
-
-            val fakeData = createFakeRecommendFoods()
-
-            updateState {
-                it.copy(recommendMealResult = ResultState.Success(fakeData))
+            appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
+                calendarSharedState.updateCalendarResult(ResultState.Loading)
+                val result = getCalendarUseCase(CalendarType.MEAL, yearMonth)
+                calendarSharedState.updateCalendarResult(result.toResultState())
             }
         }
     }
 
-    private fun createFakeRecommendFoods(): List<RecommendFood> {
-        return listOf(
-            RecommendFood(
-                foodRecommendId = 1,
-                name = "고구마",
-                kcal = 120,
-                reason = "에너지원으로 좋아서 추천합니다.",
-                effects = listOf(
-                    Effect(label = "혈당 조절"),
-                    Effect(label = "소화 촉진")
-                )
-            ),
-            RecommendFood(
-                foodRecommendId = 2,
-                name = "닭가슴살",
-                kcal = 165,
-                reason = "단백질 섭취를 위해 추천합니다.",
-                effects = listOf(
-                    Effect(label = "근육 생성"),
-                    Effect(label = "포만감 증가")
-                )
-            )
-        )
+    fun fetchRecommendation(yearMonth: YearMonth, week: Int) {
+        viewModelScope.launch {
+            appSharedState.withLoginAndFetch(yearMonth to week, recommendationTracker) {
+                calendarSharedState.updateRecommendFoods(ResultState.Loading)
+                val result = getRecommendFoodUseCase(yearMonth, week)
+                calendarSharedState.updateRecommendFoods(result.toResultState())
+            }
+        }
     }
 
 }

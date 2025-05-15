@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,10 +40,6 @@ fun FoodLabelButton(
     foodName: String,
     onClick: () -> Unit = {},
 ) {
-    // position.x와 position.y는 부분 이미지의 좌상단 좌표 (이미지 비율 기준)
-    val relativeX = position.x / originalImageSize.width
-    val relativeY = position.y / originalImageSize.height
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,9 +62,16 @@ fun FoodLabelButton(
                 val containerWidth = constraints.maxWidth.toFloat()
                 val containerHeight = constraints.maxHeight.toFloat()
 
+                Log.d(
+                    "FoodLabelButton",
+                    "Container size: ${position.x + centerPosition.width} x ${position.y + centerPosition.height}"
+                )
+
                 // 중앙 위치 계산 (버튼 자체 크기의 절반을 빼서 중앙 정렬)
-                val x = (centerPosition.width * containerWidth).toInt() - (placeable.width / 2)
-                val y = (centerPosition.height * containerHeight).toInt() - (placeable.height / 2)
+                val x =
+                    ((position.x + centerPosition.width) * containerWidth).toInt() - (placeable.width / 2)
+                val y =
+                    ((position.y + centerPosition.height) * containerHeight).toInt() - (placeable.height / 2)
 
                 // 원래 크기를 유지하면서 위치만 조정
                 layout(placeable.width, placeable.height) {

@@ -5,6 +5,7 @@ import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.food.application.FoodService;
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
+import com.foodon.foodon.food.dto.CustomFoodCreateResponse;
 import com.foodon.foodon.food.dto.FoodDetailInfoResponse;
 import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.food.domain.FoodType;
@@ -15,6 +16,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +34,16 @@ public class FoodController {
     ){
         foodService.saveCustomFood(request, member);
         return ResponseUtil.created();
+    }
+
+    @PostMapping("/custom/modified")
+    @Operation(summary = "식단 업로드 시 음식 정보 수정하기")
+    public ResponseEntity<Response<CustomFoodCreateResponse>> modifyFood(
+            @Valid @RequestBody CustomFoodCreateRequest request,
+            @Parameter(hidden = true) @AuthMember Member member
+    ){
+        CustomFoodCreateResponse result = foodService.saveModifiedFood(request, member);
+        return ResponseUtil.created(result);
     }
 
     @GetMapping("/{foodId}")

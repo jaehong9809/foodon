@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.WB500F1A
@@ -27,8 +28,13 @@ import com.swallaby.foodon.domain.calendar.model.UserWeight
 
 @Composable
 fun WeightContent(
-    userWeight: UserWeight = UserWeight()
+    weightResult: ResultState<UserWeight>
 ) {
+    val userWeight = when (weightResult) {
+        is ResultState.Success -> weightResult.data
+        else -> UserWeight()
+    }
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
@@ -95,5 +101,5 @@ fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
 @Preview(showBackground = true)
 @Composable
 fun WeightPreview() {
-    WeightContent()
+    WeightContent(weightResult = ResultState.Loading)
 }

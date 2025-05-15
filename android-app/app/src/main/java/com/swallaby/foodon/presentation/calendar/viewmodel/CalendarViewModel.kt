@@ -5,12 +5,13 @@ import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
+import com.swallaby.foodon.core.util.FetchTracker
 import com.swallaby.foodon.domain.calendar.model.CalendarType
-import com.swallaby.foodon.domain.calendar.model.Effect
-import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
+import com.swallaby.foodon.presentation.sharedstate.AppSharedState
+import com.swallaby.foodon.presentation.sharedstate.CalendarSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,132 +24,105 @@ class CalendarViewModel @Inject constructor(
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getUserWeightUseCase: GetUserWeightUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
+    private val appSharedState: AppSharedState,
+    val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
+
+    private val yearMonthTracker = FetchTracker(calendarSharedState.currentYearMonth.value)
+    private val recommendationTracker = FetchTracker(
+        calendarSharedState.currentYearMonth.value to getWeekOfMonth(calendarSharedState.currentWeekStart.value)
+    )
 
     fun updateState(block: (CalendarUiState) -> CalendarUiState) {
         _uiState.update(block)
-    }
-
-    fun selectDate(date: LocalDate) {
-        updateState { it.copy(selectedDate = date) }
     }
 
     fun selectTab(index: Int) {
         updateState { it.copy(selectedTabIndex = index) }
     }
 
-    fun updateYearMonth(yearMonth: YearMonth) {
-        updateState { it.copy(currentYearMonth = yearMonth) }
-    }
-
-    private fun selectWeek(index: Int) {
-        updateState { it.copy(selectedWeekIndex = index) }
+    fun updateInitialLoaded(state: Boolean) {
+        updateState { it.copy(isInitialLoaded = state) }
     }
 
     fun updateCalendarData(
         calendarType: CalendarType,
-        isSameMonth: Boolean = false,
         isTabChanged: Boolean = false
     ) {
-        val state = uiState.value
-        val currentYearMonth = state.currentYearMonth
+        val today = LocalDate.now()
+        val currentYearMonth = calendarSharedState.currentYearMonth.value
+        val isSameMonth = YearMonth.from(today) == currentYearMonth
 
-        val targetDate = if (isTabChanged) {
-            state.selectedDate
-        } else {
-            if (isSameMonth) state.today else currentYearMonth.atDay(1)
+        val newSelectedDate = when {
+            !uiState.value.isInitialLoaded || isTabChanged -> calendarSharedState.selectedDate.value
+            isSameMonth -> today
+            else -> currentYearMonth.atDay(1)
         }
 
-        selectDate(targetDate)
+        calendarSharedState.updateDate(newSelectedDate)
+
+        updateState {
+            it.copy(
+                isInitialLoaded = true
+            )
+        }
 
         if (calendarType == CalendarType.RECOMMENDATION) {
-            val weekIndex = getWeekOfMonth(targetDate)
-            updateRecommendation(weekIndex)
+            val week = getWeekOfMonth(newSelectedDate)
+            updateRecommendation(currentYearMonth, week)
         }
 
         if (isTabChanged && calendarType == CalendarType.WEIGHT) {
             fetchUserWeight()
         }
 
-        fetchCalendarData(calendarType, currentYearMonth.toString())
-    }
-
-    fun updateRecommendation(weekIndex: Int) {
-        val currentYearMonth = uiState.value.currentYearMonth
-
-        selectWeek(weekIndex)
-        fetchRecommendFoods(
-            yearMonth = currentYearMonth.toString(),
-            week = weekIndex + 1
-        )
-    }
-
-    private fun fetchCalendarData(type: CalendarType, date: String) {
-        updateState { it.copy(calendarResult = ResultState.Loading) }
-
-        viewModelScope.launch {
-            val result = getCalendarUseCase(type, date)
-            updateState { it.copy(calendarResult = result.toResultState()) }
+        if (isTabChanged) {
+            yearMonthTracker.fetch(null)
         }
+
+        fetchCalendarData(calendarType, currentYearMonth)
     }
 
-    private fun fetchUserWeight() {
-        updateState { it.copy(weightResult = ResultState.Loading) }
-
+    fun fetchCalendarData(type: CalendarType, yearMonth: YearMonth) {
         viewModelScope.launch {
-            val result = getUserWeightUseCase()
-            updateState { it.copy(weightResult = result.toResultState()) }
-        }
-    }
-
-    private fun fetchRecommendFoods(yearMonth: String, week: Int? = null) {
-        updateState { it.copy(recommendFoods = ResultState.Loading) }
-
-        viewModelScope.launch {
-//            val result = getRecommendFoodUseCase(yearMonth, week)
-//            updateState { it.copy(recommendFoods = result.toResultState()) }
-
-            val fakeData = createFakeRecommendFoods()
-
-            updateState {
-                it.copy(recommendFoods = ResultState.Success(fakeData))
+            appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
+                calendarSharedState.updateCalendarResult(ResultState.Loading)
+                val result = getCalendarUseCase(type, yearMonth)
+                calendarSharedState.updateCalendarResult(result.toResultState())
             }
         }
     }
 
-    private fun createFakeRecommendFoods(): List<RecommendFood> {
-        return listOf(
-            RecommendFood(
-                foodRecommendId = 1,
-                name = "고구마",
-                kcal = 120,
-                reason = "에너지원으로 좋아서 추천합니다.",
-                effects = listOf(
-                    Effect(label = "혈당 조절"),
-                    Effect(label = "소화 촉진")
-                )
-            ),
-            RecommendFood(
-                foodRecommendId = 2,
-                name = "닭가슴살",
-                kcal = 165,
-                reason = "단백질 섭취를 위해 추천합니다.",
-                effects = listOf(
-                    Effect(label = "근육 생성"),
-                    Effect(label = "포만감 증가")
-                )
-            ),
-            RecommendFood(
-                foodRecommendId = 3,
-                name = "아몬드",
-                kcal = 575,
-                reason = "건강한 지방 섭취를 위해 추천합니다.",
-                effects = listOf(
-                    Effect(label = "심장 건강"),
-                    Effect(label = "혈압 조절")
-                )
-            )
+    fun updateRecommendation(yearMonth: YearMonth, week: Int) {
+        selectWeek(week - 1)
+
+        fetchRecommendFoods(
+            yearMonth = yearMonth,
+            week = week
         )
+    }
+
+    private fun fetchRecommendFoods(yearMonth: YearMonth, week: Int) {
+        viewModelScope.launch {
+            appSharedState.withLoginAndFetch(yearMonth to week, recommendationTracker) {
+                calendarSharedState.updateRecommendFoods(ResultState.Loading)
+                val result = getRecommendFoodUseCase(yearMonth, week)
+                calendarSharedState.updateRecommendFoods(result.toResultState())
+            }
+        }
+    }
+
+    private fun fetchUserWeight() {
+        viewModelScope.launch {
+            appSharedState.withLogin {
+                val result = getUserWeightUseCase()
+                updateState { it.copy(weightResult = result.toResultState()) }
+            }
+        }
+    }
+
+    private fun selectWeek(index: Int) {
+        updateState { it.copy(selectedWeekIndex = index) }
     }
 
 }

@@ -9,20 +9,21 @@ import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.domain.main.repository.MainRepository
+import org.threeten.bp.LocalDate
 import javax.inject.Inject
 
 class MainRepositoryImpl @Inject constructor(
     private val api: MainApi
 ): MainRepository {
-    override suspend fun getMealRecord(date: String): ApiResult<List<MealRecord>> = safeApiCall {
+    override suspend fun getMealRecord(date: LocalDate): ApiResult<List<MealRecord>> = safeApiCall {
         api.getMealRecord(date).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
-    override suspend fun getNutrientIntake(date: String): ApiResult<NutrientIntake> = safeApiCall {
+    override suspend fun getNutrientIntake(date: LocalDate): ApiResult<NutrientIntake> = safeApiCall {
         api.getNutrientIntake(date).getOrThrow { it.toDomain() }
     }
 
-    override suspend fun getNutrientManage(date: String): ApiResult<List<NutrientManage>> = safeApiCall {
+    override suspend fun getNutrientManage(date: LocalDate): ApiResult<List<NutrientManage>> = safeApiCall {
         api.getNutrientManage(date).getOrThrow { it.map { data -> data.toDomain() } }
     }
 
