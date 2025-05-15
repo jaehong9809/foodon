@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.WB500
+import com.swallaby.foodon.data.auth.remote.result.AuthFlowResult
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import com.swallaby.foodon.presentation.splash.viewmodel.SplashViewModel
 
@@ -35,9 +36,16 @@ fun SplashScreen(
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         LaunchedEffect(uiState.result) {
-            when (uiState.result) {
-                is ResultState.Success -> onNavigate(NavRoutes.MainGraph)
-                is ResultState.Error -> onNavigate(NavRoutes.LoginGraph)
+            when (val result = uiState.result) {
+                is ResultState.Success -> {
+                    when (result.data) {
+                        AuthFlowResult.NavigateToMain -> onNavigate(NavRoutes.MainGraph)
+                        AuthFlowResult.NavigateToSignUp -> onNavigate(NavRoutes.SignUpGraph)
+                    }
+                }
+                is ResultState.Error -> {
+                    onNavigate(NavRoutes.LoginGraph)
+                }
                 else -> Unit // Loading 상태일 때 대기, 추후 ProgressBar or Animation 추가 가능
             }
         }

@@ -6,6 +6,7 @@ import com.swallaby.foodon.core.data.TokenDataStore
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.data.auth.remote.result.AuthFlowResult
 import com.swallaby.foodon.domain.auth.usecase.ValidateTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
@@ -32,8 +33,16 @@ class SplashViewModel @Inject constructor(
                 is ApiResult.Success -> {
                     val newAccess = result.data.accessToken
                     val newRefresh = result.data.refreshToken
+                    val profileUpdated = result.data.profileUpdated
+
                     tokenDataStore.saveTokens(newAccess, newRefresh)
-                    _uiState.value = SplashUiState(ResultState.Success(Unit))
+
+                    val next = if (profileUpdated) {
+                        AuthFlowResult.NavigateToMain
+                    } else {
+                        AuthFlowResult.NavigateToSignUp
+                    }
+                    _uiState.value = SplashUiState(ResultState.Success(next))
                 }
 
                 is ApiResult.Failure -> {
