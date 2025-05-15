@@ -76,6 +76,10 @@ class CalendarViewModel @Inject constructor(
             fetchUserWeight()
         }
 
+        if (isTabChanged) {
+            yearMonthTracker.fetch(null)
+        }
+
         fetchCalendarData(calendarType, currentYearMonth)
     }
 
@@ -83,7 +87,7 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch {
             appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
                 calendarSharedState.updateCalendarResult(ResultState.Loading)
-                val result = getCalendarUseCase(CalendarType.MEAL, yearMonth)
+                val result = getCalendarUseCase(type, yearMonth)
                 calendarSharedState.updateCalendarResult(result.toResultState())
             }
         }
