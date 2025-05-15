@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.MonthlyTabBar
@@ -53,13 +53,13 @@ fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedState = viewModel.calendarSharedState
 
     // 날짜 관리
     val today = LocalDate.now()
-    val selectedDate by sharedState.selectedDate.collectAsState()
-    val currentYearMonth by sharedState.currentYearMonth.collectAsState()
+    val selectedDate by sharedState.selectedDate.collectAsStateWithLifecycle()
+    val currentYearMonth by sharedState.currentYearMonth.collectAsStateWithLifecycle()
     val weekCount = rememberWeekCount(currentYearMonth, today)
 
     // 탭 상태 관리
@@ -84,7 +84,7 @@ fun CalendarScreen(
     val scope = rememberCoroutineScope()
 
     // 날짜와 연관된 데이터 관리
-    val calendarResult by sharedState.calendarResult.collectAsState()
+    val calendarResult by sharedState.calendarResult.collectAsStateWithLifecycle()
     val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val calendarItemMap by remember(calendarItems) {

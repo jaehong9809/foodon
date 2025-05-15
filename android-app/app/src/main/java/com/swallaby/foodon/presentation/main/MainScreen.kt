@@ -18,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.FloatingButton
@@ -41,7 +41,6 @@ import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.toCalendarItemMap
-import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
 import com.swallaby.foodon.presentation.main.component.MainCalendarHeader
 import com.swallaby.foodon.presentation.main.component.MainCalendarPager
@@ -62,17 +61,17 @@ fun MainScreen(
 
     val navController = LocalNavController.current
 
-    val mainUiState by mainViewModel.uiState.collectAsState()
+    val mainUiState by mainViewModel.uiState.collectAsStateWithLifecycle()
     val sharedState = mainViewModel.calendarSharedState
 
     val calendarInfo = CalendarInfo(
         today = LocalDate.now(),
-        selectedDate = sharedState.selectedDate.collectAsState().value,
-        currentYearMonth = sharedState.currentYearMonth.collectAsState().value,
-        currentWeekStart = sharedState.currentWeekStart.collectAsState().value
+        selectedDate = sharedState.selectedDate.collectAsStateWithLifecycle().value,
+        currentYearMonth = sharedState.currentYearMonth.collectAsStateWithLifecycle().value,
+        currentWeekStart = sharedState.currentWeekStart.collectAsStateWithLifecycle().value
     )
 
-    val calendarResult by sharedState.calendarResult.collectAsState()
+    val calendarResult by sharedState.calendarResult.collectAsStateWithLifecycle()
     val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
     val mealItemMap by remember(calendarItems) {
@@ -177,7 +176,7 @@ fun MainScreen(
             MainContentPager(
                 mainUiState.intakeResult,
                 mainUiState.manageResult,
-                sharedState.recommendFoods.collectAsState().value,
+                sharedState.recommendFoods.collectAsStateWithLifecycle().value,
                 calendarInfo
             )
 
