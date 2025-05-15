@@ -37,6 +37,7 @@ import com.swallaby.foodon.core.ui.theme.TextGreen
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
+import com.swallaby.foodon.domain.food.model.NutrientLevel
 
 @Composable
 fun RecommendFoodCompact(
@@ -115,7 +116,7 @@ fun RecommendFoodDetail(
                     .wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                food.effects.forEach { item ->
+                food.nutrientClaims.forEach { item ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -123,12 +124,12 @@ fun RecommendFoodDetail(
                             painter = painterResource(R.drawable.icon_red_arrow),
                             contentDescription = null,
                             modifier = Modifier.graphicsLayer(
-                                rotationZ = if (item.direct == "down") 180f else 0f
+                                rotationZ = if (item.level == NutrientLevel.LOW) 180f else 0f
                             )
                         )
 
                         Text(
-                            text = item.label,
+                            text = item.code.displayName,
                             color = G700,
                             style = NotoTypography.NotoMedium13,
                         )
