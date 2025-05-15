@@ -22,17 +22,22 @@ public class AuthService {
     }
 
     public MemberTokens validateAndReissueTokens(MemberTokens memberTokens) {
-        jwtUtil.validateRefreshToken(memberTokens.refreshToken());
-
-        String subject;
-        try {
-            subject = jwtUtil.getSubject(memberTokens.accessToken());
-        } catch (ExpiredJwtException e) {
-            subject = e.getClaims().getSubject();
-        }
-
+        validateRefreshToken(memberTokens.refreshToken());
+        String subject = extractSubjectAllowingExpiration(memberTokens.accessToken());
         validateMemberExists(subject);
         return jwtUtil.createMemberToken(subject);
+    }
+
+    private void validateRefreshToken(String refreshToken) {
+        jwtUtil.validateRefreshToken(refreshToken);
+    }
+
+    private String extractSubjectAllowingExpiration(String accessToken) {
+        try {
+            return jwtUtil.getSubject(accessToken);
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
     }
 
     private void validateMemberExists(String userId) {
