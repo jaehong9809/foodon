@@ -21,7 +21,7 @@ def generate_dataset_from_df(
     image_dir="train/dataset/images",
     label_dir="train/dataset/labels",
     conf_min=0.3,
-    conf_max=0.7,
+    conf_max=0.99,
 ):
     os.makedirs(image_dir, exist_ok=True)
     os.makedirs(label_dir, exist_ok=True)
@@ -86,7 +86,7 @@ def generate_dataset_from_df(
 
 
 
-def load_data_from_db(min_count=20):
+def load_data_from_db(min_count=10):
     logger.info("📦 DB 연결 시도 중...")
 
     conn = pymysql.connect(
