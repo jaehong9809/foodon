@@ -22,9 +22,9 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.presentation.login.component.KakaoLoginButton
 import com.swallaby.foodon.presentation.login.viewmodel.LoginViewModel
 import com.swallaby.foodon.presentation.navigation.LocalNavController
-import com.swallaby.foodon.core.ui.theme.WB600
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.ui.theme.WB500
 
 @Composable
 fun LoginScreen(
@@ -55,7 +55,7 @@ fun LoginScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(WB600)
+                .background(WB500)
                 .padding(paddingValues)
         ) {
             Image(
