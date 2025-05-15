@@ -161,7 +161,7 @@ fun CalendarScreen(
             TabContentPager(
                 selectedMeal = selectedMeal,
                 weightResult = uiState.weightResult,
-                recommendFoods = uiState.recommendFoods,
+                recommendFoods = sharedState.recommendFoods.collectAsStateWithLifecycle().value,
                 calendarStatus = calendarStatus,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
