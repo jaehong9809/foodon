@@ -63,7 +63,7 @@ fun RecommendFoodCompact(
             Spacer(modifier = Modifier.width(8.dp))
 
             CommonBox(
-                content = stringResource(R.string.format_kcal, formatKcal(food.kcal)),
+                content = stringResource(R.string.format_kcal, formatKcal(food.kcal.toInt())),
                 bgColor = BGGreen,
                 textColor = TextGreen,
                 horizontalPadding = 4.dp,
@@ -95,13 +95,13 @@ fun RecommendFoodDetail(
                 Text(
                     text = food.name,
                     color = G900,
-                    style = NotoTypography.NotoBold14,
+                    style = NotoTypography.NotoMedium16,
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 CommonBox(
-                    content = stringResource(R.string.format_kcal, formatKcal(food.kcal)),
+                    content = stringResource(R.string.format_kcal, formatKcal(food.kcal.toInt())),
                     bgColor = BGGreen,
                     textColor = TextGreen,
                     horizontalPadding = 4.dp,

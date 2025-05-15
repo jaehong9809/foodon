@@ -6,7 +6,7 @@ import com.swallaby.foodon.domain.food.model.NutrientClaimInfo
 data class RecommendFoodResponse(
     val foodId: Long = 0,
     val foodName: String = "",
-    val kcal: Int = 0,
+    val kcal: Double = 0.0,
     val nutrientClaims: List<NutrientClaimInfo> = emptyList()
 )
 
