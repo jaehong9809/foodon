@@ -74,7 +74,6 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil
-import com.swallaby.foodon.core.util.ImageConverter
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.ImageMetadataUtil
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
@@ -163,14 +162,15 @@ fun MealRecordScreen(
                     uiState = uiState,
                     onBackClick = onBackClick,
                     uploadMealImage = { uri, context ->
-                        ImageConverter.convertUriToWebP(
-                            context = context, imageUri = uri, quality = 10
-                        )
+//                        ImageConverter.convertUriToWebP(
+//                            context = context, imageUri = uri, quality = 10
+//                        )
                         recordViewModel.uploadMealImage(
                             uri, context
                         )
                     },
                     onSearchClick = onSearchClick,
+                    onClearImageUploadFailMessage = recordViewModel::clearImageUploadFailMessage,
                     innerPadding = innerPadding
                 )
             }
@@ -286,6 +286,7 @@ fun CameraAppScreen(
     onBackClick: () -> Unit,
     uploadMealImage: (uri: Uri, context: Context) -> Unit,
     onSearchClick: () -> Unit,
+    onClearImageUploadFailMessage: () -> Unit = {},
     innerPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val context = LocalContext.current
@@ -355,7 +356,10 @@ fun CameraAppScreen(
             selectedImageUri != null -> {
                 ImagePreview(
                     imageUri = selectedImageUri,
-                    onClose = { selectedImageUri = null },
+                    onClose = {
+                        selectedImageUri = null
+                        onClearImageUploadFailMessage()
+                    },
                     contentDescription = "Selected Image"
                 )
             }
@@ -373,14 +377,17 @@ fun CameraAppScreen(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            if (uiState.failImageUpload) Box(
-                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    stringResource(R.string.notice_size_image),
-                    style = NotoTypography.NotoBold16.copy(color = Color.Red),
-                )
+            uiState.imageUploadFailMessage?.let {
+                Box(
+                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        stringResource(it),
+                        style = NotoTypography.NotoBold16.copy(color = Color.Red),
+                    )
+                }
             }
+
 
             // 하단 액션 버튼 행
             Row(

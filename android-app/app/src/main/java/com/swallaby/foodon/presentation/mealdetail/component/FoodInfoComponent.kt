@@ -56,9 +56,9 @@ fun FoodInfoComponent(
         }
 
     }
-    imageUri?.let {
-        ImageConverter.convertUriToWebP(context = context, imageUri = it, quality = 10)
-    }
+//    imageUri?.let {
+//        ImageConverter.convertUriToWebP(context = context, imageUri = it, quality = 10)
+//    }
 
 
     if (isLoad) {

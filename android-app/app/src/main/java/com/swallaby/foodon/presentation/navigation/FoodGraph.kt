@@ -134,9 +134,6 @@ fun NavGraphBuilder.mealGraph(
                 onSearchClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodSearch.route)
                 }
-//                onSuccessCustomFood = { mealItem ->
-//                    mealEditViewModel.updateFood(mealItem.copy(type = FoodType.CUSTOM))
-//                }
             )
         }
 
@@ -163,8 +160,6 @@ fun NavGraphBuilder.mealGraph(
                 navController.popBackStack()
             }, onFoodUpdateClick = { mealItem ->
                 foodEditViewModel.updateCustomFood(mealItem)
-//                    foodEditViewModel.updateFoodNutrients(foodId, nutrientInfo)
-//                    navController.popBackStack()
             }, onSuccessCustomFood = {
                 navController.popBackStack()
             })
