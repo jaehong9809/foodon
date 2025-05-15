@@ -1,6 +1,7 @@
 package com.swallaby.foodon.data.main.remote.api
 
 import com.swallaby.foodon.core.data.remote.BaseResponse
+import com.swallaby.foodon.data.main.remote.dto.GoalManageResponse
 import com.swallaby.foodon.data.main.remote.dto.MealRecordResponse
 import com.swallaby.foodon.data.main.remote.dto.NutrientIntakeResponse
 import com.swallaby.foodon.data.main.remote.dto.NutrientManageResponse
@@ -19,4 +20,6 @@ interface MainApi {
     @GET("meals/manage-nutrient/{date}")
     suspend fun getNutrientManage(@Path("date") date: LocalDate): BaseResponse<List<NutrientManageResponse>>
 
+    @GET("profile/goal-management")
+    suspend fun getGoalManage(): BaseResponse<GoalManageResponse>
 }

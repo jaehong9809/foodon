@@ -36,7 +36,7 @@ fun NutrientDetailScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    val nutrientList = (uiState.manageResult as? ResultState.Success)?.data.orEmpty()
+    val nutrientList = (uiState.nutrientManageResult as? ResultState.Success)?.data.orEmpty()
     val essentialList = nutrientList.filter { it.healthEffect == HealthEffect.BENEFICIAL }
     val limitedList = nutrientList.filter { it.healthEffect == HealthEffect.HARMFUL }
 

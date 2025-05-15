@@ -9,6 +9,7 @@ import com.swallaby.foodon.core.util.FetchTracker
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
+import com.swallaby.foodon.domain.main.usecase.GetGoalManageUseCase
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
@@ -28,6 +29,7 @@ class MainViewModel @Inject constructor(
     private val getNutrientManageUseCase: GetNutrientManageUseCase,
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
+    private val getGoalManageUseCase: GetGoalManageUseCase,
     private val tokenDataStore: TokenDataStore,
     private val appSharedState: AppSharedState,
     val calendarSharedState: CalendarSharedState,
@@ -53,7 +55,8 @@ class MainViewModel @Inject constructor(
             appSharedState.withLoginAndFetch(date, dateTracker) {
                 fetchRecordData(date)
                 fetchIntakeData(date)
-                fetchManageData(date)
+                fetchNutrientManageData(date)
+                fetchGoalManageData()
             }
         }
     }
@@ -76,12 +79,21 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun fetchManageData(date: LocalDate) {
-        updateState { it.copy(manageResult = ResultState.Loading) }
+    private fun fetchNutrientManageData(date: LocalDate) {
+        updateState { it.copy(nutrientManageResult = ResultState.Loading) }
 
         viewModelScope.launch {
             val result = getNutrientManageUseCase(date)
-            updateState { it.copy(manageResult = result.toResultState()) }
+            updateState { it.copy(nutrientManageResult = result.toResultState()) }
+        }
+    }
+
+    private fun fetchGoalManageData() {
+        updateState { it.copy(goalManageResult = ResultState.Loading) }
+
+        viewModelScope.launch {
+            val result = getGoalManageUseCase()
+            updateState { it.copy(goalManageResult = result.toResultState()) }
         }
     }
 

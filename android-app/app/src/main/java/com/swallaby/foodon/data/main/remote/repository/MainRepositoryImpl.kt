@@ -5,6 +5,7 @@ import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.safeApiCall
 import com.swallaby.foodon.data.main.remote.api.MainApi
 import com.swallaby.foodon.data.main.remote.dto.toDomain
+import com.swallaby.foodon.domain.main.model.GoalManage
 import com.swallaby.foodon.domain.main.model.MealRecord
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.domain.main.model.NutrientManage
@@ -25,6 +26,10 @@ class MainRepositoryImpl @Inject constructor(
 
     override suspend fun getNutrientManage(date: LocalDate): ApiResult<List<NutrientManage>> = safeApiCall {
         api.getNutrientManage(date).getOrThrow { it.map { data -> data.toDomain() } }
+    }
+
+    override suspend fun getGoalManage(): ApiResult<GoalManage> = safeApiCall {
+        api.getGoalManage().getOrThrow { it.toDomain() }
     }
 
 }

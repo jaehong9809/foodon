@@ -175,7 +175,7 @@ fun MainScreen(
 
             MainContentPager(
                 mainUiState.intakeResult,
-                mainUiState.manageResult,
+                mainUiState.nutrientManageResult,
                 sharedState.recommendFoods.collectAsStateWithLifecycle().value,
                 calendarInfo
             )
