@@ -15,12 +15,12 @@ public record IntakeDetailResponse(
         LocalDate date,
         BigDecimal goalKcal,
         BigDecimal intakeKcal,
-        BigDecimal intakeCarbs,
         BigDecimal goalCarbs,
-        BigDecimal intakeProtein,
+        BigDecimal intakeCarbs,
         BigDecimal goalProtein,
-        BigDecimal intakeFat,
-        BigDecimal goalFat
+        BigDecimal intakeProtein,
+        BigDecimal goalFat,
+        BigDecimal intakeFat
 ) {
     public static IntakeDetailResponse withIntakeLog(
             NutrientGoal nutrientGoal,
