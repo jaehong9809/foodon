@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -114,6 +115,13 @@ fun FoodRegisterScreen(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    val isEnabled by remember {
+        derivedStateOf {
+            foodName.isNotEmpty() && servingSize != null && servingSize != 0
+        }
+    }
+
+
 
     Scaffold { innerPadding ->
         Column(
@@ -294,6 +302,7 @@ fun FoodRegisterScreen(
             CommonWideButton(
                 text = stringResource(R.string.btn_complete),
                 modifier = modifier.padding(horizontal = 24.dp),
+                isEnabled = isEnabled,
                 onClick = {
                     val updatedNutrientInfo = NutrientConverter.updateNutrientInfo(
                         nutritions, NutrientInfo()
