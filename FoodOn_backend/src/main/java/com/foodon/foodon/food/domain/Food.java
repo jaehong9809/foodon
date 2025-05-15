@@ -7,6 +7,7 @@ import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
@@ -58,7 +59,8 @@ public class Food {
     private boolean searchable;
 
     @Column(nullable = false)
-    private Boolean isRecommended;
+    @ColumnDefault("false")
+    private boolean isRecommended;
 
     private Food(
             Long memberId,
