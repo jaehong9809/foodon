@@ -115,7 +115,7 @@ fun CalendarScreen(
         val isTabChanged = selectedTabIndex != previousTabIndex
         previousTabIndex = selectedTabIndex
 
-        viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged)
+        viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged, isInit = isTabChanged)
     }
 
     Scaffold(

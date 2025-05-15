@@ -25,6 +25,8 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.WB500F1A
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.domain.calendar.model.UserWeight
+import com.swallaby.foodon.presentation.navigation.LocalNavController
+import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun WeightContent(
@@ -39,13 +41,13 @@ fun WeightContent(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        CurrentWeight(modifier = Modifier.weight(1f), userWeight.currentWeight)
         GoalWeight(modifier = Modifier.weight(1f), userWeight.goalWeight)
+        CurrentWeight(modifier = Modifier.weight(1f), userWeight.currentWeight)
     }
 }
 
 @Composable
-fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
+fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
     TabContentLayout(
         modifier = modifier.heightIn(min = 78.dp),
         title = stringResource(R.string.tab_content_title_goal_weight),
@@ -60,7 +62,9 @@ fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
 }
 
 @Composable
-fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
+fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
+    val navController = LocalNavController.current
+
     TabContentLayout(
         modifier = modifier.heightIn(min = 78.dp),
         title = stringResource(R.string.tab_content_title_cur_weight),
@@ -88,7 +92,7 @@ fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = {
-                            // TODO: 현재 체중 수정 화면으로 이동
+                            navController.navigate(NavRoutes.CurrentWeight.route)
                         }
                     ),
                 painter = painterResource(id = R.drawable.icon_bg_pencil),

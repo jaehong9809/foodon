@@ -14,4 +14,6 @@ data class CalendarUiState(
     val isInitialLoaded: Boolean = false,
     val selectedTabIndex: Int = 0,
     val selectedWeekIndex: Int = 0,
+
+    val inputWeight: Int = 0
 ): UiState
