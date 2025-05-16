@@ -12,6 +12,8 @@ import com.foodon.foodon.member.domain.Member;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.foodon.foodon.food.exception.FoodErrorCode.CONFLICT_CUSTOM_FOOD;
+import static org.eclipse.jdt.internal.compiler.parser.Parser.name;
 
 @Service
 @RequiredArgsConstructor
@@ -117,6 +120,14 @@ public class FoodService {
                         NutrientInfo::value
                         // 1회 제공량 함량으로 변환해서 주도록 수정하겠습니다. (변환 로직이 다른 PR 에 존재)
                 ));
+    }
+
+    public List<FoodNameResponse> getSimilarFoods(String name) {
+        Pageable limit = PageRequest.of(0, 10); // LIMIT 10
+        return foodRepository.findByNameContaining(name, limit)
+                .stream()
+                .map(FoodNameResponse::from)
+                .toList();
     }
 
 }

@@ -23,23 +23,6 @@ fun NavGraph(
     modifier: Modifier = Modifier,
 ) {
     NavControllerProvider(navController = navController) {
-//        val currentBackStackEntry by navController.currentBackStackEntryFlow.collectAsStateWithLifecycle(
-//            initialValue = navController.currentBackStackEntry
-//        )
-//
-//        val isMealDetailScreen = remember(currentBackStackEntry) {
-//            navController.currentDestination?.let {
-//                Log.d("NavGraph", "currentDestination: $it")
-//                it.route == NavRoutes.FoodGraph.MealDetail.route
-//            } ?: false
-//        }
-//
-//        val allInsets =
-//            WindowInsets.statusBars.union(WindowInsets.navigationBars).union(WindowInsets.ime)
-//                .asPaddingValues()
-//
-//        Log.d("NavGraph", "isMealDetailScreen: $isMealDetailScreen")
-
 
         val mainViewModel: MainViewModel = hiltViewModel()
         val calendarViewModel: CalendarViewModel = hiltViewModel()
@@ -70,12 +53,10 @@ fun NavGraph(
 
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.MainGraph.route,
-//            modifier = modifier.padding(
-//                top = if (isMealDetailScreen) 0.dp else allInsets.calculateTopPadding(),
-//                bottom = allInsets.calculateBottomPadding()
-//            )
+            startDestination = NavRoutes.SplashGraph.route,
+            modifier = modifier
         ) {
+            splashGraph(navController)
             mainGraph(navController, mainViewModel)
             loginGraph(navController)
             calendarGraph(navController, calendarViewModel)

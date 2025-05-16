@@ -52,4 +52,8 @@ sealed class NavRoutes(val route: String) {
     object SignUpBodyInfo : NavRoutes("sign_up_body_info")
     object SignUpGoalWeight : NavRoutes("sign_up_goal_weight")
 
+    /* Splash */
+    object SplashGraph : NavRoutes("splash_graph")
+    object Splash : NavRoutes("splash")
+
 }
