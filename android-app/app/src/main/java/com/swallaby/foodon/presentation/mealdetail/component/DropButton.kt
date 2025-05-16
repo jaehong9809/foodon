@@ -27,12 +27,14 @@ fun DropButton(
     prefixIcon: @Composable () -> Unit = {},
     suffixIcon: @Composable () -> Unit = {},
     text: String,
+    enabled: Boolean = true,
     textStyle: TextStyle = SpoqaMedium14.copy(color = G800),
     onClick: () -> Unit,
 ) {
     TextButton(
         contentPadding = contentPadding,
         modifier = modifier,
+        enabled = enabled,
         onClick = onClick,
         shape = RoundedCornerShape(4.dp),
         border = BorderStroke(1.dp, color = Border025)

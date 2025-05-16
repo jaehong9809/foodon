@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -157,7 +159,9 @@ fun MealDetailScreen(
             val mealInfo = (uiState.mealEditState as ResultState.Success).data
 
             Column(
-                modifier = modifier.fillMaxSize()
+                modifier = modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
             ) {
                 Column(
                     modifier = modifier
@@ -173,15 +177,18 @@ fun MealDetailScreen(
                     )
 
                     // 영양소 정보 컴포넌트
-                    NutritionalIngredientsComponent(modifier = modifier,
+                    NutritionalIngredientsComponent(
+                        modifier = modifier,
                         mealType = mealInfo.mealTimeType,
                         mealTime = mealInfo.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
                         totalFat = mealInfo.totalFat,
                         totalKcal = mealInfo.totalKcal,
                         totalProtein = mealInfo.totalProtein,
+                        enabledUpdate = enabledUpdate,
                         onMealTypeClick = viewModel::updateMealType,
-                        onTimeClick = { showBottomSheet = true })
+                        onTimeClick = { showBottomSheet = true },
+                    )
 
                     // 구분선
                     Spacer(
@@ -200,7 +207,7 @@ fun MealDetailScreen(
                         enabledDeleteButton = enabledUpdate
                     )
 
-                    Box(modifier = modifier.height(1000.dp))
+//                    Spacer(modifier = modifier.height(200.dp))
                 }
 
                 if (enabledUpdate) CommonWideButton(

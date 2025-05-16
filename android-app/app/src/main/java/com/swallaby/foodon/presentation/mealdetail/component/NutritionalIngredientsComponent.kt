@@ -60,6 +60,7 @@ fun NutritionalIngredientsComponent(
     totalFat: Double,
     totalKcal: Int,
     totalProtein: Double,
+    enabledUpdate: Boolean,
     onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit = {},
 ) {
@@ -86,6 +87,7 @@ fun NutritionalIngredientsComponent(
                 modifier,
                 mealType,
                 mealTime,
+                enabledUpdate,
                 onMealTypeClick = onMealTypeClick,
                 onTimeClick = onTimeClick
             )
@@ -144,6 +146,7 @@ private fun MealTime(
     modifier: Modifier,
     mealType: MealType,
     mealTime: String,
+    enabledUpdate: Boolean,
     onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit,
 ) {
@@ -155,6 +158,7 @@ private fun MealTime(
                 modifier = modifier
                     .wrapContentWidth()
                     .height(32.dp),
+                enabled = enabledUpdate,
                 onClick = {
                     expanded = true
                 },
@@ -213,6 +217,7 @@ private fun MealTime(
             modifier = modifier
                 .wrapContentWidth()
                 .height(32.dp),
+            enabled = enabledUpdate,
             onClick = onTimeClick,
             text = mealTime,
             prefixIcon = {
@@ -243,6 +248,7 @@ fun NutritionalIngredientsComponentPreview() {
         totalCarbs = 100.0,
         totalFat = 100.0,
         totalKcal = 100,
-        totalProtein = 100.0
+        totalProtein = 100.0,
+        enabledUpdate = true,
     )
 }

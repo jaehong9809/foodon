@@ -143,7 +143,7 @@ fun FoodEditScreen(
                         .fillMaxWidth()
                         .background(color = Bkg04)
                 )
-                FoodAmountComponent(food = food, onClickUnitType = {
+                FoodAmountComponent(food = food, enabledUpdate = enabledUpdate, onClickUnitType = {
                     showBottomSheet = true
                 })
                 NutritionComponent(
@@ -256,6 +256,16 @@ fun NutritionComponent(
                             StringUtil.formatKcal(nutrientInfo[index].value.toInt())
                         ),
                         amountColor = WB500,
+                    )
+                }
+
+                NutrientType.CHOLESTEROL, NutrientType.SODIUM, NutrientType.POTASSIUM -> {
+                    ParentNutritionInfo(
+                        nutritionName = nutrientInfo[index].name,
+                        amount = StringUtil.formatNutrition(
+                            nutrientInfo[index].value, defaultUnit = R.string.format_nutrition_mg
+                        ),
+                        hasChild = childItems.isNotEmpty()
                     )
                 }
 

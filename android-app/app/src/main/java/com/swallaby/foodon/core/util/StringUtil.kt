@@ -15,13 +15,23 @@ object StringUtil {
     }
 
     @Composable
-    fun formatNutrition(amount: Double): String {
+    fun formatNutrition(amount: Double, defaultUnit: Int = R.string.format_nutrition_g): String {
         val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        val nextUnit = when (defaultUnit == R.string.format_nutrition_g) {
+            true -> {
+                R.string.format_nutrition_kg
+            }
+
+            false -> {
+                R.string.format_nutrition_g
+            }
+        }
+
         return if (amount >= 1000) {
             val kgWeight = amount / 1000.0
-            stringResource(R.string.format_nutrition_kg, formatter.format(kgWeight))
+            stringResource(nextUnit, formatter.format(kgWeight))
         } else {
-            stringResource(R.string.format_nutrition_g, formatter.format(amount))
+            stringResource(defaultUnit, formatter.format(amount))
         }
     }
 

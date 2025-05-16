@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,7 +42,10 @@ class MealRecordViewModel @Inject constructor(
         val imageValidation = validateImage(uri, context)
         if (!imageValidation.first) {
             _uiState.update {
-                it.copy(imageUploadFailMessage = imageValidation.second)
+                it.copy(
+                    mealRecordState = ResultState.Success(null),
+                    imageUploadFailMessage = imageValidation.second
+                )
             }
             viewModelScope.launch {
                 _events.emit(
@@ -91,22 +93,6 @@ class MealRecordViewModel @Inject constructor(
     fun resetMealRecordState() {
         _uiState.update {
             it.copy(mealRecordState = ResultState.Success(null))
-        }
-    }
-
-    private fun validateMultipartImageSize(part: MultipartBody.Part): Pair<Boolean, Long> {
-        val maxSizeBytes = 10 * 1024 * 1024 // 10MB in bytes
-        val fileSize = getImageSizeFromMultipartBodyPart(part)
-        return Pair(fileSize in 1..maxSizeBytes, fileSize)
-    }
-
-    private fun getImageSizeFromMultipartBodyPart(part: MultipartBody.Part): Long {
-        try {
-            val requestBody = part.body
-            val contentLength = requestBody.contentLength()
-            return contentLength
-        } catch (e: Exception) {
-            return 0L
         }
     }
 

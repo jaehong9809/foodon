@@ -12,6 +12,7 @@
     <string name="format_kg">%dkg</string>
     <string name="format_nutrition_kg">%skg</string>
     <string name="format_nutrition_g">%sg</string>
+    <string name="format_nutrition_mg">%smg</string>
     <string name="format_calendar_date">%d년 %d월</string>
     <string name="format_hour">%s시</string>
     <string name="format_min">%s분</string>

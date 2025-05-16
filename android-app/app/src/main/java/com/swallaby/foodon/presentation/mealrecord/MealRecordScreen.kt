@@ -304,6 +304,7 @@ fun CameraAppScreen(
     ) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
+            onCaptureClick()
             uploadMealImage(it, context)
             Log.d("GALLERY", "Selected image: $it")
         }
@@ -524,8 +525,12 @@ fun CameraPreview(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+
     // remember로 상태 유지
-    val previewUseCase = remember { androidx.camera.core.Preview.Builder().build() }
+    val previewUseCase = remember {
+        androidx.camera.core.Preview.Builder()
+            .build()
+    }
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
 

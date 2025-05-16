@@ -14,17 +14,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatNutrition
 import com.swallaby.foodon.domain.food.model.Nutrition
+import com.swallaby.foodon.domain.food.model.NutritionType
 
 @Composable
 fun NutritionalSmallInfo(
     modifier: Modifier = Modifier,
     nutrition: Nutrition,
 ) {
+    val formatAmount = when (nutrition.nutritionType) {
+        NutritionType.CHOLESTEROL, NutritionType.SODIUM -> {
+            formatNutrition(nutrition.amount, R.string.format_nutrition_mg)
+        }
+        else -> {
+            formatNutrition(nutrition.amount)
+        }
+    }
+
     Row {
         Box(
             modifier = modifier
@@ -42,8 +53,7 @@ fun NutritionalSmallInfo(
         }
         Spacer(modifier.width(4.dp))
         Text(
-            text = formatNutrition(nutrition.amount),
-            style = SpoqaTypography.SpoqaMedium13.copy(color = G700)
+            text = formatAmount, style = SpoqaTypography.SpoqaMedium13.copy(color = G700)
         )
 
     }
