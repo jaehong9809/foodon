@@ -12,5 +12,5 @@ import java.util.List;
 @Repository
 public interface FoodRepository extends JpaRepository<Food, Long>, FoodRepositoryCustom {
     boolean existsByMemberIdAndName(Long memberId, String foodName);
-    List<Food> findByNameContaining(String name, Pageable pageable);
+    List<Food> findByNameContainingAndSearchableIsTrue(String name, Pageable pageable);
 }

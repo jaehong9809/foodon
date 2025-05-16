@@ -124,7 +124,7 @@ public class FoodService {
 
     public List<FoodNameResponse> getSimilarFoods(String name) {
         Pageable limit = PageRequest.of(0, 10); // LIMIT 10
-        return foodRepository.findByNameContaining(name, limit)
+        return foodRepository.findByNameContainingAndSearchableIsTrue(name, limit)
                 .stream()
                 .map(FoodNameResponse::from)
                 .toList();
