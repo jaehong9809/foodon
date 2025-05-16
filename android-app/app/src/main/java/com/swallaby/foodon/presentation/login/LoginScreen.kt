@@ -99,7 +99,7 @@ fun LoginScreen(
             is ResultState.Success -> {
                 when (result.data) {
                     AuthFlowResult.NavigateToMain -> {
-                        navController.navigate(NavRoutes.Main.route) {
+                        navController.navigate(NavRoutes.MainGraph.route) {
                             popUpTo(NavRoutes.Login.route) { inclusive = true }
                         }
                     }
