@@ -4,7 +4,7 @@ import com.foodon.foodon.auth.domain.OauthAccount;
 import com.foodon.foodon.auth.domain.OauthProvider;
 import com.foodon.foodon.auth.dto.MemberTokens;
 import com.foodon.foodon.auth.domain.RefreshToken;
-import com.foodon.foodon.auth.dto.response.KakaoLoginResponse;
+import com.foodon.foodon.auth.dto.response.AuthTokenResponse;
 import com.foodon.foodon.auth.dto.response.KakaoUserInfoResponse;
 import com.foodon.foodon.auth.exception.AuthErrorCode;
 import com.foodon.foodon.auth.infrastructure.KakaoApiClient;
@@ -32,12 +32,12 @@ public class KakaoAuthService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public KakaoLoginResponse loginByKakao(String kakaoAccessToken) {
+    public AuthTokenResponse loginByKakao(String kakaoAccessToken) {
         KakaoUserInfoResponse kakaoUser = kakaoApiClient.getUserInfo(kakaoAccessToken);
         Member member = findOrCreateMember(kakaoUser);
         MemberTokens tokens = issueTokensFor(member);
 
-        return buildLoginResponse(tokens);
+        return buildLoginResponse(tokens, member.isProfileUpdated());
     }
 
     private Member findOrCreateMember(KakaoUserInfoResponse kakaoUser) {
@@ -73,10 +73,11 @@ public class KakaoAuthService {
         return tokens;
     }
 
-    private KakaoLoginResponse buildLoginResponse(MemberTokens tokens) {
-        return KakaoLoginResponse.of(
+    private AuthTokenResponse buildLoginResponse(MemberTokens tokens, boolean profileUpdated) {
+        return AuthTokenResponse.of(
                 tokens.accessToken(),
-                tokens.refreshToken()
+                tokens.refreshToken(),
+                profileUpdated
         );
     }
 }

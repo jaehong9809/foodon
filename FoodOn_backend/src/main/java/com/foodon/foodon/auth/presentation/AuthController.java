@@ -4,8 +4,7 @@ import com.foodon.foodon.auth.application.AuthService;
 import com.foodon.foodon.auth.application.KakaoAuthService;
 import com.foodon.foodon.auth.dto.MemberTokens;
 import com.foodon.foodon.auth.dto.request.KakaoLoginRequest;
-import com.foodon.foodon.auth.dto.response.KakaoLoginResponse;
-import com.foodon.foodon.auth.util.JwtUtil;
+import com.foodon.foodon.auth.dto.response.AuthTokenResponse;
 import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +22,10 @@ public class AuthController {
 
     @PostMapping("/kakao")
     @Operation(summary = "카카오 로그인 후 서버 자체 인증 토큰 발급")
-    public ResponseEntity<Response<KakaoLoginResponse>> loginByKakao(
+    public ResponseEntity<Response<AuthTokenResponse>> loginByKakao(
             @RequestBody KakaoLoginRequest request
     ) {
-        KakaoLoginResponse response = kakaoAuthService.loginByKakao(request.accessToken());
+        AuthTokenResponse response = kakaoAuthService.loginByKakao(request.accessToken());
         return ResponseUtil.success(response);
     }
 
@@ -41,11 +40,11 @@ public class AuthController {
 
     @PostMapping("/token/validate")
     @Operation(summary = "자동 로그인을 위한 토큰 검증")
-    public ResponseEntity<Response<MemberTokens>> validateTokens(
+    public ResponseEntity<Response<AuthTokenResponse>> validateTokens(
             @RequestBody MemberTokens memberTokens
     ) {
-        MemberTokens tokens = authService.validateAndReissueTokens(memberTokens);
-        return ResponseUtil.success(tokens);
+        AuthTokenResponse response = authService.validateAndReissueTokens(memberTokens);
+        return ResponseUtil.success(response);
     }
 
 }
