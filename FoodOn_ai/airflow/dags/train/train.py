@@ -170,6 +170,9 @@ def train_and_log_with_mlflow():
                 # print(f"📀 모델 저장 (val mAP 향상): {save_path}")
 
                 mlflow.pytorch.log_model(model, "model", registered_model_name="food_detection")
+                model_uri = "runs:/" + mlflow.active_run().info.run_id + "/model"
+                mlflow.register_model(model_uri, "food_detection")
+                print("✅ 모델을 MLflow Model Registry에 등록했습니다.")
 
             else:
                 patience_counter += 1
