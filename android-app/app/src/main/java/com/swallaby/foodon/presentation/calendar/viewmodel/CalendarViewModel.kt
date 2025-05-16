@@ -7,9 +7,11 @@ import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.FetchTracker
 import com.swallaby.foodon.domain.calendar.model.CalendarType
+import com.swallaby.foodon.domain.calendar.model.UserWeight
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetUserWeightUseCase
+import com.swallaby.foodon.domain.calendar.usecase.UpdateUserWeightUseCase
 import com.swallaby.foodon.presentation.sharedstate.AppSharedState
 import com.swallaby.foodon.presentation.sharedstate.CalendarSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,8 @@ class CalendarViewModel @Inject constructor(
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getUserWeightUseCase: GetUserWeightUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
-    private val appSharedState: AppSharedState,
+    private val updateUserWeightUseCase: UpdateUserWeightUseCase,
+    val appSharedState: AppSharedState,
     val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
 
@@ -45,9 +48,33 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(isInitialLoaded = state) }
     }
 
+    fun onCurrentWeightChange(weight: Int) {
+        updateState { it.copy(inputWeight = weight) }
+    }
+
+    fun updateUserWeight(weight: Int) {
+        viewModelScope.launch {
+            appSharedState.withLogin {
+                updateUserWeightUseCase(weight)
+
+                updateState {
+                    val previous = (it.weightResult as? ResultState.Success)?.data
+                    val updated = UserWeight(
+                        currentWeight = weight,
+                        goalWeight = previous?.goalWeight ?: 0
+                    )
+                    it.copy(weightResult = ResultState.Success(updated))
+                }
+
+                updateCalendarData(CalendarType.WEIGHT, isInit = true)
+            }
+        }
+    }
+
     fun updateCalendarData(
         calendarType: CalendarType,
-        isTabChanged: Boolean = false
+        isTabChanged: Boolean = false,
+        isInit: Boolean = false
     ) {
         val today = LocalDate.now()
         val currentYearMonth = calendarSharedState.currentYearMonth.value
@@ -76,7 +103,7 @@ class CalendarViewModel @Inject constructor(
             fetchUserWeight()
         }
 
-        if (isTabChanged) {
+        if (isInit) {
             yearMonthTracker.fetch(null)
         }
 
@@ -113,6 +140,8 @@ class CalendarViewModel @Inject constructor(
     }
 
     private fun fetchUserWeight() {
+        updateState { it.copy(weightResult = ResultState.Loading) }
+
         viewModelScope.launch {
             appSharedState.withLogin {
                 val result = getUserWeightUseCase()

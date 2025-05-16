@@ -10,6 +10,7 @@ sealed class NavRoutes(val route: String) {
     /* Calendar */
     object CalendarGraph : NavRoutes("calendar_graph")
     object Calendar : NavRoutes("calendar")
+    object CurrentWeight : NavRoutes("update_current_weight")
 
     /* Food */
     object FoodGraph : NavRoutes("food_graph") {
@@ -46,5 +47,9 @@ sealed class NavRoutes(val route: String) {
     object SignUpActivity : NavRoutes("sign_up_activity")
     object SignUpBodyInfo : NavRoutes("sign_up_body_info")
     object SignUpGoalWeight : NavRoutes("sign_up_goal_weight")
+
+    /* Splash */
+    object SplashGraph : NavRoutes("splash_graph")
+    object Splash : NavRoutes("splash")
 
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +42,9 @@ fun RecommendationContent(
 
     val foods = (recommendFoods as? ResultState.Success)?.data.orEmpty()
 
-    Column {
+    Column(
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
         WeekTabBar(
             weeks = (1..calendarStatus.weekCount).map { stringResource(R.string.tab_weekly, it) },
             selectedIndex = selectedWeek,
@@ -54,6 +57,7 @@ fun RecommendationContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         TabContentLayout(
+            modifier = Modifier.padding(horizontal = 24.dp),
             title = stringResource(R.string.tab_content_title_recommend),
             bgColor = Bkg04
         ) {

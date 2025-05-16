@@ -52,7 +52,7 @@ fun RecommendFoodContent(
 
         if (foods.isNotEmpty()) {
             RecommendFoodGrid(foods)
-            RecommendReason(foods.map { it.reason })
+//            RecommendReason(foods.map { it.reason })
         }
 
         if (foods.isEmpty()) {

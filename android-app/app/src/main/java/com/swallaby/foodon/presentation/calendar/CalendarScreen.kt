@@ -51,6 +51,7 @@ import org.threeten.bp.YearMonth
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
+    onUpdateWeight: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -115,7 +116,7 @@ fun CalendarScreen(
         val isTabChanged = selectedTabIndex != previousTabIndex
         previousTabIndex = selectedTabIndex
 
-        viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged)
+        viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged, isInit = isTabChanged)
     }
 
     Scaffold(
@@ -161,12 +162,13 @@ fun CalendarScreen(
             TabContentPager(
                 selectedMeal = selectedMeal,
                 weightResult = uiState.weightResult,
-                recommendFoods = uiState.recommendFoods,
+                recommendFoods = sharedState.recommendFoods.collectAsStateWithLifecycle().value,
                 calendarStatus = calendarStatus,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
                     viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
-                }
+                },
+                onUpdateWeight = onUpdateWeight
             )
         }
     }
@@ -198,5 +200,5 @@ fun UnitContent(calendarType: CalendarType) {
 @Preview(showBackground = true)
 @Composable
 fun CalendarPreview() {
-    CalendarScreen()
+    CalendarScreen(onUpdateWeight = {})
 }

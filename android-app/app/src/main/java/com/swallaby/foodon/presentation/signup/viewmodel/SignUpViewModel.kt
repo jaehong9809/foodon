@@ -1,10 +1,14 @@
 package com.swallaby.foodon.presentation.signup.viewmodel
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
+import com.swallaby.foodon.core.result.ApiResult
+import com.swallaby.foodon.data.user.remote.dto.request.UpdateProfileRequest
 import com.swallaby.foodon.domain.user.model.ActivityTypeOption
 import com.swallaby.foodon.domain.user.model.GenderOption
 import com.swallaby.foodon.domain.user.model.ManagementTypeOption
+import com.swallaby.foodon.domain.user.usecase.UpdateUserProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -12,11 +16,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase
 ) : BaseViewModel<SignUpUiState>(SignUpUiState()) {
 
-    init { // UI Test를 위한 Init, 추후 API 붙이면 삭제 예정
-        val dummyList = listOf(
+    init { // TODO: UI를 위한 Init, 추후 API 붙이면 삭제
+        val managementTypeList = listOf(
             ManagementTypeOption(
                 id = 1L,
                 title = "고단백형",
@@ -39,15 +43,15 @@ class SignUpViewModel @Inject constructor(
             )
         )
 
-        val dummyActivityTypes = listOf(
+        val activityTypeList = listOf(
             ActivityTypeOption(id = 1L, title = "주로 앉아서 생활, 별도 운동 없음"),
             ActivityTypeOption(id = 2L, title = "가벼운 활동 또는 주 1~3회 운동"),
-            ActivityTypeOption(id = 3L, title = "활동적 직업 또는 주 4회 이상 운동")
+            ActivityTypeOption(id = 3L, title = "활동적인 직업 또는 주 4회 이상 운동")
         )
 
         _uiState.update { it.copy(
-                managementOptions = dummyList,
-                activityTypeOptions = dummyActivityTypes,
+                managementOptions = managementTypeList,
+                activityTypeOptions = activityTypeList,
             )
         }
     }
@@ -86,5 +90,34 @@ class SignUpViewModel @Inject constructor(
 
     fun onGoalWeightChange(newGoal: Int) {
         updateState { it.copy(goalWeight = newGoal) }
+    }
+
+    fun submitProfile(
+        onSuccess: () -> Unit,
+        onError: (Int) -> Unit
+    ) {
+        val state = uiState.value
+        val gender = state.selectedGender?.textValue?: return
+        val managementType = state.selectedManagementTypeId ?: return
+        val activityType = state.selectedActivityTypeId ?: return
+        val height = state.height ?: return
+        val weight = state.weight ?: return
+        val goalWeight = state.goalWeight ?: return
+
+        val request = UpdateProfileRequest(
+            gender = gender,
+            managementType = managementType.toInt(),
+            activityType = activityType.toInt(),
+            height = height,
+            weight = weight,
+            goalWeight = goalWeight
+        )
+
+        viewModelScope.launch {
+            when (val result = updateUserProfileUseCase(request)) {
+                is ApiResult.Success -> onSuccess()
+                is ApiResult.Failure -> onError(result.error.messageRes)
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.signup
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
@@ -35,6 +37,7 @@ fun GoalWeightScreen(
     val uiState by viewModel.uiState.collectAsState()
     val current = uiState.weight
     val goal = uiState.goalWeight ?: current
+    val context = LocalContext.current
 
     val labelRes = when {
         goal < current -> R.string.loss_weight
@@ -93,7 +96,16 @@ fun GoalWeightScreen(
                 .padding(horizontal = 24.dp),
             text = stringResource(R.string.btn_complete),
             isEnabled = uiState.goalWeight != null,
-            onClick = onSubmit
+            onClick = {
+                viewModel.submitProfile(
+                    onSuccess = { onSubmit() }, // MainGraph 이동
+                    onError = { msgRes ->
+                        Toast.makeText(context,
+                            context.getString(msgRes),
+                            Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
         )
     }
 }
