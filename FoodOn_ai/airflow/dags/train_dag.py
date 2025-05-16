@@ -44,7 +44,7 @@ with DAG(
     dag_id='train_register_and_save_model',
     default_args=default_args,
     start_date=datetime(2025, 4, 28),
-    schedule_interval='*/20 * * * *',  # 매주 월요일 00:00
+    schedule_interval='0 * * * *',  # 매주 월요일 00:00
     catchup=False,
     tags=['ml', 'mlflow', 'shared_model'],
 ) as dag:
