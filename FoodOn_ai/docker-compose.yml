@@ -35,7 +35,7 @@ services:
     command: webserver
     volumes:
       - shared-model-volume:/shared_model
-
+      - /home/ubuntu/dataset:/train/dataset  
   airflow-scheduler:
     container_name: airflow_scheduler
     build:
