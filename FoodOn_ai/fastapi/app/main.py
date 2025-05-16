@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .router import detect, detect_yolo
-from .core.model_loader import start_scheduler
-
+from .core.model_loader import start_scheduler, load_model
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("✅ FastAPI 앱 시작됨 (lifespan)")
     start_scheduler()
+    load_model
     yield
     print("🛑 FastAPI 앱 종료됨 (lifespan)")
 
