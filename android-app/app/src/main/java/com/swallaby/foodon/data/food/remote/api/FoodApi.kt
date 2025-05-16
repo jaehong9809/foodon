@@ -4,6 +4,7 @@ import com.swallaby.foodon.core.data.remote.BaseResponse
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 import com.swallaby.foodon.data.food.remote.dto.response.FoodResponse
+import com.swallaby.foodon.data.food.remote.dto.response.FoodSimilarResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealDetailInfoResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealInfoResponse
 import okhttp3.MultipartBody
@@ -37,6 +38,7 @@ interface FoodApi {
         @Body request: CustomFoodRequest,
     ): BaseResponse<FoodResponse>
 
+    // todo 응답 수정
     @GET("foods/{foodId}")
     suspend fun getFood(
         @Query("foodId") foodId: Long,
@@ -46,5 +48,10 @@ interface FoodApi {
     suspend fun getMealDetail(
         @Path("mealId") mealId: Long,
     ): BaseResponse<MealDetailInfoResponse>
+
+    @GET("foods/similar")
+    suspend fun getFoodSimilar(
+        @Query("name") name: String,
+    ): BaseResponse<List<FoodSimilarResponse>>
 
 }

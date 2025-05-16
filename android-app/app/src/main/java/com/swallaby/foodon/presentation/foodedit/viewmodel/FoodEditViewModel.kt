@@ -10,6 +10,7 @@ import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.NutrientInfo
 import com.swallaby.foodon.domain.food.model.UnitType
+import com.swallaby.foodon.domain.food.usecase.FetchFoodSimilarUseCase
 import com.swallaby.foodon.domain.food.usecase.UpdateCustomFoodUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FoodEditViewModel @Inject constructor(
     private val updateCustomFoodUseCase: UpdateCustomFoodUseCase,
+    private val fetchFoodSimilarUseCase: FetchFoodSimilarUseCase,
 ) : BaseViewModel<FoodEditUiState>(FoodEditUiState()) {
     private var isInitialized = false
 
@@ -35,6 +37,7 @@ class FoodEditViewModel @Inject constructor(
             }.thenBy {
                 it.foodName
             })
+            fetchFoodSimilar(mealInfo.mealItems.first().foodName)
 
             _uiState.update {
                 it.copy(
@@ -46,6 +49,19 @@ class FoodEditViewModel @Inject constructor(
                 )
             }
             isInitialized = true
+
+
+        }
+    }
+
+    private fun fetchFoodSimilar(name: String) {
+        _uiState.update {
+            it.copy(foodSimilarState = ResultState.Loading)
+        }
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(foodSimilarState = fetchFoodSimilarUseCase(name).toResultState())
+            }
         }
     }
 
@@ -127,7 +143,8 @@ class FoodEditViewModel @Inject constructor(
         }
     }
 
-    fun selectFood(foodId: Long) {
+    fun selectFood(foodId: Long, foodName: String) {
+        fetchFoodSimilar(name = foodName)
         _uiState.update {
             it.copy(selectedFoodId = foodId)
         }

@@ -24,6 +24,7 @@ import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.domain.food.model.FoodSimilar
 
 @Composable
 private fun DefaultChip(
@@ -66,7 +67,28 @@ fun SearchChip(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
 @Composable
 fun FoodChip(
     modifier: Modifier = Modifier,
-    foodName: String,
+    food: FoodSimilar,
+    isSelected: Boolean = false,
+    onClick: (foodId: Long) -> Unit = {},
+) {
+    DefaultChip(
+        modifier = modifier.border(
+            width = 1.dp,
+            color = if (isSelected) WB500 else Border025,
+            shape = RoundedCornerShape(100.dp)
+        ), onClick = { onClick(food.foodId) }
+    ) {
+        Text(
+            food.foodName,
+            style = NotoTypography.NotoMedium14.copy(color = if (isSelected) WB500 else G800)
+        )
+    }
+}
+
+@Composable
+fun UnitTypeChip(
+    modifier: Modifier = Modifier,
+    unit: String,
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
 ) {
@@ -78,7 +100,7 @@ fun FoodChip(
         ), onClick = onClick
     ) {
         Text(
-            foodName,
+            unit,
             style = NotoTypography.NotoMedium14.copy(color = if (isSelected) WB500 else G800)
         )
     }

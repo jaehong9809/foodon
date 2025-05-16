@@ -42,7 +42,7 @@ fun FoodThumbnailList(
     imageUri: Uri?,
     foods: List<MealItem>,
     selectedFoodId: Long = 0L,
-    selectFood: (foodId: Long) -> Unit = {},
+    selectFood: (foodId: Long, foodName: String) -> Unit = { _, _ -> },
 ) {
     val scrollState = rememberScrollState()
 
@@ -96,13 +96,13 @@ private fun FoodThumbnail(
     imageUri: Uri?,
     mealItem: MealItem,
     isSelected: Boolean = false,
-    selectFood: (foodId: Long) -> Unit = {},
+    selectFood: (foodId: Long, foodName: String) -> Unit = { _, _ -> },
     cropManager: ImageCropManager = ImageCropManager(LocalContext.current),
 ) {
     val foodImage = mealItem.positions.firstOrNull()
 
     Column(modifier = modifier.clickable(onClick = {
-        selectFood(mealItem.foodId)
+        selectFood(mealItem.foodId, mealItem.foodName)
     }, indication = null, interactionSource = remember {
         MutableInteractionSource()
     }), horizontalAlignment = Alignment.CenterHorizontally) {

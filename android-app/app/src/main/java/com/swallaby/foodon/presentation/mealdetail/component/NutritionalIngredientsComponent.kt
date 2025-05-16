@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -150,7 +149,7 @@ private fun MealTime(
     onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit,
 ) {
-    Log.d("mealType", "mealType: $mealType")
+//    Log.d("mealType", "mealType: $mealType")
     var expanded by remember { mutableStateOf(false) }
     Row(modifier = modifier.fillMaxWidth()) {
         Box {

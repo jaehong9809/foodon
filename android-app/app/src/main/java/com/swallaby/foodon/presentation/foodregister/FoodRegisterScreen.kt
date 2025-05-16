@@ -64,7 +64,7 @@ import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientInfo
 import com.swallaby.foodon.domain.food.model.NutrientType
 import com.swallaby.foodon.domain.food.model.UnitType
-import com.swallaby.foodon.presentation.foodedit.component.FoodChip
+import com.swallaby.foodon.presentation.foodedit.component.UnitTypeChip
 import com.swallaby.foodon.presentation.foodregister.viewmodel.FoodRegisterEvent
 import com.swallaby.foodon.presentation.foodregister.viewmodel.FoodRegisterViewModel
 import com.swallaby.foodon.presentation.mealdetail.component.DropButton
@@ -433,7 +433,7 @@ fun UnitTypeBottomSheet(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     unitTypes.forEach { unitType ->
-                        FoodChip(foodName = unitType.value,
+                        UnitTypeChip(unit = unitType.value,
                             isSelected = unitType == selectedUnitType,
                             onClick = {
                                 selectedUnitType = unitType

@@ -9,6 +9,7 @@ import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 import com.swallaby.foodon.data.food.remote.dto.response.toDomain
 import com.swallaby.foodon.domain.food.model.FoodInfoWithId
+import com.swallaby.foodon.domain.food.model.FoodSimilar
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.repository.FoodRepository
 import okhttp3.MultipartBody
@@ -40,4 +41,10 @@ class FoodRemoteRepositoryImpl @Inject constructor(
     override suspend fun getMealDetail(mealId: Long): ApiResult<MealInfo> = safeApiCall {
         foodApi.getMealDetail(mealId).getOrThrow { it.toDomain() }
     }
+
+    override suspend fun getFoodSimilar(name: String): ApiResult<List<FoodSimilar>> = safeApiCall {
+        foodApi.getFoodSimilar(name)
+            .getOrThrow { it.map { foodSimilarResponse -> foodSimilarResponse.toDomain() } }
+    }
+
 }

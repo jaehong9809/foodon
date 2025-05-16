@@ -61,6 +61,7 @@ import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
+import com.swallaby.foodon.domain.food.model.FoodSimilar
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientItem
 import com.swallaby.foodon.domain.food.model.NutrientType
@@ -88,6 +89,7 @@ fun FoodEditScreen(
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
+
 
     val enabledUpdate = remember(mealId) {
         mealId == 0L
@@ -135,7 +137,9 @@ fun FoodEditScreen(
                     color = Border02
                 )
                 FoodSearch(
-                    foodName = food.foodName, onSearchClick = onSearchClick
+                    foodName = food.foodName,
+                    onSearchClick = onSearchClick,
+                    foodSimilarState = uiState.foodSimilarState
                 )
                 Spacer(
                     modifier = modifier
@@ -366,8 +370,13 @@ private fun ChildNutritionInfo(
 
 @Composable
 fun FoodSearch(
-    modifier: Modifier = Modifier, foodName: String, onSearchClick: () -> Unit = {},
+    modifier: Modifier = Modifier, foodName: String,
+    foodSimilarState: ResultState<List<FoodSimilar>>,
+//    foodSimilars: List<FoodSimilar> = emptyList(),
+    onSearchClick: () -> Unit = {},
 ) {
+
+
     val scrollState = rememberScrollState()
     Column(modifier = modifier.padding(top = 16.dp, bottom = 24.dp)) {
         Row(
@@ -379,6 +388,7 @@ fun FoodSearch(
             Text("가 아닌가요?", style = NotoTypography.NotoBold14.copy(color = G500))
         }
         Spacer(modifier = modifier.height(8.dp))
+
         Row(
             modifier = modifier
                 .horizontalScroll(scrollState)
@@ -386,10 +396,26 @@ fun FoodSearch(
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             SearchChip(modifier, onClick = onSearchClick)
-            FoodChip(modifier, foodName = "피자", isSelected = true)
-            FoodChip(modifier, foodName = "불고기 피자")
-            FoodChip(modifier, foodName = "페페로니 피자")
+            when (foodSimilarState) {
+                is ResultState.Success -> {
+                    val foodSimilars = foodSimilarState.data
+                    repeat(foodSimilars.size) { index ->
+                        FoodChip(
+                            modifier, food = foodSimilars[index], onClick = {}, isSelected = true
+                        )
+                    }
+                }
+
+                is ResultState.Loading -> {
+                }
+
+                is ResultState.Error -> {
+                }
+            }
+
         }
+
+
     }
 }
 
