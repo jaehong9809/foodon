@@ -13,7 +13,7 @@ import java.util.List;
 public interface FoodRepository extends JpaRepository<Food, Long>, FoodRepositoryCustom {
     boolean existsByMemberIdAndName(Long memberId, String foodName);
 
-    List<Food> findByNameContainingAndSearchableIsTrue(String name, Pageable pageable);
+    List<Food> findByNameContainingAndSearchableIsTrueAndMemberIdIsNull(String name, Pageable pageable);
 
     List<Food> findTop10ByMemberIdAndSearchableIsTrueOrderByIdDesc(Long memberId);
 }
