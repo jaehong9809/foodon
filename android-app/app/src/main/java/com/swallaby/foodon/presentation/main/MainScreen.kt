@@ -55,14 +55,14 @@ import org.threeten.bp.LocalDate
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = hiltViewModel(),
+    viewModel: MainViewModel = hiltViewModel(),
     onRecordClick: () -> Unit = {}
 ) {
 
     val navController = LocalNavController.current
 
-    val mainUiState by mainViewModel.uiState.collectAsStateWithLifecycle()
-    val sharedState = mainViewModel.calendarSharedState
+    val mainUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val sharedState = viewModel.calendarSharedState
 
     val calendarInfo = CalendarInfo(
         today = LocalDate.now(),
@@ -99,15 +99,15 @@ fun MainScreen(
     }
 
     LaunchedEffect(calendarInfo.selectedDate) {
-        mainViewModel.updateDailyData(calendarInfo.selectedDate)
+        viewModel.updateDailyData(calendarInfo.selectedDate)
     }
 
     LaunchedEffect(calendarInfo.currentYearMonth) {
-        mainViewModel.fetchCalendarData(calendarInfo.currentYearMonth)
+        viewModel.fetchCalendarData(calendarInfo.currentYearMonth)
     }
 
     LaunchedEffect(calendarInfo.currentWeekStart) {
-        mainViewModel.fetchRecommendation(
+        viewModel.fetchRecommendation(
             calendarInfo.currentYearMonth,
             getWeekOfMonth(calendarInfo.currentWeekStart)
         )

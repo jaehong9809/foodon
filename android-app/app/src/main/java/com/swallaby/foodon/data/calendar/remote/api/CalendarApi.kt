@@ -7,7 +7,9 @@ import com.swallaby.foodon.data.calendar.remote.dto.RecommendationResponse
 import com.swallaby.foodon.data.calendar.remote.dto.UserWeightResponse
 import com.swallaby.foodon.data.calendar.remote.dto.WeightResponse
 import org.threeten.bp.YearMonth
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -30,5 +32,8 @@ interface CalendarApi {
         @Query(value = "yearMonth") yearMonth: YearMonth,
         @Query(value = "week") week: Int?
     ): BaseResponse<List<RecommendFoodResponse>>
+
+    @PATCH("members/profile/weight")
+    suspend fun updateUserWeight(@Body map: Map<String, Int>): BaseResponse<Unit>
 
 }

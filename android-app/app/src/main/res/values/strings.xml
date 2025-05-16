@@ -44,6 +44,7 @@
     <string name="tab_content_title_goal_weight">목표 체중</string>
     <string name="tab_content_title_cur_weight">현재 체중</string>
     <string name="tab_content_title_recommend">이 주의 추천 음식</string>
+    <string name="current_weight_input">현재 체중을 입력해 주세요</string>
 
     <string name="tab_meal_bottom">단위 : kcal</string>
     <string name="tab_weight_bottom">체중 변화(kg)</string>

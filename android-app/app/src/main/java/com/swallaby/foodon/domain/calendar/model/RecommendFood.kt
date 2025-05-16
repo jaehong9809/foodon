@@ -1,9 +1,10 @@
 package com.swallaby.foodon.domain.calendar.model
 
+import com.swallaby.foodon.domain.food.model.NutrientClaimInfo
+
 data class RecommendFood(
     val foodId: Long = 0,
     val name: String = "",
-    val kcal: Int = 0,
-    val reason: String = "",
-    val effects: List<Effect> = emptyList()
+    val kcal: Double = 0.0,
+    val nutrientClaims: List<NutrientClaimInfo> = emptyList()
 )

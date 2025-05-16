@@ -135,9 +135,12 @@ fun WeekTabBar(
     onTabSelected: (Int) -> Unit
 ) {
     LazyRow(
-        modifier = Modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        item {
+            Spacer(modifier = Modifier.width(24.dp))
+        }
+
         itemsIndexed(weeks) { index, label ->
             val isSelected = index == selectedIndex
 
@@ -171,6 +174,10 @@ fun WeekTabBar(
                     style = NotoTypography.NotoMedium14,
                 )
             }
+        }
+
+        item {
+            Spacer(modifier = Modifier.width(24.dp))
         }
     }
 }
