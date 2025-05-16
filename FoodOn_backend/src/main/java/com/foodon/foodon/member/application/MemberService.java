@@ -143,12 +143,12 @@ public class MemberService {
 
 	private ActivityLevel getActivityLevelOrThrow(MemberStatus status) {
 		return activityLevelRepository.findById(status.getActivityLevelId())
-				.orElseThrow(() -> new MemberException.MemberBadRequestException(MemberErrorCode.ACTIVITY_LEVEL_NOT_FOUND));
+				.orElseThrow(() -> new MemberBadRequestException(MemberErrorCode.ACTIVITY_LEVEL_NOT_FOUND));
 	}
 
 	private NutrientPlan getNutrientPlanOrThrow(MemberStatus status) {
 		return nutrientPlanRepository.findById(status.getNutrientPlanId())
-				.orElseThrow(() -> new MemberException.MemberBadRequestException(MemberErrorCode.NUTRIENT_PLAN_NOT_FOUND));
+				.orElseThrow(() -> new MemberBadRequestException(MemberErrorCode.NUTRIENT_PLAN_NOT_FOUND));
 	}
 
 	public Boolean getMemberProfileUpdated(Member member) {
