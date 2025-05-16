@@ -27,9 +27,7 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil.formatKcal
-import com.swallaby.foodon.presentation.main.model.GoalInfo
 import com.swallaby.foodon.domain.main.model.GoalManage
-import com.swallaby.foodon.presentation.main.model.GoalSection
 import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 
@@ -38,65 +36,61 @@ fun GoalManageContent(
     goalManageResult: ResultState<GoalManage>
 ) {
 
-    val sections = when (goalManageResult) {
-        is ResultState.Success -> {
-            val data = goalManageResult.data
-
-            listOf(
-                GoalSection(
-                    title = stringResource(R.string.main_goal_manage_title),
-                    items = listOf(
-                        GoalInfo(stringResource(R.string.main_goal_manage_type), data.managementType, NavRoutes.SignUpManagement),
-                        GoalInfo(
-                            stringResource(R.string.main_goal_manage_calorie),
-                            stringResource(R.string.format_kcal, formatKcal(data.targetCalories)),
-                            NavRoutes.SignUpManagement
-                        ),
-                        GoalInfo(
-                            stringResource(R.string.main_goal_manage_nutrient),
-                            "${data.carbRatio}:${data.proteinRatio}:${data.fatRatio}",
-                            NavRoutes.SignUpManagement
-                        )
-                    )
-                ),
-                GoalSection(
-                    title = stringResource(R.string.main_profile_manage_title),
-                    items = listOf(
-                        GoalInfo(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, data.height), NavRoutes.SignUpBodyInfo),
-                        GoalInfo(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, data.currentWeight), NavRoutes.SignUpBodyInfo),
-                        GoalInfo(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, data.goalWeight), NavRoutes.SignUpGoalWeight)
-                    )
-                )
-            )
-        }
-
-        else -> emptyList()
-    }
+    val data = (goalManageResult as? ResultState.Success)?.data ?: GoalManage()
 
     Column(
         modifier = Modifier
             .padding(top = 24.dp, start = 24.dp, end = 24.dp)
             .fillMaxSize()
     ) {
-        sections.forEach { section ->
-            Section(title = section.title, items = section.items)
-            Spacer(modifier = Modifier.height(11.5.dp))
-        }
+        ManageTitleItem(stringResource(R.string.main_goal_manage_title))
+
+        InfoItem(
+            title = stringResource(R.string.main_goal_manage_type),
+            content = data.managementType.takeIf { it.isNotEmpty() } ?: "없음",
+            navRoutes = NavRoutes.SignUpManagement
+        )
+        InfoItem(
+            title = stringResource(R.string.main_goal_manage_calorie),
+            content = stringResource(R.string.format_kcal, formatKcal(data.targetCalories)),
+            navRoutes = NavRoutes.SignUpManagement
+        )
+        InfoItem(
+            title = stringResource(R.string.main_goal_manage_nutrient),
+            content = "${data.carbRatio}:${data.proteinRatio}:${data.fatRatio}",
+            navRoutes = NavRoutes.SignUpManagement
+        )
+
+        Spacer(modifier = Modifier.height(11.5.dp))
+
+        ManageTitleItem(stringResource(R.string.main_profile_manage_title))
+
+        InfoItem(
+            title = stringResource(R.string.main_goal_manage_height),
+            content = stringResource(R.string.format_cm, data.height),
+            navRoutes = NavRoutes.SignUpBodyInfo
+        )
+        InfoItem(
+            title = stringResource(R.string.main_goal_manage_cur_weight),
+            content = stringResource(R.string.format_kg, data.currentWeight),
+            navRoutes = NavRoutes.SignUpBodyInfo
+        )
+        InfoItem(
+            title = stringResource(R.string.main_goal_manage_goal_weight),
+            content = stringResource(R.string.format_kg, data.goalWeight),
+            navRoutes = NavRoutes.SignUpGoalWeight
+        )
     }
 }
 
 @Composable
-fun Section(title: String, items: List<GoalInfo>) {
+fun ManageTitleItem(title: String) {
     Text(
         text = title,
         style = NotoTypography.NotoBold18.copy(color = G900)
     )
 
     Spacer(modifier = Modifier.height(4.dp))
-
-    items.forEach { item ->
-        InfoItem(title = item.title, content = item.content, navRoutes = item.route)
-    }
 }
 
 @Composable

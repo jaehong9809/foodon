@@ -30,10 +30,6 @@ fun NutrientIntakeContent(
     calendarInfo: CalendarInfo
 ) {
 
-//    val today = calendarUiState.today
-//    val selectedDate = calendarUiState.selectedDate
-//    val intakeResult = mainUiState.intakeResult
-
     val today = calendarInfo.today
     val selectedDate = calendarInfo.selectedDate
 
