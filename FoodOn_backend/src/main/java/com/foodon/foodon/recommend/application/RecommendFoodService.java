@@ -229,8 +229,8 @@ public class RecommendFoodService {
                 continue;
             }
 
-            int deficient = deficientDays.get(code);
-            int excessive = excessiveDays.get(code);
+            int deficient = deficientDays.getOrDefault(code, 0);
+            int excessive = excessiveDays.getOrDefault(code, 0);
 
             double deficientRatio = (double) deficient / recordedDays;
             double excessiveRatio = (double) excessive / recordedDays;
