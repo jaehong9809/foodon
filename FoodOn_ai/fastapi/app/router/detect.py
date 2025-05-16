@@ -53,12 +53,13 @@ from fastapi import UploadFile, File
 @router.post("/detect2", response_model=ResponseSchema)
 async def detect_objects_2(file: UploadFile = File(...)):
     total_start = time.time()
-    model = load_model()
+    
     # 이미지 로딩
     t0 = time.time()
+    model = load_model()
     image = Image.open(file.file).convert("RGB")  # PIL 이미지로 변환
     t1 = time.time()
-    print(f"🕒 이미지 로딩 시간: {t1 - t0:.4f}초")
+    print(f"🕒 모델 로드, 이미지 로딩 시간: {t1 - t0:.4f}초")
 
     width, height = image.size
 

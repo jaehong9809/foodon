@@ -11,7 +11,8 @@ from .food_dataset_name import names
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-
+mlflow.set_tracking_uri("http://k12s203.p.ssafy.io:5000")  # URL 오타 수정
+mlflow.set_experiment("food_detection")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 모델 생성 함수

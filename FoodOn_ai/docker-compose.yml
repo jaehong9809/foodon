@@ -35,7 +35,6 @@ services:
     command: webserver
     volumes:
       - shared-model-volume:/shared_model
-      - /var/run/docker.sock:/var/run/docker.sock  # ✅ docker 명령어 실행 허용
 
   airflow-scheduler:
     container_name: airflow_scheduler
