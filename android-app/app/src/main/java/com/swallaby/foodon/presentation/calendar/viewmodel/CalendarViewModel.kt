@@ -125,9 +125,9 @@ class CalendarViewModel @Inject constructor(
     fun fetchCalendarData(type: CalendarType, yearMonth: YearMonth) {
         viewModelScope.launch {
             appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
-                calendarSharedState.updateCalendarResult(ResultState.Loading)
+                calendarSharedState.updateCalendarResult(type = type, result = ResultState.Loading)
                 val result = getCalendarUseCase(type, yearMonth)
-                calendarSharedState.updateCalendarResult(result.toResultState())
+                calendarSharedState.updateCalendarResult(type = type, result = result.toResultState())
             }
         }
     }
@@ -142,9 +142,10 @@ class CalendarViewModel @Inject constructor(
     }
 
     private fun fetchRecommendFoods(yearMonth: YearMonth, week: Int) {
+        calendarSharedState.updateRecommendFoods(ResultState.Loading)
+
         viewModelScope.launch {
             appSharedState.withLoginAndFetch(yearMonth to week, recommendationTracker) {
-                calendarSharedState.updateRecommendFoods(ResultState.Loading)
                 val result = getRecommendFoodUseCase(yearMonth, week)
                 calendarSharedState.updateRecommendFoods(result.toResultState())
             }

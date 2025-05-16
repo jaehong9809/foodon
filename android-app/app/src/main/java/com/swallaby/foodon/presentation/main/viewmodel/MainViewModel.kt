@@ -90,10 +90,14 @@ class MainViewModel @Inject constructor(
 
     fun fetchCalendarData(yearMonth: YearMonth) {
         viewModelScope.launch {
-            appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
-                calendarSharedState.updateCalendarResult(ResultState.Loading)
+            appSharedState.withLogin {
+                updateState { it.copy(mealCalendarResult = ResultState.Loading) }
                 val result = getCalendarUseCase(CalendarType.MEAL, yearMonth)
-                calendarSharedState.updateCalendarResult(result.toResultState())
+                updateState { it.copy(mealCalendarResult = result.toResultState()) }
+
+                if (calendarSharedState.calendarType.value == CalendarType.MEAL) {
+                    calendarSharedState.updateCalendarResult(result = result.toResultState())
+                }
             }
         }
     }
