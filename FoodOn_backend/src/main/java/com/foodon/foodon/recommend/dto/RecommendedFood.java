@@ -31,7 +31,7 @@ public static RecommendedFood from(
 	}
 
 	NutrientInfo kcalInfo = nutrients.get(NutrientCode.KCAL);
-	BigDecimal value = kcalInfo ==null?BigDecimal.ZERO:kcalInfo.value();
+	BigDecimal value = kcalInfo == null?BigDecimal.ZERO:kcalInfo.value();
 	BigDecimal kcal = BigDecimalUtil.divide(
 		BigDecimalUtil.multiply(servingSize, value),
 		BigDecimal.valueOf(100)
