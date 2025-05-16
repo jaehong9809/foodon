@@ -64,21 +64,18 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
-      
+
   mlflow:
     container_name: mlflow_server
     image: ghcr.io/mlflow/mlflow
-    command: >
-      mlflow server 
-      --host 0.0.0.0 
-      --port 5000 
-      --backend-store-uri sqlite:///mlflow/mlruns.db 
-      --default-artifact-root /mlflow/mlruns
+    command: mlflow ui --host 0.0.0.0 --port 5000
     ports:
       - "5000:5000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
     volumes:
-      - /home/ubuntu/mlflow:/mlflow
-      - shared-model-volume:/shared_model
+      - /home/ubuntu/mlflow:/mlflow/mlruns
+      - shared-model-volume:/shared_model  
 
 volumes:
   postgres-db-volume:
