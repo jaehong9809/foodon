@@ -55,11 +55,21 @@ public class FoodController {
     }
 
     @GetMapping("/similar")
+    @Operation(summary = "음식 이름으로 유사 음식 조회하기")
     public ResponseEntity<Response<List<FoodNameResponse>>> getSimilarFoods(
             @RequestParam("name") String name,
             @Parameter(hidden = true) @AuthMember Member member
     ) {
-        List<FoodNameResponse> response = foodService.getSimilarFoods(name);
-        return ResponseUtil.success(response);
+        List<FoodNameResponse> responses = foodService.getSimilarFoods(name);
+        return ResponseUtil.success(responses);
+    }
+
+    @GetMapping("/custom/recent")
+    @Operation(summary = "회원이 최근 등록한 커스텀 푸드를 등록 순서대로 조회하기")
+    public ResponseEntity<Response<List<FoodNameResponse>>> getRecentFoods(
+            @Parameter(hidden = true) @AuthMember Member member
+    ) {
+        List<FoodNameResponse> responses = foodService.getRecentFoods(member.getId());
+        return ResponseUtil.success(responses);
     }
 }
