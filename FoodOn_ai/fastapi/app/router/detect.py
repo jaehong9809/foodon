@@ -3,7 +3,7 @@ from ..schemas.request import RequestSchema
 from ..schemas.response import ResponseSchema
 from ..service.preprocessing import load_image_from_url, preprocess
 from ..service.postprocessing import postprocess
-from ..core.model_state import model
+from ..core import model_state
 import torch
 import time
 from PIL import Image
@@ -15,6 +15,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 @router.post("/detect", response_model=ResponseSchema)
 async def detect_objects(request: RequestSchema):
     total_start = time.time()
+    
     # 이미지 로딩
     t0 = time.time()
     image = load_image_from_url(request.url)
@@ -32,7 +33,7 @@ async def detect_objects(request: RequestSchema):
     # 추론
     t4 = time.time()
     with torch.inference_mode():
-        prediction = model(img_tensor)[0]
+        prediction = model_state.model(img_tensor)[0]
     t5 = time.time()
     print(f"🤖 추론 시간: {t5 - t4:.4f}초")
 
@@ -52,7 +53,7 @@ from fastapi import UploadFile, File
 @router.post("/detect2", response_model=ResponseSchema)
 async def detect_objects_2(file: UploadFile = File(...)):
     total_start = time.time()
-    
+
     # 이미지 로딩
     t0 = time.time()
     image = Image.open(file.file).convert("RGB")  # PIL 이미지로 변환
@@ -70,7 +71,7 @@ async def detect_objects_2(file: UploadFile = File(...)):
     # 추론
     t4 = time.time()
     with torch.inference_mode():
-        prediction = model(img_tensor)[0]
+        prediction = model_state.model(img_tensor)[0]
     t5 = time.time()
     print(f"🤖 추론 시간: {t5 - t4:.4f}초")
 

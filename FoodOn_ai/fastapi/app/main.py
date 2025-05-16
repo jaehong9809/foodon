@@ -15,7 +15,6 @@ app = FastAPI(root_path="/ai", lifespan=lifespan)
 
 app.include_router(detect.router)
 app.include_router(detect_yolo.router)
-
 @app.get("/")
 def read_root():
     return {"Hello": "FoodOn"}
