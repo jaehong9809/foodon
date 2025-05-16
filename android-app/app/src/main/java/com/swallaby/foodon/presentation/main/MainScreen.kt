@@ -52,6 +52,7 @@ import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 
 @Composable
 fun MainScreen(
@@ -62,7 +63,7 @@ fun MainScreen(
     onClickNavigate: (NavRoutes) -> Unit = {}
 ) {
 
-    val mainUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedState = viewModel.calendarSharedState
 
     val calendarInfo = CalendarInfo(
@@ -72,8 +73,7 @@ fun MainScreen(
         currentWeekStart = sharedState.currentWeekStart.collectAsStateWithLifecycle().value
     )
 
-    val calendarResult by sharedState.calendarResult.collectAsStateWithLifecycle()
-    val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
+    val calendarItems = (uiState.mealCalendarResult as? ResultState.Success)?.data.orEmpty()
 
     val mealItemMap by remember(calendarItems) {
         derivedStateOf { calendarItems.toCalendarItemMap() }
@@ -109,7 +109,7 @@ fun MainScreen(
 
     LaunchedEffect(calendarInfo.currentWeekStart) {
         viewModel.fetchRecommendation(
-            calendarInfo.currentYearMonth,
+            YearMonth.from(calendarInfo.currentWeekStart),
             getWeekOfMonth(calendarInfo.currentWeekStart)
         )
     }
@@ -173,10 +173,10 @@ fun MainScreen(
 //            )
 
             MainContentPager(
-                intakeResult = mainUiState.intakeResult,
-                nutrientManageResult = mainUiState.nutrientManageResult,
+                intakeResult = uiState.intakeResult,
+                nutrientManageResult = uiState.nutrientManageResult,
                 recommendFoods = sharedState.recommendFoods.collectAsStateWithLifecycle().value,
-                goalManageResult = mainUiState.goalManageResult,
+                goalManageResult = uiState.goalManageResult,
                 calendarInfo = calendarInfo,
                 onClickNavigate = onClickNavigate
             )
@@ -184,7 +184,7 @@ fun MainScreen(
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
 
             MealRecordContent(
-                mainUiState.recordResult,
+                uiState.recordResult,
                 calendarInfo
             ) { mealId ->
                 onMealClick(mealId)
