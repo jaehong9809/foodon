@@ -65,7 +65,7 @@ public class FoodController {
     }
 
     @GetMapping("/custom/recent")
-    @Operation(summary = "회원이 최근 등록한 커스텀 푸드를 등록 순서대로 조회하기")
+    @Operation(summary = "회원이 등록한 커스텀 푸드를 최근순으로 조회하기")
     public ResponseEntity<Response<List<FoodNameResponse>>> getRecentFoods(
             @Parameter(hidden = true) @AuthMember Member member
     ) {
