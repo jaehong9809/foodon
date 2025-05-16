@@ -15,7 +15,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -63,7 +62,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.swallaby.foodon.R
@@ -520,56 +521,115 @@ fun CameraPreview(
     zoomLevel: Float,
     imageCaptureUseCase: ImageCapture,
 ) {
-    val previewUseCase = remember { androidx.camera.core.Preview.Builder().build() }
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
+    // remember로 상태 유지
+    val previewUseCase = remember { androidx.camera.core.Preview.Builder().build() }
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
 
-    val localContext = LocalContext.current
-
-    fun rebindCameraProvider() {
-        cameraProvider?.let { cameraProvider ->
-            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-            cameraProvider.unbindAll()
-            val camera = cameraProvider.bindToLifecycle(
-                localContext as LifecycleOwner, cameraSelector, previewUseCase, imageCaptureUseCase
-            )
-            cameraControl = camera.cameraControl
+    // PreviewView를 remember로 생성
+    val previewView = remember {
+        PreviewView(context).apply {
+            scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
 
+    fun bindCameraUseCases() {
+        cameraProvider?.let { provider ->
+            try {
+                // 기존 바인딩 해제
+                provider.unbindAll()
+
+                // 카메라 설정
+                val cameraSelector = CameraSelector.Builder()
+                    .requireLensFacing(lensFacing)
+                    .build()
+
+                // 프리뷰와 이미지 캡처 사용 사례 바인딩
+                val camera = provider.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    previewUseCase,
+                    imageCaptureUseCase
+                )
+
+                // 카메라 컨트롤 저장
+                cameraControl = camera.cameraControl
+            } catch (e: Exception) {
+                Log.e("CameraPreview", "카메라 사용 사례 바인딩 실패", e)
+            }
+        }
+    }
+
+    // 카메라 프로바이더 초기화
     LaunchedEffect(Unit) {
-        cameraProvider = ProcessCameraProvider.awaitInstance(localContext)
-        rebindCameraProvider()
+        try {
+            val provider = ProcessCameraProvider.getInstance(context).get()
+            cameraProvider = provider
+            previewUseCase.surfaceProvider = previewView.surfaceProvider
+            bindCameraUseCases()
+        } catch (e: Exception) {
+            Log.e("CameraPreview", "카메라 프로바이더 초기화 실패", e)
+        }
     }
 
+    // 렌즈 방향이 변경될 때 카메라 리바인딩
     LaunchedEffect(lensFacing) {
-        rebindCameraProvider()
+        bindCameraUseCases()
     }
 
+    // 줌 레벨 변경 시 적용
     LaunchedEffect(zoomLevel) {
         cameraControl?.setLinearZoom(zoomLevel)
     }
 
-    // 컴포넌트가 화면에서 사라질 때 카메라 리소스 해제
-    DisposableEffect(Unit) {
+    // 핵심: 컴포넌트 수명 주기와 리소스 해제 관리 개선
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP -> {
+                    // 앱이 백그라운드로 갈 때 리소스 해제
+                    previewUseCase.surfaceProvider = null
+                    cameraProvider?.unbindAll()
+                }
+
+                Lifecycle.Event.ON_RESUME -> {
+                    // 앱이 다시 포그라운드로 올 때 카메라 재설정
+                    if (cameraProvider != null) {
+                        previewUseCase.surfaceProvider = previewView.surfaceProvider
+                        bindCameraUseCases()
+                    }
+                }
+
+                else -> {}
+            }
+        }
+
+        // 생명주기 옵저버 등록
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // 컴포넌트가 제거될 때 확실히 리소스 해제
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            // 중요: 명시적으로 서페이스 제공자 해제
+            previewUseCase.surfaceProvider = null
             cameraProvider?.unbindAll()
             cameraProvider = null
+            cameraControl = null
         }
     }
 
-    AndroidView(modifier = modifier
-        .fillMaxWidth()
-        .aspectRatio(1f)
-        .clip(RectangleShape), // 1:1 비율에 맞게 clip
-        factory = { context ->
-            PreviewView(context).also {
-                it.scaleType = PreviewView.ScaleType.FILL_CENTER
-                previewUseCase.surfaceProvider = it.surfaceProvider
-                rebindCameraProvider()
-            }
-        })
+
+
+    AndroidView(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .clip(RectangleShape), // 1:1 비율에 맞게 clip
+        factory = { previewView },
+    )
 }
 
 @Preview(showBackground = true)

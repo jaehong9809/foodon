@@ -332,9 +332,12 @@ fun MealImageWithFoodLabels(
 ) {
     var originalImageSize by remember { mutableStateOf(Size(0f, 0f)) }
     var isImageLoaded by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
+    val screenWidthPx = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+
 
     Box(modifier = modifier.graphicsLayer {
-        translationY += (scrollState.value.toFloat() / 2)
+        translationY += (scrollState.value.toFloat() / 2).coerceAtMost(screenWidthPx / 2)
     }) {
         val imageContentScale = ContentScale.FillBounds
         val context = LocalContext.current

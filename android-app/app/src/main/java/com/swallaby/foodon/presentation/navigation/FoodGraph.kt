@@ -1,7 +1,5 @@
 package com.swallaby.foodon.presentation.navigation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,10 +32,6 @@ fun NavGraphBuilder.mealGraph(
     ) {
         composable(
             NavRoutes.FoodGraph.FoodRecord.route,
-            exitTransition = { ExitTransition.None },
-            enterTransition = { EnterTransition.None },
-            popExitTransition = { ExitTransition.None },
-            popEnterTransition = { EnterTransition.None },
         ) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
             MealRecordScreen(recordViewModel = recordViewModel,
@@ -56,10 +50,6 @@ fun NavGraphBuilder.mealGraph(
 
         composable(
             route = NavRoutes.FoodGraph.MealDetail.route,
-            exitTransition = { ExitTransition.None },
-            enterTransition = { EnterTransition.None },
-            popExitTransition = { ExitTransition.None },
-            popEnterTransition = { EnterTransition.None },
             arguments = listOf(navArgument(NavRoutes.FoodGraph.MealDetail.MEAL_ID) {
                 type = NavType.LongType
             })
@@ -88,10 +78,6 @@ fun NavGraphBuilder.mealGraph(
             }, navArgument(NavRoutes.FoodGraph.FoodEdit.MEAL_ID) {
                 type = NavType.LongType
             }),
-            exitTransition = { ExitTransition.None },
-            enterTransition = { EnterTransition.None },
-            popExitTransition = { ExitTransition.None },
-            popEnterTransition = { EnterTransition.None },
         ) {
             val foodId = it.arguments?.getLong(NavRoutes.FoodGraph.FoodEdit.FOOD_ID) ?: 0L
             val mealId = it.arguments?.getLong(NavRoutes.FoodGraph.FoodEdit.MEAL_ID) ?: 0L

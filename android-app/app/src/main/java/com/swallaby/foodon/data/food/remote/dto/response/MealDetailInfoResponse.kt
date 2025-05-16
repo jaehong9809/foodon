@@ -7,7 +7,7 @@ import com.swallaby.foodon.domain.food.model.MealType
 
 data class MealDetailInfoResponse(
     val mealId: Long = 0,
-    val mealDateTime: String = "",// LocalDateTime.now(),
+    val mealTime: String = "",
     val mealTimeType: MealType = MealType.BREAKFAST,
     val imageFileName: String = "",
     val totalCarbs: Double = 0.0,
@@ -20,7 +20,7 @@ data class MealDetailInfoResponse(
 fun MealDetailInfoResponse.toDomain(): MealInfo = MealInfo(
     imageUri = imageFileName.toUri(),
     mealId = mealId,
-    mealTime = mealDateTime,
+    mealTime = mealTime,
     mealTimeType = mealTimeType,
     imageFileName = imageFileName,
     totalCarbs = totalCarbs,
