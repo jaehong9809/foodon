@@ -137,7 +137,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 					FoodInfo.class,
 					food.id,
 					food.memberId,
-                    food.foodType,
+					food.foodType,
 					food.name,
 					food.unit,
 					food.servingSize

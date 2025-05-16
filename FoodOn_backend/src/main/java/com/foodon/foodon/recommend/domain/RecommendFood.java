@@ -17,7 +17,6 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor(access = PROTECTED)
 @Table(
         name = "recommend_foods",
         indexes = {
@@ -52,19 +51,42 @@ public class RecommendFood {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(length = 100)
+    private String reason;
+
+
+    private RecommendFood(
+            Member member,
+            FoodType foodType,
+            Long foodId,
+            String foodName,
+            BigDecimal kcalPerServing,
+            LocalDateTime createdAt,
+            String reason
+    ){
+        this.member = member;
+        this.foodType = foodType;
+        this.foodId = foodId;
+        this.foodName = foodName;
+        this.kcalPerServing = kcalPerServing;
+        this.createdAt = createdAt;
+        this.reason = reason;
+    }
+
     public static RecommendFood from(
         RecommendedFood recommendedFoodCache,
         Member member,
+        String reason,
         LocalDateTime createdAt
     ) {
         return new RecommendFood(
-            null,
             member,
             FoodType.PUBLIC,
             recommendedFoodCache.foodId(),
             recommendedFoodCache.foodName(),
             recommendedFoodCache.kcal(),
-            createdAt
+            createdAt,
+            reason
         );
     }
 }
