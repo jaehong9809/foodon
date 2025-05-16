@@ -44,7 +44,7 @@ public class MemberController {
 			@Valid @RequestBody ProfileRegisterRequest request,
 			@Parameter(hidden = true) @AuthMember Member member
 	){
-		memberService.registerProfile(request, member);
+		memberService.registerProfile(request, member.getId());
 		return ResponseUtil.success();
 	}
 
@@ -85,4 +85,21 @@ public class MemberController {
 		return ResponseUtil.success(result);
 	}
 
+	@GetMapping("/last-login")
+	@Operation(summary = "유저 접속 시간 갱신")
+	public ResponseEntity<Response<Void>> updateMemberLastLogin(
+		@Parameter(hidden = true) @AuthMember Member member
+	) {
+		memberService.updateLastLoginTime(member.getId());
+		return ResponseUtil.success();
+	}
+
+	@GetMapping("/me/profile/status")
+	@Operation(summary = "자신의 건강 정보가 DB에 등록되어있는지 상태 확인")
+	public ResponseEntity<Response<Boolean>> getMemberProfileUpdated(
+			@Parameter(hidden = true) @AuthMember Member member
+	) {
+		Boolean isUpdated = memberService.getMemberProfileUpdated(member);
+		return ResponseUtil.success(isUpdated);
+	}
 }

@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -217,6 +218,44 @@ public class MealService {
                 sumTotalIntake(mealItemInfos, NutrientProfile::fat),
                 mealItemInfos
         );
+    }
+
+    public List<MealCalendarResponse> getRecommendMealRecords(
+            YearMonth yearMonth,
+            Member member
+    ){
+        LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        Map<LocalDate, List<MealThumbnailInfo>> mealMap = getMealByDateMap(member, start, end);
+
+        return mealMap.entrySet().stream()
+                .map(entry -> MealCalendarResponse.from(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(MealCalendarResponse::date))
+                .toList();
+    }
+
+    private Map<LocalDate, List<MealThumbnailInfo>> getMealByDateMap(
+            Member member,
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
+        List<MealThumbnailInfo> meals = mealRepository.findRecommendMealsByMemberAndDate(member, start, end);
+        Map<Long, MealThumbnailInfo> deduplicatedMealItemMap = deduplicateById(meals);
+
+        return deduplicatedMealItemMap.values().stream()
+                .collect(Collectors.groupingBy(meal -> meal.mealTime().toLocalDate()));
+    }
+
+    private Map<Long, MealThumbnailInfo> deduplicateById(
+            List<MealThumbnailInfo> meals
+    ) {
+        return meals.stream()
+                .collect(Collectors.toMap(
+                        MealThumbnailInfo::mealItemId,
+                        Function.identity(),
+                        (prev, next) -> prev
+                ));
     }
 
     private Map<Long, FoodWithNutrientInfo> getFoodInfoInMealItems(

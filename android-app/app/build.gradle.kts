@@ -129,4 +129,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
 
+    // Splash
+    implementation(libs.androidx.core.splashscreen)
+
 }

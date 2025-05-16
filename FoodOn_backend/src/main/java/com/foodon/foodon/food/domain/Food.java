@@ -7,11 +7,10 @@ import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.foodon.foodon.food.domain.FoodType.PUBLIC;
 import static lombok.AccessLevel.PROTECTED;
@@ -58,6 +57,10 @@ public class Food {
 
     @Column(nullable = false)
     private boolean searchable;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean isRecommended;
 
     private Food(
             Long memberId,

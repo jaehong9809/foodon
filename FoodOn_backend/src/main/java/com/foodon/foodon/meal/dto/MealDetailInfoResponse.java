@@ -5,13 +5,14 @@ import com.foodon.foodon.meal.domain.MealTimeType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.foodon.foodon.common.util.BigDecimalUtil.round;
 
 public record MealDetailInfoResponse(
         Long mealId,
-        LocalDateTime mealDateTime,
+        String mealTime,
         MealTimeType mealTimeType,
         String imageFileName,
         BigDecimal totalKcal,
@@ -30,7 +31,7 @@ public record MealDetailInfoResponse(
     ) {
         return new MealDetailInfoResponse(
                 meal.getId(),
-                meal.getMealTime(),
+                meal.getMealTime().format(DateTimeFormatter.ofPattern("HH:mm")),
                 meal.getMealTimeType(),
                 meal.getMealImage(),
                 round(totalKcal, 0),

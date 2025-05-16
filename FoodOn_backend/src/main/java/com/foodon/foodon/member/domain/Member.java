@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 
 @Entity
@@ -35,6 +36,9 @@ public class Member extends BaseTimeEntity {
     private LocalDate birthday;
 
     private Gender gender;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
 
     private Member (
             String nickname,
@@ -70,5 +74,9 @@ public class Member extends BaseTimeEntity {
 
     public void markProfileUpdated() {
         this.profileUpdated = true;
+    }
+
+    public void updateLastLoginTime() {
+        this.lastLoginAt = LocalDateTime.now();
     }
 }
