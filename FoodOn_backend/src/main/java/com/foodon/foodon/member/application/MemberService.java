@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.exception.MemberErrorCode;
-import com.foodon.foodon.member.exception.MemberException;
 import com.foodon.foodon.member.repository.MemberRepository;
-
+import static com.foodon.foodon.member.exception.MemberException.MemberBadRequestException;
+import static com.foodon.foodon.member.exception.MemberException.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -37,8 +37,9 @@ public class MemberService {
 	@Transactional
 	public void registerProfile(
 			ProfileRegisterRequest request,
-			Member member
+			Long memberId
 	) {
+		Member member = getMember(memberId);
 		memberStatusRepository.save(
 				MemberStatus.createMemberStatus(
 						member.getId(),
@@ -121,16 +122,22 @@ public class MemberService {
 	private MemberStatus getLatestStatusOrThrow(Member member) {
 		return memberStatusRepository.findTopByMemberIdOrderByCreatedAtDesc(member.getId())
 				.orElseThrow(
-						() -> new MemberException.MemberBadRequestException(MemberErrorCode.MEMBER_STATUS_NOT_FOUND)
+						() -> new MemberBadRequestException(MemberErrorCode.MEMBER_STATUS_NOT_FOUND)
 				);
 	}
 
 	@Transactional
-	public void updateLastLoginTime(Member member) {
+	public void updateLastLoginTime(Long memberId) {
+		Member member = getMember(memberId);
 		member.updateLastLoginTime();
 	}
 
 	public Boolean getMemberProfileUpdated(Member member) {
 		return member.isProfileUpdated();
+	}
+
+	private Member getMember(Long memberId) {
+		return memberRepository.findById(memberId)
+				.orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
 	}
 }
