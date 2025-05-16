@@ -9,7 +9,6 @@ import com.swallaby.foodon.presentation.main.MainGoalWeightScreen
 import com.swallaby.foodon.presentation.main.MainManagementTypeScreen
 import com.swallaby.foodon.presentation.main.MainScreen
 import com.swallaby.foodon.presentation.main.NutrientDetailScreen
-import com.swallaby.foodon.presentation.main.RootScreen
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 
 fun NavGraphBuilder.mainGraph(
@@ -18,14 +17,8 @@ fun NavGraphBuilder.mainGraph(
 ) {
 
     navigation(
-//        startDestination = NavRoutes.Main.route, route = NavRoutes.MainGraph.route
-        startDestination = "root", route = NavRoutes.MainGraph.route
+        startDestination = NavRoutes.Main.route, route = NavRoutes.MainGraph.route
     ) {
-
-        // TODO: 테스트용. 삭제 예정
-        composable("root") {
-            RootScreen(navController, mainViewModel)
-        }
 
         composable(route = NavRoutes.Main.route) {
             MainScreen(

@@ -3,7 +3,7 @@ package com.swallaby.foodon.data.main.remote.dto
 import com.swallaby.foodon.domain.main.model.GoalManage
 
 data class GoalManageResponse(
-    val managementTypeDescription: String = "",
+    val managementTypeName: String = "",
     val targetCalories: Int = 0,
     val carbRatio: Int = 0,
     val proteinRatio: Int = 0,
@@ -15,7 +15,7 @@ data class GoalManageResponse(
 
 fun GoalManageResponse.toDomain(): GoalManage {
     return GoalManage(
-        managementType = this.managementTypeDescription,
+        managementType = this.managementTypeName,
         targetCalories = this.targetCalories,
         carbRatio = this.carbRatio,
         proteinRatio = this.proteinRatio,

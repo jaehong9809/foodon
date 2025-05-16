@@ -1,7 +1,6 @@
 package com.swallaby.foodon.presentation.main.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.swallaby.foodon.core.data.TokenDataStore
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
@@ -30,7 +29,6 @@ class MainViewModel @Inject constructor(
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
     private val getGoalManageUseCase: GetGoalManageUseCase,
-    private val tokenDataStore: TokenDataStore,
     private val appSharedState: AppSharedState,
     val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
@@ -38,13 +36,6 @@ class MainViewModel @Inject constructor(
     private val dateTracker = FetchTracker<LocalDate>()
     private val yearMonthTracker = FetchTracker<YearMonth>()
     private val recommendationTracker = FetchTracker<Pair<YearMonth, Int>>()
-
-    // TODO: 일단 임시로 MainViewModel에 초기화 -> SplashScreen을 따로 만든다면 해당 뷰모델에서 초기화하고 이건 삭제
-    init {
-        viewModelScope.launch {
-            appSharedState.observeToken(tokenDataStore)
-        }
-    }
 
     fun updateState(block: (MainUiState) -> MainUiState) {
         _uiState.update(block)

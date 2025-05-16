@@ -20,6 +20,6 @@ interface MainApi {
     @GET("meals/manage-nutrient/{date}")
     suspend fun getNutrientManage(@Path("date") date: LocalDate): BaseResponse<List<NutrientManageResponse>>
 
-    @GET("profile/goal-management")
+    @GET("members/profile/goal-management")
     suspend fun getGoalManage(): BaseResponse<GoalManageResponse>
 }
