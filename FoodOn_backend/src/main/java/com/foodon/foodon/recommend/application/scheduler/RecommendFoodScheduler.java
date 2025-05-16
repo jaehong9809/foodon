@@ -24,7 +24,7 @@ public class RecommendFoodScheduler {
 	public void generateWeeklyRecommendationsForAllUsers() {
 		log.info("[RecommendFoodScheduler] 추천 음식 생성 스케줄러 시작 {}", LocalDateTime.now());
 
-		List<Member> activeMembers = recommendFoodService.getRecentlyActiveMembers().subList(0, 1);
+		List<Member> activeMembers = recommendFoodService.getRecentlyActiveMembers();
 		List<RecommendedFood> recommendedFoods = recommendFoodService.loadAllRecommendedFoods();
 		LocalDateTime today = LocalDateTime.now();
 

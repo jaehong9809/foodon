@@ -155,7 +155,7 @@ public class RecommendFoodService {
         List<RecommendedFood> filtered = filterRecommendFoodByRatio(recommendedFoods, minimumNutrientGoal, maximumNutrientGoal);
         log.info("[RecommendFoodScheduler] 탄단지 비율로 필터링된 음식 개수 = {} ", filtered.size());
 
-        // 2차 : 추천 음식 이유 생성 및 점수화 (음식에 해당하는 추천 이유의 개수를 점수로 하여 점수가 높은 순으로 뽑은 것으로 조정 가능합니다.)
+        // 2차 : 추천 음식 이유 생성 및 점수화 (음식에 해당하는 추천 이유의 개수를 점수로 하여 점수가 높은 순으로 뽑은 것으로 추후 조정 가능합니다.)
         List<RecommendScoreInfo> scoredFoods = evaluateRecommendationScores(
                 filtered, intakeStatusMap, minimumNutrientGoal, maximumNutrientGoal);
 
@@ -166,6 +166,85 @@ public class RecommendFoodService {
                     scoredFoodInfo.food(), member, getOneRandomReasonFrom(scoredFoodInfo.reasons()), time
             )).forEach(recommendFoodRepository::save);
 	}
+
+    /**
+     * 부족한 날, 정상인 날, 과다한 날 빈도 수로 측정
+     * 지난 주 유저의 식단 중 열량, 탄단지 섭취량 상태 체크
+     */
+    private Map<NutrientCode, HistoryIntakeStatus> evaluateHistoryIntakeStatus(
+            List<IntakeLog> intakeLogs,
+            NutrientPlan nutrientPlan
+    ) {
+        Map<NutrientCode, Integer> deficientDays = initCountMap();
+        Map<NutrientCode, Integer> excessiveDays = initCountMap();
+
+        // 영양소가 부족한 날, 과다한 날 카운트
+        for (IntakeLog log : intakeLogs) {
+            NutrientGoal dailyGoal = NutrientGoal.from(log.getGoalKcal(), nutrientPlan);
+            accumulateIntakeStatusByDay(log, dailyGoal, deficientDays, excessiveDays);
+        }
+
+        return evaluateStatus(deficientDays, excessiveDays, intakeLogs.size());
+    }
+
+    private Map<NutrientCode, Integer> initCountMap() {
+        Map<NutrientCode, Integer> map = new EnumMap<>(NutrientCode.class);
+        for (NutrientCode code : NUTRIENT_CODES) {
+            map.put(code, 0);
+        }
+        return map;
+    }
+
+    private void accumulateIntakeStatusByDay(
+            IntakeLog log,
+            NutrientGoal dailyGoal,
+            Map<NutrientCode, Integer> deficientDays,
+            Map<NutrientCode, Integer> excessiveDays
+    ) {
+        Map<NutrientCode, BigDecimal> nutrientMap = getNutrientValueMap(log);
+
+        for (NutrientCode code : NUTRIENT_CODES) {
+            BigDecimal intake = nutrientMap.getOrDefault(code, BigDecimal.ZERO);
+            BigDecimal target = dailyGoal.getGoalKcal(code);
+            BigDecimal ratio = BigDecimalUtil.divide(intake, target);
+
+            if (ratio.compareTo(BigDecimal.valueOf(0.8)) < 0) {
+                deficientDays.compute(code, (k, count) -> count + 1);
+            } else if (ratio.compareTo(BigDecimal.valueOf(1.1)) > 0) {
+                excessiveDays.compute(code, (k, count) -> count + 1);
+            }
+        }
+    }
+
+    private Map<NutrientCode, HistoryIntakeStatus> evaluateStatus(
+            Map<NutrientCode, Integer> deficientDays,
+            Map<NutrientCode, Integer> excessiveDays,
+            int recordedDays
+    ) {
+        Map<NutrientCode, HistoryIntakeStatus> result = new EnumMap<>(NutrientCode.class);
+        for (NutrientCode code : NUTRIENT_CODES) {
+
+            if(recordedDays < 3) {
+                result.put(code, NORMAL);
+                continue;
+            }
+
+            int deficient = deficientDays.get(code);
+            int excessive = excessiveDays.get(code);
+
+            double deficientRatio = (double) deficient / recordedDays;
+            double excessiveRatio = (double) excessive / recordedDays;
+
+            HistoryIntakeStatus historyIntakeStatus = (excessiveRatio >= 0.4)
+                    ? EXCESSIVE
+                    : (deficientRatio >= 0.5)
+                    ? DEFICIENT : NORMAL;
+
+            result.put(code, historyIntakeStatus);
+        }
+
+        return result;
+    }
 
     private List<RecommendedFood> filterRecommendFoodByRatio(
             List<RecommendedFood> recommendedFoods,
@@ -201,11 +280,11 @@ public class RecommendFoodService {
             NutrientGoal maximumNutrientGoal
     ) {
         return filtered.stream()
-                .map(food -> evaluateScoreFrom(food, intakeStatusMap, minimumNutrientGoal, maximumNutrientGoal))
+                .map(food -> evaluateScoreBy(food, intakeStatusMap, minimumNutrientGoal, maximumNutrientGoal))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private RecommendScoreInfo evaluateScoreFrom(
+    private RecommendScoreInfo evaluateScoreBy(
             RecommendedFood food,
             Map<NutrientCode, HistoryIntakeStatus> intakeStatusMap,
             NutrientGoal minimumNutrientGoal,
@@ -272,85 +351,6 @@ public class RecommendFoodService {
         nutrientMap.put(NutrientCode.PROTEIN, intakeLog.getIntakeProtein());
         nutrientMap.put(NutrientCode.FAT, intakeLog.getIntakeFat());
         return nutrientMap;
-    }
-
-    /**
-     * 부족한 날, 정상인 날, 과다한 날 빈도 수로 측정
-     * 지난 주 유저의 식단 중 열량, 탄단지 섭취량 상태 체크
-     */
-    private Map<NutrientCode, HistoryIntakeStatus> evaluateHistoryIntakeStatus(
-            List<IntakeLog> intakeLogs,
-            NutrientPlan nutrientPlan
-    ) {
-        Map<NutrientCode, Integer> deficientDays = initCountMap();
-        Map<NutrientCode, Integer> excessiveDays = initCountMap();
-
-        // 영양소가 부족한 날, 과다한 날 카운트
-        for (IntakeLog log : intakeLogs) {
-            NutrientGoal dailyGoal = NutrientGoal.from(log.getGoalKcal(), nutrientPlan);
-            accumulateIntakeStatusByDay(log, dailyGoal, deficientDays, excessiveDays);
-        }
-
-        return evaluateStatus(deficientDays, excessiveDays, intakeLogs.size());
-    }
-
-    private Map<NutrientCode, Integer> initCountMap() {
-        Map<NutrientCode, Integer> map = new EnumMap<>(NutrientCode.class);
-        for (NutrientCode code : NUTRIENT_CODES) {
-            map.put(code, 0);
-        }
-        return map;
-    }
-
-    private void accumulateIntakeStatusByDay(
-            IntakeLog log,
-            NutrientGoal dailyGoal,
-            Map<NutrientCode, Integer> deficientDays,
-            Map<NutrientCode, Integer> excessiveDays
-    ) {
-        Map<NutrientCode, BigDecimal> nutrientMap = getNutrientValueMap(log);
-
-        for (NutrientCode code : NUTRIENT_CODES) {
-            BigDecimal intake = nutrientMap.getOrDefault(code, BigDecimal.ZERO);
-            BigDecimal target = dailyGoal.getGoalKcal(code);
-            BigDecimal ratio = BigDecimalUtil.divide(intake, target);
-
-            if (ratio.compareTo(BigDecimal.valueOf(0.8)) < 0) {
-                deficientDays.compute(code, (k, v) -> v + 1);
-            } else if (ratio.compareTo(BigDecimal.valueOf(1.1)) > 0) {
-                excessiveDays.compute(code, (k, v) -> v + 1);
-            }
-        }
-    }
-
-    private Map<NutrientCode, HistoryIntakeStatus> evaluateStatus(
-            Map<NutrientCode, Integer> deficientDays,
-            Map<NutrientCode, Integer> excessiveDays,
-            int recordedDays
-    ) {
-        Map<NutrientCode, HistoryIntakeStatus> result = new EnumMap<>(NutrientCode.class);
-        for (NutrientCode code : NUTRIENT_CODES) {
-
-            if(recordedDays < 3) {
-                result.put(code, NORMAL);
-                continue;
-            }
-
-            int deficient = deficientDays.get(code);
-            int excessive = excessiveDays.get(code);
-
-            double deficientRatio = (double) deficient / recordedDays;
-            double excessiveRatio = (double) excessive / recordedDays;
-
-            HistoryIntakeStatus historyIntakeStatus = (excessiveRatio >= 0.4)
-                    ? EXCESSIVE
-                    : (deficientRatio >= 0.5)
-                    ? DEFICIENT : NORMAL;
-
-            result.put(code, historyIntakeStatus);
-        }
-
-        return result;
     }
 
     private ActivityLevel findActivityLevelById(Long activityLevelId) {
