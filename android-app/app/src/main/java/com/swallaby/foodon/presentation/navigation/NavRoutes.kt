@@ -6,6 +6,9 @@ sealed class NavRoutes(val route: String) {
     object MainGraph : NavRoutes("main_graph")
     object Main : NavRoutes("main")
     object NutrientDetail : NavRoutes("nutrient_detail")
+    object MainManagementType : NavRoutes("main_management_type")
+    object MainBodyInfo : NavRoutes("main_body_info")
+    object MainGoalWeight : NavRoutes("main_goal_weight")
 
     /* Calendar */
     object CalendarGraph : NavRoutes("calendar_graph")

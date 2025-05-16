@@ -49,17 +49,17 @@ fun GoalManageContent(
         InfoItem(
             title = stringResource(R.string.main_goal_manage_type),
             content = data.managementType.takeIf { it.isNotEmpty() } ?: "없음",
-            onClick = { onClickNavigate(NavRoutes.SignUpManagement) }
+            onClick = { onClickNavigate(NavRoutes.MainManagementType) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_calorie),
             content = stringResource(R.string.format_kcal, formatKcal(data.targetCalories)),
-            onClick = { onClickNavigate(NavRoutes.SignUpManagement) }
+            onClick = { onClickNavigate(NavRoutes.MainManagementType) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_nutrient),
             content = "${data.carbRatio}:${data.proteinRatio}:${data.fatRatio}",
-            onClick = { onClickNavigate(NavRoutes.SignUpManagement) }
+            onClick = { onClickNavigate(NavRoutes.MainManagementType) }
         )
 
         Spacer(modifier = Modifier.height(11.5.dp))
@@ -69,17 +69,17 @@ fun GoalManageContent(
         InfoItem(
             title = stringResource(R.string.main_goal_manage_height),
             content = stringResource(R.string.format_cm, data.height),
-            onClick = { onClickNavigate(NavRoutes.SignUpBodyInfo) }
+            onClick = { onClickNavigate(NavRoutes.MainBodyInfo) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_cur_weight),
             content = stringResource(R.string.format_kg, data.currentWeight),
-            onClick = { onClickNavigate(NavRoutes.SignUpBodyInfo) }
+            onClick = { onClickNavigate(NavRoutes.MainBodyInfo) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_goal_weight),
             content = stringResource(R.string.format_kg, data.goalWeight),
-            onClick = { onClickNavigate(NavRoutes.SignUpGoalWeight) }
+            onClick = { onClickNavigate(NavRoutes.MainGoalWeight) }
         )
     }
 }
