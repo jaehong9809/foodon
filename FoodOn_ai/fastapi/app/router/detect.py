@@ -10,12 +10,12 @@ from PIL import Image
 router = APIRouter()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = load_model()
+
 
 @router.post("/detect", response_model=ResponseSchema)
 async def detect_objects(request: RequestSchema):
     total_start = time.time()
-
+    model = load_model()
     # 이미지 로딩
     t0 = time.time()
     image = load_image_from_url(request.url)

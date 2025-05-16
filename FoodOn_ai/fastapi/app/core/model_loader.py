@@ -1,3 +1,4 @@
+# model_load_scheduler.py
 import torch
 from torchvision.models.detection import (
     fasterrcnn_resnet50_fpn,
@@ -7,11 +8,13 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 import mlflow.pytorch
 import os
 from .food_dataset_name import names
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
+# 모델 생성 함수
 def create_model(num_classes: int):
     weights = FasterRCNN_ResNet50_FPN_Weights.DEFAULT
     model = fasterrcnn_resnet50_fpn(weights=weights)
@@ -24,7 +27,7 @@ def create_model(num_classes: int):
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
     return model
 
-
+# 모델 로드 함수
 def load_model():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(base_dir, "best_model_0513.pth")
@@ -52,3 +55,11 @@ def load_model():
         raise FileNotFoundError("❌ 로컬 모델 파일도 존재하지 않습니다.")
 
     return model
+
+
+# 주기적으로 모델을 로드하는 스케줄러 시작 함수
+def start_scheduler():
+    scheduler = AsyncIOScheduler()
+    # 모델을 1시간마다 갱신
+    scheduler.add_job(load_model, IntervalTrigger(hours=1))  
+    scheduler.start()
