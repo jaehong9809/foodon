@@ -7,7 +7,7 @@ import com.foodon.foodon.member.domain.MemberStatus;
 import com.foodon.foodon.member.domain.NutrientPlan;
 
 public record GoalManagementResponse(
-        String managementTypeDescription,
+        String managementTypeName,
         int targetCalories,
         int carbRatio,
         int proteinRatio,
@@ -28,7 +28,7 @@ public record GoalManagementResponse(
         NutrientGoal goal = NutrientGoal.from(member, status, activityLevel, plan);
 
         return new GoalManagementResponse(
-                plan.getDescription(),
+                plan.getName(),
                 goal.getGoalKcal().intValue(),
                 carbsPercent,
                 proteinPercent,
