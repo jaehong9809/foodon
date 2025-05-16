@@ -4,10 +4,7 @@ import com.foodon.foodon.auth.annotation.AuthMember;
 import com.foodon.foodon.common.dto.Response;
 import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.food.application.FoodService;
-import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
-import com.foodon.foodon.food.dto.CustomFoodCreateResponse;
-import com.foodon.foodon.food.dto.FoodDetailInfoResponse;
-import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
+import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,5 +52,14 @@ public class FoodController {
     ){
         FoodDetailInfoResponse result = foodService.getFood(foodId, type, member);
         return ResponseUtil.success(result);
+    }
+
+    @GetMapping("/similar")
+    public ResponseEntity<Response<List<FoodNameResponse>>> getSimilarFoods(
+            @RequestParam("name") String name,
+            @Parameter(hidden = true) @AuthMember Member member
+    ) {
+        List<FoodNameResponse> response = foodService.getSimilarFoods(name);
+        return ResponseUtil.success(response);
     }
 }
