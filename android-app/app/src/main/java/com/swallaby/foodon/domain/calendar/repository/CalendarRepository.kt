@@ -18,4 +18,6 @@ interface CalendarRepository {
     suspend fun getUserWeight(): ApiResult<UserWeight>
 
     suspend fun getRecommendFood(yearMonth: YearMonth, week: Int?): ApiResult<List<RecommendFood>>
+
+    suspend fun updateUserWeight(weight: Int): ApiResult<Unit>
 }

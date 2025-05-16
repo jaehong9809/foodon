@@ -28,7 +28,7 @@ fun NavGraphBuilder.mainGraph(
 
         composable(NavRoutes.Main.route) {
             MainScreen(
-                mainViewModel,
+                viewModel = mainViewModel,
                 onRecordClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodRecord.route)
                 }
@@ -43,7 +43,7 @@ fun NavGraphBuilder.mainGraph(
                     animationSpec = tween(500)
                 )
             },
-            exitTransition = {
+            popExitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,
                     animationSpec = tween(500)

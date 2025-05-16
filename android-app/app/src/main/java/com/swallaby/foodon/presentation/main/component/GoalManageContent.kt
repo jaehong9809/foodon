@@ -37,17 +37,17 @@ fun GoalManageContent() {
         GoalSection(
             title = stringResource(R.string.main_goal_manage_title),
             items = listOf(
-                GoalInfo(stringResource(R.string.main_goal_manage_type), "고단백형"),
-                GoalInfo(stringResource(R.string.main_goal_manage_calorie), stringResource(R.string.format_kcal, formatKcal(1000))),
-                GoalInfo(stringResource(R.string.main_goal_manage_nutrient), "48:28:24")
+                GoalInfo(stringResource(R.string.main_goal_manage_type), "고단백형", NavRoutes.SignUpManagement),
+                GoalInfo(stringResource(R.string.main_goal_manage_calorie), stringResource(R.string.format_kcal, formatKcal(1000)), NavRoutes.SignUpManagement),
+                GoalInfo(stringResource(R.string.main_goal_manage_nutrient), "48:28:24", NavRoutes.SignUpManagement)
             )
         ),
         GoalSection(
             title = stringResource(R.string.main_profile_manage_title),
             items = listOf(
-                GoalInfo(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, 174)),
-                GoalInfo(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, 60)),
-                GoalInfo(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, 60))
+                GoalInfo(stringResource(R.string.main_goal_manage_height), stringResource(R.string.format_cm, 174), NavRoutes.SignUpBodyInfo),
+                GoalInfo(stringResource(R.string.main_goal_manage_cur_weight), stringResource(R.string.format_kg, 60), NavRoutes.SignUpBodyInfo),
+                GoalInfo(stringResource(R.string.main_goal_manage_goal_weight), stringResource(R.string.format_kg, 60), NavRoutes.SignUpGoalWeight)
             )
         )
     )
@@ -76,7 +76,7 @@ fun Section(title: String, items: List<GoalInfo>) {
 
     // TODO: 프로필 UI 추가되면 그 화면 사용
     items.forEach { item ->
-        InfoItem(title = item.title, content = item.content, navRoutes = NavRoutes.FoodGraph)
+        InfoItem(title = item.title, content = item.content, navRoutes = item.route)
     }
 }
 

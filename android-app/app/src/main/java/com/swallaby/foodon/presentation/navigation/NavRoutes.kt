@@ -10,6 +10,7 @@ sealed class NavRoutes(val route: String) {
     /* Calendar */
     object CalendarGraph : NavRoutes("calendar_graph")
     object Calendar : NavRoutes("calendar")
+    object CurrentWeight : NavRoutes("update_current_weight")
 
     /* Food */
     object FoodGraph : NavRoutes("food_graph") {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +29,8 @@ import com.swallaby.foodon.domain.calendar.model.UserWeight
 
 @Composable
 fun WeightContent(
-    weightResult: ResultState<UserWeight>
+    weightResult: ResultState<UserWeight>,
+    onUpdateWeight: () -> Unit
 ) {
     val userWeight = when (weightResult) {
         is ResultState.Success -> weightResult.data
@@ -36,16 +38,22 @@ fun WeightContent(
     }
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        CurrentWeight(modifier = Modifier.weight(1f), userWeight.currentWeight)
         GoalWeight(modifier = Modifier.weight(1f), userWeight.goalWeight)
+        CurrentWeight(
+            modifier = Modifier.weight(1f),
+            weight = userWeight.currentWeight,
+            onUpdateWeight = onUpdateWeight
+        )
     }
 }
 
 @Composable
-fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
+fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
     TabContentLayout(
         modifier = modifier.heightIn(min = 78.dp),
         title = stringResource(R.string.tab_content_title_goal_weight),
@@ -60,7 +68,11 @@ fun CurrentWeight(modifier: Modifier = Modifier, weight: Int) {
 }
 
 @Composable
-fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
+fun CurrentWeight(
+    modifier: Modifier = Modifier,
+    weight: Int,
+    onUpdateWeight: () -> Unit
+) {
     TabContentLayout(
         modifier = modifier.heightIn(min = 78.dp),
         title = stringResource(R.string.tab_content_title_cur_weight),
@@ -87,9 +99,7 @@ fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = {
-                            // TODO: 현재 체중 수정 화면으로 이동
-                        }
+                        onClick = onUpdateWeight
                     ),
                 painter = painterResource(id = R.drawable.icon_bg_pencil),
                 contentDescription = null,
@@ -101,5 +111,5 @@ fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
 @Preview(showBackground = true)
 @Composable
 fun WeightPreview() {
-    WeightContent(weightResult = ResultState.Loading)
+    WeightContent(weightResult = ResultState.Loading, onUpdateWeight = {})
 }
