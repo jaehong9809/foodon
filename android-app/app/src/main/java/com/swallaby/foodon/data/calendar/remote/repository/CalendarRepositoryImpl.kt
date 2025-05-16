@@ -1,6 +1,7 @@
 package com.swallaby.foodon.data.calendar.remote.repository
 
 import com.swallaby.foodon.core.data.remote.getOrThrow
+import com.swallaby.foodon.core.data.remote.getOrThrowNull
 import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.safeApiCall
 import com.swallaby.foodon.data.calendar.remote.api.CalendarApi
@@ -39,6 +40,11 @@ class CalendarRepositoryImpl @Inject constructor(
         week: Int?,
     ): ApiResult<List<RecommendFood>> = safeApiCall {
         api.getRecommendFoods(yearMonth, week).getOrThrow { it.map { data -> data.toDomain() } }
+    }
+
+    override suspend fun updateUserWeight(weight: Int) = safeApiCall {
+        val body = mapOf("weight" to weight)
+        api.updateUserWeight(body).getOrThrowNull {}
     }
 
 }

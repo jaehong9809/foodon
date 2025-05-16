@@ -53,12 +53,13 @@ fun NavGraph(
 
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.MainGraph.route,
+            startDestination = NavRoutes.SplashGraph.route,
             modifier = modifier
         ) {
+            splashGraph(navController)
             mainGraph(navController, mainViewModel)
             loginGraph(navController)
-            calendarGraph(calendarViewModel)
+            calendarGraph(navController, calendarViewModel)
             signUpGraph(navController, signUpViewModel)
             mealGraph(navController, mealEditViewModel)
         }

@@ -1,7 +1,10 @@
 package com.swallaby.foodon.core.util
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
@@ -50,21 +53,22 @@ object DateUtil {
             else -> 0.dp
         }
 
-//        val targetTopStart by animateDpAsState(topStart)
-//        val targetTopEnd by animateDpAsState(topEnd)
-//
-//        return RoundedCornerShape(
-//            topStart = targetTopStart,
-//            topEnd = targetTopEnd,
-//            bottomEnd = targetTopEnd,
-//            bottomStart = targetTopStart
-//        )
+        val animatedTopStart by animateDpAsState(
+            targetValue = topStart,
+            animationSpec = tween(durationMillis = 300),
+            label = "topStart"
+        )
+        val animatedTopEnd by animateDpAsState(
+            targetValue = topEnd,
+            animationSpec = tween(durationMillis = 300),
+            label = "topEnd"
+        )
 
         return RoundedCornerShape(
-            topStart = topStart,
-            topEnd = topEnd,
-            bottomEnd = topEnd,
-            bottomStart = topStart
+            topStart = animatedTopStart,
+            topEnd = animatedTopEnd,
+            bottomEnd = animatedTopEnd,
+            bottomStart = animatedTopStart
         )
     }
 

@@ -44,7 +44,7 @@ public class MemberController {
 			@Valid @RequestBody ProfileRegisterRequest request,
 			@Parameter(hidden = true) @AuthMember Member member
 	){
-		memberService.registerProfile(request, member);
+		memberService.registerProfile(request, member.getId());
 		return ResponseUtil.success();
 	}
 
@@ -90,7 +90,25 @@ public class MemberController {
 	public ResponseEntity<Response<Void>> updateMemberLastLogin(
 		@Parameter(hidden = true) @AuthMember Member member
 	) {
-		memberService.updateLastLoginTime(member);
+		memberService.updateLastLoginTime(member.getId());
 		return ResponseUtil.success();
+	}
+
+	@GetMapping("/profile/goal-management")
+	@Operation(summary = "목표 관리를 위한 관리 유형과 섭취 정보, 신체 정보 제공")
+	public ResponseEntity<Response<GoalManagementResponse>> getGoalManagementProfile(
+			@Parameter(hidden = true) @AuthMember Member member
+	) {
+		GoalManagementResponse response = memberService.getGoalManagementProfile(member);
+		return ResponseUtil.success(response);
+	}
+
+	@GetMapping("/me/profile/status")
+	@Operation(summary = "자신의 건강 정보가 DB에 등록되어있는지 상태 확인")
+	public ResponseEntity<Response<Boolean>> getMemberProfileUpdated(
+			@Parameter(hidden = true) @AuthMember Member member
+	) {
+		Boolean isUpdated = memberService.getMemberProfileUpdated(member);
+		return ResponseUtil.success(isUpdated);
 	}
 }

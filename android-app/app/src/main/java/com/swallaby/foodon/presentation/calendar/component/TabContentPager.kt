@@ -3,7 +3,6 @@ package com.swallaby.foodon.presentation.calendar.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -12,7 +11,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarMeal
@@ -29,7 +27,8 @@ fun TabContentPager(
     recommendFoods: ResultState<List<RecommendFood>>,
     calendarStatus: CalendarStatus,
     onTabChanged: (Int) -> Unit,
-    onWeeklyTabChanged: (Int) -> Unit
+    onWeeklyTabChanged: (Int) -> Unit,
+    onUpdateWeight: () -> Unit
 ) {
 
     val selectedTabIndex = calendarStatus.selectedTabIndex
@@ -44,9 +43,7 @@ fun TabContentPager(
             .wrapContentHeight()
     ) { page ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 16.dp, horizontal = 24.dp),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopStart
         ) {
             when (page) {
@@ -55,7 +52,7 @@ fun TabContentPager(
                     MealContent(calendarMeal = meal)
                 }
                 1 -> {
-                    WeightContent(weightResult)
+                    WeightContent(weightResult, onUpdateWeight)
                 }
                 2 -> {
                     RecommendationContent(
