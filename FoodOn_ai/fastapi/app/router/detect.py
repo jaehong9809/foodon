@@ -3,7 +3,7 @@ from ..schemas.request import RequestSchema
 from ..schemas.response import ResponseSchema
 from ..service.preprocessing import load_image_from_url, preprocess
 from ..service.postprocessing import postprocess
-from ..core.model_loader import load_model
+from ..core.model_state import model
 import torch
 import time
 from PIL import Image
@@ -15,7 +15,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 @router.post("/detect", response_model=ResponseSchema)
 async def detect_objects(request: RequestSchema):
     total_start = time.time()
-    model = load_model()
     # 이미지 로딩
     t0 = time.time()
     image = load_image_from_url(request.url)
@@ -56,7 +55,6 @@ async def detect_objects_2(file: UploadFile = File(...)):
     
     # 이미지 로딩
     t0 = time.time()
-    model = load_model()
     image = Image.open(file.file).convert("RGB")  # PIL 이미지로 변환
     t1 = time.time()
     print(f"🕒 모델 로드, 이미지 로딩 시간: {t1 - t0:.4f}초")
