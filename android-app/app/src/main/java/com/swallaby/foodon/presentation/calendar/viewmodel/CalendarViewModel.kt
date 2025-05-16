@@ -2,6 +2,7 @@ package com.swallaby.foodon.presentation.calendar.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
+import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
@@ -36,7 +37,7 @@ class CalendarViewModel @Inject constructor(
         calendarSharedState.currentYearMonth.value to getWeekOfMonth(calendarSharedState.currentWeekStart.value)
     )
 
-    val isLoggedIn = appSharedState.isLoggedIn.value
+    val isLoggedIn = appSharedState.isLoggedIn
 
     fun updateState(block: (CalendarUiState) -> CalendarUiState) {
         _uiState.update(block)
@@ -54,21 +55,30 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(inputWeight = weight) }
     }
 
-    fun updateUserWeight(weight: Int) {
+    fun updateUserWeight(
+        weight: Int,
+        onSuccess: () -> Unit,
+        onError: (Int) -> Unit
+    ) {
         viewModelScope.launch {
             appSharedState.withLogin {
-                updateUserWeightUseCase(weight)
+                when (val result = updateUserWeightUseCase(weight)) {
+                    is ApiResult.Success -> {
+                        updateState {
+                            val previous = (it.weightResult as? ResultState.Success)?.data
+                            val updated = UserWeight(
+                                currentWeight = weight,
+                                goalWeight = previous?.goalWeight ?: 0
+                            )
+                            it.copy(weightResult = ResultState.Success(updated))
+                        }
 
-                updateState {
-                    val previous = (it.weightResult as? ResultState.Success)?.data
-                    val updated = UserWeight(
-                        currentWeight = weight,
-                        goalWeight = previous?.goalWeight ?: 0
-                    )
-                    it.copy(weightResult = ResultState.Success(updated))
+                        updateCalendarData(CalendarType.WEIGHT, isInit = true)
+
+                        onSuccess()
+                    }
+                    is ApiResult.Failure -> onError(result.error.messageRes)
                 }
-
-                updateCalendarData(CalendarType.WEIGHT, isInit = true)
             }
         }
     }

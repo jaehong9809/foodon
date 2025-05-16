@@ -48,7 +48,7 @@ fun NavGraphBuilder.calendarGraph(
                 viewModel = calendarViewModel,
                 onUpdateWeight = {
                     navController.navigate(
-                        if (calendarViewModel.isLoggedIn)
+                        if (calendarViewModel.isLoggedIn.value)
                             NavRoutes.CurrentWeight.route
                         else
                             NavRoutes.Login.route
@@ -74,8 +74,7 @@ fun NavGraphBuilder.calendarGraph(
         ) {
             CurrentWeightScreen(
                 onBack = { navController.popBackStack() },
-                onSubmit = { weight ->
-                    calendarViewModel.updateUserWeight(weight)
+                onSubmit = {
                     navController.popBackStack()
                 },
                 viewModel = calendarViewModel

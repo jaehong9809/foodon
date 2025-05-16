@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.calendar
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
@@ -28,7 +30,7 @@ import com.swallaby.foodon.presentation.calendar.viewmodel.CalendarViewModel
 @Composable
 fun CurrentWeightScreen(
     onBack: () -> Unit,
-    onSubmit: (Int) -> Unit,
+    onSubmit: () -> Unit,
     viewModel: CalendarViewModel
 ) {
 
@@ -37,6 +39,8 @@ fun CurrentWeightScreen(
 
     val current = userWeight.currentWeight
     val inputWeight = uiState.inputWeight
+
+    val context = LocalContext.current
 
     LaunchedEffect(userWeight.currentWeight) {
         viewModel.onCurrentWeightChange(userWeight.currentWeight)
@@ -87,7 +91,13 @@ fun CurrentWeightScreen(
             text = stringResource(R.string.btn_complete),
             isEnabled = current != 0,
             onClick = {
-                onSubmit(inputWeight)
+                viewModel.updateUserWeight(
+                    weight = inputWeight,
+                    onSuccess = { onSubmit() },
+                    onError = { msgRes ->
+                        Toast.makeText(context, context.getString(msgRes), Toast.LENGTH_SHORT).show()
+                    }
+                )
             }
         )
     }
