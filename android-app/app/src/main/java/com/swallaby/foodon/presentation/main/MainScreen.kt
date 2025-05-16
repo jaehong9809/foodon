@@ -56,10 +56,10 @@ import org.threeten.bp.LocalDate
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    onRecordClick: () -> Unit = {}
+    onMonthlyClick: () -> Unit = {},
+    onRecordClick: () -> Unit = {},
+    onMealClick: (Long) -> Unit = {}
 ) {
-
-    val navController = LocalNavController.current
 
     val mainUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedState = viewModel.calendarSharedState
@@ -135,9 +135,7 @@ fun MainScreen(
 
             MainCalendarHeader(
                 currentYearMonth = calendarInfo.currentYearMonth,
-                onMonthlyClick = {
-                    navController.navigate(NavRoutes.Calendar.route)
-                },
+                onMonthlyClick = onMonthlyClick,
                 onTodayClick = {
                     sharedState.resetToTodayWeek()
 
@@ -187,13 +185,16 @@ fun MainScreen(
                 mainUiState.recordResult,
                 calendarInfo
             ) { mealId ->
-                navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(mealId))
+                onMealClick(mealId)
             }
 
+            // 로그인, 등록 화면 테스트용 코드 (추후 삭제 필요)
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                val navController = LocalNavController.current
+
                 Box(modifier = Modifier
                     .background(WB500)
                     .clickable {
@@ -207,7 +208,6 @@ fun MainScreen(
                     )
                 }
 
-                // 임시 테스트
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Box(modifier = Modifier

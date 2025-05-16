@@ -29,8 +29,14 @@ fun NavGraphBuilder.mainGraph(
         composable(NavRoutes.Main.route) {
             MainScreen(
                 viewModel = mainViewModel,
+                onMonthlyClick = {
+                    navController.navigate(NavRoutes.CalendarGraph.route)
+                },
                 onRecordClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodRecord.route)
+                },
+                onMealClick = { mealId ->
+                    navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(mealId))
                 }
             )
         }

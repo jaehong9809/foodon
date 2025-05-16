@@ -27,7 +27,7 @@ class CalendarViewModel @Inject constructor(
     private val getUserWeightUseCase: GetUserWeightUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
     private val updateUserWeightUseCase: UpdateUserWeightUseCase,
-    val appSharedState: AppSharedState,
+    private val appSharedState: AppSharedState,
     val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<CalendarUiState>(CalendarUiState()) {
 
@@ -35,6 +35,8 @@ class CalendarViewModel @Inject constructor(
     private val recommendationTracker = FetchTracker(
         calendarSharedState.currentYearMonth.value to getWeekOfMonth(calendarSharedState.currentWeekStart.value)
     )
+
+    val isLoggedIn = appSharedState.isLoggedIn.value
 
     fun updateState(block: (CalendarUiState) -> CalendarUiState) {
         _uiState.update(block)
