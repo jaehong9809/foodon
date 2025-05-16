@@ -26,6 +26,12 @@ class MealRecordViewModel @Inject constructor(
     private val _events = MutableSharedFlow<MealRecordEvent>()
     val events = _events.asSharedFlow()
 
+    fun capture() {
+        _uiState.update {
+            it.copy(mealRecordState = ResultState.Loading, imageUploadFailMessage = null)
+        }
+    }
+
     fun clearImageUploadFailMessage() {
         _uiState.update {
             it.copy(imageUploadFailMessage = null)
@@ -67,9 +73,6 @@ class MealRecordViewModel @Inject constructor(
 //        }
 
 
-        _uiState.update {
-            it.copy(mealRecordState = ResultState.Loading, imageUploadFailMessage = null)
-        }
         viewModelScope.launch {
             val result = uploadMealUseCase(image).toResultState()
             _uiState.update { uiState ->

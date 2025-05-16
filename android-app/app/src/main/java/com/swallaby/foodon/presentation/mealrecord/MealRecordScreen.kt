@@ -76,6 +76,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.ImageMetadataUtil
+import com.swallaby.foodon.core.util.rememberThrottledFunction
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
@@ -170,6 +171,7 @@ fun MealRecordScreen(
                         )
                     },
                     onSearchClick = onSearchClick,
+                    onCaptureClick = recordViewModel::capture,
                     onClearImageUploadFailMessage = recordViewModel::clearImageUploadFailMessage,
                     innerPadding = innerPadding
                 )
@@ -287,6 +289,7 @@ fun CameraAppScreen(
     uploadMealImage: (uri: Uri, context: Context) -> Unit,
     onSearchClick: () -> Unit,
     onClearImageUploadFailMessage: () -> Unit = {},
+    onCaptureClick: () -> Unit = {},
     innerPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val context = LocalContext.current
@@ -313,6 +316,72 @@ fun CameraAppScreen(
     }
 
 
+    val throttledCapture = rememberThrottledFunction(300) {
+        onCaptureClick()
+        Log.d("CAMERASCREEN", "currentTime = ${System.currentTimeMillis()}")
+        // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
+        val timestamp =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val filename = "FOODON_$timestamp.jpg"
+
+        // 갤러리에 저장될 파일 생성
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/FoodOn")
+            }
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            context.contentResolver,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ).build()
+
+        imageCaptureUseCase.takePicture(outputOptions,
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    outputFileResults.savedUri?.let { uri ->
+                        Log.d("CAMERA", "Saved image to gallery: $uri")
+                        selectedImageUri = uri // 찍은 사진의 URI 저장
+                        uploadMealImage(uri, context)
+                    }
+                }
+//                            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//                                outputFileResults.savedUri?.let { uri ->
+//                                    Log.d("CAMERASCREEN", "Saved image to gallery: $uri")
+//                                    selectedImageUri = uri // 찍은 사진의 URI 저장
+//
+//                                    // WebP로 변환
+//                                    val webpFile = ImageConverter.convertUriToWebP(
+//                                        context, uri, 85
+//                                    ) // 품질 85로 설정
+//
+//                                    // WebP 파일을 사용하여 업로드
+//                                    webpFile?.let { file ->
+//                                        val webpUri = Uri.fromFile(file)
+//                                        Log.d("CAMERASCREEN", "Converted to WebP: $webpUri")
+//                                        uploadMealImage(webpUri, context) // WebP URI로 업로드
+//                                    } ?: run {
+//                                        Log.d("CAMERASCREEN", "Conversion to WebP failed")
+//                                        // 변환 실패 시 원본 URI 사용
+//                                        uploadMealImage(uri, context)
+//                                    }
+//                                }
+//                            }
+
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e("CAMERASCREEN", "Error saving image", exception)
+                    // 에러 메시지 표시
+                    Toast.makeText(
+                        context, "사진 저장 실패: ${exception.message}", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+
+    }
 
     Column(
         modifier = modifier
@@ -355,12 +424,10 @@ fun CameraAppScreen(
         when {
             selectedImageUri != null -> {
                 ImagePreview(
-                    imageUri = selectedImageUri,
-                    onClose = {
+                    imageUri = selectedImageUri, onClose = {
                         selectedImageUri = null
                         onClearImageUploadFailMessage()
-                    },
-                    contentDescription = "Selected Image"
+                    }, contentDescription = "Selected Image"
                 )
             }
 
@@ -404,48 +471,10 @@ fun CameraAppScreen(
                 }
 
                 // 촬영 버튼
-                CaptureButton(onClick = {
-                    // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
-                    val timestamp =
-                        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                    val filename = "FOODON_$timestamp.jpg"
+                CaptureButton(
+                    onClick = throttledCapture
 
-                    // 갤러리에 저장될 파일 생성
-                    val contentValues = ContentValues().apply {
-                        put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/FoodOn")
-                        }
-                    }
-
-                    val outputOptions = ImageCapture.OutputFileOptions.Builder(
-                        context.contentResolver,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        contentValues
-                    ).build()
-
-                    imageCaptureUseCase.takePicture(outputOptions,
-                        ContextCompat.getMainExecutor(context),
-                        object : ImageCapture.OnImageSavedCallback {
-                            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                                outputFileResults.savedUri?.let { uri ->
-                                    Log.d("CAMERA", "Saved image to gallery: $uri")
-                                    selectedImageUri = uri // 찍은 사진의 URI 저장
-                                    uploadMealImage(uri, context)
-                                }
-                            }
-
-                            override fun onError(exception: ImageCaptureException) {
-                                Log.e("CAMERA", "Error saving image", exception)
-                                // 에러 메시지 표시
-                                Toast.makeText(
-                                    context, "사진 저장 실패: ${exception.message}", Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        })
-
-                })
+                )
 
                 // 음식 검색 버튼
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
