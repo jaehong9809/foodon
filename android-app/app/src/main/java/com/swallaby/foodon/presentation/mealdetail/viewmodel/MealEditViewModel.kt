@@ -12,6 +12,7 @@ import com.swallaby.foodon.domain.food.model.MealType
 import com.swallaby.foodon.domain.food.model.toRequest
 import com.swallaby.foodon.domain.food.usecase.FetchMealDetailInfoUseCase
 import com.swallaby.foodon.domain.food.usecase.RecordMealUseCase
+import com.swallaby.foodon.presentation.sharedstate.MealSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class MealEditViewModel @Inject constructor(
     private val recordMealUseCase: RecordMealUseCase,
     private val fetchMealDetailInfoUseCase: FetchMealDetailInfoUseCase,
+    val mealSharedState: MealSharedState
 ) : BaseViewModel<MealEditUiState>(MealEditUiState()) {
     private val _events = MutableSharedFlow<MealEditEvent>()
     val events = _events.asSharedFlow()
@@ -79,6 +81,9 @@ class MealEditViewModel @Inject constructor(
                 is ResultState.Success -> {
                     _uiState.update { it.copy(mealEditState = ResultState.Success(mealInfo)) }
                     _events.emit(MealEditEvent.NavigateToMain)
+
+                    mealSharedState.triggerRefreshForDaily()
+                    mealSharedState.triggerRefreshForCalendar()
                 }
 
                 is ResultState.Error -> {

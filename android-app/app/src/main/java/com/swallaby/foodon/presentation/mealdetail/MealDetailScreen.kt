@@ -97,6 +97,8 @@ fun MealDetailScreen(
                 }
             }
         }
+
+        viewModel.mealSharedState.updateMealAddStatus(false)
     }
 
 //    DisposableEffect(Unit) {
