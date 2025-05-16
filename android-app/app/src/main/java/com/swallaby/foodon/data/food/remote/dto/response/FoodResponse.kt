@@ -5,19 +5,12 @@ import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.NutrientInfo
 import com.swallaby.foodon.domain.food.model.UnitType
 
-/*
-    "type": "PUBLIC",
-    "foodId": 0,
-    "foodName": "string",
-    "unit": "SLICE",
- */
 data class FoodResponse(
     val type: FoodType = FoodType.PUBLIC,
     val foodId: Long,
     val foodName: String = "",
-    val nutrientInfo: NutrientInfo = NutrientInfo(),
-//    val servingSize: Int = 0,
     val unit: UnitType = UnitType.GRAM,
+    val nutrientInfo: NutrientInfo = NutrientInfo(),
 )
 
 fun FoodResponse.toDomain(): FoodInfoWithId = FoodInfoWithId(
@@ -25,6 +18,5 @@ fun FoodResponse.toDomain(): FoodInfoWithId = FoodInfoWithId(
     foodId = foodId,
     foodName = foodName,
     nutrientInfo = nutrientInfo,
-//    servingSize = servingSize,
     unit = unit,
 )

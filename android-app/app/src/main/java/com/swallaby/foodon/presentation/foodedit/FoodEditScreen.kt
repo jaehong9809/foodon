@@ -2,7 +2,6 @@ package com.swallaby.foodon.presentation.foodedit
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -62,6 +63,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
 import com.swallaby.foodon.domain.food.model.FoodSimilar
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientItem
 import com.swallaby.foodon.domain.food.model.NutrientType
@@ -72,6 +74,7 @@ import com.swallaby.foodon.presentation.foodedit.component.SearchChip
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.foodregister.UnitTypeBottomSheet
 import com.swallaby.foodon.presentation.mealdetail.dismissModalBottomSheet
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,9 +99,9 @@ fun FoodEditScreen(
     }
 
 
-    val food = mealInfo.mealItems.find { item ->
+    val food = mealInfo.mealItems.singleOrNull { item ->
         item.foodId == uiState.selectedFoodId
-    }!!
+    } ?: mealInfo.mealItems.first()
 
 
     // food.nutrientInfo 대신 uiState 자체를 의존성으로 설정
@@ -136,11 +139,11 @@ fun FoodEditScreen(
                     thickness = 1.dp,
                     color = Border02
                 )
-                FoodSearch(
-                    foodName = food.foodName,
+                FoodSearch(foodName = food.foodName,
                     onSearchClick = onSearchClick,
-                    foodSimilarState = uiState.foodSimilarState
-                )
+                    selectedFoodId = uiState.selectedFoodId,
+                    foodSimilarState = uiState.foodSimilarState,
+                    onClick = { foodId -> viewModel.fetchFood(foodId, FoodType.PUBLIC) })
                 Spacer(
                     modifier = modifier
                         .height(8.dp)
@@ -370,14 +373,17 @@ private fun ChildNutritionInfo(
 
 @Composable
 fun FoodSearch(
-    modifier: Modifier = Modifier, foodName: String,
+    modifier: Modifier = Modifier,
+    foodName: String,
     foodSimilarState: ResultState<List<FoodSimilar>>,
-//    foodSimilars: List<FoodSimilar> = emptyList(),
+    selectedFoodId: Long,
     onSearchClick: () -> Unit = {},
+    onClick: (foodId: Long) -> Unit = {},
 ) {
+    // LazyListState 사용
+    val lazyRowState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
-
-    val scrollState = rememberScrollState()
     Column(modifier = modifier.padding(top = 16.dp, bottom = 24.dp)) {
         Row(
             modifier = modifier.padding(horizontal = 24.dp)
@@ -389,33 +395,58 @@ fun FoodSearch(
         }
         Spacer(modifier = modifier.height(8.dp))
 
-        Row(
-            modifier = modifier
-                .horizontalScroll(scrollState)
-                .padding(horizontal = 24.dp),
+        LazyRow(
+            state = lazyRowState,
+            contentPadding = PaddingValues(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            SearchChip(modifier, onClick = onSearchClick)
+            // 검색 칩 추가
+            item {
+                SearchChip(modifier, onClick = onSearchClick)
+            }
+
+            // 음식 칩들 추가
             when (foodSimilarState) {
                 is ResultState.Success -> {
                     val foodSimilars = foodSimilarState.data
-                    repeat(foodSimilars.size) { index ->
+
+                    // 각 음식에 대한 인덱스 맵 생성
+                    val foodIndexMap = foodSimilars.mapIndexed { index, food ->
+                        food.foodId to (index + 1) // SearchChip이 인덱스 0이므로 +1
+                    }.toMap()
+
+                    items(foodSimilars.size) { index ->
                         FoodChip(
-                            modifier, food = foodSimilars[index], onClick = {}, isSelected = true
+                            modifier = modifier, food = foodSimilars[index], onClick = { foodId ->
+                                // 선택된 아이템으로 스크롤
+                                coroutineScope.launch {
+                                    foodIndexMap[foodId]?.let { index ->
+                                        // 아이템 위치로 스크롤 (중앙 정렬)
+                                        lazyRowState.animateScrollToItem(
+                                            index = index,
+                                            scrollOffset = -lazyRowState.layoutInfo.viewportSize.width / 2 + lazyRowState.layoutInfo.visibleItemsInfo.firstOrNull()?.size?.div(
+                                                2
+                                            )!!
+                                        )
+                                    }
+                                }
+                                onClick(foodId)
+
+
+                            }, isSelected = selectedFoodId == foodSimilars[index].foodId
                         )
                     }
                 }
 
                 is ResultState.Loading -> {
+                    // 로딩 상태 처리
                 }
 
                 is ResultState.Error -> {
+                    // 에러 상태 처리
                 }
             }
-
         }
-
-
     }
 }
 

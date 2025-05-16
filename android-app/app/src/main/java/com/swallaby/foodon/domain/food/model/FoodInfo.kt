@@ -6,9 +6,8 @@ data class FoodInfoWithId(
     val type: FoodType = FoodType.PUBLIC,
     val foodId: Long = 0,
     val foodName: String = "",
-    val nutrientInfo: NutrientInfo = NutrientInfo(),
-    val servingSize: Int = 0,
     val unit: UnitType = UnitType.GRAM,
+    val nutrientInfo: NutrientInfo = NutrientInfo(),
 )
 
 data class FoodInfo(
@@ -17,7 +16,6 @@ data class FoodInfo(
     val servingSize: Int = 0,
     val unit: UnitType = UnitType.GRAM,
 )
-
 
 fun FoodInfo.toRequest(): CustomFoodRequest = CustomFoodRequest(
     foodName = foodName,

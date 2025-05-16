@@ -5,6 +5,7 @@ import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
 import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.FoodSimilar
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.MealInfo
 import okhttp3.MultipartBody
 
@@ -33,7 +34,8 @@ interface FoodRepository {
         name: String,
     ): ApiResult<List<FoodSimilar>>
 
-//    suspend fun getFood(
-//        foodId: Long,
-//    ): ApiResult<List<FoodSimilar>>
+    suspend fun getFood(
+        foodId: Long,
+        type: FoodType,
+    ): ApiResult<FoodInfoWithId>
 }

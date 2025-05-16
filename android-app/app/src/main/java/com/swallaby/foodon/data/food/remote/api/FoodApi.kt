@@ -7,6 +7,7 @@ import com.swallaby.foodon.data.food.remote.dto.response.FoodResponse
 import com.swallaby.foodon.data.food.remote.dto.response.FoodSimilarResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealDetailInfoResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealInfoResponse
+import com.swallaby.foodon.domain.food.model.FoodType
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -38,11 +39,11 @@ interface FoodApi {
         @Body request: CustomFoodRequest,
     ): BaseResponse<FoodResponse>
 
-    // todo 응답 수정
     @GET("foods/{foodId}")
     suspend fun getFood(
-        @Query("foodId") foodId: Long,
-    ): BaseResponse<MealInfoResponse>
+        @Path("foodId") foodId: Long,
+        @Query("type") type: FoodType,
+    ): BaseResponse<FoodResponse>
 
     @GET("meals/detail/{mealId}")
     suspend fun getMealDetail(

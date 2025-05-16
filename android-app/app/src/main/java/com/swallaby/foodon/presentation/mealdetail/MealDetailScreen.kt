@@ -112,12 +112,6 @@ fun MealDetailScreen(
         }
     }
 
-//    DisposableEffect(Unit) {
-//        onDispose {
-//            viewModel.destroyMeal()
-//        }
-//    }
-
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true

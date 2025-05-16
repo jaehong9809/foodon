@@ -39,21 +39,6 @@ class MealEditViewModel @Inject constructor(
             _uiState.update {
                 it.copy(mealEditState = fetchMealDetailInfoUseCase(mealId).toResultState())
             }
-//            when (val result = fetchMealDetailInfoUseCase(mealId).toResultState()) {
-//                is ResultState.Success -> {
-//                    _uiState.update {
-//                        it.copy(mealEditState = ResultState.Success(result.data))
-//                    }
-//                }
-//
-//                is ResultState.Error -> {
-//                    _uiState.update {
-//                        it.copy(mealEditState = ResultState.Error(result.messageRes))
-//                    }
-//                }
-//
-//                else -> {}
-//            }
         }
     }
 
