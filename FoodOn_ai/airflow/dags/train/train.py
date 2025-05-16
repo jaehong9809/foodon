@@ -169,7 +169,7 @@ def train_and_log_with_mlflow():
                 # torch.save(model.state_dict(), save_path)
                 # print(f"📀 모델 저장 (val mAP 향상): {save_path}")
 
-                mlflow.pytorch.log_model(model, "model")
+                mlflow.pytorch.log_model(model, "model", registered_model_name="food_detection")
 
             else:
                 patience_counter += 1

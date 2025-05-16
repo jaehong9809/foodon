@@ -144,7 +144,7 @@ def load_data_from_db(min_count=10):
         logger.info("🔌 DB 연결 종료")
 
 def delete_data():
-    folder_path = "train/dataset"
+    folder_path = "/dataset/dataset"
 
     if os.path.isdir(folder_path):
         shutil.rmtree(folder_path)
