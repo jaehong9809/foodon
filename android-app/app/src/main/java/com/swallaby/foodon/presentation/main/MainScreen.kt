@@ -58,7 +58,8 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onMonthlyClick: () -> Unit = {},
     onRecordClick: () -> Unit = {},
-    onMealClick: (Long) -> Unit = {}
+    onMealClick: (Long) -> Unit = {},
+    onClickNavigate: (NavRoutes) -> Unit = {}
 ) {
 
     val mainUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -176,7 +177,8 @@ fun MainScreen(
                 nutrientManageResult = mainUiState.nutrientManageResult,
                 recommendFoods = sharedState.recommendFoods.collectAsStateWithLifecycle().value,
                 goalManageResult = mainUiState.goalManageResult,
-                calendarInfo = calendarInfo
+                calendarInfo = calendarInfo,
+                onClickNavigate = onClickNavigate
             )
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)

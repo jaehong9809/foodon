@@ -33,7 +33,8 @@ import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun GoalManageContent(
-    goalManageResult: ResultState<GoalManage>
+    goalManageResult: ResultState<GoalManage>,
+    onClickNavigate: (NavRoutes) -> Unit = {}
 ) {
 
     val data = (goalManageResult as? ResultState.Success)?.data ?: GoalManage()
@@ -48,17 +49,17 @@ fun GoalManageContent(
         InfoItem(
             title = stringResource(R.string.main_goal_manage_type),
             content = data.managementType.takeIf { it.isNotEmpty() } ?: "없음",
-            navRoutes = NavRoutes.SignUpManagement
+            onClick = { onClickNavigate(NavRoutes.SignUpManagement) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_calorie),
             content = stringResource(R.string.format_kcal, formatKcal(data.targetCalories)),
-            navRoutes = NavRoutes.SignUpManagement
+            onClick = { onClickNavigate(NavRoutes.SignUpManagement) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_nutrient),
             content = "${data.carbRatio}:${data.proteinRatio}:${data.fatRatio}",
-            navRoutes = NavRoutes.SignUpManagement
+            onClick = { onClickNavigate(NavRoutes.SignUpManagement) }
         )
 
         Spacer(modifier = Modifier.height(11.5.dp))
@@ -68,17 +69,17 @@ fun GoalManageContent(
         InfoItem(
             title = stringResource(R.string.main_goal_manage_height),
             content = stringResource(R.string.format_cm, data.height),
-            navRoutes = NavRoutes.SignUpBodyInfo
+            onClick = { onClickNavigate(NavRoutes.SignUpBodyInfo) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_cur_weight),
             content = stringResource(R.string.format_kg, data.currentWeight),
-            navRoutes = NavRoutes.SignUpBodyInfo
+            onClick = { onClickNavigate(NavRoutes.SignUpBodyInfo) }
         )
         InfoItem(
             title = stringResource(R.string.main_goal_manage_goal_weight),
             content = stringResource(R.string.format_kg, data.goalWeight),
-            navRoutes = NavRoutes.SignUpGoalWeight
+            onClick = { onClickNavigate(NavRoutes.SignUpGoalWeight) }
         )
     }
 }
@@ -97,7 +98,7 @@ fun ManageTitleItem(title: String) {
 fun InfoItem(
     title: String,
     content: String,
-    navRoutes: NavRoutes
+    onClick: () -> Unit
 ) {
 
     val navController = LocalNavController.current
@@ -114,14 +115,13 @@ fun InfoItem(
             style = SpoqaTypography.SpoqaMedium16.copy(color = G800)
         )
 
+        // 목표 수정 시 주석 해제
         Row(
             modifier = Modifier
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = {
-                        navController.navigate(navRoutes.route)
-                    }
+                    onClick = onClick
                 ),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically

@@ -24,6 +24,7 @@ import com.swallaby.foodon.domain.main.model.GoalManage
 import com.swallaby.foodon.domain.main.model.NutrientIntake
 import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.presentation.main.model.CalendarInfo
+import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun MainContentPager(
@@ -31,7 +32,8 @@ fun MainContentPager(
     nutrientManageResult: ResultState<List<NutrientManage>>,
     recommendFoods: ResultState<List<RecommendFood>>,
     goalManageResult: ResultState<GoalManage>,
-    calendarInfo: CalendarInfo
+    calendarInfo: CalendarInfo,
+    onClickNavigate: (NavRoutes) -> Unit = {}
 ) {
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 4 })
@@ -50,7 +52,7 @@ fun MainContentPager(
                 0 -> NutrientIntakeContent(intakeResult, calendarInfo)
                 1 -> NutrientManageContent(nutrientManageResult)
                 2 -> RecommendFoodContent(recommendFoods)
-                3 -> GoalManageContent(goalManageResult)
+                3 -> GoalManageContent(goalManageResult, onClickNavigate = onClickNavigate)
             }
         }
 

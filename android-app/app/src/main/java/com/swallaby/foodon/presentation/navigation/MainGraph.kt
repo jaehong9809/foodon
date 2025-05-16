@@ -37,6 +37,9 @@ fun NavGraphBuilder.mainGraph(
                 },
                 onMealClick = { mealId ->
                     navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(mealId))
+                },
+                onClickNavigate = { navRoute ->
+                    navController.navigate(navRoute.route)
                 }
             )
         }
