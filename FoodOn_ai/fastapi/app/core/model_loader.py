@@ -42,19 +42,20 @@ def load_model():
         model = mlflow.pytorch.load_model("models:/food_detection/Production").to(device)
         model.eval()
         print("✅ MLflow에서 모델 로드 완료")
-        return model
     except Exception as e:
         print(f"⚠️ MLflow 로드 실패: {e}")
 
-    # 로컬 fallback
-    if os.path.exists(model_path):
-        model = create_model(num_classes)
-        model.load_state_dict(torch.load(model_path, map_location=device))
-        model.to(device)
-        model.eval()
-        print(f"✅ 로컬 모델 로드 완료: {model_path}")
-    else:
-        raise FileNotFoundError("❌ 로컬 모델 파일도 존재하지 않습니다.")
+        # 로컬 fallback
+        if os.path.exists(model_path):
+            model = create_model(num_classes)
+            model.load_state_dict(torch.load(model_path, map_location=device))
+            model.to(device)
+            model.eval()
+            print(f"✅ 로컬 모델 로드 완료: {model_path}")
+        else:
+            raise FileNotFoundError("❌ 로컬 모델 파일도 존재하지 않습니다.")
+
+    # ✅ 리턴 전 전역 모델 할당
     model_state.model = model
     return model
 
