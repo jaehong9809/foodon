@@ -17,7 +17,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from .names_id import names, class_id_to_index
 from .transform import get_transform
 from .FoodDetectionDataset import FoodDetectionDataset
-
+from mlflow.tracking import MlflowClient
 
 def create_model(num_classes: int = 68):
     weights = FasterRCNN_ResNet50_FPN_Weights.DEFAULT
@@ -173,7 +173,17 @@ def train_and_log_with_mlflow():
                 model_uri = "runs:/" + mlflow.active_run().info.run_id + "/model"
                 mlflow.register_model(model_uri, "food_detection")
                 print("✅ 모델을 MLflow Model Registry에 등록했습니다.")
-
+                client = MlflowClient()
+                latest_versions = client.get_latest_versions("food_detection", stages=["None"])
+                if latest_versions:
+                    model_version = latest_versions[0].version
+                    client.transition_model_version_stage(
+                        name="food_detection",
+                        version=model_version,
+                        stage="Production",
+                        archive_existing_versions=True,
+                    )
+                print(f"🚀 모델 버전 {model_version}을 'Production'으로 전환했습니다.")
             else:
                 patience_counter += 1
                 print(f"⏳ patience: {patience_counter}/{patience}")
