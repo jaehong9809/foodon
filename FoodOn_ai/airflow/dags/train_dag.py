@@ -53,8 +53,5 @@ with DAG(
         task_id='train_log_save_model',
         python_callable=train_log_save_model,
     )
-    restart_fastapi = BashOperator(
-        task_id='restart_fastapi_container',
-        bash_command='docker restart fastapi_server',
-    )
+
     train_and_save
