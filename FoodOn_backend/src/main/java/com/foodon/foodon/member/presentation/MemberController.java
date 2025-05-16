@@ -44,7 +44,7 @@ public class MemberController {
 			@Valid @RequestBody ProfileRegisterRequest request,
 			@Parameter(hidden = true) @AuthMember Member member
 	){
-		memberService.registerProfile(request, member);
+		memberService.registerProfile(request, member.getId());
 		return ResponseUtil.success();
 	}
 
@@ -90,7 +90,7 @@ public class MemberController {
 	public ResponseEntity<Response<Void>> updateMemberLastLogin(
 		@Parameter(hidden = true) @AuthMember Member member
 	) {
-		memberService.updateLastLoginTime(member);
+		memberService.updateLastLoginTime(member.getId());
 		return ResponseUtil.success();
 	}
 
