@@ -18,8 +18,8 @@ logger.setLevel(logging.INFO)
 
 def generate_dataset_from_df(
     df,
-    image_dir="train/dataset/images",
-    label_dir="train/dataset/labels",
+    image_dir="/train/dataset/images",
+    label_dir="/train/dataset/labels",
     conf_min=0.3,
     conf_max=0.99,
 ):
@@ -123,6 +123,7 @@ def load_data_from_db(min_count=10):
                 JOIN positions p ON mi.meal_item_id = p.meal_item_id
                 WHERE m.meal_time >= NOW() - INTERVAL 7 DAY
                 ORDER BY m.meal_id
+                LIMIT 10
         """
         df = pd.read_sql(query, conn)
 

@@ -51,7 +51,8 @@ services:
       - AIRFLOW__WEBSERVER__SECRET_KEY=s3cr3t_k3y_4irfl0w_1234567890
     command: scheduler
     volumes:
-      - shared-model-volume:/shared_model  
+      - shared-model-volume:/shared_model
+      - /home/ubuntu/dataset:/train/dataset  
 
   airflow-postgres:
     container_name: airflow_postgres
