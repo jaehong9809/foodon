@@ -52,7 +52,7 @@ services:
     command: scheduler
     volumes:
       - shared-model-volume:/shared_model
-      - /home/ubuntu/dataset:/train/dataset  
+      - /home/ubuntu/dataset:/dataset  
 
   airflow-postgres:
     container_name: airflow_postgres

@@ -18,8 +18,8 @@ logger.setLevel(logging.INFO)
 
 def generate_dataset_from_df(
     df,
-    image_dir="/train/dataset/images",
-    label_dir="/train/dataset/labels",
+    image_dir="/dataset/dataset/images",
+    label_dir="/dataset/dataset/labels",
     conf_min=0.3,
     conf_max=0.99,
 ):
