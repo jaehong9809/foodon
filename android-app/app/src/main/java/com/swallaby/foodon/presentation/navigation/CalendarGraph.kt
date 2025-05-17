@@ -25,12 +25,7 @@ fun NavGraphBuilder.calendarGraph(
             CalendarScreen(
                 viewModel = calendarViewModel,
                 onUpdateWeight = {
-                    navController.navigate(
-                        if (calendarViewModel.isLoggedIn.value)
-                            NavRoutes.CurrentWeight.route
-                        else
-                            NavRoutes.Login.route
-                    )
+                    navController.navigate(NavRoutes.CurrentWeight.route)
                 }
             )
         }

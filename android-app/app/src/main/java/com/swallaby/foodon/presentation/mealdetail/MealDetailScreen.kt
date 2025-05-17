@@ -110,6 +110,8 @@ fun MealDetailScreen(
                 }
             }
         }
+
+        viewModel.mealSharedState.updateMealAddStatus(false)
     }
 
     var showBottomSheet by remember { mutableStateOf(false) }

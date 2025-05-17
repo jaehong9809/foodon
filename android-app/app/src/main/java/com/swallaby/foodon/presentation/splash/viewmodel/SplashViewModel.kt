@@ -45,6 +45,8 @@ class SplashViewModel @Inject constructor(
                         AuthFlowResult.NavigateToSignUp
                     }
                     _uiState.value = SplashUiState(ResultState.Success(next))
+
+                    appSharedState.observeToken(tokenDataStore)
                 }
 
                 is ApiResult.Failure -> {
@@ -52,8 +54,6 @@ class SplashViewModel @Inject constructor(
                     _uiState.value = SplashUiState(ResultState.Error(R.string.error_invalid_token))
                 }
             }
-
-            appSharedState.observeToken(tokenDataStore)
         }
     }
 }

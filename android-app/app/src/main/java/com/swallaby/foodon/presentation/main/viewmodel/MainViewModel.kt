@@ -12,8 +12,8 @@ import com.swallaby.foodon.domain.main.usecase.GetGoalManageUseCase
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
-import com.swallaby.foodon.presentation.sharedstate.AppSharedState
 import com.swallaby.foodon.presentation.sharedstate.CalendarSharedState
+import com.swallaby.foodon.presentation.sharedstate.MealSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ class MainViewModel @Inject constructor(
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
     private val getGoalManageUseCase: GetGoalManageUseCase,
-    private val appSharedState: AppSharedState,
+    private val mealSharedState: MealSharedState,
     val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
 
@@ -42,13 +42,13 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateDailyData(date: LocalDate) {
-        viewModelScope.launch {
-            appSharedState.withLoginAndFetch(date, dateTracker) {
-                fetchRecordData(date)
-                fetchIntakeData(date)
-                fetchNutrientManageData(date)
-                fetchGoalManageData()
-            }
+        if (dateTracker.fetch(date) || mealSharedState.refreshDaily.value) {
+            fetchRecordData(date)
+            fetchIntakeData(date)
+            fetchNutrientManageData(date)
+            fetchGoalManageData()
+
+            mealSharedState.clearDaily()
         }
     }
 
@@ -89,8 +89,8 @@ class MainViewModel @Inject constructor(
     }
 
     fun fetchCalendarData(yearMonth: YearMonth) {
-        viewModelScope.launch {
-            appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
+        if (yearMonthTracker.fetch(yearMonth) || mealSharedState.refreshCalendar.value) {
+            viewModelScope.launch {
                 updateState { it.copy(mealCalendarResult = ResultState.Loading) }
                 val result = getCalendarUseCase(CalendarType.MEAL, yearMonth)
                 updateState { it.copy(mealCalendarResult = result.toResultState()) }
@@ -99,12 +99,14 @@ class MainViewModel @Inject constructor(
                     calendarSharedState.updateCalendarResult(result = result.toResultState())
                 }
             }
+
+            mealSharedState.clearCalendar()
         }
     }
 
     fun fetchRecommendation(yearMonth: YearMonth, week: Int) {
-        viewModelScope.launch {
-            appSharedState.withLoginAndFetch(yearMonth to week, recommendationTracker) {
+        if (recommendationTracker.fetch(yearMonth to week)) {
+            viewModelScope.launch {
                 calendarSharedState.updateRecommendFoods(ResultState.Loading)
                 val result = getRecommendFoodUseCase(yearMonth, week)
                 calendarSharedState.updateRecommendFoods(result.toResultState())
