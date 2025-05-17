@@ -154,6 +154,8 @@ object UriUtils {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
             val outputStream = FileOutputStream(tempFile)
 
+//            bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, 90, outputStream)
+
             val buffer = ByteArray(4 * 1024) // 4KB 버퍼
             var read: Int
 

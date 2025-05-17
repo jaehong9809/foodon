@@ -3,6 +3,9 @@ package com.swallaby.foodon.domain.food.repository
 import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
+import com.swallaby.foodon.domain.food.model.FoodInfoWithId
+import com.swallaby.foodon.domain.food.model.FoodSimilar
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.MealInfo
 import okhttp3.MultipartBody
 
@@ -19,7 +22,20 @@ interface FoodRepository {
         request: CustomFoodRequest,
     ): ApiResult<Unit>
 
+    suspend fun postCustomFoodUpdate(
+        request: CustomFoodRequest,
+    ): ApiResult<FoodInfoWithId>
+
     suspend fun getMealDetail(
         mealId: Long,
     ): ApiResult<MealInfo>
+
+    suspend fun getFoodSimilar(
+        name: String,
+    ): ApiResult<List<FoodSimilar>>
+
+    suspend fun getFood(
+        foodId: Long,
+        type: FoodType,
+    ): ApiResult<FoodInfoWithId>
 }

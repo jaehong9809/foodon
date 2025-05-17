@@ -3,8 +3,11 @@ package com.swallaby.foodon.data.food.remote.api
 import com.swallaby.foodon.core.data.remote.BaseResponse
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
+import com.swallaby.foodon.data.food.remote.dto.response.FoodResponse
+import com.swallaby.foodon.data.food.remote.dto.response.FoodSimilarResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealDetailInfoResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealInfoResponse
+import com.swallaby.foodon.domain.food.model.FoodType
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -31,14 +34,25 @@ interface FoodApi {
         @Body request: CustomFoodRequest,
     ): BaseResponse<Unit>
 
+    @POST("foods/custom/modified")
+    suspend fun postCustomFoodUpdate(
+        @Body request: CustomFoodRequest,
+    ): BaseResponse<FoodResponse>
+
     @GET("foods/{foodId}")
     suspend fun getFood(
-        @Query("foodId") foodId: Long,
-    ): BaseResponse<MealInfoResponse>
+        @Path("foodId") foodId: Long,
+        @Query("type") type: FoodType,
+    ): BaseResponse<FoodResponse>
 
     @GET("meals/detail/{mealId}")
     suspend fun getMealDetail(
         @Path("mealId") mealId: Long,
     ): BaseResponse<MealDetailInfoResponse>
+
+    @GET("foods/similar")
+    suspend fun getFoodSimilar(
+        @Query("name") name: String,
+    ): BaseResponse<List<FoodSimilarResponse>>
 
 }

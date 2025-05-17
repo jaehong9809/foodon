@@ -24,7 +24,11 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL")}\"")
-            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"24a64adccf1bc7b63a4cd6c0ba58dc9f\"")
+            buildConfigField(
+                "String",
+                "KAKAO_NATIVE_APP_KEY",
+                "\"24a64adccf1bc7b63a4cd6c0ba58dc9f\""
+            )
         }
         release {
             isMinifyEnabled = false
@@ -34,7 +38,11 @@ android {
             )
 
             buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL")}\"")
-            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"24a64adccf1bc7b63a4cd6c0ba58dc9f\"")
+            buildConfigField(
+                "String",
+                "KAKAO_NATIVE_APP_KEY",
+                "\"24a64adccf1bc7b63a4cd6c0ba58dc9f\""
+            )
         }
     }
     compileOptions {
@@ -110,10 +118,11 @@ dependencies {
     // coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
-    
+
     // pager
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
+    implementation(libs.accompanist.systemuicontroller)
 
     // time
     implementation(libs.threetenabp)

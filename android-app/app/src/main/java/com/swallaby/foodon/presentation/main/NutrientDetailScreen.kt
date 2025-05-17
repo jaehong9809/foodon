@@ -23,8 +23,8 @@ import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.domain.main.model.HealthEffect
+import com.swallaby.foodon.domain.main.model.NutrientManage
 import com.swallaby.foodon.presentation.main.component.NutrientManageDetailItem
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 
@@ -42,18 +42,21 @@ fun NutrientDetailScreen(
 
     Scaffold(
         topBar = {
-            CommonBackTopBar(
-                title = stringResource(R.string.top_bar_nutrient_detail)) {
-                onBackClick()
-            }
+// todo : top bar 복구
         }
     ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
         ) {
+            CommonBackTopBar(
+                title = stringResource(R.string.top_bar_nutrient_detail)
+            ) {
+                onBackClick()
+            }
             NutrientDetailInfo(essentialList, HealthEffect.BENEFICIAL)
 
             HorizontalDivider(thickness = 8.dp, color = Bkg04)
@@ -67,7 +70,7 @@ fun NutrientDetailScreen(
 @Composable
 fun NutrientDetailInfo(
     manageItems: List<NutrientManage>,
-    type: HealthEffect
+    type: HealthEffect,
 ) {
     Column(
         modifier = Modifier.padding(24.dp)

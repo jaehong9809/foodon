@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
-import com.swallaby.foodon.core.util.UriUtils
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.MealType
@@ -37,21 +36,8 @@ class MealEditViewModel @Inject constructor(
             it.copy(mealEditState = ResultState.Loading)
         }
         viewModelScope.launch {
-            when (val result = fetchMealDetailInfoUseCase(mealId).toResultState()) {
-                is ResultState.Success -> {
-                    UriUtils
-                    _uiState.update {
-                        it.copy(mealEditState = ResultState.Success(result.data))
-                    }
-                }
-
-                is ResultState.Error -> {
-                    _uiState.update {
-                        it.copy(mealEditState = ResultState.Error(result.messageRes))
-                    }
-                }
-
-                else -> {}
+            _uiState.update {
+                it.copy(mealEditState = fetchMealDetailInfoUseCase(mealId).toResultState())
             }
         }
     }

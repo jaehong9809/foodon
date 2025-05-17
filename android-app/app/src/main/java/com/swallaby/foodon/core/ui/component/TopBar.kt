@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -107,7 +108,8 @@ fun OnBoardingTopBar(
 @Composable
 fun BackIconImage(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    color: Color = Color.Black,
 ) {
     Image(
         modifier = modifier
@@ -118,6 +120,7 @@ fun BackIconImage(
             ),
         painter = painterResource(id = R.drawable.icon_back),
         contentDescription = "back",
+        colorFilter = ColorFilter.tint(color),
     )
 }
 
@@ -125,7 +128,7 @@ fun BackIconImage(
 fun TopBarText(
     modifier: Modifier = Modifier,
     text: String,
-    fontColor: Color
+    fontColor: Color,
 ) {
     Text(
         modifier = modifier,

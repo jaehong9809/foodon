@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,6 +59,7 @@ fun NutritionalIngredientsComponent(
     totalFat: Double,
     totalKcal: Int,
     totalProtein: Double,
+    enabledUpdate: Boolean,
     onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit = {},
 ) {
@@ -86,6 +86,7 @@ fun NutritionalIngredientsComponent(
                 modifier,
                 mealType,
                 mealTime,
+                enabledUpdate,
                 onMealTypeClick = onMealTypeClick,
                 onTimeClick = onTimeClick
             )
@@ -144,10 +145,11 @@ private fun MealTime(
     modifier: Modifier,
     mealType: MealType,
     mealTime: String,
+    enabledUpdate: Boolean,
     onMealTypeClick: (MealType) -> Unit = {},
     onTimeClick: () -> Unit,
 ) {
-    Log.d("mealType", "mealType: $mealType")
+//    Log.d("mealType", "mealType: $mealType")
     var expanded by remember { mutableStateOf(false) }
     Row(modifier = modifier.fillMaxWidth()) {
         Box {
@@ -155,6 +157,7 @@ private fun MealTime(
                 modifier = modifier
                     .wrapContentWidth()
                     .height(32.dp),
+                enabled = enabledUpdate,
                 onClick = {
                     expanded = true
                 },
@@ -213,6 +216,7 @@ private fun MealTime(
             modifier = modifier
                 .wrapContentWidth()
                 .height(32.dp),
+            enabled = enabledUpdate,
             onClick = onTimeClick,
             text = mealTime,
             prefixIcon = {
@@ -243,6 +247,7 @@ fun NutritionalIngredientsComponentPreview() {
         totalCarbs = 100.0,
         totalFat = 100.0,
         totalKcal = 100,
-        totalProtein = 100.0
+        totalProtein = 100.0,
+        enabledUpdate = true,
     )
 }

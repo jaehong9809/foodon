@@ -26,7 +26,7 @@ fun NavGraph(
 
         val mainViewModel: MainViewModel = hiltViewModel()
         val calendarViewModel: CalendarViewModel = hiltViewModel()
-        val signUpViewModel : SignUpViewModel = hiltViewModel()
+        val signUpViewModel: SignUpViewModel = hiltViewModel()
         val mealEditViewModel: MealEditViewModel = hiltViewModel()
 
         // todo 수정 예정

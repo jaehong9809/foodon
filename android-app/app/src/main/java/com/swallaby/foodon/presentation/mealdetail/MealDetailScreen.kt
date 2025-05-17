@@ -4,17 +4,23 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,9 +42,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +61,7 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.BackIconImage
 import com.swallaby.foodon.core.ui.component.CommonWideButton
+import com.swallaby.foodon.core.ui.component.StatusBarConfig
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
 import com.swallaby.foodon.domain.food.model.MealItem
@@ -73,6 +84,8 @@ fun MealDetailScreen(
     onFoodClick: (foodId: Long) -> Unit,
     onNavigateMain: () -> Unit = {},
 ) {
+
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     LaunchedEffect(mealId) {
@@ -99,18 +112,32 @@ fun MealDetailScreen(
         }
     }
 
-//    DisposableEffect(Unit) {
-//        onDispose {
-//            viewModel.destroyMeal()
-//        }
-//    }
-
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+
+
+    val density = LocalDensity.current
+    val screenWidthPx = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+    val topAppbarHeightPx = with(density) { 52.dp.toPx() }
+
+    val isCollapse = remember(scrollState.value) {
+        Log.d(
+            "MealDetailScreen",
+            "remainScroll.value: ${scrollState.value - (screenWidthPx - topAppbarHeightPx)}, toolbarHeight = ${topAppbarHeightPx}"
+        )
+        if (scrollState.value < screenWidthPx - topAppbarHeightPx) 0f
+        else ((scrollState.value - (screenWidthPx - topAppbarHeightPx)) / topAppbarHeightPx).coerceIn(
+            0f, 1f
+        )
+    }
+    StatusBarConfig(
+        darkIcons = isCollapse == 1f,  // 흰색 아이콘
+        statusBarColor = Color.Transparent
+    )
 
     when (uiState.mealEditState) {
         is ResultState.Loading -> {
@@ -126,7 +153,9 @@ fun MealDetailScreen(
             val mealInfo = (uiState.mealEditState as ResultState.Success).data
 
             Column(
-                modifier = modifier.fillMaxSize()
+                modifier = modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
             ) {
                 Column(
                     modifier = modifier
@@ -135,21 +164,25 @@ fun MealDetailScreen(
                 ) {
                     // 음식 이미지와 음식 이름 버튼 영역
                     MealImageWithFoodLabels(
+                        scrollState = scrollState,
                         mealItems = mealInfo.mealItems,
                         onFoodClick = onFoodClick,
                         imageUri = mealInfo.imageUri
                     )
 
                     // 영양소 정보 컴포넌트
-                    NutritionalIngredientsComponent(modifier = modifier,
+                    NutritionalIngredientsComponent(
+                        modifier = modifier,
                         mealType = mealInfo.mealTimeType,
                         mealTime = mealInfo.mealTime,
                         totalCarbs = mealInfo.totalCarbs,
                         totalFat = mealInfo.totalFat,
                         totalKcal = mealInfo.totalKcal,
                         totalProtein = mealInfo.totalProtein,
+                        enabledUpdate = enabledUpdate,
                         onMealTypeClick = viewModel::updateMealType,
-                        onTimeClick = { showBottomSheet = true })
+                        onTimeClick = { showBottomSheet = true },
+                    )
 
                     // 구분선
                     Spacer(
@@ -167,6 +200,8 @@ fun MealDetailScreen(
                         onDelete = viewModel::deleteFood,
                         enabledDeleteButton = enabledUpdate
                     )
+
+//                    Spacer(modifier = modifier.height(200.dp))
                 }
 
                 if (enabledUpdate) CommonWideButton(
@@ -174,18 +209,32 @@ fun MealDetailScreen(
                     text = stringResource(R.string.btn_record_complete),
                     onClick = viewModel::recordMeal
                 )
+
             }
             Box(
                 modifier = modifier
+                    .height(
+                        52.dp + WindowInsets.systemBars
+                            .asPaddingValues()
+                            .calculateTopPadding()
+                    )// .statusBars.getTop(density)
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .background(
+                        color = Color.White.copy(alpha = isCollapse)
+                    )
                     .padding(start = 16.dp, end = 16.dp)
             ) {
                 Row(
-                    modifier = Modifier.align(Alignment.CenterStart),
+                    modifier = Modifier
+                        .height(52.dp)
+                        .align(Alignment.BottomStart),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BackIconImage(modifier = Modifier, onBackClick)
+                    BackIconImage(
+                        modifier = Modifier,
+                        onBackClick,
+                        color = if (isCollapse == 1f) Color.Black else Color.White
+                    )
                 }
             }
 
@@ -278,36 +327,62 @@ private fun ErrorState(message: String) {
 @Composable
 fun MealImageWithFoodLabels(
     modifier: Modifier = Modifier,
+    scrollState: ScrollState,
     imageUri: Uri?,
     mealItems: List<MealItem>, onFoodClick: (foodId: Long) -> Unit,
 ) {
     var originalImageSize by remember { mutableStateOf(Size(0f, 0f)) }
     var isImageLoaded by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
+    val screenWidthPx = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
 
-    Box {
+
+    Box(modifier = modifier.graphicsLayer {
+        translationY += (scrollState.value.toFloat() / 2).coerceAtMost(screenWidthPx / 2)
+    }) {
         val imageContentScale = ContentScale.FillBounds
         val context = LocalContext.current
         val imageUrl = imageUri.toString()
 //        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
 
-        // 이미지 표시
-        AsyncImage(
-            model = ImageRequest.Builder(context).data(imageUrl).crossfade(true)
-                .listener(onSuccess = { _, result ->
-                    val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
-                    if (bitmap != null && !isImageLoaded) {
-                        originalImageSize = Size(
-                            bitmap.width.toFloat(), bitmap.height.toFloat()
-                        )
-                        isImageLoaded = true
-                    }
-                }).build(),
-            contentDescription = "음식 사진",
-            contentScale = imageContentScale,
-            modifier = Modifier
+        Box(
+            modifier = modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-        )
+        ) {
+
+            // 이미지 표시
+            AsyncImage(
+                model = ImageRequest.Builder(context).data(imageUrl).crossfade(true)
+                    .listener(onSuccess = { _, result ->
+                        val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
+                        if (bitmap != null && !isImageLoaded) {
+                            originalImageSize = Size(
+                                bitmap.width.toFloat(), bitmap.height.toFloat()
+                            )
+                            isImageLoaded = true
+                        }
+                    }).build(),
+                contentDescription = "음식 사진",
+                contentScale = imageContentScale,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+            )
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.3f)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = .6f), Color.Black.copy(alpha = 0f)
+                            )
+                        )
+                    )
+            )
+        }
+
 
         // 이미지 로드 완료 후 음식 이름 버튼 표시
         if (isImageLoaded) {

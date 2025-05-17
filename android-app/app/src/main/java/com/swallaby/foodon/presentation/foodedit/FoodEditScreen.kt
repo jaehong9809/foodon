@@ -1,9 +1,7 @@
 package com.swallaby.foodon.presentation.foodedit
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,21 +13,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
+import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.UpdateFoodButton
 import com.swallaby.foodon.core.ui.theme.BG100
 import com.swallaby.foodon.core.ui.theme.Bkg04
@@ -54,7 +62,8 @@ import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.StringUtil
-import com.swallaby.foodon.domain.food.model.MealItem
+import com.swallaby.foodon.domain.food.model.FoodSimilar
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientItem
 import com.swallaby.foodon.domain.food.model.NutrientType
@@ -62,9 +71,12 @@ import com.swallaby.foodon.presentation.foodedit.component.FoodAmountComponent
 import com.swallaby.foodon.presentation.foodedit.component.FoodChip
 import com.swallaby.foodon.presentation.foodedit.component.FoodThumbnailList
 import com.swallaby.foodon.presentation.foodedit.component.SearchChip
-import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
+import com.swallaby.foodon.presentation.foodregister.UnitTypeBottomSheet
+import com.swallaby.foodon.presentation.mealdetail.dismissModalBottomSheet
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodEditScreen(
     modifier: Modifier = Modifier,
@@ -74,36 +86,23 @@ fun FoodEditScreen(
     onFoodDeleteClick: (foodId: Long) -> Unit = {},
     onFoodUpdateClick: () -> Unit = {},
     onNutritionEditClick: () -> Unit = {},
-    onSuccessCustomFood: (mealItem: MealItem) -> Unit = {},
+    onSearchClick: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mealInfo = (uiState.foodEditState as ResultState.Success).data
 
+
     val enabledUpdate = remember(mealId) {
         mealId == 0L
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                is FoodEditEvent.SuccessCustomFood -> {
-                    onSuccessCustomFood(event.mealItem)
-                }
 
-                is FoodEditEvent.FailedCustomFood -> {
-                    Toast.makeText(context, event.messageRes, Toast.LENGTH_SHORT).show()
-                }
-
-                else -> {
-                }
-            }
-        }
-    }
-    val food = mealInfo.mealItems.find { item ->
+    val food = mealInfo.mealItems.singleOrNull { item ->
         item.foodId == uiState.selectedFoodId
-    }!!
+    } ?: mealInfo.mealItems.first()
+
 
     // food.nutrientInfo 대신 uiState 자체를 의존성으로 설정
     var nutrientInfo by remember(uiState) {
@@ -114,53 +113,127 @@ fun FoodEditScreen(
 
     Log.d("Screen", "FoodEditScreen ViewModel identity: ${System.identityHashCode(viewModel)}")
     Log.d("Screen", "FoodEditScreen Food.nutrientInfo: ${food.nutrientInfo}")
-
-
-    Column {
-        CommonBackTopBar(
-            title = stringResource(R.string.top_bar_food_info_update), onBackClick = onBackClick
-        )
-        Column(
-            modifier = modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-        ) {
-            FoodThumbnailList(
-                foods = mealInfo.mealItems,
-                imageUri = mealInfo.imageUri,
-                selectedFoodId = uiState.selectedFoodId,
-                selectFood = viewModel::selectFood
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val scope = rememberCoroutineScope()
+    Scaffold { innerPadding ->
+        Column(modifier = modifier.padding(innerPadding)) {
+            CommonBackTopBar(
+                title = stringResource(R.string.top_bar_food_info_update), onBackClick = onBackClick
             )
-            HorizontalDivider(
-                modifier = modifier.padding(horizontal = 24.dp), thickness = 1.dp, color = Border02
-            )
-            FoodSearch(
-                foodName = food.foodName
-            )
-            Spacer(
+            Column(
                 modifier = modifier
-                    .height(8.dp)
-                    .fillMaxWidth()
-                    .background(color = Bkg04)
-            )
-            FoodAmountComponent(
-                food = food,
-            )
-            NutritionComponent(
-                modifier = modifier,
-                nutrientInfo = nutrientInfo,
-                onNutritionEditClick = onNutritionEditClick,
-                enabledUpdate
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+            ) {
+                FoodThumbnailList(
+                    foods = mealInfo.mealItems,
+                    imageUri = mealInfo.imageUri,
+                    selectedFoodId = uiState.selectedFoodId,
+                    selectFood = viewModel::selectFood
+                )
+                HorizontalDivider(
+                    modifier = modifier.padding(horizontal = 24.dp),
+                    thickness = 1.dp,
+                    color = Border02
+                )
+                FoodSearch(foodName = food.foodName,
+                    onSearchClick = onSearchClick,
+                    selectedFoodId = uiState.selectedFoodId,
+                    foodSimilarState = uiState.foodSimilarState,
+                    onClick = { foodId -> viewModel.fetchFood(foodId, FoodType.PUBLIC) })
+                Spacer(
+                    modifier = modifier
+                        .height(8.dp)
+                        .fillMaxWidth()
+                        .background(color = Bkg04)
+                )
+                FoodAmountComponent(food = food, enabledUpdate = enabledUpdate, onClickUnitType = {
+                    showBottomSheet = true
+                })
+                NutritionComponent(
+                    modifier = modifier,
+                    nutrientInfo = nutrientInfo,
+                    onNutritionEditClick = onNutritionEditClick,
+                    enabledUpdate
+                )
+            }
+            // todo 음식 상세 화면에서도 수정 가능한지 확인
+            if (enabledUpdate) UpdateFoodButton(
+                modifier = modifier.padding(
+                    horizontal = 24.dp
+                ),
+                onDeleteClick = { onFoodDeleteClick(food.foodId) },
+                onUpdateClick = onFoodUpdateClick,
             )
         }
-        // todo 음식 상세 화면에서도 수정 가능한지 확인
-        if (enabledUpdate) UpdateFoodButton(
-            modifier = modifier.padding(
-                horizontal = 24.dp
-            ),
-            onDeleteClick = { onFoodDeleteClick(food.foodId) },
-            onUpdateClick = onFoodUpdateClick,
-        )
+
+        if (showBottomSheet) {
+            ModalBottomSheet(dragHandle = null, sheetState = sheetState, onDismissRequest = {
+                showBottomSheet = false
+            }) {
+
+                var selectedUnitType by remember {
+                    mutableStateOf(food.unit)
+                }
+
+                Column(
+                    modifier = modifier
+                        .wrapContentHeight()
+                        .background(Color.White)
+                ) {
+                    Row(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(onClick = {
+                            dismissModalBottomSheet(
+                                scope = scope,
+                                sheetState = sheetState,
+                                callback = {
+                                    showBottomSheet = false
+                                },
+                            )
+                        }) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_close),
+                                contentDescription = "close"
+                            )
+                        }
+                    }
+
+                    UnitTypeBottomSheet(
+                        initUnitType = food.unit,
+                        onUnitSelected = {
+                            selectedUnitType = it
+                        },
+                    )
+
+                    CommonWideButton(
+                        modifier = Modifier.padding(horizontal = 24.dp),
+                        text = "확인",
+                        onClick = {
+                            viewModel.updateUnitType(
+                                food.foodId, selectedUnitType
+                            )
+                            dismissModalBottomSheet(
+                                scope = scope,
+                                sheetState = sheetState,
+                                callback = {
+                                    showBottomSheet = false
+                                },
+                            )
+                        },
+                    )
+
+                }
+
+            }
+        }
     }
 
 
@@ -190,6 +263,16 @@ fun NutritionComponent(
                             StringUtil.formatKcal(nutrientInfo[index].value.toInt())
                         ),
                         amountColor = WB500,
+                    )
+                }
+
+                NutrientType.CHOLESTEROL, NutrientType.SODIUM, NutrientType.POTASSIUM -> {
+                    ParentNutritionInfo(
+                        nutritionName = nutrientInfo[index].name,
+                        amount = StringUtil.formatNutrition(
+                            nutrientInfo[index].value, defaultUnit = R.string.format_nutrition_mg
+                        ),
+                        hasChild = childItems.isNotEmpty()
                     )
                 }
 
@@ -257,7 +340,7 @@ private fun ParentNutritionInfo(
     modifier: Modifier = Modifier,
     nutritionName: String,
     amount: String,
-    amountColor: androidx.compose.ui.graphics.Color = G900,
+    amountColor: Color = G900,
     hasChild: Boolean = false,
 ) {
     BaseNutritionInfo(modifier = if (hasChild) modifier.bottomBorder() else modifier, nutrition = {
@@ -290,9 +373,17 @@ private fun ChildNutritionInfo(
 
 @Composable
 fun FoodSearch(
-    modifier: Modifier = Modifier, foodName: String,
+    modifier: Modifier = Modifier,
+    foodName: String,
+    foodSimilarState: ResultState<List<FoodSimilar>>,
+    selectedFoodId: Long,
+    onSearchClick: () -> Unit = {},
+    onClick: (foodId: Long) -> Unit = {},
 ) {
-    val scrollState = rememberScrollState()
+    // LazyListState 사용
+    val lazyRowState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
     Column(modifier = modifier.padding(top = 16.dp, bottom = 24.dp)) {
         Row(
             modifier = modifier.padding(horizontal = 24.dp)
@@ -303,16 +394,58 @@ fun FoodSearch(
             Text("가 아닌가요?", style = NotoTypography.NotoBold14.copy(color = G500))
         }
         Spacer(modifier = modifier.height(8.dp))
-        Row(
-            modifier = modifier
-                .horizontalScroll(scrollState)
-                .padding(horizontal = 24.dp),
+
+        LazyRow(
+            state = lazyRowState,
+            contentPadding = PaddingValues(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            SearchChip(modifier)
-            FoodChip(modifier, foodName = "피자", isSelected = true)
-            FoodChip(modifier, foodName = "불고기 피자")
-            FoodChip(modifier, foodName = "페페로니 피자")
+            // 검색 칩 추가
+            item {
+                SearchChip(modifier, onClick = onSearchClick)
+            }
+
+            // 음식 칩들 추가
+            when (foodSimilarState) {
+                is ResultState.Success -> {
+                    val foodSimilars = foodSimilarState.data
+
+                    // 각 음식에 대한 인덱스 맵 생성
+                    val foodIndexMap = foodSimilars.mapIndexed { index, food ->
+                        food.foodId to (index + 1) // SearchChip이 인덱스 0이므로 +1
+                    }.toMap()
+
+                    items(foodSimilars.size) { index ->
+                        FoodChip(
+                            modifier = modifier, food = foodSimilars[index], onClick = { foodId ->
+                                // 선택된 아이템으로 스크롤
+                                coroutineScope.launch {
+                                    foodIndexMap[foodId]?.let { index ->
+                                        // 아이템 위치로 스크롤 (중앙 정렬)
+                                        lazyRowState.animateScrollToItem(
+                                            index = index,
+                                            scrollOffset = -lazyRowState.layoutInfo.viewportSize.width / 2 + lazyRowState.layoutInfo.visibleItemsInfo.firstOrNull()?.size?.div(
+                                                2
+                                            )!!
+                                        )
+                                    }
+                                }
+                                onClick(foodId)
+
+
+                            }, isSelected = selectedFoodId == foodSimilars[index].foodId
+                        )
+                    }
+                }
+
+                is ResultState.Loading -> {
+                    // 로딩 상태 처리
+                }
+
+                is ResultState.Error -> {
+                    // 에러 상태 처리
+                }
+            }
         }
     }
 }

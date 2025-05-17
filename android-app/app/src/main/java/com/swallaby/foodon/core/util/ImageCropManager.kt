@@ -22,6 +22,7 @@ class ImageCropManager(private val context: Context) {
         val request = ImageRequest.Builder(context).data(imageUrl).target { result ->
             val bitmap = (result as? BitmapDrawable)?.bitmap ?: return@target
 
+
             // 원본 이미지 크기
             val imageWidth = bitmap.width
             val imageHeight = bitmap.height

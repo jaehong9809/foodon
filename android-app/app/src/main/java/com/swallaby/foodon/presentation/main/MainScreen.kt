@@ -224,6 +224,22 @@ fun MainScreen(
                         style = NotoTypography.NotoMedium20
                     )
                 }
+
+                // 임시 테스트
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(modifier = Modifier
+                    .background(WB500)
+                    .clickable {
+                        navController.navigate(NavRoutes.FoodGraph.FoodRegister.route)
+                    }) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = "음식 등록",
+                        color = MainWhite,
+                        style = NotoTypography.NotoMedium20
+                    )
+                }
             }
         }
     }

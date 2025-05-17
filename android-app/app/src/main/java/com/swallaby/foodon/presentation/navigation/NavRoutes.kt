@@ -37,6 +37,10 @@ sealed class NavRoutes(val route: String) {
 
 
         object FoodRecord : NavRoutes("food_record")
+
+        object FoodRegister : NavRoutes("food_register")
+
+        object FoodSearch : NavRoutes("food_search")
     }
 
     /* Login */

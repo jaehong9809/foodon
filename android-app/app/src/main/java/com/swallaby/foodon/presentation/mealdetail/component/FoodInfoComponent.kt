@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.ImageConverter
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.domain.food.model.MealItem
 
@@ -37,6 +38,7 @@ fun FoodInfoComponent(
 ) {
     // todo 크롭 매니저 처리 리팩토링
     val cropManager = ImageCropManager(LocalContext.current)
+    val context = LocalContext.current
 
     val positions = foods.mapNotNull { mealItem ->
         mealItem.positions.firstOrNull()
@@ -52,7 +54,12 @@ fun FoodInfoComponent(
         ) {
             isLoad = true
         }
+
     }
+//    imageUri?.let {
+//        ImageConverter.convertUriToWebP(context = context, imageUri = it, quality = 10)
+//    }
+
 
     if (isLoad) {
         Column(

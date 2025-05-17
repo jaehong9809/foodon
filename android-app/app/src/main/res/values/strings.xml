@@ -12,6 +12,7 @@
     <string name="format_kg">%dkg</string>
     <string name="format_nutrition_kg">%skg</string>
     <string name="format_nutrition_g">%sg</string>
+    <string name="format_nutrition_mg">%smg</string>
     <string name="format_calendar_date">%d년 %d월</string>
     <string name="format_hour">%s시</string>
     <string name="format_min">%s분</string>
@@ -58,8 +59,14 @@
     <string name="nutritional_ingredients">영양 성분</string>
     <string name="format_g">%dg</string>
     <string name="over_size_image">이미지가 너무 큽니다.</string>
-    <string name="notice_size_image">10MB 이하 이미지 파일만 업로드 가능합니다.</string>
+    <string name="food_name">음식명</string>
+    <string name="food_quantity">내용량</string>
+    <string name="food_name_placeholder">음식 이름을 입력해 주세요</string>
 
+    <!-- image-->
+    <string name="invalid_image_resolution">이미지 해상도가 유효하지 않습니다.</string>
+    <string name="invalid_image_aspect_ratio">이미지 비율이 유효하지 않습니다.</string>
+    <string name="invalid_image_size">10MB 초과한 이미지 파일은 업로드가 불가능합니다.</string>
 
     <!-- main -->
     <string name="main_today">오늘</string>

@@ -6,7 +6,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,12 +52,10 @@ fun WithPermission(
     }
 
     if (!permissionGranted) {
-        PermissionRequiredScreen(modifier = modifier, permission = permission) {
+        PermissionRequiredScreen(permission = permission) {
             permissionGranted = true
         }
     } else {
-        Surface(modifier = modifier) {
-            content()
-        }
+        content()
     }
 }

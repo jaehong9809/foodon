@@ -15,7 +15,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +23,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -37,6 +37,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -61,7 +62,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.swallaby.foodon.R
@@ -74,6 +77,7 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.ImageMetadataUtil
+import com.swallaby.foodon.core.util.rememberThrottledFunction
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
@@ -147,17 +151,36 @@ fun MealRecordScreen(
         }
     }
 
-    WithPermission(
-        modifier = modifier, permission = Manifest.permission.CAMERA
-    ) {
-        CameraAppScreen(
-            modifier = modifier,
-            uiState = uiState,
-            onBackClick = onBackClick,
-            uploadMealImage = recordViewModel::uploadMealImage,
-            onSearchClick = onSearchClick,
-        )
+    Scaffold { innerPadding ->
+        Box(
+            modifier = modifier.fillMaxSize()
+//                .padding(innerPadding)
+        ) {
+            WithPermission(
+                modifier = modifier, permission = Manifest.permission.CAMERA
+            ) {
+                CameraAppScreen(
+                    modifier = modifier,
+                    uiState = uiState,
+                    onBackClick = onBackClick,
+                    uploadMealImage = { uri, context ->
+//                        ImageConverter.convertUriToWebP(
+//                            context = context, imageUri = uri, quality = 10
+//                        )
+                        recordViewModel.uploadMealImage(
+                            uri, context
+                        )
+                    },
+                    onSearchClick = onSearchClick,
+                    onCaptureClick = recordViewModel::capture,
+                    onClearImageUploadFailMessage = recordViewModel::clearImageUploadFailMessage,
+                    innerPadding = innerPadding
+                )
+            }
+        }
+
     }
+
 }
 
 // 재사용 가능한 이미지 프리뷰 컴포넌트
@@ -266,6 +289,9 @@ fun CameraAppScreen(
     onBackClick: () -> Unit,
     uploadMealImage: (uri: Uri, context: Context) -> Unit,
     onSearchClick: () -> Unit,
+    onClearImageUploadFailMessage: () -> Unit = {},
+    onCaptureClick: () -> Unit = {},
+    innerPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val context = LocalContext.current
 
@@ -278,6 +304,7 @@ fun CameraAppScreen(
     ) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
+            onCaptureClick()
             uploadMealImage(it, context)
             Log.d("GALLERY", "Selected image: $it")
         }
@@ -291,11 +318,81 @@ fun CameraAppScreen(
     }
 
 
+    val throttledCapture = rememberThrottledFunction(300) {
+        onCaptureClick()
+        Log.d("CAMERASCREEN", "currentTime = ${System.currentTimeMillis()}")
+        // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
+        val timestamp =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val filename = "FOODON_$timestamp.jpg"
 
-    Column(modifier = Modifier.fillMaxSize()) {
+        // 갤러리에 저장될 파일 생성
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/FoodOn")
+            }
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            context.contentResolver,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ).build()
+
+        imageCaptureUseCase.takePicture(outputOptions,
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    outputFileResults.savedUri?.let { uri ->
+                        Log.d("CAMERA", "Saved image to gallery: $uri")
+                        selectedImageUri = uri // 찍은 사진의 URI 저장
+                        uploadMealImage(uri, context)
+                    }
+                }
+//                            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//                                outputFileResults.savedUri?.let { uri ->
+//                                    Log.d("CAMERASCREEN", "Saved image to gallery: $uri")
+//                                    selectedImageUri = uri // 찍은 사진의 URI 저장
+//
+//                                    // WebP로 변환
+//                                    val webpFile = ImageConverter.convertUriToWebP(
+//                                        context, uri, 85
+//                                    ) // 품질 85로 설정
+//
+//                                    // WebP 파일을 사용하여 업로드
+//                                    webpFile?.let { file ->
+//                                        val webpUri = Uri.fromFile(file)
+//                                        Log.d("CAMERASCREEN", "Converted to WebP: $webpUri")
+//                                        uploadMealImage(webpUri, context) // WebP URI로 업로드
+//                                    } ?: run {
+//                                        Log.d("CAMERASCREEN", "Conversion to WebP failed")
+//                                        // 변환 실패 시 원본 URI 사용
+//                                        uploadMealImage(uri, context)
+//                                    }
+//                                }
+//                            }
+
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e("CAMERASCREEN", "Error saving image", exception)
+                    // 에러 메시지 표시
+                    Toast.makeText(
+                        context, "사진 저장 실패: ${exception.message}", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+    ) {
         // 상단 버튼 행
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
             horizontalArrangement = Arrangement.Absolute.SpaceBetween
@@ -329,9 +426,10 @@ fun CameraAppScreen(
         when {
             selectedImageUri != null -> {
                 ImagePreview(
-                    imageUri = selectedImageUri,
-                    onClose = { selectedImageUri = null },
-                    contentDescription = "Selected Image"
+                    imageUri = selectedImageUri, onClose = {
+                        selectedImageUri = null
+                        onClearImageUploadFailMessage()
+                    }, contentDescription = "Selected Image"
                 )
             }
 
@@ -344,79 +442,44 @@ fun CameraAppScreen(
             }
         }
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            if (uiState.failImageUpload) Box(
-                modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    stringResource(R.string.notice_size_image),
-                    style = NotoTypography.NotoBold16.copy(color = Color.Red),
-                )
+            uiState.imageUploadFailMessage?.let {
+                Box(
+                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        stringResource(it),
+                        style = NotoTypography.NotoBold16.copy(color = Color.Red),
+                    )
+                }
             }
+
 
             // 하단 액션 버튼 행
             Row(
-                modifier = modifier
+                modifier = Modifier
                     .matchParentSize()
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // 앨범 선택 버튼
-                Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                     ActionButton(iconResId = R.drawable.icon_gallery,
                         text = stringResource(R.string.select_gallery),
                         onClick = { galleryLauncher.launch("image/*") })
                 }
 
                 // 촬영 버튼
-                CaptureButton(onClick = {
-                    // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
-                    val timestamp =
-                        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                    val filename = "FOODON_$timestamp.jpg"
+                CaptureButton(
+                    onClick = throttledCapture
 
-                    // 갤러리에 저장될 파일 생성
-                    val contentValues = ContentValues().apply {
-                        put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/FoodOn")
-                        }
-                    }
-
-                    val outputOptions = ImageCapture.OutputFileOptions.Builder(
-                        context.contentResolver,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        contentValues
-                    ).build()
-
-                    imageCaptureUseCase.takePicture(outputOptions,
-                        ContextCompat.getMainExecutor(context),
-                        object : ImageCapture.OnImageSavedCallback {
-                            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                                outputFileResults.savedUri?.let { uri ->
-                                    Log.d("CAMERA", "Saved image to gallery: $uri")
-                                    selectedImageUri = uri // 찍은 사진의 URI 저장
-                                    uploadMealImage(uri, context)
-                                }
-                            }
-
-                            override fun onError(exception: ImageCaptureException) {
-                                Log.e("CAMERA", "Error saving image", exception)
-                                // 에러 메시지 표시
-                                Toast.makeText(
-                                    context, "사진 저장 실패: ${exception.message}", Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        })
-
-                })
+                )
 
                 // 음식 검색 버튼
-                Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                     ActionButton(
                         iconResId = R.drawable.icon_search,
                         text = stringResource(R.string.food_search),
@@ -459,56 +522,119 @@ fun CameraPreview(
     zoomLevel: Float,
     imageCaptureUseCase: ImageCapture,
 ) {
-    val previewUseCase = remember { androidx.camera.core.Preview.Builder().build() }
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
+
+    // remember로 상태 유지
+    val previewUseCase = remember {
+        androidx.camera.core.Preview.Builder()
+            .build()
+    }
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
 
-    val localContext = LocalContext.current
-
-    fun rebindCameraProvider() {
-        cameraProvider?.let { cameraProvider ->
-            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-            cameraProvider.unbindAll()
-            val camera = cameraProvider.bindToLifecycle(
-                localContext as LifecycleOwner, cameraSelector, previewUseCase, imageCaptureUseCase
-            )
-            cameraControl = camera.cameraControl
+    // PreviewView를 remember로 생성
+    val previewView = remember {
+        PreviewView(context).apply {
+            scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
 
+    fun bindCameraUseCases() {
+        cameraProvider?.let { provider ->
+            try {
+                // 기존 바인딩 해제
+                provider.unbindAll()
+
+                // 카메라 설정
+                val cameraSelector = CameraSelector.Builder()
+                    .requireLensFacing(lensFacing)
+                    .build()
+
+                // 프리뷰와 이미지 캡처 사용 사례 바인딩
+                val camera = provider.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    previewUseCase,
+                    imageCaptureUseCase
+                )
+
+                // 카메라 컨트롤 저장
+                cameraControl = camera.cameraControl
+            } catch (e: Exception) {
+                Log.e("CameraPreview", "카메라 사용 사례 바인딩 실패", e)
+            }
+        }
+    }
+
+    // 카메라 프로바이더 초기화
     LaunchedEffect(Unit) {
-        cameraProvider = ProcessCameraProvider.awaitInstance(localContext)
-        rebindCameraProvider()
+        try {
+            val provider = ProcessCameraProvider.getInstance(context).get()
+            cameraProvider = provider
+            previewUseCase.surfaceProvider = previewView.surfaceProvider
+            bindCameraUseCases()
+        } catch (e: Exception) {
+            Log.e("CameraPreview", "카메라 프로바이더 초기화 실패", e)
+        }
     }
 
+    // 렌즈 방향이 변경될 때 카메라 리바인딩
     LaunchedEffect(lensFacing) {
-        rebindCameraProvider()
+        bindCameraUseCases()
     }
 
+    // 줌 레벨 변경 시 적용
     LaunchedEffect(zoomLevel) {
         cameraControl?.setLinearZoom(zoomLevel)
     }
 
-    // 컴포넌트가 화면에서 사라질 때 카메라 리소스 해제
-    DisposableEffect(Unit) {
+    // 핵심: 컴포넌트 수명 주기와 리소스 해제 관리 개선
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP -> {
+                    // 앱이 백그라운드로 갈 때 리소스 해제
+                    previewUseCase.surfaceProvider = null
+                    cameraProvider?.unbindAll()
+                }
+
+                Lifecycle.Event.ON_RESUME -> {
+                    // 앱이 다시 포그라운드로 올 때 카메라 재설정
+                    if (cameraProvider != null) {
+                        previewUseCase.surfaceProvider = previewView.surfaceProvider
+                        bindCameraUseCases()
+                    }
+                }
+
+                else -> {}
+            }
+        }
+
+        // 생명주기 옵저버 등록
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // 컴포넌트가 제거될 때 확실히 리소스 해제
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            // 중요: 명시적으로 서페이스 제공자 해제
+            previewUseCase.surfaceProvider = null
             cameraProvider?.unbindAll()
             cameraProvider = null
+            cameraControl = null
         }
     }
 
-    AndroidView(modifier = modifier
-        .fillMaxWidth()
-        .aspectRatio(1f)
-        .clip(RectangleShape), // 1:1 비율에 맞게 clip
-        factory = { context ->
-            PreviewView(context).also {
-                it.scaleType = PreviewView.ScaleType.FILL_CENTER
-                previewUseCase.surfaceProvider = it.surfaceProvider
-                rebindCameraProvider()
-            }
-        })
+
+
+    AndroidView(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .clip(RectangleShape), // 1:1 비율에 맞게 clip
+        factory = { previewView },
+    )
 }
 
 @Preview(showBackground = true)

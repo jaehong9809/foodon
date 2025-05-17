@@ -27,7 +27,9 @@ import com.swallaby.foodon.presentation.mealdetail.component.DropButton
 @Composable
 fun FoodAmountComponent(
     modifier: Modifier = Modifier,
-    food: MealItem
+    food: MealItem,
+    enabledUpdate: Boolean = true,
+    onClickUnitType: () -> Unit = {},
 ) {
     Column(modifier = modifier.padding(24.dp)) {
         Column {
@@ -44,8 +46,8 @@ fun FoodAmountComponent(
                     modifier = modifier
                         .height(48.dp)
                         .weight(1f),
-
-                    onClick = {}, text = food.unit,
+                    enabled = enabledUpdate,
+                    onClick = onClickUnitType, text = food.unit.value,
                     contentModifier = modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     contentAlignment = Arrangement.SpaceBetween,
@@ -61,6 +63,7 @@ fun FoodAmountComponent(
                     modifier = modifier
                         .height(48.dp)
                         .weight(1f),
+                    enabled = enabledUpdate,
                     onClick = {}, text = food.quantity.toString(),// "1 ½",
                     contentModifier = modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),

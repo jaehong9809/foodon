@@ -136,7 +136,7 @@ fun FoodCard(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                food.unit, style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
+                                food.unit.value, style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
                             )
                             Box(
                                 modifier = Modifier
