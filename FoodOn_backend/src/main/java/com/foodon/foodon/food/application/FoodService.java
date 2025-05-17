@@ -1,6 +1,5 @@
 package com.foodon.foodon.food.application;
 
-import com.foodon.foodon.common.util.NutrientCalculator;
 import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
@@ -9,8 +8,6 @@ import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
 import com.foodon.foodon.meal.dto.NutrientProfile;
 import com.foodon.foodon.member.domain.Member;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -124,7 +121,14 @@ public class FoodService {
 
     public List<FoodNameResponse> getSimilarFoods(String name) {
         Pageable limit = PageRequest.of(0, 10); // LIMIT 10
-        return foodRepository.findByNameContaining(name, limit)
+        return foodRepository.findByNameContainingAndSearchableIsTrueAndMemberIdIsNull(name, limit)
+                .stream()
+                .map(FoodNameResponse::from)
+                .toList();
+    }
+
+    public List<FoodNameResponse> getRecentFoods(Long memberId) {
+        return foodRepository.findTop10ByMemberIdAndSearchableIsTrueOrderByIdDesc(memberId)
                 .stream()
                 .map(FoodNameResponse::from)
                 .toList();

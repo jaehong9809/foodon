@@ -47,7 +47,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 .from(food)
                 .where(
                         food.id.eq(id),
-                        eqMemberId(member)
+                        eqMemberIdIfNotPublic(member, type)
                 )
                 .fetchOne();
 
@@ -137,6 +137,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 					FoodInfo.class,
 					food.id,
 					food.memberId,
+					food.foodType,
 					food.name,
 					food.unit,
 					food.servingSize
@@ -249,7 +250,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 .leftJoin(nutrient).on(foodNutrient.nutrientId.eq(nutrient.id))
                 .where(
                         containsId(cond.getFoodIds()),
-                        eqMemberId(cond.getMember())
+                        eqMemberIdIfNotPublic(cond.getMember(), cond.getFoodType())
                 )
                 .transform(
                     GroupBy.groupBy(food.id).list(
@@ -285,8 +286,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
         return nutrients.stream().collect(Collectors.groupingBy(NutrientInfo::foodId));
     }
 
-    private BooleanExpression eqMemberId(Member member) {
-        if(Objects.isNull(member) || member.getId() == 0) {
+    private BooleanExpression eqMemberIdIfNotPublic(Member member, FoodType type) {
+        if(Objects.isNull(member) || member.getId() == 0 || type == FoodType.PUBLIC) {
             return null;
         }
 
