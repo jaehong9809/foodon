@@ -1,7 +1,5 @@
 package com.swallaby.foodon.presentation.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -19,36 +17,16 @@ fun NavGraphBuilder.calendarGraph(
     ) {
         composable(
             route = NavRoutes.Calendar.route,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(500)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(500)
-                )
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(500)
-                )
-            }
+            enterTransition = slideUpEnter(),
+            exitTransition = slideLeftExit(),
+            popEnterTransition = slideRightPopEnter(),
+            popExitTransition = slideDownPopExit()
         ) {
             CalendarScreen(
                 viewModel = calendarViewModel,
                 onUpdateWeight = {
                     navController.navigate(
-                        if (calendarViewModel.appSharedState.isLoggedIn.value)
+                        if (calendarViewModel.isLoggedIn.value)
                             NavRoutes.CurrentWeight.route
                         else
                             NavRoutes.Login.route
@@ -59,23 +37,12 @@ fun NavGraphBuilder.calendarGraph(
 
         composable(
             route = NavRoutes.CurrentWeight.route,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(500)
-                )
-            }
+            enterTransition = slideLeftEnter(),
+            popExitTransition = slideRightPopExit(),
         ) {
             CurrentWeightScreen(
                 onBack = { navController.popBackStack() },
-                onSubmit = { weight ->
-                    calendarViewModel.updateUserWeight(weight)
+                onSubmit = {
                     navController.popBackStack()
                 },
                 viewModel = calendarViewModel

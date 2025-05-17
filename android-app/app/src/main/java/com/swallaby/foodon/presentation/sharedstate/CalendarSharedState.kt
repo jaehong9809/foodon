@@ -2,6 +2,7 @@ package com.swallaby.foodon.presentation.sharedstate
 
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
+import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,9 @@ class CalendarSharedState @Inject constructor() {
 
     private val _recommendFoods = MutableStateFlow<ResultState<List<RecommendFood>>>(ResultState.Loading)
     val recommendFoods: StateFlow<ResultState<List<RecommendFood>>> = _recommendFoods
+
+    private val _calendarType = MutableStateFlow<CalendarType>(CalendarType.MEAL)
+    val calendarType: StateFlow<CalendarType> = _calendarType
 
     val currentWeekStart: StateFlow<LocalDate> = _selectedDate.map {
         it.with(weekFields.dayOfWeek(), 1)
@@ -70,8 +74,12 @@ class CalendarSharedState @Inject constructor() {
         _currentYearMonth.value = YearMonth.from(today)
     }
 
-    fun updateCalendarResult(result: ResultState<List<CalendarItem>>) {
+    fun updateCalendarResult(
+        type: CalendarType = CalendarType.MEAL,
+        result: ResultState<List<CalendarItem>>
+    ) {
         _calendarResult.value = result
+        _calendarType.value = type
     }
 
     fun updateRecommendFoods(result: ResultState<List<RecommendFood>>) {

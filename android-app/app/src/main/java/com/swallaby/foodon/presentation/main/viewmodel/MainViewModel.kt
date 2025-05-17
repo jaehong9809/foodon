@@ -1,7 +1,6 @@
 package com.swallaby.foodon.presentation.main.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.swallaby.foodon.core.data.TokenDataStore
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
@@ -9,6 +8,7 @@ import com.swallaby.foodon.core.util.FetchTracker
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.domain.calendar.usecase.GetCalendarUseCase
 import com.swallaby.foodon.domain.calendar.usecase.GetRecommendFoodUseCase
+import com.swallaby.foodon.domain.main.usecase.GetGoalManageUseCase
 import com.swallaby.foodon.domain.main.usecase.GetMealRecordUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientIntakeUseCase
 import com.swallaby.foodon.domain.main.usecase.GetNutrientManageUseCase
@@ -28,7 +28,7 @@ class MainViewModel @Inject constructor(
     private val getNutrientManageUseCase: GetNutrientManageUseCase,
     private val getCalendarUseCase: GetCalendarUseCase,
     private val getRecommendFoodUseCase: GetRecommendFoodUseCase,
-    private val tokenDataStore: TokenDataStore,
+    private val getGoalManageUseCase: GetGoalManageUseCase,
     private val appSharedState: AppSharedState,
     val calendarSharedState: CalendarSharedState,
 ) : BaseViewModel<MainUiState>(MainUiState()) {
@@ -36,13 +36,6 @@ class MainViewModel @Inject constructor(
     private val dateTracker = FetchTracker<LocalDate>()
     private val yearMonthTracker = FetchTracker<YearMonth>()
     private val recommendationTracker = FetchTracker<Pair<YearMonth, Int>>()
-
-    // TODO: 일단 임시로 MainViewModel에 초기화 -> SplashScreen을 따로 만든다면 해당 뷰모델에서 초기화하고 이건 삭제
-    init {
-        viewModelScope.launch {
-            appSharedState.observeToken(tokenDataStore)
-        }
-    }
 
     fun updateState(block: (MainUiState) -> MainUiState) {
         _uiState.update(block)
@@ -53,7 +46,8 @@ class MainViewModel @Inject constructor(
             appSharedState.withLoginAndFetch(date, dateTracker) {
                 fetchRecordData(date)
                 fetchIntakeData(date)
-                fetchManageData(date)
+                fetchNutrientManageData(date)
+                fetchGoalManageData()
             }
         }
     }
@@ -76,21 +70,34 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun fetchManageData(date: LocalDate) {
-        updateState { it.copy(manageResult = ResultState.Loading) }
+    private fun fetchNutrientManageData(date: LocalDate) {
+        updateState { it.copy(nutrientManageResult = ResultState.Loading) }
 
         viewModelScope.launch {
             val result = getNutrientManageUseCase(date)
-            updateState { it.copy(manageResult = result.toResultState()) }
+            updateState { it.copy(nutrientManageResult = result.toResultState()) }
+        }
+    }
+
+    private fun fetchGoalManageData() {
+        updateState { it.copy(goalManageResult = ResultState.Loading) }
+
+        viewModelScope.launch {
+            val result = getGoalManageUseCase()
+            updateState { it.copy(goalManageResult = result.toResultState()) }
         }
     }
 
     fun fetchCalendarData(yearMonth: YearMonth) {
         viewModelScope.launch {
             appSharedState.withLoginAndFetch(yearMonth, yearMonthTracker) {
-                calendarSharedState.updateCalendarResult(ResultState.Loading)
+                updateState { it.copy(mealCalendarResult = ResultState.Loading) }
                 val result = getCalendarUseCase(CalendarType.MEAL, yearMonth)
-                calendarSharedState.updateCalendarResult(result.toResultState())
+                updateState { it.copy(mealCalendarResult = result.toResultState()) }
+
+                if (calendarSharedState.calendarType.value == CalendarType.MEAL) {
+                    calendarSharedState.updateCalendarResult(result = result.toResultState())
+                }
             }
         }
     }

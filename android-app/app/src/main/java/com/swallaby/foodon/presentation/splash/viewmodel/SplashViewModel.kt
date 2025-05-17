@@ -8,6 +8,7 @@ import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.data.auth.remote.result.AuthFlowResult
 import com.swallaby.foodon.domain.auth.usecase.ValidateTokenUseCase
+import com.swallaby.foodon.presentation.sharedstate.AppSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val validateTokenUseCase: ValidateTokenUseCase,
-    private val tokenDataStore: TokenDataStore
+    private val tokenDataStore: TokenDataStore,
+    private val appSharedState: AppSharedState,
 ) : BaseViewModel<SplashUiState>(SplashUiState()) {
 
     init {
@@ -50,6 +52,8 @@ class SplashViewModel @Inject constructor(
                     _uiState.value = SplashUiState(ResultState.Error(R.string.error_invalid_token))
                 }
             }
+
+            appSharedState.observeToken(tokenDataStore)
         }
     }
 }
