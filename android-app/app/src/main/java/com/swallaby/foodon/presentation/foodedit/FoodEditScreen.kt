@@ -134,14 +134,13 @@ fun FoodEditScreen(
                     selectedFoodId = uiState.selectedFoodId,
                     selectFood = viewModel::selectFood
                 )
-                if(enabledUpdate)
-                HorizontalDivider(
+                if (enabledUpdate) HorizontalDivider(
                     modifier = modifier.padding(horizontal = 24.dp),
                     thickness = 1.dp,
                     color = Border02
                 )
-                if(enabledUpdate)
-                FoodSearch(foodName = food.foodName,
+                if (enabledUpdate) FoodSearch(
+                    foodName = food.foodName,
                     onSearchClick = onSearchClick,
                     selectedFoodId = uiState.selectedFoodId,
                     foodSimilarState = uiState.foodSimilarState,
@@ -152,9 +151,13 @@ fun FoodEditScreen(
                         .fillMaxWidth()
                         .background(color = Bkg04)
                 )
-                FoodAmountComponent(food = food, enabledUpdate = enabledUpdate, onClickUnitType = {
-                    showBottomSheet = true
-                })
+                FoodAmountComponent(
+                    food = food,
+                    enabledUpdate = enabledUpdate,
+                    onUpdateQuantity = viewModel::updateQuantity,
+                    onClickUnitType = {
+                        showBottomSheet = true
+                    })
                 NutritionComponent(
                     modifier = modifier,
                     nutrientInfo = nutrientInfo,
@@ -162,7 +165,6 @@ fun FoodEditScreen(
                     enabledUpdate
                 )
             }
-            // todo 음식 상세 화면에서도 수정 가능한지 확인
             if (enabledUpdate) UpdateFoodButton(
                 modifier = modifier.padding(
                     horizontal = 24.dp
