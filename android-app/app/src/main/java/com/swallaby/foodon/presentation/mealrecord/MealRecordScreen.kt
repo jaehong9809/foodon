@@ -82,13 +82,19 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil
+import com.swallaby.foodon.core.util.ImageConverter
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.ImageMetadataUtil
+import com.swallaby.foodon.core.util.ImageUtil.validateImage
 import com.swallaby.foodon.core.util.rememberThrottledFunction
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDateTime
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -171,9 +177,6 @@ fun MealRecordScreen(
                     uiState = uiState,
                     onBackClick = onBackClick,
                     uploadMealImage = { uri, context ->
-//                        ImageConverter.convertUriToWebP(
-//                            context = context, imageUri = uri, quality = 10
-//                        )
                         recordViewModel.uploadMealImage(
                             uri, context
                         )
@@ -311,9 +314,25 @@ fun CameraAppScreen(
     ) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
+
+            // 1. 먼저 로딩 상태로 변경해서 UI 갱신
             onCaptureClick()
-            uploadMealImage(it, context)
-            Log.d("GALLERY", "Selected image: $it")
+
+            // 2. 이미지 변환을 백그라운드 스레드로 이동
+            CoroutineScope(Dispatchers.IO).launch {
+                val webpFile = ImageConverter.convertUriToWebP(
+                    context, uri, 85
+                )
+
+                webpFile?.let { file ->
+                    val webpUri = Uri.fromFile(file)
+                    Log.d("CAMERASCREEN", "Converted to WebP: $webpUri")
+                    uploadMealImage(webpUri, context)
+                } ?: run {
+                    Log.d("CAMERASCREEN", "Conversion to WebP failed")
+                    uploadMealImage(uri, context)
+                }
+            }
         }
     }
 
@@ -351,33 +370,23 @@ fun CameraAppScreen(
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     outputFileResults.savedUri?.let { uri ->
-                        Log.d("CAMERA", "Saved image to gallery: $uri")
-                        selectedImageUri = uri // 찍은 사진의 URI 저장
-                        uploadMealImage(uri, context)
+                        selectedImageUri = uri
+
+                        // 이미지 변환을 백그라운드 스레드로 이동
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val webpFile = ImageConverter.convertUriToWebP(
+                                context, uri, 85
+                            )
+
+                            webpFile?.let { file ->
+                                val webpUri = Uri.fromFile(file)
+                                uploadMealImage(webpUri, context)
+                            } ?: run {
+                                uploadMealImage(uri, context)
+                            }
+                        }
                     }
                 }
-//                            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-//                                outputFileResults.savedUri?.let { uri ->
-//                                    Log.d("CAMERASCREEN", "Saved image to gallery: $uri")
-//                                    selectedImageUri = uri // 찍은 사진의 URI 저장
-//
-//                                    // WebP로 변환
-//                                    val webpFile = ImageConverter.convertUriToWebP(
-//                                        context, uri, 85
-//                                    ) // 품질 85로 설정
-//
-//                                    // WebP 파일을 사용하여 업로드
-//                                    webpFile?.let { file ->
-//                                        val webpUri = Uri.fromFile(file)
-//                                        Log.d("CAMERASCREEN", "Converted to WebP: $webpUri")
-//                                        uploadMealImage(webpUri, context) // WebP URI로 업로드
-//                                    } ?: run {
-//                                        Log.d("CAMERASCREEN", "Conversion to WebP failed")
-//                                        // 변환 실패 시 원본 URI 사용
-//                                        uploadMealImage(uri, context)
-//                                    }
-//                                }
-//                            }
 
                 override fun onError(exception: ImageCaptureException) {
                     Log.e("CAMERASCREEN", "Error saving image", exception)

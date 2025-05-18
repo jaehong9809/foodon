@@ -59,22 +59,6 @@ class MealRecordViewModel @Inject constructor(
 
 
         val image = uri.toMultipartBodyPart(context)
-//        val validation = validateMultipartImageSize(image)
-//        Log.d("MealRecordViewModel", "validation: $validation")
-//
-//        if (!validation.first) {
-//            _uiState.update {
-//                it.copy(imageUploadFailMessage = R.string.over_size_image)
-//            }
-//            viewModelScope.launch {
-//                _events.emit(
-//                    MealRecordEvent.ShowErrorMessage(R.string.over_size_image)
-//                )
-//            }
-//            return
-//        }
-
-
         viewModelScope.launch {
             val result = uploadMealUseCase(image).toResultState()
             _uiState.update { uiState ->

@@ -429,7 +429,6 @@ private fun DisplayFoodLabels(
             val centerY = relativeY + (partialHeight / 2)
 
             FoodLabelButton(position = position,
-                originalImageSize = originalImageSize,
                 centerPosition = Size(centerX.toFloat(), centerY.toFloat()),  // 중앙 좌표 전달
                 foodName = mealItem.foodName,
                 onClick = { onFoodClick(mealItem.foodId) })
