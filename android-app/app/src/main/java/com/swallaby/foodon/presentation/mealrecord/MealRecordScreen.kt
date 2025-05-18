@@ -146,7 +146,6 @@ fun MealRecordScreen(
                     // 이미지 로드 및 크롭
                     cropManager.loadAndCropImage(
                         event.mealInfo.imageUri.toString(),
-//                        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
                         positions
                     ) {
                         // 모든 크롭 이미지가 준비됨
@@ -337,7 +336,6 @@ fun CameraAppScreen(
     }
 
     var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
-    var zoomLevel by remember { mutableFloatStateOf(0.0f) }
     var flashMode by remember { mutableIntStateOf(ImageCapture.FLASH_MODE_OFF) }
     val imageCaptureUseCase = remember {
         ImageCapture.Builder().setFlashMode(flashMode).build()
@@ -450,7 +448,6 @@ fun CameraAppScreen(
             else -> {
                 CameraPreview(
                     lensFacing = lensFacing,
-                    zoomLevel = zoomLevel,
                     imageCaptureUseCase = imageCaptureUseCase
                 )
             }
@@ -547,7 +544,6 @@ fun CameraAppScreen(
 fun CameraPreview(
     modifier: Modifier = Modifier,
     lensFacing: Int,
-    zoomLevel: Float,
     imageCaptureUseCase: ImageCapture,
 ) {
     val context = LocalContext.current
@@ -602,17 +598,6 @@ fun CameraPreview(
         }
     }
 
-    // 렌즈 방향이 변경될 때 카메라 리바인딩
-    LaunchedEffect(lensFacing) {
-        bindCameraUseCases()
-    }
-
-    // 줌 레벨 변경 시 적용
-    LaunchedEffect(zoomLevel) {
-        cameraControl?.setLinearZoom(zoomLevel)
-    }
-
-    // 핵심: 컴포넌트 수명 주기와 리소스 해제 관리 개선
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {

@@ -345,7 +345,6 @@ fun MealImageWithFoodLabels(
         val imageContentScale = ContentScale.FillBounds
         val context = LocalContext.current
         val imageUrl = imageUri.toString()
-//        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740"
 
         Box(
             modifier = modifier

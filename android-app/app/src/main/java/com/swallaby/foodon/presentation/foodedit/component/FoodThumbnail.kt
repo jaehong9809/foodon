@@ -59,7 +59,6 @@ fun FoodThumbnailList(
         // 이미지 로드 및 크롭
         cropManager.loadAndCropImage(
             imageUri.toString(),
-            //"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
             positions
         ) {
             isLoad = true
@@ -118,7 +117,7 @@ private fun FoodThumbnail(
             foodImage?.let {
                 AsyncImage(
                     model = cropManager.getCroppedImageRequest(
-                        imageUri.toString(),//"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
+                        imageUri.toString(),
                         it
                     ),
                     contentDescription = "음식 사진",

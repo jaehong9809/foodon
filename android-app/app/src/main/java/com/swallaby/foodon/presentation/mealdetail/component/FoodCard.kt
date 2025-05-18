@@ -93,7 +93,7 @@ fun FoodCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column (modifier = modifier.weight(1f)){
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
