@@ -102,6 +102,11 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.paging)
+
+    // paging
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     // androidx library
     implementation(libs.androidx.foundation)
@@ -140,5 +145,10 @@ dependencies {
 
     // Splash
     implementation(libs.androidx.core.splashscreen)
+
+    // test
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
 
 }

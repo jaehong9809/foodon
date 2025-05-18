@@ -1,11 +1,11 @@
 package com.swallaby.foodon.presentation.foodsearch.viewmodel
 
-import androidx.lifecycle.viewModelScope
+import android.util.Log
+import androidx.paging.PagingData
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.domain.food.usecase.SearchFoodNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,17 +18,18 @@ class FoodSearchViewModel @Inject constructor(
     }
 
     fun onQueryChange(query: String) {
-        updateState { it.copy(query = query) }
-
-        viewModelScope.launch {
-            searchFoodNameUseCase(query).collectLatest { foods ->
-                updateState { it.copy(searchResults = foods) }
-            }
+        val start = System.currentTimeMillis()
+        updateState { it.copy(
+            query = query,
+            searchResults = searchFoodNameUseCase(query))
         }
+        val end = System.currentTimeMillis()
+
+        Log.d("SearchPerformance", "검색 소요 시간: ${end - start} ms")
     }
 
     fun onClearClick() {
-        updateState { it.copy(query = "", searchResults = emptyList()) }
+        updateState { it.copy(query = "", searchResults = flowOf(PagingData.empty())) }
     }
 
     fun onChipClick(chip: String) {

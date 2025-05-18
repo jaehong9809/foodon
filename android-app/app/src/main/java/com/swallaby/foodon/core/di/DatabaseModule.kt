@@ -22,6 +22,6 @@ object DatabaseModule {
 
     @Provides
     fun provideFoodSearchDao(db: AppDatabase): FoodSearchDao {
-        return db.foodDao()
+        return db.foodSearchDao()
     }
 }

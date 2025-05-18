@@ -5,5 +5,5 @@ data class Food(
     val name: String,
     val servingUnit: String,
     val kcal: Int,
-    val isRegistered: Boolean = false
+    val isCustom: Boolean = false
 )
