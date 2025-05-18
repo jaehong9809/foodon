@@ -134,11 +134,13 @@ fun FoodEditScreen(
                     selectedFoodId = uiState.selectedFoodId,
                     selectFood = viewModel::selectFood
                 )
+                if(enabledUpdate)
                 HorizontalDivider(
                     modifier = modifier.padding(horizontal = 24.dp),
                     thickness = 1.dp,
                     color = Border02
                 )
+                if(enabledUpdate)
                 FoodSearch(foodName = food.foodName,
                     onSearchClick = onSearchClick,
                     selectedFoodId = uiState.selectedFoodId,
