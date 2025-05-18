@@ -67,9 +67,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -82,19 +80,13 @@ import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.dropShadow
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil
-import com.swallaby.foodon.core.util.ImageConverter
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.core.util.ImageMetadataUtil
-import com.swallaby.foodon.core.util.ImageUtil.validateImage
 import com.swallaby.foodon.core.util.rememberThrottledFunction
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordEvent
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordUiState
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDateTime
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -145,8 +137,7 @@ fun MealRecordScreen(
                     Log.d("MealRecordScreen", "image URI: ${event.mealInfo.imageUri.toString()}")
                     // 이미지 로드 및 크롭
                     cropManager.loadAndCropImage(
-                        event.mealInfo.imageUri.toString(),
-                        positions
+                        event.mealInfo.imageUri.toString(), positions
                     ) {
                         // 모든 크롭 이미지가 준비됨
                         onNavigateToMealDetail()
@@ -314,24 +305,8 @@ fun CameraAppScreen(
         uri?.let {
             selectedImageUri = it
 
-            // 1. 먼저 로딩 상태로 변경해서 UI 갱신
             onCaptureClick()
-
-            // 2. 이미지 변환을 백그라운드 스레드로 이동
-            CoroutineScope(Dispatchers.IO).launch {
-                val webpFile = ImageConverter.convertUriToWebP(
-                    context, uri, 85
-                )
-
-                webpFile?.let { file ->
-                    val webpUri = Uri.fromFile(file)
-                    Log.d("CAMERASCREEN", "Converted to WebP: $webpUri")
-                    uploadMealImage(webpUri, context)
-                } ?: run {
-                    Log.d("CAMERASCREEN", "Conversion to WebP failed")
-                    uploadMealImage(uri, context)
-                }
-            }
+            uploadMealImage(it, context)
         }
     }
 
@@ -369,20 +344,7 @@ fun CameraAppScreen(
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     outputFileResults.savedUri?.let { uri ->
                         selectedImageUri = uri
-
-                        // 이미지 변환을 백그라운드 스레드로 이동
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val webpFile = ImageConverter.convertUriToWebP(
-                                context, uri, 85
-                            )
-
-                            webpFile?.let { file ->
-                                val webpUri = Uri.fromFile(file)
-                                uploadMealImage(webpUri, context)
-                            } ?: run {
-                                uploadMealImage(uri, context)
-                            }
-                        }
+                        uploadMealImage(uri, context)
                     }
                 }
 
@@ -447,8 +409,7 @@ fun CameraAppScreen(
 
             else -> {
                 CameraPreview(
-                    lensFacing = lensFacing,
-                    imageCaptureUseCase = imageCaptureUseCase
+                    lensFacing = lensFacing, imageCaptureUseCase = imageCaptureUseCase
                 )
             }
         }
