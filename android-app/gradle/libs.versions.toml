@@ -34,6 +34,8 @@ cameraCore = "1.4.2"
 
 splashscreen = "1.0.1"
 
+lottieCompose = "6.6.6"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -107,6 +109,8 @@ accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-
 # Splash
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 
+# Lottie
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -67,6 +67,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimatable
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieRetrySignal
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.BG100
@@ -322,8 +329,7 @@ fun CameraAppScreen(
         onCaptureClick()
         Log.d("CAMERASCREEN", "currentTime = ${System.currentTimeMillis()}")
         // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
-        val timestamp =
-            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val filename = "FOODON_$timestamp.jpg"
 
         // 갤러리에 저장될 파일 생성
@@ -336,12 +342,11 @@ fun CameraAppScreen(
         }
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(
-            context.contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
+            context.contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
         ).build()
 
-        imageCaptureUseCase.takePicture(outputOptions,
+        imageCaptureUseCase.takePicture(
+            outputOptions,
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
@@ -467,7 +472,8 @@ fun CameraAppScreen(
             ) {
                 // 앨범 선택 버튼
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    ActionButton(iconResId = R.drawable.icon_gallery,
+                    ActionButton(
+                        iconResId = R.drawable.icon_gallery,
                         text = stringResource(R.string.select_gallery),
                         onClick = { galleryLauncher.launch("image/*") })
                 }
@@ -492,6 +498,15 @@ fun CameraAppScreen(
     }
     when (uiState.mealRecordState) {
         is ResultState.Loading -> {
+            val retrySignal = rememberLottieRetrySignal()
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(R.raw.food_loading),
+                onRetry = { failCount, exception ->
+                    retrySignal.awaitRetry()
+                    // Continue retrying. Return false to stop trying.
+                    true
+                })
+
             // 로딩 중 UI 표시
             Box(
                 modifier = modifier
@@ -501,11 +516,15 @@ fun CameraAppScreen(
                         true
                     }, contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                LottieAnimation(
+                    composition,
+                    iterations = LottieConstants.IterateForever,
+                )
             }
         }
 
         is ResultState.Success -> {
+
         }
 
         is ResultState.Error -> {
@@ -528,8 +547,7 @@ fun CameraPreview(
 
     // remember로 상태 유지
     val previewUseCase = remember {
-        androidx.camera.core.Preview.Builder()
-            .build()
+        androidx.camera.core.Preview.Builder().build()
     }
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
@@ -548,16 +566,11 @@ fun CameraPreview(
                 provider.unbindAll()
 
                 // 카메라 설정
-                val cameraSelector = CameraSelector.Builder()
-                    .requireLensFacing(lensFacing)
-                    .build()
+                val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
                 // 프리뷰와 이미지 캡처 사용 사례 바인딩
                 val camera = provider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    previewUseCase,
-                    imageCaptureUseCase
+                    lifecycleOwner, cameraSelector, previewUseCase, imageCaptureUseCase
                 )
 
                 // 카메라 컨트롤 저장
