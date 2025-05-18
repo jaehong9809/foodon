@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.navigation
 
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +33,8 @@ fun NavGraphBuilder.mealGraph(
     ) {
         composable(
             NavRoutes.FoodGraph.FoodRecord.route,
+            popExitTransition = { ExitTransition.None },
+            exitTransition = { ExitTransition.None }
         ) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
             MealRecordScreen(
