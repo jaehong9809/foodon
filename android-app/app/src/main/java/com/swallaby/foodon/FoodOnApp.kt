@@ -29,8 +29,17 @@ class FoodOnApp : Application() {
             AppDatabase::class.java,
             "foods.db"
         )
-            .createFromAsset("foods.db")
+            .createFromAsset("foods_init_final.db")
             .fallbackToDestructiveMigration()
             .build()
+
+        Thread {
+            try {
+                val count = database.foodSearchDao().countFoods()
+                android.util.Log.d("RoomInit", "🍽️ Food row count: $count")
+            } catch (e: Exception) {
+                android.util.Log.e("RoomInit", "🔥 Room DB init failed", e)
+            }
+        }.start()
     }
 }

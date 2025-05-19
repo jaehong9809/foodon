@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,9 +20,8 @@ class FoodSearchViewModel @Inject constructor(
     private val searchFoodNameUseCase: SearchFoodNameUseCase
 ) : BaseViewModel<FoodSearchUiState>(FoodSearchUiState()) {
 
-    private val queryState = MutableStateFlow("")
-
-    val searchResults = queryState
+    val searchResults = uiState
+        .map { it.query }
         .debounce(200)
         .distinctUntilChanged()
         .flatMapLatest { query ->
@@ -36,7 +36,7 @@ class FoodSearchViewModel @Inject constructor(
     }
 
     fun onQueryChange(query: String) {
-        queryState.value = query
+        updateState { it.copy(query = query) }
     }
 
     fun onClearClick() {

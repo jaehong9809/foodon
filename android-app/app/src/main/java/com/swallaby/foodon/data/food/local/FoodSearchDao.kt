@@ -10,6 +10,12 @@ import com.swallaby.foodon.data.food.local.dto.LocalFoodDto
 @Dao
 interface FoodSearchDao {
 
+    @Query("SELECT COUNT(*) FROM foods")
+    fun countFoods(): Int
+
+    @Query("SELECT * FROM foods")
+    suspend fun getAllFoods(): List<LocalFoodEntity>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFood(food: LocalFoodEntity): Long
 

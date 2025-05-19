@@ -21,8 +21,7 @@ fun Food.toEntity(): LocalFoodEntity {
         name = this.name,
         servingUnit = this.servingUnit,
         kcal = this.kcal,
-        isCustom = this.isCustom,
-        searchTokens = this.name.generateSearchTokens()
+        isCustom = this.isCustom
     )
 }
 
