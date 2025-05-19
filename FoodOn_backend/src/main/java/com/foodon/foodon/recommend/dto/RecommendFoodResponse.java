@@ -12,6 +12,7 @@ public record RecommendFoodResponse(
         Long foodId,
         String foodName,
         BigDecimal kcal,
+        String reason,
         List<NutrientClaimResponse> nutrientClaims
 ) {
     public static RecommendFoodResponse from(
@@ -22,6 +23,7 @@ public record RecommendFoodResponse(
                 recommendFood.getFoodId(),
                 recommendFood.getFoodName(),
                 recommendFood.getKcalPerServing(),
+                recommendFood.getReason(),
                 nutrientClaims.stream()
                         .map(NutrientClaimInfo::type)
                         .map(NutrientClaimResponse::from)

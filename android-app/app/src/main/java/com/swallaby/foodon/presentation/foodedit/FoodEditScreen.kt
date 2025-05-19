@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -49,6 +51,7 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.UpdateFoodButton
+import com.swallaby.foodon.core.ui.component.VerticalSlideAnimatedComponent
 import com.swallaby.foodon.core.ui.theme.BG100
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.Border02
@@ -119,7 +122,12 @@ fun FoodEditScreen(
     )
     val scope = rememberCoroutineScope()
     Scaffold { innerPadding ->
-        Column(modifier = modifier.padding(innerPadding)) {
+        Column(
+            modifier = modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .imePadding()
+        ) {
             CommonBackTopBar(
                 title = stringResource(R.string.top_bar_food_info_update), onBackClick = onBackClick
             )
@@ -139,8 +147,7 @@ fun FoodEditScreen(
                     thickness = 1.dp,
                     color = Border02
                 )
-                if (enabledUpdate) FoodSearch(
-                    foodName = food.foodName,
+                if (enabledUpdate) FoodSearch(foodName = food.foodName,
                     onSearchClick = onSearchClick,
                     selectedFoodId = uiState.selectedFoodId,
                     foodSimilarState = uiState.foodSimilarState,
@@ -151,8 +158,7 @@ fun FoodEditScreen(
                         .fillMaxWidth()
                         .background(color = Bkg04)
                 )
-                FoodAmountComponent(
-                    food = food,
+                FoodAmountComponent(food = food,
                     enabledUpdate = enabledUpdate,
                     onUpdateQuantity = viewModel::updateQuantity,
                     onClickUnitType = {
@@ -257,7 +263,6 @@ fun NutritionComponent(
         )
         repeat(nutrientInfo.size) { index ->
             val childItems = nutrientInfo[index].childItems
-
             when (nutrientInfo[index].nutrientType) {
                 NutrientType.KCAL -> {
                     ParentNutritionInfo(
@@ -268,13 +273,16 @@ fun NutritionComponent(
                         ),
                         amountColor = WB500,
                     )
+
+
                 }
 
                 NutrientType.CHOLESTEROL, NutrientType.SODIUM, NutrientType.POTASSIUM -> {
                     ParentNutritionInfo(
                         nutritionName = nutrientInfo[index].name,
                         amount = StringUtil.formatNutrition(
-                            nutrientInfo[index].value, defaultUnit = R.string.format_nutrition_mg
+                            nutrientInfo[index].value,
+                            defaultUnit = R.string.format_nutrition_mg
                         ),
                         hasChild = childItems.isNotEmpty()
                     )
@@ -296,6 +304,7 @@ fun NutritionComponent(
                 )
 
             }
+
         }
 
         if (enabledUpdate) Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -326,15 +335,17 @@ private fun BaseNutritionInfo(
     nutrition: @Composable () -> Unit,
     amount: @Composable () -> Unit,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        nutrition()
-        amount()
+    VerticalSlideAnimatedComponent {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            nutrition()
+            amount()
+        }
     }
 }
 

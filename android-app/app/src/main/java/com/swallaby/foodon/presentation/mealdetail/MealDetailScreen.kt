@@ -60,6 +60,7 @@ import coil.request.ImageRequest
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.BackIconImage
+import com.swallaby.foodon.core.ui.component.BouncingAnimatedComponent
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.StatusBarConfig
 import com.swallaby.foodon.core.ui.theme.Bkg04
@@ -425,10 +426,13 @@ private fun DisplayFoodLabels(
             val centerX = relativeX + (partialWidth / 2)
             val centerY = relativeY + (partialHeight / 2)
 
-            FoodLabelButton(position = position,
-                centerPosition = Size(centerX.toFloat(), centerY.toFloat()),  // 중앙 좌표 전달
-                foodName = mealItem.foodName,
-                onClick = { onFoodClick(mealItem.foodId) })
+            BouncingAnimatedComponent {
+                FoodLabelButton(position = position,
+                    centerPosition = Size(centerX.toFloat(), centerY.toFloat()),  // 중앙 좌표 전달
+                    foodName = mealItem.foodName,
+                    onClick = { onFoodClick(mealItem.foodId) })
+            }
+
         }
     }
 }

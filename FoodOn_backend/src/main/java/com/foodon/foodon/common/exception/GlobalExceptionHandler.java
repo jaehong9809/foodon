@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -110,10 +111,30 @@ public class GlobalExceptionHandler {
             );
             exception.printStackTrace();
 
-            return  ResponseUtil.failure(exception, errorMessage);
+            return ResponseUtil.failure(exception, errorMessage);
         }
 
         throw exception;
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Response<Void>> handleMissingParams(
+            MissingServletRequestParameterException exception,
+            HttpServletRequest request
+    ) {
+        String missingParam = exception.getParameterName();
+        String errorMessage = "요청 파라미터가 누락되었습니다 : " + missingParam;
+
+        log.warn(
+            LOG_FORMAT,
+            request.getMethod(),
+            request.getRequestURI(),
+            exception.getClass().getSimpleName(),
+            HttpStatus.BAD_REQUEST.value(),
+            errorMessage
+        );
+
+        return ResponseUtil.failure(exception, errorMessage);
     }
 
 }

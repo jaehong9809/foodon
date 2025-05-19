@@ -1,6 +1,11 @@
 package com.swallaby.foodon.core.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,12 +53,10 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 fun MonthlyTabBar(
     modifier: Modifier = Modifier,
     selectedIndex: Int,
-    onTabSelected: (Int) -> Unit
+    onTabSelected: (Int) -> Unit,
 ) {
     val icons = listOf(
-        R.drawable.icon_rice_white,
-        R.drawable.icon_weight_white,
-        R.drawable.icon_sparkle_white
+        R.drawable.icon_rice_white, R.drawable.icon_weight_white, R.drawable.icon_sparkle_white
     )
 
     val labels = listOf(
@@ -80,13 +83,11 @@ fun MonthlyTabBar(
             val isSelected = selectedIndex == index
 
             val backgroundColor by animateColorAsState(
-                targetValue = if (isSelected) WB500 else BGTab,
-                label = "BackgroundColor"
+                targetValue = if (isSelected) WB500 else BGTab, label = "BackgroundColor"
             )
 
             val iconTint by animateColorAsState(
-                targetValue = if (isSelected) MainWhite else WB500 ,
-                label = "IconTint"
+                targetValue = if (isSelected) MainWhite else WB500, label = "IconTint"
             )
 
             Box(
@@ -96,11 +97,9 @@ fun MonthlyTabBar(
                     .wrapContentWidth()
                     .clip(RoundedCornerShape(100.dp))
                     .background(backgroundColor)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
+                    .clickable(interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = { onTabSelected(index) }
-                    )
+                        onClick = { onTabSelected(index) })
                     .padding(horizontal = 12.dp, vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -114,13 +113,23 @@ fun MonthlyTabBar(
                         colorFilter = ColorFilter.tint(iconTint),
                     )
 
-                    if (isSelected) {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = labels[index],
-                            color = MainWhite,
-                            style = NotoTypography.NotoMedium16,
-                        )
+                    AnimatedVisibility(
+                        visible = isSelected,
+                        enter = fadeIn() + expandHorizontally(),
+                        exit = fadeOut() + shrinkHorizontally()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = labels[index],
+                                color = MainWhite,
+                                style = NotoTypography.NotoMedium16,
+                            )
+                        }
+
                     }
                 }
             }
@@ -132,7 +141,7 @@ fun MonthlyTabBar(
 fun WeekTabBar(
     weeks: List<String>,
     selectedIndex: Int,
-    onTabSelected: (Int) -> Unit
+    onTabSelected: (Int) -> Unit,
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -160,11 +169,9 @@ fun WeekTabBar(
                     .clip(RoundedCornerShape(100.dp))
                     .border(1.dp, borderColor, RoundedCornerShape(100.dp))
                     .background(backgroundColor)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
+                    .clickable(interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = { onTabSelected(index) }
-                    )
+                        onClick = { onTabSelected(index) })
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -195,10 +202,8 @@ fun TabPreview() {
     ) {
         var selectedTabIndex by remember { mutableIntStateOf(1) }
 
-        MonthlyTabBar(
-            selectedIndex = selectedTabIndex,
-            onTabSelected = { index -> selectedTabIndex = index }
-        )
+        MonthlyTabBar(selectedIndex = selectedTabIndex,
+            onTabSelected = { index -> selectedTabIndex = index })
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -209,11 +214,9 @@ fun TabPreview() {
         // 주차별 탭
         var selectedWeek by remember { mutableIntStateOf(0) }
 
-        WeekTabBar(
-            weeks = (1..5).map { stringResource(R.string.tab_weekly, it) },
+        WeekTabBar(weeks = (1..5).map { stringResource(R.string.tab_weekly, it) },
             selectedIndex = selectedWeek,
-            onTabSelected = { selectedWeek = it }
-        )
+            onTabSelected = { selectedWeek = it })
     }
 
 }

@@ -26,6 +26,10 @@ public class LowKcalRule implements NutrientClaimRule {
 
     @Override
     public boolean matches(Map<NutrientCode, NutrientServingInfo> nutrientMap) {
+        if(!nutrientMap.containsKey(NutrientCode.KCAL)){
+            return false;
+        }
+
         NutrientServingInfo kcalInfo = nutrientMap.get(NutrientCode.KCAL);
         return kcalInfo.per100g().compareTo(BigDecimal.valueOf(40)) < 0;
     }

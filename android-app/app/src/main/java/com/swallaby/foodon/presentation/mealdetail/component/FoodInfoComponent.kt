@@ -21,9 +21,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
+import com.swallaby.foodon.core.ui.component.VerticalSlideAnimatedComponent
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.core.util.ImageConverter
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.domain.food.model.MealItem
 
@@ -68,13 +68,15 @@ fun FoodInfoComponent(
             Spacer(modifier = modifier.height(24.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 repeat(foods.size) { index ->
-                    FoodCard(
-                        food = foods[index],
-                        onClick = onClick,
-                        onDelete = onDelete,
-                        imageUri = imageUri,
-                        enabledDeleteButton = enabledDeleteButton
-                    )
+                    VerticalSlideAnimatedComponent {
+                        FoodCard(
+                            food = foods[index],
+                            onClick = onClick,
+                            onDelete = onDelete,
+                            imageUri = imageUri,
+                            enabledDeleteButton = enabledDeleteButton
+                        )
+                    }
                 }
             }
         }

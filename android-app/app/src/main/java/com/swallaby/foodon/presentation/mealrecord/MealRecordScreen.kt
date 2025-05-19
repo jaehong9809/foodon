@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -42,7 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -160,7 +158,9 @@ fun MealRecordScreen(
 //                .padding(innerPadding)
         ) {
             WithPermission(
-                modifier = modifier, permission = Manifest.permission.CAMERA
+                modifier = modifier,
+                permission = Manifest.permission.CAMERA,
+                onBackClick = onBackClick
             ) {
                 CameraAppScreen(
                     modifier = modifier,

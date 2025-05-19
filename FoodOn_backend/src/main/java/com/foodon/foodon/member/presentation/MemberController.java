@@ -68,7 +68,7 @@ public class MemberController {
 	}
 
 	@GetMapping("/profile/activity-levels")
-	@Operation(summary = "관리 유형 목록 조회")
+	@Operation(summary = "활동량 유형 목록 조회")
 	public ResponseEntity<Response<List<ActivityLevelResponse>>> getActivityLevels(
 			@Parameter(hidden = true) @AuthMember Member member
 	){
@@ -77,7 +77,7 @@ public class MemberController {
 	}
 
 	@GetMapping("/profile/nutrient-plans")
-	@Operation(summary = "활동량 유형 목록 조회")
+	@Operation(summary = "관리 유형 목록 조회")
 	public ResponseEntity<Response<List<NutrientPlanResponse>>> getNutrientPlans(
 			@Parameter(hidden = true) @AuthMember Member member
 	){

@@ -12,7 +12,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.swallaby.foodon.core.result.ResultState
-import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.foodregister.FoodRegisterScreen
@@ -147,13 +146,20 @@ fun NavGraphBuilder.mealGraph(
                 )
             }
             val foodEditViewModel: FoodEditViewModel = hiltViewModel(backStackEntry)
-            NutritionEditScreen(viewModel = foodEditViewModel, foodId = foodId, onBackClick = {
-                navController.popBackStack()
-            }, onFoodUpdateClick = { mealItem ->
-                foodEditViewModel.updateCustomFood(mealItem)
-            }, onSuccessCustomFood = {
-                navController.popBackStack()
-            })
+            val foodEditUiState
+                    by foodEditViewModel.uiState.collectAsStateWithLifecycle()
+            NutritionEditScreen(
+                viewModel = foodEditViewModel,
+                foodId = foodEditUiState.selectedFoodId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onFoodUpdateClick = { mealItem ->
+                    foodEditViewModel.updateCustomFood(mealItem)
+                },
+                onSuccessCustomFood = {
+                    navController.popBackStack()
+                })
         }
 
         composable(
@@ -168,10 +174,8 @@ fun NavGraphBuilder.mealGraph(
             )
         }
 
-        composable(
-            NavRoutes.FoodGraph.FoodSearch.route,
-        ) {
-            FoodSearchScreen()
+        composable(NavRoutes.FoodGraph.FoodSearch.route) {
+            FoodSearchScreen(navController = navController)
         }
     }
 }
