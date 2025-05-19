@@ -170,14 +170,14 @@ class FoodEditViewModel @Inject constructor(
         }
     }
 
-    fun updateUnitType(foodId: Long, unit: UnitType) {
+    private fun updateFoodItem(foodId: Long, updateFunction: (item: MealItem) -> MealItem) {
         val currentUiState = _uiState.value
+
         if (currentUiState.foodEditState is ResultState.Success) {
             val mealInfo = currentUiState.foodEditState.data
             val updatedItems = mealInfo.mealItems.map { item ->
                 if (item.foodId == foodId) {
-                    val newItem = item.copy(unit = unit)
-                    newItem
+                    updateFunction(item)
                 } else {
                     item
                 }
@@ -188,6 +188,18 @@ class FoodEditViewModel @Inject constructor(
                     foodEditState = ResultState.Success(updatedMealInfo)
                 )
             }
+        }
+    }
+
+    fun updateUnitType(foodId: Long, unit: UnitType) {
+        updateFoodItem(foodId) { item ->
+            item.copy(unit = unit)
+        }
+    }
+
+    fun updateQuantity(foodId: Long, quantity: Int) {
+        updateFoodItem(foodId) { item ->
+            item.copy(quantity = quantity)
         }
     }
 
