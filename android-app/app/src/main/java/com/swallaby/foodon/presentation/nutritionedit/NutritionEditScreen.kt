@@ -1,13 +1,14 @@
 package com.swallaby.foodon.presentation.nutritionedit
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -42,6 +43,7 @@ import com.swallaby.foodon.domain.food.model.NutrientType
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
+import kotlin.math.min
 
 @Composable
 fun NutritionEditScreen(
@@ -100,6 +102,8 @@ fun NutritionEditScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .imePadding()
         ) {
             CommonBackTopBar(
                 title = stringResource(R.string.top_bar_nutrient_input), onBackClick = onBackClick
@@ -139,13 +143,10 @@ fun NutritionEditScreen(
                         value = item.value.toString(),
                         formatPattern = if (item.nutrientType == NutrientType.KCAL) NumberFormatPattern.INT_THOUSAND_COMMA else NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
                         onValueChange = { newValue ->
-                            val cleaned = newValue.filter { it.isDigit() || it == '.' }
-
-                            Log.d("updatedValue", "Input Value = $cleaned")
-                            val updatedValue = cleaned.toBigDecimalOrNull()?.toDouble() ?: 0.0
-                            Log.d(
-                                "updatedValue", "updatedValue: $updatedValue"
-                            )
+                            val filtered =
+                                newValue.filter { it.isDigit() || it == '.' }.toBigDecimalOrNull()
+                                    ?.toDouble() ?: 0.0
+                            val updatedValue = min(filtered, 999999.99)
 
                             // 업데이트된 아이템 생성
                             val updatedItem = item.copy(value = updatedValue)
@@ -165,8 +166,9 @@ fun NutritionEditScreen(
                             modifier = modifier,
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
-                                val cleaned = newValue.filter { it.isDigit() || it == '.' }
-                                val updatedValue = cleaned.toBigDecimalOrNull()?.toDouble() ?: 0.0
+                                val filtered = newValue.filter { it.isDigit() || it == '.' }
+                                    .toBigDecimalOrNull()?.toDouble() ?: 0.0
+                                val updatedValue = min(filtered, 999999.99)
 
                                 // 업데이트된 자식 아이템 생성
                                 val updatedChildItem = childItem.copy(value = updatedValue)

@@ -1,5 +1,10 @@
 package com.swallaby.foodon.presentation.main
 
+
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -38,9 +43,11 @@ import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.model.CalendarInfo
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.NavRoutes
+import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
+import kotlin.math.min
 
 @Composable
 fun MainScreen(
@@ -146,19 +153,6 @@ fun MainScreen(
             )
 
             HorizontalDivider(thickness = 1.dp, color = Bkg04)
-
-            // todo formfield 테스트 용으로 넣어놔서 나중에 지우겠습니다!
-//            NutrientField(
-//                modifier = Modifier.height(100.dp),
-//                value = value,
-//                onValueChange = { newValue ->
-//                    Log.d("NutrientField", "newValue: $newValue")
-//                    value = cleanDoubleInput(newValue)
-//                    Log.d("NutrientField", "value: $value")
-//                },
-//                nutrient = "탄수화물",
-//                unit = "g",
-//            )
 
             MainContentPager(
                 intakeResult = uiState.intakeResult,

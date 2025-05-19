@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -42,7 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +65,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieRetrySignal
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.theme.BG100
@@ -132,9 +135,7 @@ fun MealRecordScreen(
                     Log.d("MealRecordScreen", "image URI: ${event.mealInfo.imageUri.toString()}")
                     // 이미지 로드 및 크롭
                     cropManager.loadAndCropImage(
-                        event.mealInfo.imageUri.toString(),
-//                        "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
-                        positions
+                        event.mealInfo.imageUri.toString(), positions
                     ) {
                         // 모든 크롭 이미지가 준비됨
                         onNavigateToMealDetail()
@@ -157,16 +158,15 @@ fun MealRecordScreen(
 //                .padding(innerPadding)
         ) {
             WithPermission(
-                modifier = modifier, permission = Manifest.permission.CAMERA
+                modifier = modifier,
+                permission = Manifest.permission.CAMERA,
+                onBackClick = onBackClick
             ) {
                 CameraAppScreen(
                     modifier = modifier,
                     uiState = uiState,
                     onBackClick = onBackClick,
                     uploadMealImage = { uri, context ->
-//                        ImageConverter.convertUriToWebP(
-//                            context = context, imageUri = uri, quality = 10
-//                        )
                         recordViewModel.uploadMealImage(
                             uri, context
                         )
@@ -304,14 +304,13 @@ fun CameraAppScreen(
     ) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
+
             onCaptureClick()
             uploadMealImage(it, context)
-            Log.d("GALLERY", "Selected image: $it")
         }
     }
 
     var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
-    var zoomLevel by remember { mutableFloatStateOf(0.0f) }
     var flashMode by remember { mutableIntStateOf(ImageCapture.FLASH_MODE_OFF) }
     val imageCaptureUseCase = remember {
         ImageCapture.Builder().setFlashMode(flashMode).build()
@@ -322,8 +321,7 @@ fun CameraAppScreen(
         onCaptureClick()
         Log.d("CAMERASCREEN", "currentTime = ${System.currentTimeMillis()}")
         // 현재 시간을 파일명에 포함시켜 겹치지 않게 함
-        val timestamp =
-            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val filename = "FOODON_$timestamp.jpg"
 
         // 갤러리에 저장될 파일 생성
@@ -336,43 +334,19 @@ fun CameraAppScreen(
         }
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(
-            context.contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
+            context.contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
         ).build()
 
-        imageCaptureUseCase.takePicture(outputOptions,
+        imageCaptureUseCase.takePicture(
+            outputOptions,
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     outputFileResults.savedUri?.let { uri ->
-                        Log.d("CAMERA", "Saved image to gallery: $uri")
-                        selectedImageUri = uri // 찍은 사진의 URI 저장
+                        selectedImageUri = uri
                         uploadMealImage(uri, context)
                     }
                 }
-//                            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-//                                outputFileResults.savedUri?.let { uri ->
-//                                    Log.d("CAMERASCREEN", "Saved image to gallery: $uri")
-//                                    selectedImageUri = uri // 찍은 사진의 URI 저장
-//
-//                                    // WebP로 변환
-//                                    val webpFile = ImageConverter.convertUriToWebP(
-//                                        context, uri, 85
-//                                    ) // 품질 85로 설정
-//
-//                                    // WebP 파일을 사용하여 업로드
-//                                    webpFile?.let { file ->
-//                                        val webpUri = Uri.fromFile(file)
-//                                        Log.d("CAMERASCREEN", "Converted to WebP: $webpUri")
-//                                        uploadMealImage(webpUri, context) // WebP URI로 업로드
-//                                    } ?: run {
-//                                        Log.d("CAMERASCREEN", "Conversion to WebP failed")
-//                                        // 변환 실패 시 원본 URI 사용
-//                                        uploadMealImage(uri, context)
-//                                    }
-//                                }
-//                            }
 
                 override fun onError(exception: ImageCaptureException) {
                     Log.e("CAMERASCREEN", "Error saving image", exception)
@@ -435,9 +409,7 @@ fun CameraAppScreen(
 
             else -> {
                 CameraPreview(
-                    lensFacing = lensFacing,
-                    zoomLevel = zoomLevel,
-                    imageCaptureUseCase = imageCaptureUseCase
+                    lensFacing = lensFacing, imageCaptureUseCase = imageCaptureUseCase
                 )
             }
         }
@@ -467,7 +439,8 @@ fun CameraAppScreen(
             ) {
                 // 앨범 선택 버튼
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    ActionButton(iconResId = R.drawable.icon_gallery,
+                    ActionButton(
+                        iconResId = R.drawable.icon_gallery,
                         text = stringResource(R.string.select_gallery),
                         onClick = { galleryLauncher.launch("image/*") })
                 }
@@ -492,6 +465,15 @@ fun CameraAppScreen(
     }
     when (uiState.mealRecordState) {
         is ResultState.Loading -> {
+            val retrySignal = rememberLottieRetrySignal()
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(R.raw.food_loading),
+                onRetry = { failCount, exception ->
+                    retrySignal.awaitRetry()
+                    // Continue retrying. Return false to stop trying.
+                    true
+                })
+
             // 로딩 중 UI 표시
             Box(
                 modifier = modifier
@@ -501,11 +483,15 @@ fun CameraAppScreen(
                         true
                     }, contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                LottieAnimation(
+                    composition,
+                    iterations = LottieConstants.IterateForever,
+                )
             }
         }
 
         is ResultState.Success -> {
+
         }
 
         is ResultState.Error -> {
@@ -519,7 +505,6 @@ fun CameraAppScreen(
 fun CameraPreview(
     modifier: Modifier = Modifier,
     lensFacing: Int,
-    zoomLevel: Float,
     imageCaptureUseCase: ImageCapture,
 ) {
     val context = LocalContext.current
@@ -528,8 +513,7 @@ fun CameraPreview(
 
     // remember로 상태 유지
     val previewUseCase = remember {
-        androidx.camera.core.Preview.Builder()
-            .build()
+        androidx.camera.core.Preview.Builder().build()
     }
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
@@ -548,16 +532,11 @@ fun CameraPreview(
                 provider.unbindAll()
 
                 // 카메라 설정
-                val cameraSelector = CameraSelector.Builder()
-                    .requireLensFacing(lensFacing)
-                    .build()
+                val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
                 // 프리뷰와 이미지 캡처 사용 사례 바인딩
                 val camera = provider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    previewUseCase,
-                    imageCaptureUseCase
+                    lifecycleOwner, cameraSelector, previewUseCase, imageCaptureUseCase
                 )
 
                 // 카메라 컨트롤 저장
@@ -580,17 +559,6 @@ fun CameraPreview(
         }
     }
 
-    // 렌즈 방향이 변경될 때 카메라 리바인딩
-    LaunchedEffect(lensFacing) {
-        bindCameraUseCases()
-    }
-
-    // 줌 레벨 변경 시 적용
-    LaunchedEffect(zoomLevel) {
-        cameraControl?.setLinearZoom(zoomLevel)
-    }
-
-    // 핵심: 컴포넌트 수명 주기와 리소스 해제 관리 개선
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {

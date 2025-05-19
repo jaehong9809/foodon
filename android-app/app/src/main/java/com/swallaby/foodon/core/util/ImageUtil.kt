@@ -113,13 +113,13 @@ object ImageUtil {
                     "ImageValidator",
                     "이미지 크기가 ${maxSizeMB}MB를 초과합니다. 현재: ${fileSize / (1024 * 1024)}MB"
                 )
-                return Pair(false, R.string.over_size_image)
+                return Pair(false, R.string.invalid_image_size)
             }
 
             return Pair(true, 0)
         } catch (e: Exception) {
             Log.e("ImageValidator", "이미지 크기 검증 중 오류 발생", e)
-            return Pair(false, R.string.over_size_image)
+            return Pair(false, R.string.invalid_image_size)
         }
     }
 

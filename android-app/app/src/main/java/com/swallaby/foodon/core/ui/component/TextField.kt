@@ -39,6 +39,7 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.OutlinedTextFieldStyle
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.DoubleVisualTransformation
+import com.swallaby.foodon.core.util.IntegerVisualTransformation
 import com.swallaby.foodon.core.util.NumberFormatPattern
 
 
@@ -59,18 +60,21 @@ fun NutritionTextField(
 
     // VisualTransformation 생성
     val numberFormatTransformation = remember(formatPattern) {
-        if (formatPattern == NumberFormatPattern.DOUBLE_THOUSAND_COMMA) DoubleVisualTransformation()
-        else DoubleVisualTransformation()
+        if (formatPattern == NumberFormatPattern.DOUBLE_THOUSAND_COMMA) DoubleVisualTransformation(
+            maxValue = 999999.99
+        )
+        else IntegerVisualTransformation(maxValue = 999999)
     }
 
-    OutLineTextField(value = value,
+    OutLineTextField(
+        value = value,
         modifier = Modifier
             .height(44.dp)
             .width(140.dp),
         onValueChange = onValueChange,
         keyboardOptions = numberKeyboardOptions,
         keyboardActions = KeyboardActions(),
-//        visualTransformation = numberFormatTransformation,
+        visualTransformation = numberFormatTransformation,
         placeholder = {
             Text(
                 modifier = modifier.fillMaxWidth(),
@@ -99,6 +103,7 @@ fun OutLineTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    enabled: Boolean = true,
     placeholder: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
 ) {
@@ -113,6 +118,7 @@ fun OutLineTextField(
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         visualTransformation = visualTransformation,
+        enabled = enabled,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = OutlinedTextFieldStyle.focusedBackgroundColor,
             unfocusedContainerColor = OutlinedTextFieldStyle.unfocusedBackgroundColor,
@@ -182,7 +188,8 @@ fun BaseTextField(
         }
     }
 
-    BasicTextField(value = internalTextFieldValue.value,
+    BasicTextField(
+        value = internalTextFieldValue.value,
         modifier = modifier.onFocusChanged { focusState ->
             // 처음 포커스를 받았을 때만 커서 위치를 끝으로 설정
             if (focusState.isFocused && !hasFocused) {
@@ -211,7 +218,8 @@ fun BaseTextField(
         maxLines = maxLines,
         minLines = minLines,
         decorationBox = @Composable { innerTextField ->
-            OutlinedTextFieldDefaults.DecorationBox(value = internalTextFieldValue.value.text,
+            OutlinedTextFieldDefaults.DecorationBox(
+                value = internalTextFieldValue.value.text,
                 visualTransformation = visualTransformation,
                 innerTextField = innerTextField,
                 placeholder = placeholder,

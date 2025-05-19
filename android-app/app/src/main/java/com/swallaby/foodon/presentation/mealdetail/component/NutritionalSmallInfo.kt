@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
+import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,11 +27,13 @@ import com.swallaby.foodon.domain.food.model.NutritionType
 fun NutritionalSmallInfo(
     modifier: Modifier = Modifier,
     nutrition: Nutrition,
+    isLast: Boolean = false,
 ) {
     val formatAmount = when (nutrition.nutritionType) {
         NutritionType.CHOLESTEROL, NutritionType.SODIUM -> {
             formatNutrition(nutrition.amount, R.string.format_nutrition_mg)
         }
+
         else -> {
             formatNutrition(nutrition.amount)
         }
@@ -55,7 +58,7 @@ fun NutritionalSmallInfo(
         Text(
             text = formatAmount, style = SpoqaTypography.SpoqaMedium13.copy(color = G700)
         )
-
+        if (isLast) Spacer(modifier = modifier.width(12.dp))
     }
 }
 

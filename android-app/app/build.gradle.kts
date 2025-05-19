@@ -151,9 +151,11 @@ dependencies {
     // Splash
     implementation(libs.androidx.core.splashscreen)
 
+    // lottie
+    implementation (libs.lottie.compose)
+
     // test
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
-
 }

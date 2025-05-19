@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -58,6 +60,7 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
+import com.swallaby.foodon.core.util.IntegerVisualTransformation
 import com.swallaby.foodon.core.util.NumberFormatPattern
 import com.swallaby.foodon.domain.food.model.FoodInfo
 import com.swallaby.foodon.domain.food.model.NutrientConverter
@@ -70,6 +73,7 @@ import com.swallaby.foodon.presentation.foodregister.viewmodel.FoodRegisterViewM
 import com.swallaby.foodon.presentation.mealdetail.component.DropButton
 import com.swallaby.foodon.presentation.mealdetail.dismissModalBottomSheet
 import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
+import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -128,8 +132,8 @@ fun FoodRegisterScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-//                .imePadding()
-//                .imeNestedScroll()
+                .consumeWindowInsets(innerPadding)
+                .imePadding()
         ) {
             CommonBackTopBar(
                 title = stringResource(R.string.top_bar_input), onBackClick = onBackClick
@@ -153,9 +157,10 @@ fun FoodRegisterScreen(
                             style = NotoTypography.NotoBold18.copy(color = G900)
                         )
                         Spacer(modifier = modifier.height(8.dp))
-                        OutLineTextField(modifier = modifier
-                            .height(48.dp)
-                            .fillMaxWidth(),
+                        OutLineTextField(
+                            modifier = modifier
+                                .height(48.dp)
+                                .fillMaxWidth(),
                             value = foodName,
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Next
@@ -188,15 +193,20 @@ fun FoodRegisterScreen(
                         )
                         Spacer(modifier = modifier.height(12.dp))
                         Row(modifier = modifier.fillMaxWidth()) {
-                            OutLineTextField(modifier = modifier
-                                .height(48.dp)
-                                .weight(1f),
+                            OutLineTextField(
+                                modifier = modifier
+                                    .height(48.dp)
+                                    .weight(1f),
                                 value = if (servingSize == null) "" else servingSize.toString(),
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                                 ),
+                                visualTransformation = IntegerVisualTransformation(maxValue = 999999),
                                 onValueChange = { newValue ->
-                                    servingSize = newValue.filter { it.isDigit() }.toIntOrNull()
+                                    // 숫자만 필터링
+                                    val filterValue =
+                                        newValue.filter { it.isDigit() }.toIntOrNull() ?: 0
+                                    servingSize = min(filterValue, 999999)
                                 },
                                 textStyle = SpoqaTypography.SpoqaMedium16.copy(
                                     color = G900
@@ -248,13 +258,10 @@ fun FoodRegisterScreen(
                         value = item.value.toString(),
                         formatPattern = if (item.nutrientType == NutrientType.KCAL) NumberFormatPattern.INT_THOUSAND_COMMA else NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
                         onValueChange = { newValue ->
-                            val cleaned = newValue.filter { it.isDigit() || it == '.' }
-
-                            Log.d("updatedValue", "Input Value = $cleaned")
-                            val updatedValue = cleaned.toBigDecimalOrNull()?.toDouble() ?: 0.0
-                            Log.d(
-                                "updatedValue", "updatedValue: $updatedValue"
-                            )
+                            val filtered =
+                                newValue.filter { it.isDigit() || it == '.' }.toBigDecimalOrNull()
+                                    ?.toDouble() ?: 0.0
+                            val updatedValue = min(filtered, 999999.99)
 
                             // 업데이트된 아이템 생성
                             val updatedItem = item.copy(value = updatedValue)
@@ -274,8 +281,9 @@ fun FoodRegisterScreen(
                             modifier = modifier,
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
-                                val cleaned = newValue.filter { it.isDigit() || it == '.' }
-                                val updatedValue = cleaned.toBigDecimalOrNull()?.toDouble() ?: 0.0
+                                val filtered = newValue.filter { it.isDigit() || it == '.' }
+                                    .toBigDecimalOrNull()?.toDouble() ?: 0.0
+                                val updatedValue = min(filtered, 999999.99)
 
                                 // 업데이트된 자식 아이템 생성
                                 val updatedChildItem = childItem.copy(value = updatedValue)
@@ -433,7 +441,8 @@ fun UnitTypeBottomSheet(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     unitTypes.forEach { unitType ->
-                        UnitTypeChip(unit = unitType.value,
+                        UnitTypeChip(
+                            unit = unitType.value,
                             isSelected = unitType == selectedUnitType,
                             onClick = {
                                 selectedUnitType = unitType
