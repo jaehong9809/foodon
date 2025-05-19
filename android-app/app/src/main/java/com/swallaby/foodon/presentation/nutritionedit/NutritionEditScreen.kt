@@ -1,13 +1,14 @@
 package com.swallaby.foodon.presentation.nutritionedit
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -101,6 +102,8 @@ fun NutritionEditScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .imePadding()
         ) {
             CommonBackTopBar(
                 title = stringResource(R.string.top_bar_nutrient_input), onBackClick = onBackClick
@@ -163,7 +166,8 @@ fun NutritionEditScreen(
                             modifier = modifier,
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
-                                val filtered = newValue.filter { it.isDigit() || it == '.' }.toBigDecimalOrNull()?.toDouble() ?: 0.0
+                                val filtered = newValue.filter { it.isDigit() || it == '.' }
+                                    .toBigDecimalOrNull()?.toDouble() ?: 0.0
                                 val updatedValue = min(filtered, 999999.99)
 
                                 // 업데이트된 자식 아이템 생성
