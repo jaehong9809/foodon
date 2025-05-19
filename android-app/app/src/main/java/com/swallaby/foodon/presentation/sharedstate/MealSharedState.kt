@@ -8,24 +8,17 @@ import javax.inject.Singleton
 @Singleton
 class MealSharedState @Inject constructor() {
 
-    private val _mealAddStatus = MutableStateFlow(false)
-    val mealAddStatus: StateFlow<Boolean> = _mealAddStatus
-
-    fun updateMealAddStatus(status: Boolean) {
-        _mealAddStatus.value = status
-    }
-
     private val _refreshDaily = MutableStateFlow(false)
     private val _refreshCalendar = MutableStateFlow(false)
 
     val refreshDaily: StateFlow<Boolean> = _refreshDaily
     val refreshCalendar: StateFlow<Boolean> = _refreshCalendar
 
-    fun triggerRefreshForDaily() {
+    fun refreshForDaily() {
         _refreshDaily.value = true
     }
 
-    fun triggerRefreshForCalendar() {
+    fun refreshForCalendar() {
         _refreshCalendar.value = true
     }
 

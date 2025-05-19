@@ -68,8 +68,8 @@ class MealEditViewModel @Inject constructor(
                     _uiState.update { it.copy(mealEditState = ResultState.Success(mealInfo)) }
                     _events.emit(MealEditEvent.NavigateToMain)
 
-                    mealSharedState.triggerRefreshForDaily()
-                    mealSharedState.triggerRefreshForCalendar()
+                    mealSharedState.refreshForDaily()
+                    mealSharedState.refreshForCalendar()
                 }
 
                 is ResultState.Error -> {

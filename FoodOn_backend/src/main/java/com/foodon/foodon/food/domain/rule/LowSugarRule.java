@@ -27,6 +27,10 @@ public class LowSugarRule implements NutrientClaimRule {
 
     @Override
     public boolean matches(Map<NutrientCode, NutrientServingInfo> nutrientMap) {
+        if(!nutrientMap.containsKey(NutrientCode.SUGAR)){
+            return false;
+        }
+
         NutrientServingInfo sugarInfo = nutrientMap.get(NutrientCode.SUGAR);
         return sugarInfo.per100g().compareTo(BigDecimal.valueOf(5)) < 0;
     }

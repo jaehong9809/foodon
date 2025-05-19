@@ -1,12 +1,7 @@
 package com.swallaby.foodon.core.util
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -35,43 +30,6 @@ object DateUtil {
         }
     }
 
-    @Composable
-    fun getDateShape(
-        dayOfWeek: Int,
-        day: Int,
-        daysInMonth: Int,
-        isSelectedWeek: Boolean,
-    ): RoundedCornerShape {
-        val topStart = when {
-            isSelectedWeek && (day == 1 && dayOfWeek == 6) || (day == daysInMonth && dayOfWeek == 0) -> 100.dp
-            isSelectedWeek && (dayOfWeek == 0 || day == 1) -> 100.dp
-            else -> 0.dp
-        }
-
-        val topEnd = when {
-            isSelectedWeek && (day == daysInMonth && dayOfWeek == 0) || (dayOfWeek == 6 || day == daysInMonth) -> 100.dp
-            else -> 0.dp
-        }
-
-        val animatedTopStart by animateDpAsState(
-            targetValue = topStart,
-            animationSpec = tween(durationMillis = 300),
-            label = "topStart"
-        )
-        val animatedTopEnd by animateDpAsState(
-            targetValue = topEnd,
-            animationSpec = tween(durationMillis = 300),
-            label = "topEnd"
-        )
-
-        return RoundedCornerShape(
-            topStart = animatedTopStart,
-            topEnd = animatedTopEnd,
-            bottomEnd = animatedTopEnd,
-            bottomStart = animatedTopStart
-        )
-    }
-
     fun formatDate(localDate: LocalDate): String {
         val outputFormatter = DateTimeFormatter.ofPattern("M월 d일")
         return localDate.format(outputFormatter)
@@ -85,6 +43,28 @@ object DateUtil {
     fun getWeekOfMonth(date: LocalDate): Int {
         val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
         return date.get(weekFields.weekOfMonth())
+    }
+
+    // 각 주에 있는 날짜의 인덱스 반환
+    fun getWeekDateRange(
+        weekIndex: Int,
+        yearMonth: YearMonth,
+        firstDayOfWeek: Int
+    ): Pair<Int, Int> {
+        val daysInMonth = yearMonth.lengthOfMonth()
+        val firstDayAbsoluteIndex = weekIndex * 7
+
+        val validIndices = (0..6).filter { i ->
+            val globalDayIndex = firstDayAbsoluteIndex + i
+            val day = globalDayIndex - firstDayOfWeek + 1
+            day in 1..daysInMonth
+        }
+
+        return if (validIndices.isNotEmpty()) {
+            validIndices.first() to validIndices.last()
+        } else {
+            0 to 6
+        }
     }
 
 }
