@@ -85,7 +85,7 @@ public class MemberController {
 		return ResponseUtil.success(result);
 	}
 
-	@GetMapping("/last-login")
+	@PostMapping("/last-login")
 	@Operation(summary = "유저 접속 시간 갱신")
 	public ResponseEntity<Response<Void>> updateMemberLastLogin(
 		@Parameter(hidden = true) @AuthMember Member member

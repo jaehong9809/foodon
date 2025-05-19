@@ -63,14 +63,14 @@ public class FoodService {
     }
 
     private String getRegisterNameWithOrigName(String foodName, LocalDateTime dateTime) {
-        return foodName + "_" + dateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        return foodName.trim() + "_" + dateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 
     private void checkDuplicateCustomFood(
             String foodName,
             Member member
     ) {
-        if(foodRepository.existsByMemberIdAndName(member.getId(), foodName)) {
+        if(foodRepository.existsByMemberIdAndName(member.getId(), foodName.trim())) {
             throw new FoodConflictException(CONFLICT_CUSTOM_FOOD);
         }
     }
