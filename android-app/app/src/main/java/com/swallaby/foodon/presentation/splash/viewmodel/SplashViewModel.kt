@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.splash.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.data.TokenDataStore
@@ -8,6 +9,7 @@ import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.data.auth.remote.result.AuthFlowResult
 import com.swallaby.foodon.domain.auth.usecase.ValidateTokenUseCase
+import com.swallaby.foodon.domain.user.usecase.UpdateUserLastLoginUseCase
 import com.swallaby.foodon.presentation.sharedstate.AppSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
@@ -17,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val validateTokenUseCase: ValidateTokenUseCase,
+    private val updateUserLastLoginUseCase: UpdateUserLastLoginUseCase,
     private val tokenDataStore: TokenDataStore,
     private val appSharedState: AppSharedState,
 ) : BaseViewModel<SplashUiState>(SplashUiState()) {
@@ -38,6 +41,12 @@ class SplashViewModel @Inject constructor(
                     val profileUpdated = result.data.profileUpdated
 
                     tokenDataStore.saveTokens(newAccess, newRefresh)
+                    appSharedState.observeToken(tokenDataStore)
+
+                    launch {
+                        runCatching { updateUserLastLoginUseCase() }
+                            .onFailure { e -> Log.e("Last Login (POST API)", "로그인 시간 Update 실패", e) }
+                    }
 
                     val next = if (profileUpdated) {
                         AuthFlowResult.NavigateToMain
@@ -45,8 +54,6 @@ class SplashViewModel @Inject constructor(
                         AuthFlowResult.NavigateToSignUp
                     }
                     _uiState.value = SplashUiState(ResultState.Success(next))
-
-                    appSharedState.observeToken(tokenDataStore)
                 }
 
                 is ApiResult.Failure -> {
