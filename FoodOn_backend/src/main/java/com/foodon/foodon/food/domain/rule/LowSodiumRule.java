@@ -26,6 +26,10 @@ public class LowSodiumRule implements NutrientClaimRule {
 
     @Override
     public boolean matches(Map<NutrientCode, NutrientServingInfo> nutrientMap) {
+        if(!nutrientMap.containsKey(NutrientCode.SODIUM)){
+            return false;
+        }
+
         NutrientServingInfo sodiumInfo = nutrientMap.get(NutrientCode.SODIUM);
         return sodiumInfo.per100g().compareTo(BigDecimal.valueOf(120)) < 0;
     }
