@@ -26,6 +26,10 @@ public class HighKcalRule implements NutrientClaimRule {
 
     @Override
     public boolean matches(Map<NutrientCode, NutrientServingInfo> nutrientMap) {
+        if(!nutrientMap.containsKey(NutrientCode.KCAL)){
+            return false;
+        }
+
         NutrientServingInfo kcalInfo = nutrientMap.get(NutrientCode.KCAL);
         return kcalInfo.perServing().compareTo(BigDecimal.valueOf(600)) >= 0;
     }

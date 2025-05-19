@@ -29,6 +29,10 @@ public class HighProteinRule implements NutrientClaimRule {
      */
     @Override
     public boolean matches(Map<NutrientCode, NutrientServingInfo> nutrientMap) {
+        if(!nutrientMap.containsKey(NutrientCode.PROTEIN)){
+            return false;
+        }
+
         NutrientServingInfo proteinInfo = nutrientMap.get(NutrientCode.PROTEIN);
         return proteinInfo.per100g().compareTo(BigDecimal.valueOf(10)) >= 0;
     }
