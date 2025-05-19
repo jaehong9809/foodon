@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.room.Room
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.kakao.sdk.common.KakaoSdk
+import com.swallaby.foodon.core.di.DaoEntryPoint
 import com.swallaby.foodon.core.util.generateSearchTokens
 import com.swallaby.foodon.data.food.local.AppDatabase
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,11 +16,6 @@ import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class FoodOnApp : Application() {
-
-    companion object {
-        lateinit var database: AppDatabase
-            private set
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -29,20 +26,13 @@ class FoodOnApp : Application() {
             appKey = BuildConfig.KAKAO_NATIVE_APP_KEY
         )
 
-        database = Room.databaseBuilder(
-            this,
-            AppDatabase::class.java,
-            "foods.db"
-        )
-            .createFromAsset("foods_init_final.db")
-            .fallbackToDestructiveMigration()
-            .build()
-
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("RoomInit", "🚀 FTS 생성 작업 시작")
-            val dao = database.foodSearchDao()
+            val dao = EntryPointAccessors.fromApplication(this@FoodOnApp, DaoEntryPoint::class.java)
+                .foodSearchDao()
+
+            Log.d("Room Init", "🚀 FTS 생성 작업 시작")
             dao.rebuildFts(dao.getAllFoods())
-            Log.d("RoomInit", "✅ FTS 테이블 Transaction 재생성 완료")
+            Log.d("Room Init", "✅ FTS 테이블 Transaction 재생성 완료")
         }
     }
 }
