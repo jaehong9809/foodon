@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -30,6 +31,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 
@@ -37,75 +39,82 @@ import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 fun PermissionRequiredScreen(
     modifier: Modifier = Modifier,
     permission: String,
-    canShowPermissionDialog: Boolean, // 파라미터 추가
-    onPermissionRequested: () -> Unit, // 권한 요청 콜백
-    onPermissionGranted: () -> Unit,
+    canShowPermissionDialog: Boolean,
+    onBackClick: () -> Unit = {},
+    onPermissionRequested: () -> Unit,
 ) {
     val context = LocalContext.current
 
     val permissionDenied =
         context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED
+    Scaffold { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CommonBackTopBar(onBackClick = onBackClick)
+            if (permission == android.Manifest.permission.CAMERA) {
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 24.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("카메라 권한이 없습니다.", style = NotoTypography.NotoMedium20.copy(color = G900))
+                    Spacer(modifier = modifier.height(4.dp))
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (permission == android.Manifest.permission.CAMERA) {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("카메라 권한이 없습니다.", style = NotoTypography.NotoMedium20.copy(color = G900))
-                Spacer(modifier = modifier.height(4.dp))
+                    // 사용자가 "다시 묻지 않음"을 선택한 경우
+                    if (permissionDenied && !canShowPermissionDialog) {
+                        Text(
+                            "'설정' > 'foodOn' > '권한' > '카메라'에서\n'항상 확인'으로 직접 변경해주세요.",
+                            style = NotoTypography.NotoMedium16.copy(color = G900),
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            "'설정' > 'foodOn' > '권한' > '카메라'에서\n'항상 확인'으로 변경해주세요.",
+                            style = NotoTypography.NotoMedium16.copy(color = G900),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Spacer(modifier = modifier.height(12.dp))
 
-                // 사용자가 "다시 묻지 않음"을 선택한 경우
-                if (permissionDenied && !canShowPermissionDialog) {
-                    Text(
-                        "'설정' > 'foodOn' > '권한' > '카메라'에서\n'항상 확인'으로 직접 변경해주세요.",
-                        style = NotoTypography.NotoMedium16.copy(color = G900),
-                        textAlign = TextAlign.Center
-                    )
-                } else {
-                    Text(
-                        "'설정' > 'foodOn' > '권한' > '카메라'에서\n'항상 확인'으로 변경해주세요.",
-                        style = NotoTypography.NotoMedium16.copy(color = G900),
-                        textAlign = TextAlign.Center
-                    )
+                    if (permission == android.Manifest.permission.CAMERA) {
+                        // 권한 요청 다이얼로그를 표시할 수 있거나 아직 권한을 요청하지 않은 경우에만 버튼 표시
+                        if (canShowPermissionDialog || !permissionDenied) {
+                            Button(onClick = { onPermissionRequested() }) {
+                                Text("카메라 권한 요청")
+                            }
+                        } else if (permissionDenied && !canShowPermissionDialog) {
+                            // 사용자가 "다시 묻지 않음"을 선택한 경우 설정으로 이동하는 버튼 표시
+                            Button(onClick = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                val uri = Uri.fromParts("package", context.packageName, null)
+                                intent.data = uri
+                                context.startActivity(intent)
+                            }) {
+                                Text("앱 설정으로 이동")
+                            }
+                        }
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = modifier.height(12.dp))
 
-        if (permission == android.Manifest.permission.CAMERA) {
-            // 권한 요청 다이얼로그를 표시할 수 있거나 아직 권한을 요청하지 않은 경우에만 버튼 표시
-            if (canShowPermissionDialog || !permissionDenied) {
-                Button(onClick = { onPermissionRequested() }) {
-                    Text("카메라 권한 요청")
-                }
-            } else if (permissionDenied && !canShowPermissionDialog) {
-                // 사용자가 "다시 묻지 않음"을 선택한 경우 설정으로 이동하는 버튼 표시
-                Button(onClick = {
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    val uri = Uri.fromParts("package", context.packageName, null)
-                    intent.data = uri
-                    context.startActivity(intent)
-                }) {
-                    Text("앱 설정으로 이동")
-                }
-            }
         }
     }
+
 }
 
 @Composable
 fun WithPermission(
     modifier: Modifier = Modifier,
     permission: String,
+    onBackClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -116,11 +125,9 @@ fun WithPermission(
     }
 
     var canShowPermissionDialog by remember {
-        mutableStateOf(
-            activity?.let {
-                ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
-            } ?: false
-        )
+        mutableStateOf(activity?.let {
+            ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
+        } ?: false)
     }
 
     val launcher = rememberLauncherForActivityResult(
@@ -157,12 +164,10 @@ fun WithPermission(
         PermissionRequiredScreen(
             permission = permission,
             canShowPermissionDialog = canShowPermissionDialog,
+            onBackClick = onBackClick,
             onPermissionRequested = {
                 launcher.launch(permission)
             },
-            onPermissionGranted = {
-                permissionGranted = true
-            }
         )
     } else {
         content()
