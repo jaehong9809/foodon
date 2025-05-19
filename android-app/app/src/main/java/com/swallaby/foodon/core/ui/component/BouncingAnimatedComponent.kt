@@ -28,11 +28,13 @@ fun BouncingAnimatedComponent(
     AnimatedVisibility(
         visible = visible, enter = fadeIn(
             animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow
             )
         ) + scaleIn(
-            initialScale = 0.8f, animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium
+            initialScale = 0.5f, animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow
             )
         ), modifier = modifier
     ) {
