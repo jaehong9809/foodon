@@ -155,5 +155,3 @@ fun CalendarWeekBackground(
             .background(WB500.copy(alpha = animatedAlpha))
     )
 }
-
-

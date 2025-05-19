@@ -42,14 +42,23 @@ object DateUtil {
         daysInMonth: Int,
         isSelectedWeek: Boolean,
     ): RoundedCornerShape {
+
+        val isFirstDay = day == 1
+        val isLastDay = day == daysInMonth
+        val isSunday = dayOfWeek == 0
+        val isSaturday = dayOfWeek == 6
+
         val topStart = when {
-            isSelectedWeek && (day == 1 && dayOfWeek == 6) || (day == daysInMonth && dayOfWeek == 0) -> 100.dp
-            isSelectedWeek && (dayOfWeek == 0 || day == 1) -> 100.dp
+            !isSelectedWeek -> 0.dp
+            (isFirstDay && isSaturday) || (isLastDay && isSunday) -> 100.dp
+            isFirstDay || isSunday -> 100.dp
             else -> 0.dp
         }
 
         val topEnd = when {
-            isSelectedWeek && (day == daysInMonth && dayOfWeek == 0) || (dayOfWeek == 6 || day == daysInMonth) -> 100.dp
+            !isSelectedWeek -> 0.dp
+            (isFirstDay && isSaturday) || (isLastDay && isSunday) -> 100.dp
+            isLastDay || isSaturday -> 100.dp
             else -> 0.dp
         }
 
