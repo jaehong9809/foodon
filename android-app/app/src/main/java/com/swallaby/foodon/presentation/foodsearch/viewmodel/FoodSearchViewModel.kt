@@ -1,10 +1,16 @@
 package com.swallaby.foodon.presentation.foodsearch.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.domain.food.usecase.SearchFoodNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
@@ -13,19 +19,24 @@ class FoodSearchViewModel @Inject constructor(
     private val searchFoodNameUseCase: SearchFoodNameUseCase
 ) : BaseViewModel<FoodSearchUiState>(FoodSearchUiState()) {
 
+    private val queryState = MutableStateFlow("")
+
+    val searchResults = queryState
+        .debounce(200)
+        .distinctUntilChanged()
+        .flatMapLatest { query ->
+            if (query.isBlank()) flowOf(PagingData.empty())
+            else searchFoodNameUseCase(query)
+        }
+        .cachedIn(viewModelScope)
+
+
     private fun updateState(reducer: (FoodSearchUiState) -> FoodSearchUiState) {
         _uiState.value = reducer(_uiState.value)
     }
 
     fun onQueryChange(query: String) {
-        val start = System.currentTimeMillis()
-        updateState { it.copy(
-            query = query,
-            searchResults = searchFoodNameUseCase(query))
-        }
-        val end = System.currentTimeMillis()
-
-        Log.d("SearchPerformance", "검색 소요 시간: ${end - start} ms")
+        queryState.value = query
     }
 
     fun onClearClick() {
