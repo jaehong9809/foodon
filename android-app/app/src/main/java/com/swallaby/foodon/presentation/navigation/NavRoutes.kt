@@ -40,14 +40,13 @@ sealed class NavRoutes(val route: String) {
 
         object FoodRegister : NavRoutes("food_register")
 
-        object FoodSearch : NavRoutes("food_search?foodId={foodId}") {
+        object FoodSearch : NavRoutes("food_search?foodId={foodId}&mealId={mealId}") {
             const val FOOD_ID = "foodId"
-            const val SELECTED_FOOD_ID = "selectedFoodId"
             const val MEAL_ID = "mealId"
 
-            fun createRoute(mealId: Long?, foodId: Long?, selectedFoodId: Long?): String {
+            fun createRoute(mealId: Long?, foodId: Long?): String {
                 return if (mealId != null && foodId != null) {
-                    "food_search?foodId=$foodId&mealId=$mealId&selectedFoodId=$selectedFoodId"
+                    "food_search?foodId=$foodId&mealId=$mealId"
                 } else {
                     "food_search"
                 }

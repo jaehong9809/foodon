@@ -43,7 +43,7 @@ fun NavGraphBuilder.mealGraph(
                 onSearchClick = {
                     navController.navigate(
                         NavRoutes.FoodGraph.FoodSearch.createRoute(
-                            null, null, null
+                            null, null
                         )
                     )
                 },
@@ -77,7 +77,7 @@ fun NavGraphBuilder.mealGraph(
                 onNavigateSearch = {
                     navController.navigate(
                         NavRoutes.FoodGraph.FoodSearch.createRoute(
-                            mealId, null, null
+                            mealId, null
                         )
                     )
                 })
@@ -131,7 +131,7 @@ fun NavGraphBuilder.mealGraph(
                     )
                     navController.navigate(
                         NavRoutes.FoodGraph.FoodSearch.createRoute(
-                            mealId, foodId, foodEditUiState.selectedFoodId
+                            mealId, foodId
                         )
                     )
                 })
@@ -194,11 +194,6 @@ fun NavGraphBuilder.mealGraph(
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
-            }, navArgument(NavRoutes.FoodGraph.FoodSearch.SELECTED_FOOD_ID) {
-                // LongType 으로 하면 primitive long 으로 돼서 null 값을 넘길 수 없음.
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
             })
         ) { navBackStackEntry ->
             val foodId =
@@ -207,9 +202,6 @@ fun NavGraphBuilder.mealGraph(
             val mealId =
                 navBackStackEntry.arguments?.getString(NavRoutes.FoodGraph.FoodSearch.MEAL_ID)
                     ?.toLongOrNull() ?: 0L
-            val selectedFoodId =
-                navBackStackEntry.arguments?.getString(NavRoutes.FoodGraph.FoodSearch.SELECTED_FOOD_ID)
-                    ?.toLongOrNull()
 
             val backStackEntry = if (mealId != null && foodId != null) {
                 Log.d("FoodSearchScreen", "mealId: $mealId, foodId: $foodId")

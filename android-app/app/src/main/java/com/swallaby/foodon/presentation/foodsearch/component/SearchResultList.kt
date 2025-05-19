@@ -77,7 +77,7 @@ fun SearchResultItem(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "${UnitType.valueOf(foodItem.servingUnit).value} • ${foodItem.kcal}kcal",
+            text = "1${UnitType.valueOf(foodItem.servingUnit).value} • ${foodItem.kcal}kcal",
             style = Typography.titleMedium,
             color = G700
         )
