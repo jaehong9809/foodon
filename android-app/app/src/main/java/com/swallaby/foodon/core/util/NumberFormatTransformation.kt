@@ -5,7 +5,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
-import java.text.DecimalFormat
+import kotlin.math.min
 
 
 // 숫자 포맷 패턴 정의
@@ -16,139 +16,125 @@ enum class NumberFormatPattern {
 }
 
 /**
- * Double 타입을 위한 VisualTransformation
- * - 천 단위 구분자(,) 추가 (정수 부분만)
- * - 소수점 이하 유지
- * - 정확한 커서 위치 매핑
+ * Int 값만 입력받고 최대값을 제한하는 VisualTransformation
  */
-// 입력값 검증 및 정리 함수
-fun cleanDoubleInput(input: String): String {
-    // 콤마 제거
-    val withoutCommas = input.replace(",", "")
-
-    // 이미 소수점이 있는지 확인
-    val decimalIndex = withoutCommas.indexOf('.')
-
-    // 입력값에 소수점이 여러 개 있는 경우 처리
-    return if (decimalIndex != -1) {
-        // 소수점 앞부분 (숫자만 허용)
-        val beforeDecimal = withoutCommas.substring(0, decimalIndex).filter { it.isDigit() }
-
-        // 소수점 뒷부분 (최대 2자리까지만)
-        val afterDecimal = withoutCommas.substring(decimalIndex + 1).filter { it.isDigit() }.take(2)
-
-        // 소수점 앞부분과 뒷부분이 모두 비어있지 않은 경우에만 소수점 추가
-        if (beforeDecimal.isEmpty() && afterDecimal.isEmpty()) {
-            ""
-        } else if (beforeDecimal.isEmpty()) {
-            "0.$afterDecimal"
-        } else {
-            "$beforeDecimal.$afterDecimal"
-        }
-    } else {
-        // 소수점이 없는 경우, 숫자만 남김
-        withoutCommas.filter { it.isDigit() || it == '.' }
-    }
-}
-
-
-class DoubleVisualTransformation : VisualTransformation {
-    private val decimalFormat = DecimalFormat("#,##0.00")
-
+class IntegerVisualTransformation(private val maxValue: Int = Int.MAX_VALUE) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
-        // 입력 텍스트 처리
-        val input = text.text
+        // 숫자만 허용하는 정규식으로 필터링
+        val filteredText = text.text.replace(Regex("[^0-9]"), "")
 
-        // 텍스트가 비어있으면 기본 반환
-        if (input.isEmpty()) {
-            return TransformedText(text, OffsetMapping.Identity)
+        // 빈 문자열이면 그대로 반환
+        if (filteredText.isEmpty()) {
+            return TransformedText(
+                AnnotatedString(""),
+                IdentityOffsetMapping
+            )
         }
 
-        // 소수점 처리를 위한 기본값 설정
-        var cleanedInput = input
-
-        // 소수점이 없는 경우 소수점 추가
-        if (!input.contains(".")) {
-            cleanedInput = "$input.00"
-        } else {
-            // 소수점이 있는 경우 소수점 이하 자릿수 조정
-            val parts = input.split(".")
-            val integerPart = parts[0]
-            var decimalPart = if (parts.size > 1) parts[1] else "00"
-
-            // 소수점 이하 2자리로 제한
-            decimalPart =
-                if (decimalPart.length > 2) decimalPart.substring(0, 2) else decimalPart.padEnd(
-                    2, '0'
-                )
-            cleanedInput = "$integerPart.$decimalPart"
-        }
-
-        // 숫자 파싱 및 포맷팅
-        val number = try {
-            cleanedInput.toDouble()
+        // 최대값 제한 적용
+        val intValue = try {
+            filteredText.toInt()
         } catch (e: NumberFormatException) {
-            0.0
+            // 숫자가 너무 크면 maxValue로 설정
+            maxValue
         }
 
-        // 포맷된 숫자 문자열 생성
-        val formattedString = decimalFormat.format(number)
-        val annotatedString = AnnotatedString(formattedString)
+        val limitedValue = min(intValue, maxValue)
+        val resultText = limitedValue.toString()
 
-        // 오프셋 매핑 생성
+        // 변환된 텍스트를 AnnotatedString으로 생성
+        val annotatedString = AnnotatedString(resultText)
+
+        // 단순한 케이스를 위한 오프셋 매핑
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
-                // 원본 텍스트에서 포맷된 텍스트로 오프셋 변환
-                // 소수점 이하 2자리까지만 입력 가능하게 제한
-
-                // 소수점 위치 찾기
-                val decimalPointIndex = input.indexOf('.')
-
-                // 소수점이 없거나 소수점 이전 위치면 컴마 고려하여 계산
-                if (decimalPointIndex == -1 || offset <= decimalPointIndex) {
-                    // 입력한 정수 부분에 해당하는 오프셋 계산 (컴마 고려)
-                    val integerPart = if (decimalPointIndex == -1) input else input.substring(
-                        0, decimalPointIndex
-                    )
-                    val commaCount = countCommasUpToPosition(formattedString, offset)
-                    return offset + commaCount
-                } else {
-                    // 소수점 이후 부분
-                    // 소수점 이하 2자리 이상 입력했는지 확인
-                    val decimalPartLength = input.length - decimalPointIndex - 1
-
-                    if (decimalPartLength > 2 && offset > decimalPointIndex + 2) {
-                        // 소수점 이하 2자리 이상 입력한 경우, 소수점 이하 2자리 위치로 오프셋 조정
-                        val integerCommaCount =
-                            countCommasUpToPosition(formattedString, formattedString.indexOf('.'))
-                        return formattedString.indexOf('.') + 3 // 소수점(1) + 소수점 이하 2자리(2)
-                    } else {
-                        // 일반적인 경우 (소수점 이하 2자리 이내)
-                        val integerCommaCount =
-                            countCommasUpToPosition(formattedString, formattedString.indexOf('.'))
-                        return offset + integerCommaCount
-                    }
-                }
+                return min(offset, resultText.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                // 포맷된 텍스트에서 원본 텍스트로 오프셋 변환
-
-                val commaCount = countCommasUpToPosition(formattedString, offset)
-                Log.d("DoubleVisualTransformation", "offset - commaCount: ${offset - commaCount}")
-                return maxOf(0, offset - commaCount)
-            }
-
-            // 특정 위치까지 컴마 개수 계산
-            private fun countCommasUpToPosition(text: String, position: Int): Int {
-                var count = 0
-                for (i in 0 until minOf(position, text.length)) {
-                    if (text[i] == ',') count++
-                }
-                return count
+                return min(offset, text.length)
             }
         }
 
         return TransformedText(annotatedString, offsetMapping)
     }
+}
+
+/**
+ * Double 값만 입력받고 최대값을 제한하는 VisualTransformation
+ */
+class DoubleVisualTransformation(private val maxValue: Double = Double.MAX_VALUE) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val input = text.text
+
+        // 숫자와 소수점만 남기는 필터링 로직
+        val filteredText = buildString {
+            var hasDecimalPoint = false
+
+            for (char in input) {
+                if (char.isDigit()) {
+                    append(char)
+                } else if (char == '.' && !hasDecimalPoint) {
+                    append(char)
+                    hasDecimalPoint = true
+                }
+            }
+        }
+
+        // 빈 문자열이면 그대로 반환
+        if (filteredText.isEmpty()) {
+            return TransformedText(
+                AnnotatedString(""),
+                IdentityOffsetMapping
+            )
+        }
+
+        // 최대값 제한 적용
+        val doubleValue = try {
+            filteredText.toDouble()
+        } catch (e: NumberFormatException) {
+            // 소수점만 있거나 숫자 변환에 문제가 있으면 0.0 반환
+            if (filteredText == ".") 0.0 else maxValue
+        }
+
+        val limitedValue = min(doubleValue, maxValue)
+
+        // 소수점 형식 유지를 위한 처리
+        val resultText = if (filteredText.endsWith(".")) {
+            "${limitedValue.toInt()}."
+        } else if (filteredText.contains(".")) {
+            // 원본 소수점 이하 자릿수를 유지
+            val decimalParts = filteredText.split(".")
+            if (decimalParts.size > 1) {
+                val decimalPlaces = decimalParts[1].length
+                String.format("%.${decimalPlaces}f", limitedValue)
+            } else {
+                limitedValue.toString()
+            }
+        } else {
+            limitedValue.toString()
+        }
+
+        // 변환된 텍스트를 AnnotatedString으로 생성
+        val annotatedString = AnnotatedString(resultText)
+
+        // 오프셋 매핑 정의
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                return min(offset, resultText.length)
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                return min(offset, text.length)
+            }
+        }
+
+        return TransformedText(annotatedString, offsetMapping)
+    }
+}
+
+// 간단한 identity 오프셋 매핑 객체
+private object IdentityOffsetMapping : OffsetMapping {
+    override fun originalToTransformed(offset: Int): Int = offset
+    override fun transformedToOriginal(offset: Int): Int = offset
 }

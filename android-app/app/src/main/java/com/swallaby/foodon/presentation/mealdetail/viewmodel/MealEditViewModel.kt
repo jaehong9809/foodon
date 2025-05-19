@@ -118,33 +118,28 @@ class MealEditViewModel @Inject constructor(
         }
     }
 
-    fun updateFood(food: MealItem) {
-        Log.d(TAG, "Updating food: ${food.foodId}")
+    fun updateMealItems(mealItems: List<MealItem>) {
+        Log.d(TAG, "Updating meal items: ${mealItems.size}")
         val currentState = _uiState.value.mealEditState
-        if (currentState is ResultState.Success) {
-            val mealInfo = currentState.data
-            val updatedItems = mealInfo.mealItems.map {
-                if (it.foodId == food.foodId) food else it
-            }
 
-            _uiState.update {
-                it.copy(
+        if (currentState is ResultState.Success) {
+            _uiState.update { currentUiState ->
+                currentUiState.copy(
                     mealEditState = ResultState.Success(
-                        mealInfo.copy(
-                            mealItems = updatedItems,
-                            totalCarbs = calculateTotalCarbs(updatedItems),
-                            totalFat = calculateTotalFat(updatedItems),
-                            totalKcal = calculateTotalKcal(updatedItems),
-                            totalProtein = calculateTotalProtein(updatedItems)
+                        currentState.data.copy(
+                            mealItems = mealItems,
+                            totalCarbs = calculateTotalCarbs(mealItems),
+                            totalFat = calculateTotalFat(mealItems),
+                            totalKcal = calculateTotalKcal(mealItems),
+                            totalProtein = calculateTotalProtein(mealItems)
                         )
                     )
                 )
             }
-            Log.d(TAG, "Food update complete: ${food.foodId}")
-        } else {
-            Log.e(TAG, "Cannot update food: Invalid state")
         }
+
     }
+
 
     fun deleteFood(foodId: Long) {
         Log.d(TAG, "Deleting food: $foodId")
@@ -166,10 +161,6 @@ class MealEditViewModel @Inject constructor(
         } else {
             Log.e(TAG, "Cannot delete food: Invalid state")
         }
-    }
-
-    fun destroyMeal() {
-        _uiState.update { it.copy(mealEditState = ResultState.Success(MealInfo())) }
     }
 
     private fun calculateTotalCarbs(items: List<MealItem>): Double {

@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.navigation
 
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,9 +33,12 @@ fun NavGraphBuilder.mealGraph(
     ) {
         composable(
             NavRoutes.FoodGraph.FoodRecord.route,
+            popExitTransition = { ExitTransition.None },
+            exitTransition = { ExitTransition.None }
         ) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
-            MealRecordScreen(recordViewModel = recordViewModel,
+            MealRecordScreen(
+                recordViewModel = recordViewModel,
                 editViewModel = mealEditViewModel,
                 onBackClick = {
                     navController.popBackStack()
@@ -56,7 +60,8 @@ fun NavGraphBuilder.mealGraph(
         ) {
             val mealId = it.arguments?.getLong("mealId") ?: 0L
 
-            MealDetailScreen(mealId = mealId,
+            MealDetailScreen(
+                mealId = mealId,
                 viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = { foodId ->
@@ -106,21 +111,21 @@ fun NavGraphBuilder.mealGraph(
                     navController.popBackStack()
                 },
                 onFoodUpdateClick = {
-
                     val updateMealInfo =
                         (foodEditViewModel.uiState.value.foodEditState as ResultState.Success).data
-                    val food =
-                        updateMealInfo.mealItems.find { item -> item.foodId == foodEditViewModel.uiState.value.selectedFoodId }
+                    mealEditViewModel.updateMealItems(updateMealInfo.mealItems)
 
-                    food?.let { it ->
-                        mealEditViewModel.updateFood(it.copy(type = FoodType.CUSTOM_MODIFIED))
-                    }
+//                    val food =
+//                        updateMealInfo.mealItems.find { item -> item.foodId == foodEditViewModel.uiState.value.selectedFoodId }
+//
+//                    food?.let { it ->
+//                        mealEditViewModel.updateFood(it.copy(type = FoodType.CUSTOM_MODIFIED))
+//                    }
                     navController.popBackStack()
                 },
                 onSearchClick = {
                     navController.navigate(NavRoutes.FoodGraph.FoodSearch.route)
-                }
-            )
+                })
         }
 
         composable(

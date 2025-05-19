@@ -35,8 +35,7 @@ import com.swallaby.foodon.domain.food.model.Position
 @Composable
 fun FoodLabelButton(
     position: Position,
-    originalImageSize: Size,
-    centerPosition: Size,  // 중앙 좌표 추가
+    centerPosition: Size,
     foodName: String,
     onClick: () -> Unit = {},
 ) {
@@ -124,7 +123,6 @@ fun FoodLabelButtonPreview() {
     FoodLabelButton(
         foodName = "과일 케이크",
         position = Position(),
-        originalImageSize = Size(100f, 100f),
         centerPosition = Size(100f, 100f)
     )
 }

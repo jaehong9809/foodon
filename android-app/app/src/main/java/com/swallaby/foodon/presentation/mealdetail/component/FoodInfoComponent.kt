@@ -36,7 +36,6 @@ fun FoodInfoComponent(
     onDelete: (foodId: Long) -> Unit,
     enabledDeleteButton: Boolean = true,
 ) {
-    // todo 크롭 매니저 처리 리팩토링
     val cropManager = ImageCropManager(LocalContext.current)
     val context = LocalContext.current
 
@@ -49,17 +48,12 @@ fun FoodInfoComponent(
         // 이미지 로드 및 크롭
         cropManager.loadAndCropImage(
             imageUri.toString(),
-            //"https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_hybrid&w=740",
             positions
         ) {
             isLoad = true
         }
 
     }
-//    imageUri?.let {
-//        ImageConverter.convertUriToWebP(context = context, imageUri = it, quality = 10)
-//    }
-
 
     if (isLoad) {
         Column(
