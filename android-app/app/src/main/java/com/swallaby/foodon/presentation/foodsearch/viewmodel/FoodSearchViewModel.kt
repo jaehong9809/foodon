@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.swallaby.foodon.core.presentation.BaseViewModel
+import com.swallaby.foodon.domain.food.usecase.GetRecentFoodsUseCase
 import com.swallaby.foodon.domain.food.usecase.SearchFoodNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.debounce
@@ -11,12 +12,25 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FoodSearchViewModel @Inject constructor(
-    private val searchFoodNameUseCase: SearchFoodNameUseCase
+    private val searchFoodNameUseCase: SearchFoodNameUseCase,
+    private val getRecentFoodsUseCase: GetRecentFoodsUseCase
 ) : BaseViewModel<FoodSearchUiState>(FoodSearchUiState()) {
+
+    init {
+        fetchRecentFoods()
+    }
+
+    private fun fetchRecentFoods() {
+        viewModelScope.launch {
+            val recent = getRecentFoodsUseCase()
+            updateState { it.copy(recentFoods = recent) }
+        }
+    }
 
     val searchResults = uiState
         .map { it.query }

@@ -3,6 +3,7 @@ package com.swallaby.foodon.domain.food.repository
 import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
+import com.swallaby.foodon.data.food.remote.dto.response.RecentFoodResponse
 import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.FoodSimilar
 import com.swallaby.foodon.domain.food.model.FoodType
@@ -38,4 +39,7 @@ interface FoodRepository {
         foodId: Long,
         type: FoodType,
     ): ApiResult<FoodInfoWithId>
+
+    suspend fun getRecentFoods(
+    ): ApiResult<List<RecentFoodResponse>>
 }
