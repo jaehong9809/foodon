@@ -30,6 +30,7 @@ import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.food.model.Food
+import com.swallaby.foodon.domain.food.model.UnitType
 
 
 @Composable
@@ -76,7 +77,7 @@ fun SearchResultItem(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "${foodItem.servingUnit} • ${foodItem.kcal}kcal",
+            text = "${UnitType.valueOf(foodItem.servingUnit).value} • ${foodItem.kcal}kcal",
             style = Typography.titleMedium,
             color = G700
         )

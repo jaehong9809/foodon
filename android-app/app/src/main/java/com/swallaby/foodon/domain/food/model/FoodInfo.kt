@@ -15,6 +15,7 @@ fun FoodInfoWithId.toMealItem() = MealItem(
     foodId = foodId,
     foodName = foodName,
     unit = unit,
+    quantity = 1,
     nutrientInfo = nutrientInfo,
 )
 
