@@ -47,6 +47,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 .from(food)
                 .where(
                         food.id.eq(id),
+                        food.foodType.eq(type),
                         eqMemberIdIfNotPublic(member, type)
                 )
                 .fetchOne();
