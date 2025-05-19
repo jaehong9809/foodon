@@ -63,7 +63,8 @@ fun FoodSearchScreen(
                     Log.d("FoodSearchScreen", "food: $food")
                     // 음식 생성 후 메뉴에 추가
                     if (foodId == null) {
-
+                        mealEditViewModel.addFood(food.id)
+                        navController.popBackStack()
                     } else {
                         Log.d(
                             "FoodSearchScreen", "searchFoodId = ${food.id}, selectedFoodId: $foodId"

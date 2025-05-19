@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.MealType
+import com.swallaby.foodon.domain.food.model.toMealItem
 import com.swallaby.foodon.domain.food.model.toRequest
+import com.swallaby.foodon.domain.food.usecase.FetchFoodUseCase
 import com.swallaby.foodon.domain.food.usecase.FetchMealDetailInfoUseCase
 import com.swallaby.foodon.domain.food.usecase.RecordMealUseCase
 import com.swallaby.foodon.presentation.sharedstate.MealSharedState
@@ -23,7 +26,8 @@ import javax.inject.Inject
 class MealEditViewModel @Inject constructor(
     private val recordMealUseCase: RecordMealUseCase,
     private val fetchMealDetailInfoUseCase: FetchMealDetailInfoUseCase,
-    val mealSharedState: MealSharedState
+    private val fetchFoodUseCase: FetchFoodUseCase,
+    val mealSharedState: MealSharedState,
 ) : BaseViewModel<MealEditUiState>(MealEditUiState()) {
     private val _events = MutableSharedFlow<MealEditEvent>()
     val events = _events.asSharedFlow()
@@ -138,6 +142,37 @@ class MealEditViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun addFood(foodId: Long) {
+        Log.d(TAG, "Adding food: $foodId")
+
+        viewModelScope.launch {
+            when (val result = fetchFoodUseCase(foodId, FoodType.PUBLIC).toResultState()) {
+                is ResultState.Success -> {
+                    val food = result.data.toMealItem()
+                    val mealInfo = (_uiState.value.mealEditState as ResultState.Success).data
+                    Log.d("MealEditViewModel", "mealInfo = ${mealInfo.mealItems.size}")
+                    val updatedItems = mealInfo.mealItems.toMutableList() + food
+                    Log.d("MealEditViewModel", "updatedItems = ${updatedItems.size}")
+
+                    val updatedMealInfo = mealInfo.copy(
+                        mealItems = updatedItems,
+                        totalCarbs = calculateTotalCarbs(updatedItems),
+                        totalFat = calculateTotalFat(updatedItems),
+                        totalKcal = calculateTotalKcal(updatedItems),
+                        totalProtein = calculateTotalProtein(updatedItems)
+                    )
+                    _uiState.update { it.copy(mealEditState = ResultState.Success(updatedMealInfo)) }
+                }
+
+                is ResultState.Error -> {
+                }
+
+                else -> {
+                }
+            }
+        }
     }
 
 
