@@ -17,6 +17,7 @@ import com.foodon.foodon.member.repository.MemberStatusRepository;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.repository.NutrientPlanRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +64,7 @@ public class IntakeLogService {
         return IntakeLog.createIntakeLogOfMember(member, date, goalKcal);
     }
 
+    @Cacheable(value = "intakeCalendar", key = "'calendar:' + #member.id + ':' + #yearMonth")
     public List<IntakeSummaryResponse> getIntakeLogCalendar(
             YearMonth yearMonth,
             Member member
