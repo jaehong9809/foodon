@@ -1,16 +1,13 @@
-package com.swallaby.foodon.core.ui.component
+package com.swallaby.foodon.presentation.main.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -18,15 +15,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.Bkg05
-import com.swallaby.foodon.core.ui.theme.G700
-import com.swallaby.foodon.core.ui.theme.G900
-import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.core.util.StringUtil.formatKcal
 import com.swallaby.foodon.domain.food.model.Nutrition
 import kotlin.math.sin
 
@@ -47,9 +38,14 @@ fun CalorieProgressBar(
     val totalKcalRatio = if (goal > 0) consumed.toFloat() / goal else 0f
     val clampedKcalRatio = totalKcalRatio.coerceAtMost(1f)
 
+    val animatedKcalRatio by animateFloatAsState(
+        targetValue = clampedKcalRatio,
+        animationSpec = tween(durationMillis = 600)
+    )
+
     val totalNutrientRatio = nutrients.sumOf { it.ratio.toDouble() }.toFloat().coerceAtLeast(1f)
     val normalizedNutrients = nutrients.map {
-        val adjustedRatio = (it.ratio / totalNutrientRatio) * clampedKcalRatio
+        val adjustedRatio = (it.ratio / totalNutrientRatio) * animatedKcalRatio
         it.copy(ratio = adjustedRatio)
     }
 
@@ -92,31 +88,6 @@ fun CalorieProgressBar(
             }
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Spacer(modifier = Modifier.height(42.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = formatKcal(consumed),
-                    style = SpoqaTypography.SpoqaBold24.copy(color = G900)
-                )
-
-                Text(
-                    text = stringResource(R.string.main_kcal_unit),
-                    style = SpoqaTypography.SpoqaMedium16.copy(color = G900)
-                )
-            }
-
-            Text(
-                text = stringResource(R.string.main_pager_kcal_unit, formatKcal(goal)),
-                style = SpoqaTypography.SpoqaMedium13.copy(color = G700)
-            )
-        }
+        CalorieInfo(goal, consumed)
     }
 }
