@@ -17,7 +17,6 @@ import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.foodregister.FoodRegisterScreen
 import com.swallaby.foodon.presentation.foodregister.viewmodel.FoodRegisterViewModel
 import com.swallaby.foodon.presentation.foodsearch.FoodSearchScreen
-import com.swallaby.foodon.presentation.foodsearch.FoodSearchScreen
 import com.swallaby.foodon.presentation.mealdetail.MealDetailScreen
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.MealRecordScreen
@@ -165,13 +164,7 @@ fun NavGraphBuilder.mealGraph(
         }
 
         composable(NavRoutes.FoodGraph.FoodSearch.route) {
-            FoodSearchScreen()
-        }
-
-        composable(
-            NavRoutes.FoodGraph.FoodSearch.route,
-        ) {
-            FoodSearchScreen()
+            FoodSearchScreen(navController = navController)
         }
     }
 }
