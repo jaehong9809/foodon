@@ -46,7 +46,7 @@ sealed class NavRoutes(val route: String) {
                 return if (mealId != null && foodId != null) {
                     "food_register?foodId=$foodId&mealId=$mealId"
                 } else {
-                    "food_search"
+                    "food_register"
                 }
             }
         }

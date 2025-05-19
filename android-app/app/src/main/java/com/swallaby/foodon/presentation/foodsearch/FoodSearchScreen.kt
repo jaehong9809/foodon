@@ -95,6 +95,7 @@ fun FoodSearchScreen(
                 showBanner = uiState.showBanner,
                 bannerFoodName = uiState.bannerFoodName,
                 onBannerRegisterClick = {
+                    Log.d("FoodSearchScreen", "onBannerRegisterClick called with foodId: $foodId")
                     navController.navigate(
                         NavRoutes.FoodGraph.FoodRegister.createRoute(
                             foodId = foodId,

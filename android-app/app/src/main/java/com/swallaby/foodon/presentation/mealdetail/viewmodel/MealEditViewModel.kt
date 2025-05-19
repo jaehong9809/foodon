@@ -144,11 +144,11 @@ class MealEditViewModel @Inject constructor(
 
     }
 
-    fun addFood(foodId: Long) {
+    fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC) {
         Log.d(TAG, "Adding food: $foodId")
 
         viewModelScope.launch {
-            when (val result = fetchFoodUseCase(foodId, FoodType.PUBLIC).toResultState()) {
+            when (val result = fetchFoodUseCase(foodId, type).toResultState()) {
                 is ResultState.Success -> {
                     val food = result.data.toMealItem()
                     val mealInfo = (_uiState.value.mealEditState as ResultState.Success).data

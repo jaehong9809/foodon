@@ -205,28 +205,42 @@ fun NavGraphBuilder.mealGraph(
 
             FoodRegisterScreen(
                 onBackClick = { navController.popBackStack() },
-                onNavigateToSearch = { food ->
-                    Log.d("FoodRegisterScreen", "foodEditViewModel = $foodEditViewModel")
-                    foodEditViewModel?.fetchFood(food.foodId, FoodType.CUSTOM)
-                    foodEditViewModel?.fetchFoodSimilar(food.foodName)
-                    Log.d("FoodRegisterScreen", "food = $food, foodId = $foodId, mealId = $mealId")
-                    foodId?.let {
-                        navController.navigate(
-                            NavRoutes.FoodGraph.FoodEdit.createRoute(
-                                mealId = mealId, foodId = foodId
-                            )
-                        ) {
-                            popUpTo(
-                                NavRoutes.FoodGraph.FoodSearch.createRoute(
+                onNavigateToSearch = { food -> // DB로 찾은 음식
+                    // 음식을 수정 할 경우
+                    foodEditViewModel?.let { viewModel ->
+                        // 검색한 음식 영양소 조회 및 기존 음식과 교체하기 and 관련 검색어 조회
+                        viewModel.fetchFood(food.foodId, FoodType.CUSTOM)
+                        viewModel.fetchFoodSimilar(food.foodName)
+                        Log.d(
+                            "FoodRegisterScreen",
+                            "food = $food, foodId = $foodId, mealId = $mealId"
+                        )
+                        foodId?.let {
+                            navController.navigate(
+                                NavRoutes.FoodGraph.FoodEdit.createRoute(
                                     mealId = mealId, foodId = foodId
                                 )
-                            ) { inclusive = true }
-
-
+                            ) {
+                                popUpTo(
+                                    NavRoutes.FoodGraph.FoodSearch.createRoute(
+                                        mealId = mealId, foodId = foodId
+                                    )
+                                ) { inclusive = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    } ?: run {
+                        // 찾는 음식이 없어 새로 등록 할 경우
+                        Log.d("FoodRegisterScreen", "register food")
+                        mealEditViewModel.addFood(food.foodId, FoodType.CUSTOM)
+                        navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
+                            popUpTo(NavRoutes.FoodGraph.MealDetail.createRoute(0L))
                             launchSingleTop = true
                             restoreState = true
                         }
                     }
+
 
                 },
                 viewModel = registerViewModel,
