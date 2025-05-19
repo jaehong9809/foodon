@@ -62,9 +62,8 @@ fun CalendarDayItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-//            modifier = Modifier
-//                .size(if (calendarType == CalendarType.RECOMMENDATION) 41.dp else 30.dp),
-            modifier = Modifier.size(30.dp),
+            modifier = Modifier
+                .size(if (calendarType == CalendarType.RECOMMENDATION) 41.dp else 30.dp),
             contentAlignment = Alignment.Center
         ) {
             when (calendarType) {
