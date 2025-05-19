@@ -1,14 +1,12 @@
 package com.swallaby.foodon.presentation.main
 
+
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -25,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,9 +33,6 @@ import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.FloatingButton
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
-import com.swallaby.foodon.core.ui.theme.MainWhite
-import com.swallaby.foodon.core.ui.theme.WB500
-import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.presentation.calendar.component.WeeklyLabel
@@ -49,7 +42,6 @@ import com.swallaby.foodon.presentation.main.component.MainContentPager
 import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.model.CalendarInfo
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
-import com.swallaby.foodon.presentation.navigation.LocalNavController
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
 import kotlinx.coroutines.launch
@@ -178,61 +170,6 @@ fun MainScreen(
                 calendarInfo
             ) { mealId ->
                 onMealClick(mealId)
-            }
-
-            // 로그인, 등록 화면 테스트용 코드 (추후 삭제 필요)
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val navController = LocalNavController.current
-
-                Box(
-                    modifier = Modifier
-                        .background(WB500)
-                        .clickable {
-                            navController.navigate(NavRoutes.LoginGraph.route)
-                        }) {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = "로그인 테스트",
-                        color = MainWhite,
-                        style = NotoTypography.NotoMedium20
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Box(
-                    modifier = Modifier
-                        .background(WB500)
-                        .clickable {
-                            navController.navigate(NavRoutes.SignUpGraph.route)
-                        }) {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = "등록 화면 시작",
-                        color = MainWhite,
-                        style = NotoTypography.NotoMedium20
-                    )
-                }
-
-                // 임시 테스트
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Box(
-                    modifier = Modifier
-                        .background(WB500)
-                        .clickable {
-                            navController.navigate(NavRoutes.FoodGraph.FoodRegister.route)
-                        }) {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = "음식 등록",
-                        color = MainWhite,
-                        style = NotoTypography.NotoMedium20
-                    )
-                }
             }
         }
     }

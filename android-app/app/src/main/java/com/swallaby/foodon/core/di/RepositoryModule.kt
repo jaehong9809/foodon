@@ -23,6 +23,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 internal abstract class RepositoryModule {
 
+    // Remote
     @Binds
     @Singleton
     abstract fun bindUserRemoteRepository(
@@ -53,6 +54,7 @@ internal abstract class RepositoryModule {
         mainRepositoryImpl: MainRepositoryImpl
     ): MainRepository
 
+    // Local
     @Binds
     @Singleton
     abstract fun bindFoodSearchLocalRepository(

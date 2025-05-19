@@ -64,4 +64,5 @@ fun NavGraph(
             mealGraph(navController, mealEditViewModel)
         }
     }
+
 }

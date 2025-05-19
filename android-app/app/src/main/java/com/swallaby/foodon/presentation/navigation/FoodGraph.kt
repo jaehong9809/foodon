@@ -174,10 +174,8 @@ fun NavGraphBuilder.mealGraph(
             )
         }
 
-        composable(
-            NavRoutes.FoodGraph.FoodSearch.route,
-        ) {
-            FoodSearchScreen()
+        composable(NavRoutes.FoodGraph.FoodSearch.route) {
+            FoodSearchScreen(navController = navController)
         }
     }
 }
