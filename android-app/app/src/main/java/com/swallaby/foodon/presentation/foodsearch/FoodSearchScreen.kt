@@ -3,6 +3,7 @@ package com.swallaby.foodon.presentation.foodsearch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -49,7 +50,9 @@ fun FoodSearchScreen(
 
     Scaffold { innerPadding ->
         Column (
-            modifier = modifier.padding(innerPadding)
+            modifier = modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
         ) {
             CommonBackTopBar(title = stringResource(R.string.search_food)) {
                 navController.popBackStack()
