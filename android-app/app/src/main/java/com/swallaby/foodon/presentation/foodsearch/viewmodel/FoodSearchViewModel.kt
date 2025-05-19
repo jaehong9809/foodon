@@ -1,13 +1,11 @@
 package com.swallaby.foodon.presentation.foodsearch.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.domain.food.usecase.SearchFoodNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest

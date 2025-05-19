@@ -2,12 +2,9 @@ package com.swallaby.foodon
 
 import android.app.Application
 import android.util.Log
-import androidx.room.Room
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.kakao.sdk.common.KakaoSdk
 import com.swallaby.foodon.core.di.DaoEntryPoint
-import com.swallaby.foodon.core.util.generateSearchTokens
-import com.swallaby.foodon.data.food.local.AppDatabase
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
