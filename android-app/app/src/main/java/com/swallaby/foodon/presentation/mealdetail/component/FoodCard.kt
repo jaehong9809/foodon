@@ -9,6 +9,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,6 +61,7 @@ import com.swallaby.foodon.domain.food.model.Nutrition
 import com.swallaby.foodon.domain.food.model.toNutrient
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FoodCard(
     modifier: Modifier = Modifier,
@@ -93,7 +96,7 @@ fun FoodCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column (modifier = modifier.weight(1f)){
+            Column(modifier = modifier.weight(1f)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -136,7 +139,8 @@ fun FoodCard(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                food.unit.value, style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
+                                food.unit.value,
+                                style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
                             )
                             Box(
                                 modifier = Modifier
@@ -155,12 +159,20 @@ fun FoodCard(
 
                 }
                 Spacer(modifier.height(12.dp))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FlowRow(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     repeat(nutrients.size) { index ->
-                        NutritionalSmallInfo(
-                            modifier = modifier, nutrition = nutrients[index]
-                        )
+                        val isLast = nutrients.size - 1 == index
+                        Box {
+                            NutritionalSmallInfo(
+                                modifier = modifier,
+                                nutrition = nutrients[index],
+                                isLast = isLast,
+                            )
+                        }
                     }
                 }
             }
