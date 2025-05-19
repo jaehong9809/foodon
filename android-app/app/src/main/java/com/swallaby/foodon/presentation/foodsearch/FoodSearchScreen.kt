@@ -3,10 +3,14 @@ package com.swallaby.foodon.presentation.foodsearch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -15,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.LazyPagingItems
 import com.swallaby.foodon.R
@@ -26,6 +31,7 @@ import com.swallaby.foodon.presentation.foodsearch.component.RecentFoodChips
 import com.swallaby.foodon.presentation.foodsearch.component.SearchBar
 import com.swallaby.foodon.presentation.foodsearch.component.SearchResultList
 import com.swallaby.foodon.presentation.foodsearch.viewmodel.FoodSearchViewModel
+import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun FoodSearchScreen(
@@ -36,16 +42,26 @@ fun FoodSearchScreen(
     val uiState by viewModel.uiState.collectAsState()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
+    LaunchedEffect(searchResults.itemCount) {
+        val count = searchResults.itemCount
+        val shouldShowBanner = count in 1..20 || count >= 20
+
+        viewModel.updateBannerVisibility(shouldShowBanner)
+        viewModel.updateBannerFoodName(uiState.query)
+    }
+
     Scaffold { innerPadding ->
         Column (
-            modifier = modifier.padding(innerPadding)
+            modifier = modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
         ) {
             CommonBackTopBar(title = stringResource(R.string.search_food)) {
                 navController.popBackStack()
             }
 
             FoodSearchContent(
-                modifier = modifier,
+                modifier = Modifier,
                 query = uiState.query,
                 recentFoods = uiState.recentFoods,
                 searchResults = searchResults,
@@ -56,7 +72,9 @@ fun FoodSearchScreen(
                 onSearchResultClick = { /* TODO */ },
                 showBanner = uiState.showBanner,
                 bannerFoodName = uiState.bannerFoodName,
-                onBannerRegisterClick = { viewModel.onBannerRegisterClick() }
+                onBannerRegisterClick = {
+                    navController.navigate(NavRoutes.FoodGraph.FoodRegister.route)
+                }
             )
         }
     }
@@ -109,7 +127,10 @@ fun FoodSearchContent(
             FoodRegisterBottomBanner(
                 foodName = bannerFoodName,
                 onRegisterClick = onBannerRegisterClick,
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .imePadding()
             )
         }
     }

@@ -28,10 +28,10 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G500
+import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G800
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.core.ui.theme.Typography
-
 
 
 @Composable
@@ -57,18 +57,27 @@ fun RecentFoodChips(
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            recentFoods.forEach { food ->
-                FoodChip(
-                    food = food,
-                    onClick = { onChipClick(food) },
-                    onRemoveClick = { onChipRemove(food) }
-                )
+        if (recentFoods.isEmpty()) {
+            Text(
+                text = stringResource(R.string.no_recent_foods),
+                style = Typography.bodyMedium,
+                color = G700,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                recentFoods.forEach { food ->
+                    FoodChip(
+                        food = food,
+                        onClick = { onChipClick(food) },
+                        onRemoveClick = { onChipRemove(food) }
+                    )
+                }
             }
         }
     }
