@@ -87,8 +87,8 @@ public class Food {
         return new Food(
                 member.getId(),
                 FoodType.CUSTOM,
-                request.foodName(),
-                request.foodName(),
+                request.foodName().trim(),
+                request.foodName().trim(),
                 request.servingSize(),
                 request.unit(),
                 true
@@ -104,7 +104,7 @@ public class Food {
                 member.getId(),
                 FoodType.CUSTOM_MODIFIED,
                 registerName,
-                request.foodName(),
+                request.foodName().trim(),
                 request.servingSize(),
                 request.unit(),
                 false
