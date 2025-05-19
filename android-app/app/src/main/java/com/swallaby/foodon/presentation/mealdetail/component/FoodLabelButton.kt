@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,11 +59,6 @@ fun FoodLabelButton(
                 // 컨테이너 크기 (Box 크기)
                 val containerWidth = constraints.maxWidth.toFloat()
                 val containerHeight = constraints.maxHeight.toFloat()
-
-                Log.d(
-                    "FoodLabelButton",
-                    "Container size: ${position.x + centerPosition.width} x ${position.y + centerPosition.height}"
-                )
 
                 // 중앙 위치 계산 (버튼 자체 크기의 절반을 빼서 중앙 정렬)
                 val x =

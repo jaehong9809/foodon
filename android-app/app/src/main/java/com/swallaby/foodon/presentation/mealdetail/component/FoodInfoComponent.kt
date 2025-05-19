@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +37,7 @@ fun FoodInfoComponent(
     foods: List<MealItem> = emptyList(),
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
+    onAdd: () -> Unit,
     enabledDeleteButton: Boolean = true,
 ) {
     val cropManager = ImageCropManager(LocalContext.current)
@@ -47,8 +51,7 @@ fun FoodInfoComponent(
     LaunchedEffect(Unit) {
         // 이미지 로드 및 크롭
         cropManager.loadAndCropImage(
-            imageUri.toString(),
-            positions
+            imageUri.toString(), positions
         ) {
             isLoad = true
         }
@@ -79,6 +82,14 @@ fun FoodInfoComponent(
                     }
                 }
             }
+
+            if (foods.isNotEmpty()) {
+                IconButton(onClick = onAdd) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_check), contentDescription = "add"
+                    )
+                }
+            }
         }
     }
 
@@ -89,5 +100,5 @@ fun FoodInfoComponent(
 @Preview
 @Composable
 fun FoodInfoComponentPreview() {
-    FoodInfoComponent(onClick = {}, onDelete = {}, imageUri = null)
+    FoodInfoComponent(onClick = {}, onDelete = {}, imageUri = null, onAdd = {})
 }
