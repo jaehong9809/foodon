@@ -9,8 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record CustomFoodCreateRequest(
-        @NotNull
-        @Size(min = 1, message = "음식 이름은 최소 1자 이상이어야 합니다.")
+        @NotBlank
         String foodName,
 
         @NotNull
