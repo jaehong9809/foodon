@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.splash.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.data.TokenDataStore
@@ -8,6 +9,7 @@ import com.swallaby.foodon.core.result.ApiResult
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.data.auth.remote.result.AuthFlowResult
 import com.swallaby.foodon.domain.auth.usecase.ValidateTokenUseCase
+import com.swallaby.foodon.domain.user.usecase.UpdateUserLastLoginUseCase
 import com.swallaby.foodon.presentation.sharedstate.AppSharedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
