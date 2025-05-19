@@ -59,6 +59,8 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = updateUserWeightUseCase(weight)) {
                 is ApiResult.Success -> {
+                    calendarSharedState.refreshForGoal()
+
                     updateState {
                         val previous = (it.weightResult as? ResultState.Success)?.data
                         val updated = UserWeight(

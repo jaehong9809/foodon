@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.EmptyContentText
+import com.swallaby.foodon.core.ui.component.VerticalSlideAnimatedComponent
 import com.swallaby.foodon.core.ui.theme.BG300
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
@@ -51,8 +52,10 @@ fun RecommendFoodContent(
         )
 
         if (foods.isNotEmpty()) {
-            RecommendFoodGrid(foods)
+            VerticalSlideAnimatedComponent {
+                RecommendFoodGrid(foods)
 //            RecommendReason(foods.map { it.reason })
+            }
         }
 
         if (foods.isEmpty()) {

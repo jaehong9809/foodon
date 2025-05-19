@@ -46,10 +46,10 @@ fun MealRecordContent(
 
         when (recordResult) {
             is ResultState.Success -> {
-                VerticalSlideAnimatedComponent {
-                    if (recordResult.data.isEmpty()) {
-                        EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
-                    } else {
+                if (recordResult.data.isEmpty()) {
+                    EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
+                } else {
+                    VerticalSlideAnimatedComponent {
                         Column(
                             modifier = Modifier.wrapContentHeight(),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -62,9 +62,7 @@ fun MealRecordContent(
                 }
             }
             else -> {
-                VerticalSlideAnimatedComponent {
-                    EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
-                }
+                EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
             }
         }
 
