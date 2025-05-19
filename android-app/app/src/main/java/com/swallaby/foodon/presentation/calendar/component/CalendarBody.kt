@@ -1,8 +1,5 @@
 package com.swallaby.foodon.presentation.calendar.component
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,15 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.swallaby.foodon.core.ui.theme.WB500
-import com.swallaby.foodon.core.util.DateUtil.getDateShape
+import com.swallaby.foodon.core.util.DateUtil.getWeekDateRange
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
 import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
@@ -48,42 +41,39 @@ fun CalendarBody(
 
         repeat(6) { weekIndex ->
             val isSelectedWeek = weekIndex == calendarStatus.selectedWeekIndex
+            val weekRange = getWeekDateRange(weekIndex, yearMonth, firstDayOfWeek)
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                for (dayOfWeek in 0..6) {
-                    val day = if (weekIndex == 0 && dayOfWeek < firstDayOfWeek) null else dayCounter
+            Box(modifier = Modifier.fillMaxWidth()) {
+                WeekBackground(weekRange, isSelectedWeek, calendarType)
 
-                    if (day != null && day <= daysInMonth) {
-                        val date = yearMonth.atDay(day)
-                        val calendarItem = calendarItemMap[date.toString()]
-                        val shape = getDateShape(
-                            dayOfWeek = date.dayOfWeek.value % 7,
-                            day = day,
-                            daysInMonth = daysInMonth,
-                            isSelectedWeek = isSelectedWeek
-                        )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    for (dayOfWeek in 0..6) {
+                        val day = if (weekIndex == 0 && dayOfWeek < firstDayOfWeek) null else dayCounter
 
-                        CalendarDateCell(
-                            modifier = Modifier.weight(1f),
-                            date = date,
-                            calendarItem = calendarItem,
-                            calendarType = calendarType,
-                            shape = shape,
-                            isSelectedWeek = isSelectedWeek,
-                            isSelectedDate = calendarStatus.selectedDate == date,
-                            today = calendarStatus.today,
-                            onClick = onDateSelected
-                        )
+                        if (day != null && day <= daysInMonth) {
+                            val date = yearMonth.atDay(day)
+                            val calendarItem = calendarItemMap[date.toString()]
 
-                        dayCounter++
-                    } else {
-                        Spacer(modifier = Modifier.weight(1f))
+                            CalendarDateCell(
+                                modifier = Modifier.weight(1f),
+                                date = date,
+                                calendarItem = calendarItem,
+                                calendarType = calendarType,
+                                isSelectedDate = calendarStatus.selectedDate == date,
+                                today = calendarStatus.today,
+                                onClick = onDateSelected
+                            )
+                            dayCounter++
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }
+
         }
     }
 }
@@ -94,8 +84,6 @@ private fun CalendarDateCell(
     date: LocalDate,
     calendarItem: CalendarItem?,
     calendarType: CalendarType,
-    shape: RoundedCornerShape,
-    isSelectedWeek: Boolean,
     isSelectedDate: Boolean,
     today: LocalDate,
     onClick: (LocalDate) -> Unit
@@ -107,12 +95,6 @@ private fun CalendarDateCell(
                 .heightIn(min = if (calendarType == CalendarType.MEAL) 82.dp else 68.dp),
             contentAlignment = Alignment.TopCenter
         ) {
-            CalendarWeekBackground(
-                calendarType = calendarType,
-                isSelectedWeek = isSelectedWeek,
-                shape = shape
-            )
-
             Box(
                 modifier = if (calendarType == CalendarType.RECOMMENDATION) {
                     Modifier.height(41.dp)
@@ -132,26 +114,4 @@ private fun CalendarDateCell(
             }
         }
     }
-}
-
-@Composable
-fun CalendarWeekBackground(
-    calendarType: CalendarType,
-    isSelectedWeek: Boolean,
-    shape: RoundedCornerShape
-) {
-    val targetAlpha = if (calendarType == CalendarType.RECOMMENDATION && isSelectedWeek) 0.1f else 0f
-    val animatedAlpha by animateFloatAsState(
-        targetValue = targetAlpha,
-        animationSpec = tween(durationMillis = 300),
-        label = "WeekBackgroundAlpha"
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(41.dp)
-            .clip(shape)
-            .background(WB500.copy(alpha = animatedAlpha))
-    )
 }
