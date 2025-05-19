@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val validateTokenUseCase: ValidateTokenUseCase,
-    private val updateUserLastLoginUseCase: UpdateUserLastLoginUseCase,
     private val tokenDataStore: TokenDataStore,
     private val appSharedState: AppSharedState,
 ) : BaseViewModel<SplashUiState>(SplashUiState()) {
@@ -41,12 +40,6 @@ class SplashViewModel @Inject constructor(
                     val profileUpdated = result.data.profileUpdated
 
                     tokenDataStore.saveTokens(newAccess, newRefresh)
-                    appSharedState.observeToken(tokenDataStore)
-
-                    launch {
-                        runCatching { updateUserLastLoginUseCase() }
-                            .onFailure { e -> Log.e("Last Login (POST API)", "로그인 시간 Update 실패", e) }
-                    }
 
                     val next = if (profileUpdated) {
                         AuthFlowResult.NavigateToMain
@@ -54,6 +47,8 @@ class SplashViewModel @Inject constructor(
                         AuthFlowResult.NavigateToSignUp
                     }
                     _uiState.value = SplashUiState(ResultState.Success(next))
+
+                    appSharedState.observeToken(tokenDataStore)
                 }
 
                 is ApiResult.Failure -> {
