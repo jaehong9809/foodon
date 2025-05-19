@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -55,7 +55,7 @@ fun WeightContent(
 @Composable
 fun GoalWeight(modifier: Modifier = Modifier, weight: Int) {
     TabContentLayout(
-        modifier = modifier.heightIn(min = 78.dp),
+        modifier = modifier.height(78.dp),
         title = stringResource(R.string.tab_content_title_goal_weight),
         bgColor = Bkg04
     ) {
@@ -74,7 +74,7 @@ fun CurrentWeight(
     onUpdateWeight: () -> Unit
 ) {
     TabContentLayout(
-        modifier = modifier.heightIn(min = 78.dp),
+        modifier = modifier.height(78.dp),
         title = stringResource(R.string.tab_content_title_cur_weight),
         bgColor = WB500F1A,
         bottomPadding = 11.dp,
