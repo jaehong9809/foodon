@@ -17,6 +17,12 @@ fun FoodInfoWithId.toMealItem() = MealItem(
     unit = unit,
     quantity = 1,
     nutrientInfo = nutrientInfo,
+    positions = listOf(
+        Position(
+            height = 1.0,
+            width = 1.0,
+        )
+    )
 )
 
 data class FoodInfo(
