@@ -16,7 +16,12 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "intake_logs")
+@Table(
+        name = "intake_logs",
+        indexes = {
+                @Index(name = "idx_member_date", columnList = "member_id, date")
+        }
+)
 public class IntakeLog {
 
     @Id
