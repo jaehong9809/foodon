@@ -35,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
-import com.swallaby.foodon.core.ui.theme.Bkg03
 import com.swallaby.foodon.core.ui.theme.Border02
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.G900
@@ -109,36 +108,13 @@ fun NutritionalIngredientsComponent(
                 }
             }
             Spacer(modifier.height(16.dp))
-            Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(color = Bkg03, shape = RoundedCornerShape(10.dp))
-                    .padding(16.dp)
-            ) {
-                Column(modifier = modifier.fillMaxWidth()) {
-                    NutritionalIngredientPercentage(
-                        modifier = modifier, nutritions = nutritions,
-                    )
-                    Spacer(modifier = modifier.height(16.dp))
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                    ) {
-                        repeat(nutritions.size, action = { index ->
-                            NutritionalMediumInfo(
-                                modifier = modifier.weight(1f),
-                                nutritionType = nutritions[index].nutritionType,
-                                amount = nutritions[index].amount
-                            )
-                        })
-                    }
-                }
-            }
+            NutritionInfoBox(
+                modifier = modifier, nutritions = nutritions
+            )
         }
     }
 }
+
 
 @Composable
 private fun MealTime(
