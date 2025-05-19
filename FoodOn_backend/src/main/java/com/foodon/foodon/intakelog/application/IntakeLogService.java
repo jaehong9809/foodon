@@ -17,6 +17,8 @@ import com.foodon.foodon.member.repository.MemberStatusRepository;
 import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.member.repository.NutrientPlanRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,10 @@ public class IntakeLogService {
 
 
     @Transactional
+    @CacheEvict(
+            value = "intakeCalendar",
+            key = "'calendar:' + #member.id + ':' + T(java.time.YearMonth).from(#meal.mealTime)"
+    )
     public void saveIntakeLog(Member member, Meal meal) {
         LocalDate date = meal.getMealTime().toLocalDate();
         IntakeLog intakeLog = findOrCreateIntakeLog(member, date);
@@ -63,32 +69,41 @@ public class IntakeLogService {
         return IntakeLog.createIntakeLogOfMember(member, date, goalKcal);
     }
 
+    @Cacheable(value = "intakeCalendar", key = "'calendar:' + #member.id + ':' + #yearMonth")
     public List<IntakeSummaryResponse> getIntakeLogCalendar(
             YearMonth yearMonth,
             Member member
     ) {
         List<LocalDate> allDates = getAllDatesInMonth(yearMonth);
         TreeMap<LocalDate, MemberStatus> recordMap = findLatestMemberStatusSortedMap(member, yearMonth);
+        Map<Long, ActivityLevel> activityLevelMap = findAllActivityLevels();
         Map<LocalDate, IntakeLog> intakeLogMap = findIntakeLogsInMonth(member, yearMonth);
 
         return allDates.stream()
-                .map(date -> convertToIntakeSummaryResponse(date, member, intakeLogMap, recordMap))
+                .map(date -> convertToIntakeSummaryResponse(date, member, intakeLogMap, recordMap, activityLevelMap))
                 .toList();
+    }
+
+    private Map<Long, ActivityLevel> findAllActivityLevels() {
+        return activityLevelRepository.findAll()
+                .stream()
+                .collect(Collectors.toMap(ActivityLevel::getId, Function.identity()));
     }
 
     private IntakeSummaryResponse convertToIntakeSummaryResponse(
             LocalDate date,
             Member member,
             Map<LocalDate, IntakeLog> intakeLogMap,
-            TreeMap<LocalDate, MemberStatus> recordMap
+            TreeMap<LocalDate, MemberStatus> recordMap,
+            Map<Long, ActivityLevel> activityLevelMap
     ) {
         if (intakeLogMap.containsKey(date)) {
             return IntakeSummaryResponse.withIntakeLog(intakeLogMap.get(date));
         }
 
         MemberStatus status = getLatestMemberStatusBeforeDate(recordMap, date);
-        BigDecimal goalKcal = !Objects.isNull(status)
-                ? getGoalKcalFromMemberStatus(member)
+        BigDecimal goalKcal = (!Objects.isNull(status) && activityLevelMap.containsKey(status.getActivityLevelId()))
+                ? NutrientGoal.calculateGoalKcal(member, status, activityLevelMap.get(status.getActivityLevelId()))
                 : BigDecimal.ZERO;
 
         return IntakeSummaryResponse.withoutIntakeLog(goalKcal, date);
@@ -115,13 +130,7 @@ public class IntakeLogService {
             Member member,
             YearMonth yearMonth
     ) {
-        MemberStatus latestStatus = getLatestStatusOrThrow(member);
-        YearMonth createdMonth = YearMonth.from(latestStatus.getCreatedAt());
-        if(createdMonth.isBefore(yearMonth)) {
-            return new TreeMap<>(Map.of(latestStatus.getCreatedAt(), latestStatus));
-        }
-
-        LocalDate start = createdMonth.atDay(1);
+        LocalDate start = member.getCreatedAt().toLocalDate();
         LocalDate end = yearMonth.atEndOfMonth();
 
         return memberStatusRepository.findByMemberIdAndCreatedAtBetweenOrderByCreatedAt(
