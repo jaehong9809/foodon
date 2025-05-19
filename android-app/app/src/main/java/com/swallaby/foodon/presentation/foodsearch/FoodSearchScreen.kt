@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.LazyPagingItems
 import com.swallaby.foodon.R
@@ -30,6 +31,7 @@ import com.swallaby.foodon.presentation.foodsearch.component.RecentFoodChips
 import com.swallaby.foodon.presentation.foodsearch.component.SearchBar
 import com.swallaby.foodon.presentation.foodsearch.component.SearchResultList
 import com.swallaby.foodon.presentation.foodsearch.viewmodel.FoodSearchViewModel
+import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun FoodSearchScreen(
@@ -59,7 +61,7 @@ fun FoodSearchScreen(
             }
 
             FoodSearchContent(
-                modifier = modifier,
+                modifier = Modifier,
                 query = uiState.query,
                 recentFoods = uiState.recentFoods,
                 searchResults = searchResults,
@@ -70,7 +72,9 @@ fun FoodSearchScreen(
                 onSearchResultClick = { /* TODO */ },
                 showBanner = uiState.showBanner,
                 bannerFoodName = uiState.bannerFoodName,
-                onBannerRegisterClick = { viewModel.onBannerRegisterClick() }
+                onBannerRegisterClick = {
+                    navController.navigate(NavRoutes.FoodGraph.FoodRegister.route)
+                }
             )
         }
     }

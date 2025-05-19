@@ -38,6 +38,7 @@ fun FoodRegisterBottomBanner(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onRegisterClick() }
             .shadow(
                 elevation = 16.dp,
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),

@@ -70,8 +70,4 @@ class FoodSearchViewModel @Inject constructor(
     fun updateBannerFoodName(query: String) {
         updateState { it.copy(bannerFoodName = query) }
     }
-
-    fun onBannerRegisterClick() {
-        // TODO: 배너 클릭 처리 로직 (예: 등록 API 호출)
-    }
 }
