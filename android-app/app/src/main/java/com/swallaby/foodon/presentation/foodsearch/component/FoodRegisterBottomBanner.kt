@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,11 +38,10 @@ fun FoodRegisterBottomBanner(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(78.dp)
             .shadow(
                 elevation = 16.dp,
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                clip = false
+                clip = true
             )
             .background(
                 color = MainWhite,
@@ -53,12 +53,15 @@ fun FoodRegisterBottomBanner(
         Icon(
             painter = painterResource(id = R.drawable.icon_search_register_notice),
             contentDescription = "Info Icon",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
+            tint = Color.Unspecified
         )
         Spacer(modifier = Modifier.width(8.dp))
 
         Column(
-            modifier = Modifier.weight(1f)
+            modifier =  Modifier
+                .weight(1f)
+                .align(Alignment.CenterVertically)
         ) {
             Text(
                 text = stringResource(R.string.no_food_found),

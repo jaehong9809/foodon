@@ -63,6 +63,14 @@ class FoodSearchViewModel @Inject constructor(
         updateState { it.copy(recentFoods = it.recentFoods - chip) }
     }
 
+    fun updateBannerVisibility(visible: Boolean) {
+        updateState { it.copy(showBanner = visible) }
+    }
+
+    fun updateBannerFoodName(query: String) {
+        updateState { it.copy(bannerFoodName = query) }
+    }
+
     fun onBannerRegisterClick() {
         // TODO: 배너 클릭 처리 로직 (예: 등록 API 호출)
     }

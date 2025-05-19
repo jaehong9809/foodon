@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,6 +38,14 @@ fun FoodSearchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
+
+    LaunchedEffect(searchResults.itemCount) {
+        val count = searchResults.itemCount
+        val shouldShowBanner = count in 1..20 || count >= 20
+
+        viewModel.updateBannerVisibility(shouldShowBanner)
+        viewModel.updateBannerFoodName(uiState.query)
+    }
 
     Scaffold { innerPadding ->
         Column (
@@ -109,7 +120,10 @@ fun FoodSearchContent(
             FoodRegisterBottomBanner(
                 foodName = bannerFoodName,
                 onRegisterClick = onBannerRegisterClick,
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .imePadding()
             )
         }
     }
