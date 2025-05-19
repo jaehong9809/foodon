@@ -83,7 +83,7 @@ def train_and_log_with_mlflow():
     val_dataset.dataset.transforms = get_transform(train=False)
     train_loader = DataLoader(
         train_dataset,
-        batch_size=1,
+        batch_size=2,
         shuffle=True,
         num_workers=0,        # CPU에서 안정적으로 동작하도록 설정
         pin_memory=False,     # pin_memory를 비활성화
@@ -92,7 +92,7 @@ def train_and_log_with_mlflow():
 
     val_loader = DataLoader(
         val_dataset,
-        batch_size=1,
+        batch_size=2,
         shuffle=False,
         num_workers=0,        # CPU에서 안정적으로 동작하도록 설정
         pin_memory=False,     # pin_memory를 비활성화
