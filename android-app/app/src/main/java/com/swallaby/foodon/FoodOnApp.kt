@@ -1,11 +1,16 @@
 package com.swallaby.foodon
 
 import android.app.Application
+import android.util.Log
 import androidx.room.Room
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.kakao.sdk.common.KakaoSdk
+import com.swallaby.foodon.core.util.generateSearchTokens
 import com.swallaby.foodon.data.food.local.AppDatabase
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class FoodOnApp : Application() {
@@ -33,13 +38,11 @@ class FoodOnApp : Application() {
             .fallbackToDestructiveMigration()
             .build()
 
-        Thread {
-            try {
-                val count = database.foodSearchDao().countFoods()
-                android.util.Log.d("RoomInit", "🍽️ Food row count: $count")
-            } catch (e: Exception) {
-                android.util.Log.e("RoomInit", "🔥 Room DB init failed", e)
-            }
-        }.start()
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.d("RoomInit", "🚀 FTS 생성 작업 시작")
+            val dao = database.foodSearchDao()
+            dao.rebuildFts(dao.getAllFoods())
+            Log.d("RoomInit", "✅ FTS 테이블 Transaction 재생성 완료")
+        }
     }
 }

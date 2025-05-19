@@ -5,6 +5,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import com.swallaby.foodon.core.util.generateSearchTokens
 import com.swallaby.foodon.data.food.local.dto.LocalFoodDto
 
 @Dao
@@ -12,6 +14,9 @@ interface FoodSearchDao {
 
     @Query("SELECT COUNT(*) FROM foods")
     fun countFoods(): Int
+
+    @Query("SELECT COUNT(*) FROM foods_fts")
+    fun countFts(): Int
 
     @Query("SELECT * FROM foods")
     suspend fun getAllFoods(): List<LocalFoodEntity>
@@ -24,6 +29,14 @@ interface FoodSearchDao {
         VALUES (:rowId, :name, :tokens)
     """)
     suspend fun insertFoodFts(rowId: Long, name: String, tokens: String)
+
+    @Transaction
+    suspend fun rebuildFts(allFoods: List<LocalFoodEntity>) {
+        clearAllFts()
+        allFoods.forEach { food ->
+            insertFoodFts(food.id, food.name, food.name.generateSearchTokens())
+        }
+    }
 
     @Query("DELETE FROM foods WHERE id = :id")
     suspend fun deleteFood(id: Long)
