@@ -33,7 +33,7 @@ interface FoodApi {
     @POST("foods/custom")
     suspend fun postCustomFood(
         @Body request: CustomFoodRequest,
-    ): BaseResponse<Unit>
+    ): BaseResponse<FoodResponse>
 
     @POST("foods/custom/modified")
     suspend fun postCustomFoodUpdate(

@@ -2,10 +2,12 @@ package com.swallaby.foodon.presentation.navigation
 
 import android.util.Log
 import androidx.compose.animation.ExitTransition
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -13,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.foodregister.FoodRegisterScreen
@@ -31,11 +34,13 @@ fun NavGraphBuilder.mealGraph(
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
-        composable(NavRoutes.FoodGraph.FoodRecord.route,
+        composable(
+            NavRoutes.FoodGraph.FoodRecord.route,
             popExitTransition = { ExitTransition.None },
             exitTransition = { ExitTransition.None }) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
-            MealRecordScreen(recordViewModel = recordViewModel,
+            MealRecordScreen(
+                recordViewModel = recordViewModel,
                 editViewModel = mealEditViewModel,
                 onBackClick = {
                     navController.popBackStack()
@@ -61,7 +66,8 @@ fun NavGraphBuilder.mealGraph(
         ) {
             val mealId = it.arguments?.getLong("mealId") ?: 0L
 
-            MealDetailScreen(mealId = mealId,
+            MealDetailScreen(
+                mealId = mealId,
                 viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = { foodId ->
@@ -104,7 +110,8 @@ fun NavGraphBuilder.mealGraph(
 
             val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
 
-            FoodEditScreen(mealId = mealId,
+            FoodEditScreen(
+                mealId = mealId,
                 viewModel = foodEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onNutritionEditClick = {
@@ -157,7 +164,8 @@ fun NavGraphBuilder.mealGraph(
             }
             val foodEditViewModel: FoodEditViewModel = hiltViewModel(backStackEntry)
             val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
-            NutritionEditScreen(viewModel = foodEditViewModel,
+            NutritionEditScreen(
+                viewModel = foodEditViewModel,
                 foodId = foodEditUiState.selectedFoodId,
                 onBackClick = {
                     navController.popBackStack()
@@ -172,11 +180,54 @@ fun NavGraphBuilder.mealGraph(
 
         composable(
             NavRoutes.FoodGraph.FoodRegister.route,
+            arguments = listOf(navArgument(NavRoutes.FoodGraph.FoodRegister.MEAL_ID) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            }, navArgument(NavRoutes.FoodGraph.FoodRegister.FOOD_ID) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
         ) {
             val registerViewModel = hiltViewModel<FoodRegisterViewModel>()
+            val mealId =
+                it.arguments?.getString(NavRoutes.FoodGraph.FoodRegister.MEAL_ID)?.toLongOrNull()
+                    ?: 0
+            val foodId =
+                it.arguments?.getString(NavRoutes.FoodGraph.FoodRegister.FOOD_ID)?.toLongOrNull()
+            val backStackEntry = getFoodEditBackstackEntry(mealId, foodId, navController)
+            val foodEditViewModel = backStackEntry?.let { backStack ->
+                hiltViewModel<FoodEditViewModel>(backStack)
+            }
+            Log.d("FoodRegisterScreen", "foodEditViewModel = $foodEditViewModel")
+            Log.d("FoodRegisterScreen", "mealId = $mealId, foodId = $foodId")
+
             FoodRegisterScreen(
-                onBackClick = {
-                    navController.popBackStack()
+                onBackClick = { navController.popBackStack() },
+                onNavigateToSearch = { food ->
+                    Log.d("FoodRegisterScreen", "foodEditViewModel = $foodEditViewModel")
+                    foodEditViewModel?.fetchFood(food.foodId, FoodType.CUSTOM)
+                    foodEditViewModel?.fetchFoodSimilar(food.foodName)
+                    Log.d("FoodRegisterScreen", "food = $food, foodId = $foodId, mealId = $mealId")
+                    foodId?.let {
+                        navController.navigate(
+                            NavRoutes.FoodGraph.FoodEdit.createRoute(
+                                mealId = mealId, foodId = foodId
+                            )
+                        ) {
+                            popUpTo(
+                                NavRoutes.FoodGraph.FoodSearch.createRoute(
+                                    mealId = mealId, foodId = foodId
+                                )
+                            ) { inclusive = true }
+
+
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+
                 },
                 viewModel = registerViewModel,
             )
@@ -203,19 +254,8 @@ fun NavGraphBuilder.mealGraph(
                 navBackStackEntry.arguments?.getString(NavRoutes.FoodGraph.FoodSearch.MEAL_ID)
                     ?.toLongOrNull() ?: 0L
 
-            val backStackEntry = if (mealId != null && foodId != null) {
-                Log.d("FoodSearchScreen", "mealId: $mealId, foodId: $foodId")
-                remember(navController.currentBackStackEntry) {
-                    navController.getBackStackEntry(
-                        NavRoutes.FoodGraph.FoodEdit.createRoute(
-                            mealId = mealId,
-                            foodId = foodId,
-                        )
-                    )
-                }
-            } else {
-                null
-            }
+
+            val backStackEntry = getFoodEditBackstackEntry(mealId, foodId, navController)
             Log.d("FoodSearchScreen", "backStackEntry = $backStackEntry")
 
             val foodEditViewModel = backStackEntry?.let {
@@ -230,4 +270,24 @@ fun NavGraphBuilder.mealGraph(
             )
         }
     }
+}
+
+@Composable
+private fun getFoodEditBackstackEntry(
+    mealId: Long, foodId: Long?, navController: NavHostController
+): NavBackStackEntry? {
+    val backStackEntry = if (mealId != null && foodId != null) {
+        Log.d("FoodSearchScreen", "mealId: $mealId, foodId: $foodId")
+        remember(navController.currentBackStackEntry) {
+            navController.getBackStackEntry(
+                NavRoutes.FoodGraph.FoodEdit.createRoute(
+                    mealId = mealId,
+                    foodId = foodId,
+                )
+            )
+        }
+    } else {
+        null
+    }
+    return backStackEntry
 }

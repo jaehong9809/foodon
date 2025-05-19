@@ -23,7 +23,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.theme.MainWhite
@@ -59,7 +58,7 @@ fun FoodSearchScreen(
     }
 
     Scaffold { innerPadding ->
-        Column (
+        Column(
             modifier = modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
@@ -96,7 +95,12 @@ fun FoodSearchScreen(
                 showBanner = uiState.showBanner,
                 bannerFoodName = uiState.bannerFoodName,
                 onBannerRegisterClick = {
-                    navController.navigate(NavRoutes.FoodGraph.FoodRegister.route)
+                    navController.navigate(
+                        NavRoutes.FoodGraph.FoodRegister.createRoute(
+                            foodId = foodId,
+                            mealId = 0L,
+                        )
+                    )
                 }
             )
         }
