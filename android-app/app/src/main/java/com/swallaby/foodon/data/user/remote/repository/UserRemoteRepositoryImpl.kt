@@ -24,4 +24,10 @@ class UserRemoteRepositoryImpl @Inject constructor(
             api.updateUserProfile(request).getOrThrowNull { }
         }
     }
+
+    override suspend fun updateUserLastLogin(): ApiResult<Unit> {
+        return safeApiCall {
+            api.updateUserLastLogin().getOrThrowNull { }
+        }
+    }
 }

@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,45 +51,42 @@ fun LoginScreen(
         }
     }
 
-    Scaffold { paddingValues ->
-        Box(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(WB500)
+    ) {
+        Image(
+            painter = painterResource(R.drawable.logo_foodon),
+            contentDescription = "FoodOn Logo",
             modifier = Modifier
-                .fillMaxSize()
-                .background(WB500)
-                .padding(paddingValues)
-        ) {
-            Image(
-                painter = painterResource(R.drawable.logo_foodon),
-                contentDescription = "FoodOn Logo",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .height(188.dp)
-            )
+                .align(Alignment.Center)
+                .height(188.dp)
+        )
 
-            Column(
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 32.dp, vertical = 120.dp)
+        ) {
+            KakaoLoginButton(
+                onClick = {
+                    if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
+                        UserApiClient.instance.loginWithKakaoTalk(
+                            context = context,
+                            callback = kakaoLoginCallback
+                        )
+                    } else {
+                        UserApiClient.instance.loginWithKakaoAccount(
+                            context = context,
+                            callback = kakaoLoginCallback
+                        )
+                    }
+                },
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 32.dp, vertical = 120.dp)
-            ) {
-                KakaoLoginButton(
-                    onClick = {
-                        if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
-                            UserApiClient.instance.loginWithKakaoTalk(
-                                context = context,
-                                callback = kakaoLoginCallback
-                            )
-                        } else {
-                            UserApiClient.instance.loginWithKakaoAccount(
-                                context = context,
-                                callback = kakaoLoginCallback
-                            )
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                )
-            }
+                    .fillMaxWidth()
+                    .height(50.dp)
+            )
         }
     }
 
