@@ -44,14 +44,15 @@ fun CalorieProgressBar(
     LaunchedEffect(clampedKcalRatio) {
         animatedKcalRatio.animateTo(
             targetValue = clampedKcalRatio,
-            animationSpec = tween(durationMillis = 800)
+            animationSpec = tween(durationMillis = 500)
         )
     }
 
     val totalNutrientRatio = nutrients.sumOf { it.ratio.toDouble() }.toFloat().coerceAtLeast(1f)
-    val normalizedNutrients = nutrients.map {
-        val adjustedRatio = (it.ratio / totalNutrientRatio) * animatedKcalRatio.value
-        it.copy(ratio = adjustedRatio)
+    val animatedNutrientRatios = nutrients.map {
+        val normalized = it.ratio / totalNutrientRatio
+        val adjusted = normalized * animatedKcalRatio.value
+        it.copy(ratio = adjusted)
     }
 
     val arcHeightRatio = sin(Math.toRadians((sweepAngle / 2).toDouble())).toFloat()
@@ -63,7 +64,6 @@ fun CalorieProgressBar(
         Canvas(modifier = Modifier.fillMaxSize()) {
             val radius = size.width / 2f
             val arcHeight = radius * arcHeightRatio
-
             val arcSize = Size(radius * 2, radius * 2)
             val topLeft = Offset(0f, radius - arcHeight)
 
@@ -78,22 +78,23 @@ fun CalorieProgressBar(
             )
 
             var currentAngle = startAngle
-            normalizedNutrients.forEach { nutrient ->
+            animatedNutrientRatios.forEach { nutrient ->
                 val segmentSweep = sweepAngle * nutrient.ratio
-
-                drawArc(
-                    color = nutrient.nutritionType.color,
-                    startAngle = currentAngle,
-                    sweepAngle = segmentSweep,
-                    useCenter = false,
-                    style = Stroke(width = stroke, cap = StrokeCap.Round),
-                    size = arcSize,
-                    topLeft = topLeft
-                )
-                currentAngle += segmentSweep
+                if (segmentSweep > 0.5f) {
+                    drawArc(
+                        color = nutrient.nutritionType.color,
+                        startAngle = currentAngle,
+                        sweepAngle = segmentSweep,
+                        useCenter = false,
+                        style = Stroke(width = stroke, cap = StrokeCap.Round),
+                        size = arcSize,
+                        topLeft = topLeft
+                    )
+                    currentAngle += segmentSweep
+                }
             }
         }
 
-        CalorieInfo(goal, consumed)
+        CalorieInfo(goal = goal, consumed = consumed)
     }
 }
