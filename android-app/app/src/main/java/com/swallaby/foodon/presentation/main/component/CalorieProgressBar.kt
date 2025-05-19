@@ -1,13 +1,14 @@
 package com.swallaby.foodon.presentation.main.component
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,16 +37,20 @@ fun CalorieProgressBar(
     val stroke = with(LocalDensity.current) { strokeWidth.toPx() }
 
     val totalKcalRatio = if (goal > 0) consumed.toFloat() / goal else 0f
-    val clampedKcalRatio = totalKcalRatio.coerceAtMost(1f)
+    val clampedKcalRatio = totalKcalRatio.coerceIn(0f, 1f)
 
-    val animatedKcalRatio by animateFloatAsState(
-        targetValue = clampedKcalRatio,
-        animationSpec = tween(durationMillis = 600)
-    )
+    val animatedKcalRatio = remember { Animatable(0f) }
+
+    LaunchedEffect(clampedKcalRatio) {
+        animatedKcalRatio.animateTo(
+            targetValue = clampedKcalRatio,
+            animationSpec = tween(durationMillis = 800)
+        )
+    }
 
     val totalNutrientRatio = nutrients.sumOf { it.ratio.toDouble() }.toFloat().coerceAtLeast(1f)
     val normalizedNutrients = nutrients.map {
-        val adjustedRatio = (it.ratio / totalNutrientRatio) * animatedKcalRatio
+        val adjustedRatio = (it.ratio / totalNutrientRatio) * animatedKcalRatio.value
         it.copy(ratio = adjustedRatio)
     }
 
@@ -75,6 +80,7 @@ fun CalorieProgressBar(
             var currentAngle = startAngle
             normalizedNutrients.forEach { nutrient ->
                 val segmentSweep = sweepAngle * nutrient.ratio
+
                 drawArc(
                     color = nutrient.nutritionType.color,
                     startAngle = currentAngle,

@@ -1,5 +1,7 @@
 package com.swallaby.foodon.presentation.main.component
 
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -39,11 +45,13 @@ fun NutrientIntakeContent(
         verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = if (selectedDate != today) stringResource(
-                R.string.main_nutrient_intake_date_title,
-                formatDate(selectedDate)
-            )
-            else stringResource(R.string.main_nutrient_intake_today_title),
+            text = if (selectedDate == today)
+                    stringResource(R.string.main_nutrient_intake_today_title)
+                else
+                    stringResource(
+                        R.string.main_nutrient_intake_date_title,
+                        formatDate(selectedDate)
+                    ),
             color = G900,
             style = NotoTypography.NotoBold18
         )
@@ -54,7 +62,25 @@ fun NutrientIntakeContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val prevCalorie = remember { mutableStateOf(NutrientIntake()) }
             val calorie: NutrientIntake? = (intakeResult as? ResultState.Success)?.data
+
+            LaunchedEffect(calorie) {
+                if (calorie != null && calorie != prevCalorie.value) {
+                    prevCalorie.value = calorie
+                }
+            }
+
+            val stableCalorie = prevCalorie.value
+
+            val animatedKcal by animateIntAsState(
+                targetValue = stableCalorie.intakeKcal,
+                animationSpec = tween(600)
+            )
+            val animatedGoal by animateIntAsState(
+                targetValue = stableCalorie.goalKcal,
+                animationSpec = tween(600)
+            )
 
             val nutrients = calorie?.let {
                 val carbsRatio = it.intakeCarbs.toFloat() * 4 / it.goalKcal
@@ -70,13 +96,14 @@ fun NutrientIntakeContent(
 
             CalorieProgressBar(
                 nutrients = nutrients,
-                consumed = calorie?.intakeKcal ?: 0,
-                goal = calorie?.goalKcal ?: 0
+                consumed = animatedKcal,
+                goal = animatedGoal
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            IntakeDetail(calorie ?: NutrientIntake())
+            IntakeDetail(stableCalorie)
+
         }
     }
 
