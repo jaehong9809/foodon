@@ -1,7 +1,5 @@
 package com.swallaby.foodon.presentation.main.component
 
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -73,15 +70,6 @@ fun NutrientIntakeContent(
 
             val stableCalorie = prevCalorie.value
 
-            val animatedKcal by animateIntAsState(
-                targetValue = stableCalorie.intakeKcal,
-                animationSpec = tween(600)
-            )
-            val animatedGoal by animateIntAsState(
-                targetValue = stableCalorie.goalKcal,
-                animationSpec = tween(600)
-            )
-
             val nutrients = calorie?.let {
                 val carbsRatio = it.intakeCarbs.toFloat() * 4 / it.goalKcal
                 val proteinRatio = it.intakeProtein.toFloat() * 4 / it.goalKcal
@@ -96,8 +84,8 @@ fun NutrientIntakeContent(
 
             CalorieProgressBar(
                 nutrients = nutrients,
-                consumed = animatedKcal,
-                goal = animatedGoal
+                consumed = stableCalorie.intakeKcal,
+                goal = stableCalorie.goalKcal
             )
 
             Spacer(modifier = Modifier.height(12.dp))

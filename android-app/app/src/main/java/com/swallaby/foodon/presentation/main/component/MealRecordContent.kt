@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.EmptyContentText
-import com.swallaby.foodon.core.ui.component.LoadingProgress
+import com.swallaby.foodon.core.ui.component.VerticalSlideAnimatedComponent
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.DateUtil.formatDate
@@ -36,8 +36,8 @@ fun MealRecordContent(
         modifier = Modifier.fillMaxWidth().padding(24.dp)
     ) {
         Text(
-            text = if (selectedDate != today) stringResource(R.string.main_meal_record_date_title, formatDate(selectedDate))
-                else stringResource(R.string.main_meal_record_today_title),
+            text = if (selectedDate == today) stringResource(R.string.main_meal_record_today_title)
+                else stringResource(R.string.main_meal_record_date_title, formatDate(selectedDate)),
             color = G900,
             style = NotoTypography.NotoBold18
         )
@@ -46,22 +46,27 @@ fun MealRecordContent(
 
         when (recordResult) {
             is ResultState.Success -> {
-                if (recordResult.data.isEmpty()) {
-                    EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
-                } else {
-                    Column(
-                        modifier = Modifier.wrapContentHeight(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        recordResult.data.forEach { item ->
-                            MealRecordItem(meal = item, onClick = onMealClick)
+                VerticalSlideAnimatedComponent {
+                    if (recordResult.data.isEmpty()) {
+                        EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
+                    } else {
+                        Column(
+                            modifier = Modifier.wrapContentHeight(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            recordResult.data.forEach { item ->
+                                MealRecordItem(meal = item, onClick = onMealClick)
+                            }
                         }
                     }
                 }
             }
             else -> {
-                EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
+                VerticalSlideAnimatedComponent {
+                    EmptyContentText(emptyText = stringResource(R.string.main_meal_record_empty))
+                }
             }
         }
+
     }
 }

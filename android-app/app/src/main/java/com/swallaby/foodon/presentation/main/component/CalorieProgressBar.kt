@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.ui.component.BouncingAnimatedComponent
 import com.swallaby.foodon.core.ui.theme.Bkg05
 import com.swallaby.foodon.domain.food.model.Nutrition
 import kotlin.math.sin
@@ -95,6 +96,8 @@ fun CalorieProgressBar(
             }
         }
 
-        CalorieInfo(goal = goal, consumed = consumed)
+        BouncingAnimatedComponent {
+            CalorieInfo(goal = goal, consumed = consumed)
+        }
     }
 }
