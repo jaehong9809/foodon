@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.main.component
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.core.ui.component.BouncingAnimatedComponent
 import com.swallaby.foodon.core.ui.theme.Bkg05
 import com.swallaby.foodon.domain.food.model.Nutrition
+import com.swallaby.foodon.domain.food.model.NutritionType
 import kotlin.math.sin
 
 @Composable
@@ -34,25 +37,87 @@ fun CalorieProgressBar(
     val startAngle = 165f
     val sweepAngle = 210f
     val backgroundColor = Bkg05
-
     val stroke = with(LocalDensity.current) { strokeWidth.toPx() }
 
-    val totalKcalRatio = if (goal > 0) consumed.toFloat() / goal else 0f
-    val clampedKcalRatio = totalKcalRatio.coerceIn(0f, 1f)
+    val targetKcalRatio = if (goal > 0) consumed.toFloat() / goal else 0f
+    val animatedKcalRatio by animateFloatAsState(
+        targetValue = targetKcalRatio.coerceIn(0f, 1f),
+        animationSpec = tween(durationMillis = 500),
+        label = "KcalRatio"
+    )
 
-    val animatedKcalRatio = remember { Animatable(0f) }
-
-    LaunchedEffect(clampedKcalRatio) {
-        animatedKcalRatio.animateTo(
-            targetValue = clampedKcalRatio,
-            animationSpec = tween(durationMillis = 500)
-        )
+    val nutrientAnimations = remember {
+        mutableMapOf<NutritionType, Animatable<Float, *>>()
     }
 
-    val totalNutrientRatio = nutrients.sumOf { it.ratio.toDouble() }.toFloat().coerceAtLeast(1f)
+    nutrients.forEach { nutrient ->
+        if (nutrientAnimations[nutrient.nutritionType] == null) {
+            nutrientAnimations[nutrient.nutritionType] = Animatable(nutrient.ratio)
+        }
+    }
+
+//    LaunchedEffect(nutrients) {
+//        nutrients.forEach { nutrient ->
+//            nutrientAnimations[nutrient.nutritionType]?.let { anim ->
+//                if (anim.value != nutrient.ratio) {
+//                    anim.animateTo(
+//                        targetValue = nutrient.ratio,
+//                        animationSpec = tween(durationMillis = 500)
+//                    )
+//                }
+//            }
+//        }
+//    }
+
+//    LaunchedEffect(nutrients) {
+//        nutrients.forEachIndexed { index, nutrient ->
+//            nutrientAnimations[nutrient.nutritionType]?.let { anim ->
+//                if (anim.value != nutrient.ratio) {
+//                    kotlinx.coroutines.delay(index * 80L)
+//
+//                    anim.animateTo(
+//                        targetValue = nutrient.ratio,
+//                        animationSpec = tween(durationMillis = 500)
+//                    )
+//                }
+//            }
+//        }
+//    }
+
+    LaunchedEffect(nutrients) {
+        nutrients.forEach { nutrient ->
+            nutrientAnimations[nutrient.nutritionType]?.snapTo(nutrientAnimations[nutrient.nutritionType]?.value ?: 0f)
+        }
+
+        nutrients.forEachIndexed { index, nutrient ->
+            nutrientAnimations[nutrient.nutritionType]?.let { anim ->
+                if (anim.value != nutrient.ratio) {
+                    kotlinx.coroutines.delay(index * 80L)
+                    anim.animateTo(
+                        targetValue = nutrient.ratio,
+                        animationSpec = tween(durationMillis = 500)
+                    )
+                }
+            }
+        }
+    }
+
+//    val totalRatio = nutrients.sumOf {
+//        nutrientAnimations[it.nutritionType]?.value?.toDouble() ?: 0.0
+//    }.toFloat().coerceAtLeast(1f)
+
+    val safeTotalRatio = maxOf(
+        1f,
+        nutrients.sumOf {
+            nutrientAnimations[it.nutritionType]?.value?.toDouble() ?: 0.0
+        }.toFloat()
+    )
+
+
     val animatedNutrientRatios = nutrients.map {
-        val normalized = it.ratio / totalNutrientRatio
-        val adjusted = normalized * animatedKcalRatio.value
+        val animatedRatio = nutrientAnimations[it.nutritionType]?.value ?: it.ratio
+        val normalized = animatedRatio / safeTotalRatio
+        val adjusted = normalized * animatedKcalRatio
         it.copy(ratio = adjusted)
     }
 
@@ -79,6 +144,7 @@ fun CalorieProgressBar(
             )
 
             var currentAngle = startAngle
+
             animatedNutrientRatios.forEach { nutrient ->
                 val segmentSweep = sweepAngle * nutrient.ratio
                 if (segmentSweep > 0.5f) {
