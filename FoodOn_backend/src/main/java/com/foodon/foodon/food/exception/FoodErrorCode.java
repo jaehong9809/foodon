@@ -12,7 +12,8 @@ public enum FoodErrorCode {
     // public
     NOT_FOUND_PUBLIC_FOOD("50101", "해당 ID의 음식이 없습니다."),
     ILLEGAL_FOOD_TYPE("50102", "잘못된 음식 유형입니다."),
-    ILLEGAL_NUTRIENT_ID("50103", "요청한 ID의 영양소는 존재하지 않습니다.")
+    ILLEGAL_NUTRIENT_ID("50103", "요청한 ID의 영양소는 존재하지 않습니다."),
+    ILLEGAL_FOOD_NAME_BLANK("50104", "음식 이름은 공백일 수 없습니다."),
     ;
 
     private final String code;

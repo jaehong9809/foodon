@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Component
@@ -87,5 +88,16 @@ public class ResponseUtil {
                 .code("80000")
                 .message(message)
                 .build());
+    }
+
+    public static <T> ResponseEntity<Response<T>> failure(
+            MissingServletRequestParameterException e,
+            String message
+    ) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Response.<T>builder()
+                        .code("04000")
+                        .message(message)
+                        .build());
     }
 }
