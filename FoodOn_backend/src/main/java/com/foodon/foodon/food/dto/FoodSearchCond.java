@@ -24,12 +24,14 @@ public class FoodSearchCond {
     public static FoodSearchCond of(List<Long> foodIds) {
         return FoodSearchCond.builder()
                 .foodIds(foodIds)
+                .foodType(FoodType.PUBLIC)
                 .build();
     }
 
     public static FoodSearchCond of(List<Long> foodIds, Member member) {
         return FoodSearchCond.builder()
                 .foodIds(foodIds)
+                .foodType(FoodType.CUSTOM)
                 .member(member)
                 .build();
     }
