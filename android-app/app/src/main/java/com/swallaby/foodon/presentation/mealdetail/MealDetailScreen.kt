@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,10 +61,12 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.ui.component.BackIconImage
 import com.swallaby.foodon.core.ui.component.BouncingAnimatedComponent
+import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.component.CommonWideButton
 import com.swallaby.foodon.core.ui.component.StatusBarConfig
 import com.swallaby.foodon.core.ui.theme.Bkg04
 import com.swallaby.foodon.core.ui.theme.FoodonTheme
+import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.presentation.foodedit.component.ScrollTimePicker
 import com.swallaby.foodon.presentation.mealdetail.component.FoodInfoComponent
@@ -142,7 +145,11 @@ fun MealDetailScreen(
         }
 
         is ResultState.Error -> {
-            ErrorState(stringResource(((uiState.mealEditState as ResultState.Error).messageRes)))
+            ErrorState(
+                modifier = modifier,
+                stringResource(((uiState.mealEditState as ResultState.Error).messageRes)),
+                onBackClick = onBackClick,
+            )
         }
 
         is ResultState.Success -> {
@@ -317,8 +324,30 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun ErrorState(message: String) {
-    // 에러 상태 UI 구현
+private fun ErrorState(
+    modifier: Modifier = Modifier, message: String,
+    onBackClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CommonBackTopBar(
+            onBackClick = onBackClick,
+        )
+        Column(
+            modifier = modifier.weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = message, style = NotoTypography.NotoMedium20)
+            Text(text = "다시 한 번 시도해주세요.", style = NotoTypography.NotoMedium16)
+        }
+    }
+
 }
 
 
