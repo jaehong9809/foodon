@@ -1,6 +1,6 @@
 package com.foodon.foodon.food.domain;
 
-import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
+import com.foodon.foodon.food.dto.request.CustomFoodCreateRequest;
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;

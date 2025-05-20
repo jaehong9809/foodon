@@ -1,8 +1,9 @@
-package com.foodon.foodon.food.dto;
+package com.foodon.foodon.food.dto.response;
 
 import com.foodon.foodon.food.domain.FoodType;
 import com.foodon.foodon.food.domain.NutrientCode;
 import com.foodon.foodon.food.domain.Unit;
+import com.foodon.foodon.food.dto.FoodWithNutrientInfo;
 import com.foodon.foodon.meal.dto.NutrientProfile;
 
 import java.math.BigDecimal;

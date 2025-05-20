@@ -2,8 +2,11 @@ package com.foodon.foodon.food.application;
 
 import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.*;
+import com.foodon.foodon.food.dto.request.CustomFoodCreateRequest;
+import com.foodon.foodon.food.dto.response.CustomFoodCreateResponse;
+import com.foodon.foodon.food.dto.response.FoodDetailInfoResponse;
 import com.foodon.foodon.food.dto.response.FoodLocalDbResponse;
-import com.foodon.foodon.food.exception.FoodException;
+import com.foodon.foodon.food.dto.response.FoodNameResponse;
 import com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
 import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
 import com.foodon.foodon.food.repository.FoodNutrientRepository;

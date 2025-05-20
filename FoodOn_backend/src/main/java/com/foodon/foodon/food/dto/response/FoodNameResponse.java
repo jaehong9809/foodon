@@ -1,4 +1,4 @@
-package com.foodon.foodon.food.dto;
+package com.foodon.foodon.food.dto.response;
 
 import com.foodon.foodon.food.domain.Food;
 

@@ -1,8 +1,7 @@
 package com.foodon.foodon.recommend.dto;
 
-import com.foodon.foodon.food.dto.FoodWithNutrientClaimInfo;
 import com.foodon.foodon.food.dto.NutrientClaimInfo;
-import com.foodon.foodon.food.dto.NutrientClaimResponse;
+import com.foodon.foodon.food.dto.response.NutrientClaimResponse;
 import com.foodon.foodon.recommend.domain.RecommendFood;
 
 import java.math.BigDecimal;
