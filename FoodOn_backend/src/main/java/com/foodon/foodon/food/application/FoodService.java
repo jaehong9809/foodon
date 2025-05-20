@@ -6,6 +6,7 @@ import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.exception.FoodException;
 import com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
 import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
+import com.foodon.foodon.food.infrastructure.FoodNutrientBatchRepository;
 import com.foodon.foodon.food.repository.FoodNutrientRepository;
 import com.foodon.foodon.food.repository.FoodRepository;
 import com.foodon.foodon.food.repository.NutrientRepository;
@@ -35,6 +36,7 @@ public class FoodService {
 
     private final FoodRepository foodRepository;
     private final FoodNutrientRepository foodNutrientRepository;
+    private final FoodNutrientBatchRepository foodNutrientBatchRepository;
     private final NutrientRepository nutrientRepository;
 
     @Transactional
@@ -43,10 +45,11 @@ public class FoodService {
             Member member
     ) {
         checkDuplicateCustomFood(request.foodName(), member);
+        List<Nutrient> nutrients = nutrientRepository.findAll();
         Food food = Food.createCustomFoodByMember(request, member);
         foodRepository.save(food);
-        List<FoodNutrient> foodNutrients = registerFoodNutrients(request.nutrients(), food);
-        Map<NutrientCode, BigDecimal> nutrientMap = convertToPerServingMap(foodNutrients, food.getServingSize());
+        List<FoodNutrient> foodNutrients = registerFoodNutrients(request.nutrients(), nutrients, food);
+        Map<NutrientCode, BigDecimal> nutrientMap = convertToPerServingMap(foodNutrients, nutrients, food.getServingSize());
 
         return CustomFoodCreateResponse.from(food, NutrientProfile.from(nutrientMap));
     }
@@ -58,10 +61,11 @@ public class FoodService {
     ){
         String registerName = getRegisterNameWithOrigName(request.foodName(), LocalDateTime.now());
         checkDuplicateCustomFood(registerName, member);
+        List<Nutrient> nutrients = nutrientRepository.findAll();
         Food food = Food.createCustomFoodModifiedByMember(request, registerName, member);
         foodRepository.save(food);
-        List<FoodNutrient> foodNutrients = registerFoodNutrients(request.nutrients(), food);
-        Map<NutrientCode, BigDecimal> nutrientMap = convertToPerServingMap(foodNutrients, food.getServingSize());
+        List<FoodNutrient> foodNutrients = registerFoodNutrients(request.nutrients(), nutrients, food);
+        Map<NutrientCode, BigDecimal> nutrientMap = convertToPerServingMap(foodNutrients, nutrients, food.getServingSize());
 
         return CustomFoodCreateResponse.from(food, NutrientProfile.from(nutrientMap));
     }
@@ -80,12 +84,13 @@ public class FoodService {
     }
 
     private List<FoodNutrient> registerFoodNutrients(
-            NutrientProfile nutrients,
+            NutrientProfile nutrientInfo,
+            List<Nutrient> nutrients,
             Food food
     ) {
-        Map<NutrientCode, Long> nutrientCodeIdMap = getNutrientCodeMap();
-        List<FoodNutrient> foodNutrients = nutrients.toMap().entrySet().stream()
-                .filter(e -> e.getValue() != null)
+        Map<NutrientCode, Long> nutrientCodeIdMap = convertToNutrientCodeMap(nutrients);
+        List<FoodNutrient> foodNutrients = nutrientInfo.toMap().entrySet().stream()
+                .filter(e -> e.getValue() != null && e.getValue().compareTo(BigDecimal.ZERO) > 0)
                 .map(e -> FoodNutrient.createFoodNutrient(
                         food.getId(),
                         nutrientCodeIdMap.get(e.getKey()),
@@ -93,14 +98,24 @@ public class FoodService {
                 ))
                 .collect(Collectors.toList());
 
-        return foodNutrientRepository.saveAll(foodNutrients);
+        foodNutrientBatchRepository.saveAllFoodNutrients(foodNutrients);
+        return foodNutrients;
+    }
+
+    private Map<NutrientCode, Long> convertToNutrientCodeMap(List<Nutrient> nutrients) {
+        return nutrients.stream()
+                .collect(Collectors.toMap(
+                        Nutrient::getCode,
+                        Nutrient::getId
+                ));
     }
 
     public Map<NutrientCode, BigDecimal> convertToPerServingMap(
             List<FoodNutrient> foodNutrients,
+            List<Nutrient> nutrients,
             BigDecimal servingSize
     ) {
-        Map<Long, NutrientCode> nutrientIdCodeMap = getNutrientIdToCodeMap();
+        Map<Long, NutrientCode> nutrientIdCodeMap = convertToNutrientIdMap(nutrients);
         return foodNutrients.stream()
                 .filter(n -> n.getValue() != null && nutrientIdCodeMap.containsKey(n.getNutrientId()))
                 .collect(Collectors.toMap(
@@ -109,19 +124,11 @@ public class FoodService {
                 ));
     }
 
-    private Map<Long, NutrientCode> getNutrientIdToCodeMap() {
-        return nutrientRepository.findAll().stream()
+    private Map<Long, NutrientCode> convertToNutrientIdMap(List<Nutrient> nutrients) {
+        return nutrients.stream()
                 .collect(Collectors.toMap(
                         Nutrient::getId,
                         Nutrient::getCode
-                ));
-    }
-
-    private Map<NutrientCode, Long> getNutrientCodeMap() {
-        return nutrientRepository.findAll().stream()
-                .collect(Collectors.toMap(
-                        Nutrient::getCode,
-                        Nutrient::getId
                 ));
     }
 
