@@ -44,9 +44,10 @@ fun NavGraphBuilder.mealGraph(
                     navController.popBackStack()
                 },
                 onSearchClick = {
+                    Log.d("FoodSearchScreen", "navigate Search")
                     navController.navigate(
                         NavRoutes.FoodGraph.FoodSearch.createRoute(
-                            null, null
+                            null, null, fromRecord = true
                         )
                     )
                 },
@@ -193,6 +194,9 @@ fun NavGraphBuilder.mealGraph(
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
+            }, navArgument(NavRoutes.FoodGraph.FoodSearch.FROM_RECORD) {
+                type = NavType.BoolType
+                defaultValue = false
             })
         ) {
             val registerViewModel = hiltViewModel<FoodRegisterViewModel>()
@@ -201,12 +205,18 @@ fun NavGraphBuilder.mealGraph(
                     ?: 0
             val foodId =
                 it.arguments?.getString(NavRoutes.FoodGraph.FoodRegister.FOOD_ID)?.toLongOrNull()
+            val fromRecord =
+                it.arguments?.getBoolean(NavRoutes.FoodGraph.FoodSearch.FROM_RECORD) ?: false
+
             val backStackEntry = getFoodEditBackstackEntry(mealId, foodId, navController)
             val foodEditViewModel = backStackEntry?.let { backStack ->
                 hiltViewModel<FoodEditViewModel>(backStack)
             }
             Log.d("FoodRegisterScreen", "foodEditViewModel = $foodEditViewModel")
-            Log.d("FoodRegisterScreen", "mealId = $mealId, foodId = $foodId")
+            Log.d(
+                "FoodRegisterScreen",
+                "mealId = $mealId, foodId = $foodId fromRecord = $fromRecord"
+            )
 
             FoodRegisterScreen(
                 onBackClick = { navController.popBackStack() },
@@ -238,7 +248,11 @@ fun NavGraphBuilder.mealGraph(
                         // 찾는 음식이 없어 새로 등록 할 경우
                         // todo 음식 기록일 경우 추가 - 상세 화면으로 라우팅
                         Log.d("FoodRegisterScreen", "register food")
-                        mealEditViewModel.addFood(food.foodId, FoodType.CUSTOM)
+                        mealEditViewModel.addFood(
+                            food.foodId,
+                            FoodType.CUSTOM,
+                            fromRecord = fromRecord
+                        )
                         navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
                             popUpTo(NavRoutes.FoodGraph.MealDetail.createRoute(0L))
                             launchSingleTop = true
@@ -264,6 +278,9 @@ fun NavGraphBuilder.mealGraph(
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
+            }, navArgument(NavRoutes.FoodGraph.FoodSearch.FROM_RECORD) {
+                type = NavType.BoolType
+                defaultValue = false
             })
         ) { navBackStackEntry ->
             val foodId =
@@ -272,7 +289,11 @@ fun NavGraphBuilder.mealGraph(
             val mealId =
                 navBackStackEntry.arguments?.getString(NavRoutes.FoodGraph.FoodSearch.MEAL_ID)
                     ?.toLongOrNull() ?: 0L
+            val fromRecord =
+                navBackStackEntry.arguments?.getBoolean(NavRoutes.FoodGraph.FoodSearch.FROM_RECORD)
+                    ?: false
 
+            Log.d("FoodSearchScreen", "mealId = $mealId, foodId = $foodId fromRecord = $fromRecord")
 
             val backStackEntry = getFoodEditBackstackEntry(mealId, foodId, navController)
             Log.d("FoodSearchScreen", "backStackEntry = $backStackEntry")
@@ -286,6 +307,7 @@ fun NavGraphBuilder.mealGraph(
                 foodId = foodId,
                 mealEditViewModel = mealEditViewModel,
                 foodEditViewModel = foodEditViewModel,
+                fromRecord = fromRecord,
             )
         }
     }

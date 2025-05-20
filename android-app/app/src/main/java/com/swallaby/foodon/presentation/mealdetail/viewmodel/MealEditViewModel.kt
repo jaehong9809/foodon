@@ -1,10 +1,12 @@
 package com.swallaby.foodon.presentation.mealdetail.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.core.util.DateUtil
 import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -144,10 +147,10 @@ class MealEditViewModel @Inject constructor(
 
     }
 
-    fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC) {
+    fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC, fromRecord: Boolean = false) {
         // todo 음식 기록일 경우 식단 시간, 이미지 업데이트 필요
-        Log.d(TAG, "Adding food: $foodId")
-        
+        Log.d(TAG, "Adding food: $foodId, fromRecord = $fromRecord")
+
         viewModelScope.launch {
             when (val result = fetchFoodUseCase(foodId, type).toResultState()) {
                 is ResultState.Success -> {
@@ -162,9 +165,17 @@ class MealEditViewModel @Inject constructor(
                         totalCarbs = calculateTotalCarbs(updatedItems),
                         totalFat = calculateTotalFat(updatedItems),
                         totalKcal = calculateTotalKcal(updatedItems),
-                        totalProtein = calculateTotalProtein(updatedItems)
+                        totalProtein = calculateTotalProtein(updatedItems),
+                        mealTime = if (fromRecord) DateUtil.formatTimeToHHmm(LocalDateTime.now()) else mealInfo.mealTime,
+                        imageUri = if (fromRecord) Uri.parse("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4Ci6YkdFEjuONWRlJ-ksW_Iszr2aDmUfGuw&s") else mealInfo.imageUri,
+                        imageFileName = if (fromRecord) "" else mealInfo.imageFileName
                     )
-                    _uiState.update { it.copy(mealEditState = ResultState.Success(updatedMealInfo)) }
+
+                    _uiState.update {
+                        it.copy(
+                            mealEditState = ResultState.Success(updatedMealInfo)
+                        )
+                    }
                 }
 
                 is ResultState.Error -> {

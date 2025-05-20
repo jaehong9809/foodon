@@ -44,6 +44,7 @@ fun FoodSearchScreen(
     foodEditViewModel: FoodEditViewModel? = hiltViewModel(),
     mealEditViewModel: MealEditViewModel = hiltViewModel(),
     foodId: Long?,
+    fromRecord: Boolean,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
@@ -81,11 +82,24 @@ fun FoodSearchScreen(
                     if (foodId == null) {
                         // todo 음식 기록일 경우 추가 - 상세 화면으로 라우팅
                         mealEditViewModel.addFood(
-                            food.id, if (food.isCustom) FoodType.CUSTOM else FoodType.PUBLIC
+                            food.id,
+                            if (food.isCustom) FoodType.CUSTOM else FoodType.PUBLIC,
+                            fromRecord
                         )
-
-//                        navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L))
-                        navController.popBackStack()
+                        if (fromRecord) navController.navigate(
+                            NavRoutes.FoodGraph.MealDetail.createRoute(
+                                0L
+                            ),
+                        ) {
+                            popUpTo(
+                                NavRoutes.FoodGraph.FoodRegister.createRoute(
+                                    0L, null, fromRecord
+                                )
+                            ) {
+                                inclusive = true
+                            }
+                        }
+                        else navController.popBackStack()
                     } else {
                         Log.d(
                             "FoodSearchScreen", "searchFoodId = ${food.id}, selectedFoodId: $foodId"
@@ -104,8 +118,7 @@ fun FoodSearchScreen(
                     Log.d("FoodSearchScreen", "onBannerRegisterClick called with foodId: $foodId")
                     navController.navigate(
                         NavRoutes.FoodGraph.FoodRegister.createRoute(
-                            foodId = foodId,
-                            mealId = 0L,
+                            foodId = foodId, mealId = 0L, fromRecord = fromRecord
                         )
                     )
                 })

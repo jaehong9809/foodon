@@ -17,6 +17,8 @@ fun FoodInfoWithId.toMealItem() = MealItem(
     unit = unit,
     quantity = 1,
     nutrientInfo = nutrientInfo,
+    // todo servingSize 추가
+    servingSize = 1.0,
     positions = listOf(
         Position(
             height = 1.0,
