@@ -51,12 +51,12 @@ class MealEditViewModel @Inject constructor(
     fun initMeal(mealInfo: MealInfo) {
         Log.d(TAG, "Initializing MealEditViewModel")
         val uiState = _uiState.value.mealEditState
-        if (uiState is ResultState.Success) {
-            val mealTimeType = uiState.data.mealTimeType
-            Log.d("MealEditViewModel", "Meal time type: $mealTimeType")
-            _uiState.update {
-                it.copy(mealEditState = ResultState.Success(mealInfo.copy(mealTimeType = mealTimeType)))
-            }
+        val mealTimeType = if (uiState is ResultState.Success) {
+            uiState.data.mealTimeType
+        } else MealType.BREAKFAST
+        Log.d("MealEditViewModel", "Meal time type: $mealTimeType")
+        _uiState.update {
+            it.copy(mealEditState = ResultState.Success(mealInfo.copy(mealTimeType = mealTimeType)))
         }
     }
 

@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.nutritionedit
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -143,17 +144,20 @@ fun NutritionEditScreen(
                         value = item.value.toString(),
                         formatPattern = if (item.nutrientType == NutrientType.KCAL) NumberFormatPattern.INT_THOUSAND_COMMA else NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
                         onValueChange = { newValue ->
+                            Log.d("FoodEditScreen", "onValueChange newValue = $newValue")
                             val filtered =
                                 newValue.filter { it.isDigit() || it == '.' }.toBigDecimalOrNull()
                                     ?.toDouble() ?: 0.0
                             val updatedValue = min(filtered, 999999.99)
 
+                            Log.d("FoodEditScreen", "updatedValue = $updatedValue")
                             // 업데이트된 아이템 생성
                             val updatedItem = item.copy(value = updatedValue)
                             // 리스트에서 해당 아이템 교체
                             val updatedNutritions = nutritions.toMutableList()
                             updatedNutritions[index] = updatedItem
                             nutritions = updatedNutritions
+                            Log.d("FoodEditScreen", "nutritions = $nutritions")
                         },
                         nutrient = item.name,
                         unit = item.unit,
@@ -166,10 +170,12 @@ fun NutritionEditScreen(
                             modifier = modifier,
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
+                                Log.d("FoodEditScreen", "onValueChange newValue = $newValue")
                                 val filtered = newValue.filter { it.isDigit() || it == '.' }
                                     .toBigDecimalOrNull()?.toDouble() ?: 0.0
                                 val updatedValue = min(filtered, 999999.99)
 
+                                Log.d("FoodEditScreen", "updatedValue = $updatedValue")
                                 // 업데이트된 자식 아이템 생성
                                 val updatedChildItem = childItem.copy(value = updatedValue)
                                 // 부모 아이템의 자식 목록 업데이트
@@ -183,6 +189,7 @@ fun NutritionEditScreen(
                                 val updatedNutritions = nutritions.toMutableList()
                                 updatedNutritions[index] = updatedItem
                                 nutritions = updatedNutritions
+                                Log.d("FoodEditScreen", "nutritions = $nutritions")
                             },
                             nutrient = childItem.name,
                             unit = childItem.unit,
@@ -200,6 +207,8 @@ fun NutritionEditScreen(
                     val updatedNutrientInfo = NutrientConverter.updateNutrientInfo(
                         nutritions, food.nutrientInfo
                     )
+                    Log.d("FoodEditScreen", "updatedNutrientInfo = $updatedNutrientInfo")
+
                     val updateMealItem = MealItem(
                         foodId = food.foodId,
                         foodName = food.foodName,

@@ -6,10 +6,10 @@ import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
+import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
-import com.swallaby.foodon.domain.food.model.NutrientInfo
 import com.swallaby.foodon.domain.food.model.UnitType
 import com.swallaby.foodon.domain.food.usecase.FetchFoodSimilarUseCase
 import com.swallaby.foodon.domain.food.usecase.FetchFoodUseCase
@@ -123,7 +123,9 @@ class FoodEditViewModel @Inject constructor(
                 request = request
             ).toResultState()) {
                 is ResultState.Success -> {
+                    val updatedFood = result.data
                     Log.d("FoodEditViewModel", "Success custom food")
+                    updateFoodNutrients(mealItem.foodId, updatedFood)
                     _events.emit(FoodEditEvent.SuccessCustomFood(mealItem))
                 }
 
@@ -141,7 +143,10 @@ class FoodEditViewModel @Inject constructor(
 
     }
 
-    fun updateFoodNutrients(foodId: Long, updatedNutrientInfo: NutrientInfo) {
+    private fun updateFoodNutrients(
+        foodId: Long,
+        updatedFood: FoodInfoWithId,
+    ) {
         val currentUiState = _uiState.value
 
         if (currentUiState.foodEditState is ResultState.Success) {
@@ -149,7 +154,14 @@ class FoodEditViewModel @Inject constructor(
 
             val updatedItems = mealInfo.mealItems.map { item ->
                 if (item.foodId == foodId) {
-                    val newItem = item.copy(nutrientInfo = updatedNutrientInfo)
+                    val newItem = item.copy(
+                        foodId = updatedFood.foodId,
+                        foodName = updatedFood.foodName,
+                        unit = updatedFood.unit,
+                        type = updatedFood.type,
+                        quantity = item.quantity,
+                        nutrientInfo = updatedFood.nutrientInfo,
+                    )
                     newItem
                 } else {
                     item
@@ -160,7 +172,8 @@ class FoodEditViewModel @Inject constructor(
 
             _uiState.update { currentState ->
                 currentState.copy(
-                    foodEditState = ResultState.Success(updatedMealInfo)
+                    foodEditState = ResultState.Success(updatedMealInfo),
+                    selectedFoodId = updatedFood.foodId
                 )
             }
 

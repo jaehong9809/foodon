@@ -114,7 +114,7 @@ fun FoodEditScreen(
     }
 
 
-    Log.d("Screen", "FoodEditScreen ViewModel identity: ${System.identityHashCode(viewModel)}")
+//    Log.d("Screen", "FoodEditScreen ViewModel identity: ${System.identityHashCode(viewModel)}")
     Log.d("Screen", "FoodEditScreen Food.nutrientInfo: ${food.nutrientInfo}")
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
