@@ -53,8 +53,10 @@ fun RecommendFoodContent(
 
         if (foods.isNotEmpty()) {
             VerticalSlideAnimatedComponent {
-                RecommendFoodGrid(foods)
-//            RecommendReason(foods.map { it.reason })
+                Column {
+                    RecommendFoodGrid(foods)
+                    RecommendReason(foods.map { it.reason }.distinct())
+                }
             }
         }
 

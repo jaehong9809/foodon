@@ -7,6 +7,7 @@ data class RecommendFoodResponse(
     val foodId: Long = 0,
     val foodName: String = "",
     val kcal: Double = 0.0,
+    val reason: String = "",
     val nutrientClaims: List<NutrientClaimInfo> = emptyList()
 )
 
@@ -15,6 +16,7 @@ fun RecommendFoodResponse.toDomain(): RecommendFood {
         foodId = this.foodId,
         name = this.foodName,
         kcal = this.kcal,
+        reason = this.reason,
         nutrientClaims = this.nutrientClaims
     )
 }
