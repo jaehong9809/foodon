@@ -1,7 +1,7 @@
 package com.foodon.foodon.meal.dto;
 
-import com.foodon.foodon.common.util.BigDecimalUtil;
 import com.foodon.foodon.food.domain.NutrientCode;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -9,19 +9,46 @@ import java.util.Map;
 import static com.foodon.foodon.common.util.BigDecimalUtil.round;
 
 public record NutrientProfile(
+        @PositiveOrZero(message = "칼로리는 0 이상이어야 합니다.")
         BigDecimal kcal,
+
+        @PositiveOrZero(message = "탄수화물은 0 이상이어야 합니다.")
         BigDecimal carbs,
+
+        @PositiveOrZero(message = "당류는 0 이상이어야 합니다.")
         BigDecimal sugar,
+
+        @PositiveOrZero(message = "식이섬유는 0 이상이어야 합니다.")
         BigDecimal fiber,
+
+        @PositiveOrZero(message = "단백질은 0 이상이어야 합니다.")
         BigDecimal protein,
+
+        @PositiveOrZero(message = "지방은 0 이상이어야 합니다.")
         BigDecimal fat,
+
+        @PositiveOrZero(message = "포화지방은 0 이상이어야 합니다.")
         BigDecimal saturatedFat,
+
+        @PositiveOrZero(message = "트랜스지방은 0 이상이어야 합니다.")
         BigDecimal transFat,
+
+        @PositiveOrZero(message = "지방산은 0 이상이어야 합니다.")
         BigDecimal fattyAcid,
+
+        @PositiveOrZero(message = "불포화지방은 0 이상이어야 합니다.")
         BigDecimal unsaturatedFat,
+
+        @PositiveOrZero(message = "콜레스테롤은 0 이상이어야 합니다.")
         BigDecimal cholesterol,
+
+        @PositiveOrZero(message = "나트륨은 0 이상이어야 합니다.")
         BigDecimal sodium,
+
+        @PositiveOrZero(message = "칼륨은 0 이상이어야 합니다.")
         BigDecimal potassium,
+
+        @PositiveOrZero(message = "알코올은 0 이상이어야 합니다.")
         BigDecimal alcohol
 ) {
     public static NutrientProfile from(Map<NutrientCode, BigDecimal> nutrientMap) {
