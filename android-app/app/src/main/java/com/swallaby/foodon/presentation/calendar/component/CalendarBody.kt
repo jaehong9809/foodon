@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swallaby.foodon.core.util.DateUtil.getTotalWeekCount
 import com.swallaby.foodon.core.util.DateUtil.getWeekDateRange
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarType
@@ -32,6 +33,8 @@ fun CalendarBody(
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
     val daysInMonth = yearMonth.lengthOfMonth()
 
+    val totalWeekCount = getTotalWeekCount(yearMonth)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +42,7 @@ fun CalendarBody(
     ) {
         var dayCounter = 1
 
-        repeat(6) { weekIndex ->
+        repeat(totalWeekCount) { weekIndex ->
             val isSelectedWeek = weekIndex == calendarStatus.selectedWeekIndex
             val weekRange = getWeekDateRange(weekIndex, yearMonth, firstDayOfWeek)
 

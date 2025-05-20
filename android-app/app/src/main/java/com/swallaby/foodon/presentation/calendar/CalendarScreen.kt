@@ -1,12 +1,16 @@
 package com.swallaby.foodon.presentation.calendar
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -131,50 +135,60 @@ fun CalendarScreen(
         },
         floatingActionButtonPosition = FabPosition.Center,
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(bottom = 100.dp)
                 .fillMaxSize()
         ) {
-            item {
-                CalendarHeader(
-                    currentYearMonth = currentYearMonth,
-                    onPreviousMonth = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
-                    onNextMonth = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } }
-                )
+            CalendarHeader(
+                currentYearMonth = currentYearMonth,
+                onPreviousMonth = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage - 1,
+                            animationSpec = spring(stiffness = Spring.StiffnessLow)
+                        )
+                    }
+                },
+                onNextMonth = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage + 1,
+                            animationSpec = spring(stiffness = Spring.StiffnessLow)
+                        )
+                    }
+                }
+            )
 
-                WeeklyLabel()
+            WeeklyLabel()
 
-                CalendarPager(
-                    pagerState = pagerState,
-                    calendarItemMap = calendarItemMap,
-                    calendarStatus = calendarStatus,
-                    onDateSelected = sharedState::updateDate
-                )
+            CalendarPager(
+                pagerState = pagerState,
+                calendarItemMap = calendarItemMap,
+                calendarStatus = calendarStatus,
+                onDateSelected = sharedState::updateDate
+            )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
+            if (calendarType != CalendarType.RECOMMENDATION) {
                 UnitContent(calendarType)
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                HorizontalDivider(color = Border025, thickness = 1.dp)
             }
 
-            item {
-                TabContentPager(
-                    selectedMeal = selectedMeal,
-                    weightResult = uiState.weightResult,
-                    recommendFoods = sharedState.recommendFoods.collectAsStateWithLifecycle().value,
-                    calendarStatus = calendarStatus,
-                    onTabChanged = viewModel::selectTab,
-                    onWeeklyTabChanged = { weekIndex ->
-                        viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
-                    },
-                    onUpdateWeight = onUpdateWeight
-                )
-            }
+            HorizontalDivider(color = Border025, thickness = 1.dp)
+
+            TabContentPager(
+                selectedMeal = selectedMeal,
+                weightResult = uiState.weightResult,
+                recommendFoods = sharedState.recommendFoods.collectAsStateWithLifecycle().value,
+                calendarStatus = calendarStatus,
+                onTabChanged = viewModel::selectTab,
+                onWeeklyTabChanged = { weekIndex ->
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
+                },
+                onUpdateWeight = onUpdateWeight
+            )
         }
     }
 }
