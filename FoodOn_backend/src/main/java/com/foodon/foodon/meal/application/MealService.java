@@ -25,6 +25,7 @@ import com.foodon.foodon.member.domain.Member;
 import com.foodon.foodon.recommend.repository.RecommendFoodRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,9 @@ import static com.foodon.foodon.meal.exception.MealErrorCode.NOT_FOUND_MEAL;
 @Service
 @RequiredArgsConstructor
 public class MealService {
+
+    @Value("${image.default.meal-url}")
+    private String defaultMealImageUrl;
 
     private final MealRepository mealRepository;
     private final MealItemRepository mealItemRepository;
@@ -141,13 +145,21 @@ public class MealService {
             MealCreateRequest request,
             Member member
     ) {
-        String imageUrl = s3ImageService.upload(request.imageFileName());
+        String imageUrl = uploadOrGetDefaultImage(request.imageFileName());
         Meal meal = Meal.createMeal(member, imageUrl, request);
         addMealItemsToMeal(member, meal, request.mealItems());
         mealRepository.save(meal);
         intakeLogService.saveIntakeLog(member, meal);
 
         return meal.getId();
+    }
+
+    private String uploadOrGetDefaultImage(String imageFileName) {
+        if(imageFileName == null || imageFileName.isBlank()) {
+            return defaultMealImageUrl;
+        }
+
+        return s3ImageService.upload(imageFileName);
     }
 
     private void addMealItemsToMeal(
@@ -185,6 +197,10 @@ public class MealService {
     }
 
     private void addPositionsToMealItem(MealItem mealItem, List<PositionInfo> positionInfos) {
+        if(positionInfos == null) {
+            return;
+        }
+
         positionInfos.forEach(positionInfo -> Position.createPosition(mealItem, positionInfo));
     }
 

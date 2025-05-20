@@ -91,6 +91,10 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
 
+image:
+  default:
+    meal-url: ${S3_BASE_URL}${S3_UPLOAD_PATH}/0b4b1c06-dbf3-4259-882f-5b10d03657aa_20250520215957771237.png
+
 management:
   endpoints:
     web:
