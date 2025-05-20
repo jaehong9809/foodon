@@ -46,7 +46,11 @@ class MainViewModel @Inject constructor(
             fetchRecordData(date)
             fetchIntakeData(date)
             fetchNutrientManageData(date)
-            fetchGoalManageData()
+
+            if (calendarSharedState.refreshGoal.value) {
+                fetchGoalManageData()
+                calendarSharedState.clearGoal()
+            }
 
             mealSharedState.clearDaily()
         }

@@ -47,6 +47,18 @@ class CalendarSharedState @Inject constructor() {
         initialValue = LocalDate.now().with(weekFields.dayOfWeek(), 1)
     )
 
+    private val _refreshGoal = MutableStateFlow(true)
+
+    val refreshGoal: StateFlow<Boolean> = _refreshGoal
+
+    fun refreshForGoal() {
+        _refreshGoal.value = true
+    }
+
+    fun clearGoal() {
+        _refreshGoal.value = false
+    }
+
     fun updateDate(date: LocalDate) {
         _selectedDate.value = date
         _currentYearMonth.value = YearMonth.from(date)

@@ -30,15 +30,19 @@ fun TabContentLayout(
     title: String,
     bgColor: Color,
     @DrawableRes icon: Int = R.drawable.icon_mountain,
-    bottomPadding: Dp = 16.dp,
     contentPadding: Dp = 8.dp,
+    isWeight: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(color = bgColor, shape = RoundedCornerShape(10.dp))
-            .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = bottomPadding)
+            .then(
+                if (isWeight) Modifier.height(78.dp) else Modifier
+            )
+            .padding(horizontal = 16.dp, vertical = if (isWeight) 0.dp else 16.dp),
+        verticalArrangement = Arrangement.Center
     ) {
 
         Row(

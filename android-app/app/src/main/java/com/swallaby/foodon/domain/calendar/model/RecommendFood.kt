@@ -6,5 +6,6 @@ data class RecommendFood(
     val foodId: Long = 0,
     val name: String = "",
     val kcal: Double = 0.0,
+    val reason: String = "",
     val nutrientClaims: List<NutrientClaimInfo> = emptyList()
 )

@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.core.ui.component.VerticalSlideAnimatedComponent
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.domain.calendar.model.CalendarMeal
 import com.swallaby.foodon.domain.calendar.model.RecommendFood
@@ -46,22 +47,24 @@ fun TabContentPager(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopStart
         ) {
-            when (page) {
-                0 -> {
-                    val meal = (selectedMeal as? CalendarItem.Meal)?.data ?: CalendarMeal()
-                    MealContent(calendarMeal = meal)
-                }
-                1 -> {
-                    WeightContent(weightResult, onUpdateWeight)
-                }
-                2 -> {
-                    RecommendationContent(
-                        calendarStatus = calendarStatus,
-                        recommendFoods = recommendFoods,
-                        onWeeklyTabChanged = {
-                            onWeeklyTabChanged(it)
-                        }
-                    )
+            VerticalSlideAnimatedComponent {
+                when (page) {
+                    0 -> {
+                        val meal = (selectedMeal as? CalendarItem.Meal)?.data ?: CalendarMeal()
+                        MealContent(calendarMeal = meal)
+                    }
+                    1 -> {
+                        WeightContent(weightResult, onUpdateWeight)
+                    }
+                    2 -> {
+                        RecommendationContent(
+                            calendarStatus = calendarStatus,
+                            recommendFoods = recommendFoods,
+                            onWeeklyTabChanged = {
+                                onWeeklyTabChanged(it)
+                            }
+                        )
+                    }
                 }
             }
         }

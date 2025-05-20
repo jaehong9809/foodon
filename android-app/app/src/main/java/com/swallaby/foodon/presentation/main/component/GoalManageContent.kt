@@ -107,6 +107,7 @@ fun InfoItem(
         )
 
         // 목표 수정 추가 시 주석 해제
+        // 수정 완료 시 calendarSharedState.refreshForGoal() 호출 -> 메인 목표 관리 데이터 갱신
         Row(
 //            modifier = Modifier
 //                .clickable(
