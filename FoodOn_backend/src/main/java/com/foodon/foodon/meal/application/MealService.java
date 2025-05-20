@@ -212,10 +212,6 @@ public class MealService {
 
         return MealDetailInfoResponse.from(
                 meal,
-                sumTotalIntake(mealItemInfos, NutrientProfile::kcal),
-                sumTotalIntake(mealItemInfos, NutrientProfile::carbs),
-                sumTotalIntake(mealItemInfos, NutrientProfile::protein),
-                sumTotalIntake(mealItemInfos, NutrientProfile::fat),
                 mealItemInfos
         );
     }

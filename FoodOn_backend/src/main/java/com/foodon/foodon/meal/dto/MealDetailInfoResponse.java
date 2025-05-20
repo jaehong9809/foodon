@@ -23,10 +23,6 @@ public record MealDetailInfoResponse(
 ) {
     public static MealDetailInfoResponse from(
             Meal meal,
-            BigDecimal totalKcal,
-            BigDecimal totalCarbs,
-            BigDecimal totalProtein,
-            BigDecimal totalFat,
             List<MealItemInfo> mealItems
     ) {
         return new MealDetailInfoResponse(
@@ -34,10 +30,10 @@ public record MealDetailInfoResponse(
                 meal.getMealTime().format(DateTimeFormatter.ofPattern("HH:mm")),
                 meal.getMealTimeType(),
                 meal.getMealImage(),
-                round(totalKcal, 0),
-                round(totalCarbs, 1),
-                round(totalProtein, 1),
-                round(totalFat, 1),
+                round(meal.getTotalKcal(), 0),
+                round(meal.getTotalCarbs(), 1),
+                round(meal.getTotalProtein(), 1),
+                round(meal.getTotalFat(), 1),
                 mealItems
         );
     }
