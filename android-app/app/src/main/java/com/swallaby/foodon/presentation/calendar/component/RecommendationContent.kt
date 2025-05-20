@@ -67,7 +67,7 @@ fun RecommendationContent(
             if (foods.isEmpty()) {
                 Text(
                     text = stringResource(R.string.main_recommend_food_empty),
-                    style = NotoTypography.NotoMedium16.copy(color = G700),
+                    style = NotoTypography.NotoMedium14.copy(color = G700),
                     textAlign = TextAlign.Start
                 )
             }
