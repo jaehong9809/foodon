@@ -6,6 +6,7 @@ import com.foodon.foodon.common.util.ResponseUtil;
 import com.foodon.foodon.food.application.FoodService;
 import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.domain.FoodType;
+import com.foodon.foodon.food.dto.response.FoodLocalDbResponse;
 import com.foodon.foodon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,6 +71,16 @@ public class FoodController {
             @Parameter(hidden = true) @AuthMember Member member
     ) {
         List<FoodNameResponse> responses = foodService.getRecentFoods(member.getId());
+        return ResponseUtil.success(responses);
+    }
+
+    @GetMapping("/sync")
+    @Operation(summary = "안드로이드 로컬 RoomDB에 반영되지 않은 서버 DB의 음식 리스트 가져오기")
+    public ResponseEntity<Response<List<FoodLocalDbResponse>>> getSyncFoods(
+            @RequestParam("lastFoodId") Long lastFoodId,
+            @Parameter(hidden = true) @AuthMember Member member
+    ) {
+        List<FoodLocalDbResponse> responses = foodService.getSyncFoods(lastFoodId);
         return ResponseUtil.success(responses);
     }
 }

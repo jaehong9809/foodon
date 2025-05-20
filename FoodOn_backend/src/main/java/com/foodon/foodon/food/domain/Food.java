@@ -1,14 +1,11 @@
 package com.foodon.foodon.food.domain;
 
 import com.foodon.foodon.food.dto.CustomFoodCreateRequest;
-import com.foodon.foodon.meal.domain.MealItem;
-import com.foodon.foodon.meal.dto.MealItemInfo;
 import com.foodon.foodon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
 

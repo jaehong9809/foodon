@@ -2,6 +2,7 @@ package com.foodon.foodon.food.application;
 
 import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.*;
+import com.foodon.foodon.food.dto.response.FoodLocalDbResponse;
 import com.foodon.foodon.food.exception.FoodException;
 import com.foodon.foodon.food.exception.FoodException.FoodBadRequestException;
 import com.foodon.foodon.food.exception.FoodException.FoodConflictException;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 
 import static com.foodon.foodon.food.exception.FoodErrorCode.CONFLICT_CUSTOM_FOOD;
 import static com.foodon.foodon.food.exception.FoodErrorCode.ILLEGAL_FOOD_NAME_BLANK;
-import static org.eclipse.jdt.internal.compiler.parser.Parser.name;
 
 @Service
 @RequiredArgsConstructor
@@ -142,6 +142,10 @@ public class FoodService {
                 .stream()
                 .map(FoodNameResponse::from)
                 .toList();
+    }
+
+    public List<FoodLocalDbResponse> getSyncFoods(Long lastFoodId) {
+        return foodRepository.findSyncFoodsWithKcal(lastFoodId);
     }
 
 }
