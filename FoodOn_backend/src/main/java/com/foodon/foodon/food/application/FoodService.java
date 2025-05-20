@@ -90,7 +90,7 @@ public class FoodService {
     ) {
         Map<NutrientCode, Long> nutrientCodeIdMap = convertToNutrientCodeMap(nutrients);
         List<FoodNutrient> foodNutrients = nutrientInfo.toMap().entrySet().stream()
-                .filter(e -> e.getValue() != null)
+                .filter(e -> e.getValue() != null && e.getValue().compareTo(BigDecimal.ZERO) > 0)
                 .map(e -> FoodNutrient.createFoodNutrient(
                         food.getId(),
                         nutrientCodeIdMap.get(e.getKey()),
