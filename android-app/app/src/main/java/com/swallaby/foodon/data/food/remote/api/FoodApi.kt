@@ -8,6 +8,7 @@ import com.swallaby.foodon.data.food.remote.dto.response.FoodSimilarResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealDetailInfoResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealInfoResponse
 import com.swallaby.foodon.data.food.remote.dto.response.RecentFoodResponse
+import com.swallaby.foodon.data.foodsync.FoodLocalDbResponse
 import com.swallaby.foodon.domain.food.model.FoodType
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -59,5 +60,10 @@ interface FoodApi {
     @GET("foods/custom/recent")
     suspend fun getRecentFoods(
     ): BaseResponse<List<RecentFoodResponse>>
+
+    @GET("foods/sync")
+    suspend fun getSyncFoods(
+        @Query("lastFoodId") lastFoodId: Long,
+    ) : BaseResponse<List<FoodLocalDbResponse>>
 
 }
