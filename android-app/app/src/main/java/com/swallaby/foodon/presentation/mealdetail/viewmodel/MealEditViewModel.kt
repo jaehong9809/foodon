@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 @HiltViewModel
 class MealEditViewModel @Inject constructor(
@@ -148,7 +149,6 @@ class MealEditViewModel @Inject constructor(
     }
 
     fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC, fromRecord: Boolean = false) {
-        // todo 음식 기록일 경우 식단 시간, 이미지 업데이트 필요
         Log.d(TAG, "Adding food: $foodId, fromRecord = $fromRecord")
 
         viewModelScope.launch {
@@ -157,7 +157,9 @@ class MealEditViewModel @Inject constructor(
                     val food = result.data.toMealItem()
                     val mealInfo = (_uiState.value.mealEditState as ResultState.Success).data
                     Log.d("MealEditViewModel", "mealInfo = ${mealInfo.mealItems.size}")
-                    val updatedItems = mealInfo.mealItems.toMutableList() + food
+                    val originFoodList = if (fromRecord) emptyList()
+                    else mealInfo.mealItems.toMutableList()
+                    val updatedItems = originFoodList + food
                     Log.d("MealEditViewModel", "updatedItems = ${updatedItems.size}")
 
                     val updatedMealInfo = mealInfo.copy(
@@ -167,7 +169,10 @@ class MealEditViewModel @Inject constructor(
                         totalKcal = calculateTotalKcal(updatedItems),
                         totalProtein = calculateTotalProtein(updatedItems),
                         mealTime = if (fromRecord) DateUtil.formatTimeToHHmm(LocalDateTime.now()) else mealInfo.mealTime,
-                        imageUri = if (fromRecord) Uri.parse("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4Ci6YkdFEjuONWRlJ-ksW_Iszr2aDmUfGuw&s") else mealInfo.imageUri,
+                        imageUri = if (fromRecord)
+                        // 기본 이미지
+                            "https://foodon-bucket.s3.ap-northeast-2.amazonaws.com/images/0b4b1c06-dbf3-4259-882f-5b10d03657aa_20250520215957771237.png".toUri()
+                        else mealInfo.imageUri,
                         imageFileName = if (fromRecord) "" else mealInfo.imageFileName
                     )
 

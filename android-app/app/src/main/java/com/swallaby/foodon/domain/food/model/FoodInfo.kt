@@ -6,6 +6,7 @@ data class FoodInfoWithId(
     val type: FoodType = FoodType.PUBLIC,
     val foodId: Long = 0,
     val foodName: String = "",
+    val servingSize: Double = 0.0,
     val unit: UnitType = UnitType.GRAM,
     val nutrientInfo: NutrientInfo = NutrientInfo(),
 )
@@ -17,14 +18,14 @@ fun FoodInfoWithId.toMealItem() = MealItem(
     unit = unit,
     quantity = 1,
     nutrientInfo = nutrientInfo,
-    // todo servingSize 추가
-    servingSize = 1.0,
+    servingSize = servingSize,
     positions = listOf(
         Position(
             height = 1.0,
             width = 1.0,
         )
-    )
+    ),
+    originalFoodId = foodId
 )
 
 data class FoodInfo(

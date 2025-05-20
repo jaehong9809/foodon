@@ -34,11 +34,13 @@ fun NavGraphBuilder.mealGraph(
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
-        composable(NavRoutes.FoodGraph.FoodRecord.route,
+        composable(
+            NavRoutes.FoodGraph.FoodRecord.route,
             popExitTransition = { ExitTransition.None },
             exitTransition = { ExitTransition.None }) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
-            MealRecordScreen(recordViewModel = recordViewModel,
+            MealRecordScreen(
+                recordViewModel = recordViewModel,
                 editViewModel = mealEditViewModel,
                 onBackClick = {
                     navController.popBackStack()
@@ -65,7 +67,8 @@ fun NavGraphBuilder.mealGraph(
         ) {
             val mealId = it.arguments?.getLong("mealId") ?: 0L
 
-            MealDetailScreen(mealId = mealId,
+            MealDetailScreen(
+                mealId = mealId,
                 viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = { foodId ->
@@ -108,7 +111,8 @@ fun NavGraphBuilder.mealGraph(
 
             val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
 
-            FoodEditScreen(mealId = mealId,
+            FoodEditScreen(
+                mealId = mealId,
                 viewModel = foodEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onNutritionEditClick = {
@@ -171,7 +175,8 @@ fun NavGraphBuilder.mealGraph(
             }
             val foodEditViewModel: FoodEditViewModel = hiltViewModel(backStackEntry)
             val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
-            NutritionEditScreen(viewModel = foodEditViewModel,
+            NutritionEditScreen(
+                viewModel = foodEditViewModel,
                 foodId = foodEditUiState.selectedFoodId,
                 onBackClick = {
                     navController.popBackStack()
@@ -194,7 +199,7 @@ fun NavGraphBuilder.mealGraph(
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
-            }, navArgument(NavRoutes.FoodGraph.FoodSearch.FROM_RECORD) {
+            }, navArgument(NavRoutes.FoodGraph.FoodRegister.FROM_RECORD) {
                 type = NavType.BoolType
                 defaultValue = false
             })
@@ -214,8 +219,7 @@ fun NavGraphBuilder.mealGraph(
             }
             Log.d("FoodRegisterScreen", "foodEditViewModel = $foodEditViewModel")
             Log.d(
-                "FoodRegisterScreen",
-                "mealId = $mealId, foodId = $foodId fromRecord = $fromRecord"
+                "FoodRegisterScreen", "mealId = $mealId, foodId = $foodId fromRecord = $fromRecord"
             )
 
             FoodRegisterScreen(
@@ -246,14 +250,24 @@ fun NavGraphBuilder.mealGraph(
                         }
                     } ?: run {
                         // 찾는 음식이 없어 새로 등록 할 경우
-                        // todo 음식 기록일 경우 추가 - 상세 화면으로 라우팅
+                        // 음식 기록일 경우 추가 - 상세 화면으로 라우팅
                         Log.d("FoodRegisterScreen", "register food")
                         mealEditViewModel.addFood(
-                            food.foodId,
-                            FoodType.CUSTOM,
-                            fromRecord = fromRecord
+                            food.foodId, FoodType.CUSTOM, fromRecord = fromRecord
                         )
-                        navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
+                        if (fromRecord) {
+                            navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
+                                popUpTo(
+                                    NavRoutes.FoodGraph.FoodSearch.createRoute(
+                                        0L, null, true
+                                    )
+                                ) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        } else navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
                             popUpTo(NavRoutes.FoodGraph.MealDetail.createRoute(0L))
                             launchSingleTop = true
                             restoreState = true

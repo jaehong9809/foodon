@@ -67,7 +67,8 @@ fun FoodSearchScreen(
                 navController.popBackStack()
             }
 
-            FoodSearchContent(modifier = Modifier,
+            FoodSearchContent(
+                modifier = Modifier,
                 query = uiState.query,
                 recentFoods = uiState.recentFoods,
                 searchResults = searchResults,
@@ -76,11 +77,10 @@ fun FoodSearchScreen(
                 onChipClick = { viewModel.onChipClick(it) },
                 onChipRemove = { viewModel.onChipRemove(it) },
                 onSearchResultClick = { food ->
-
                     Log.d("FoodSearchScreen", "food: $food")
                     // 음식 생성 후 메뉴에 추가
                     if (foodId == null) {
-                        // todo 음식 기록일 경우 추가 - 상세 화면으로 라우팅
+                        //  음식 기록일 경우 추가 - 상세 화면으로 라우팅
                         mealEditViewModel.addFood(
                             food.id,
                             if (food.isCustom) FoodType.CUSTOM else FoodType.PUBLIC,
@@ -92,7 +92,7 @@ fun FoodSearchScreen(
                             ),
                         ) {
                             popUpTo(
-                                NavRoutes.FoodGraph.FoodRegister.createRoute(
+                                NavRoutes.FoodGraph.FoodSearch.createRoute(
                                     0L, null, fromRecord
                                 )
                             ) {
