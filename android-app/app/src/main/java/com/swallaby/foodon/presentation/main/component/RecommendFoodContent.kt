@@ -61,6 +61,8 @@ fun RecommendFoodContent(
         }
 
         if (foods.isEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
+
             EmptyContentText(
                 emptyText = stringResource(R.string.main_recommend_food_empty),
                 icon = R.drawable.icon_recommend_empty

@@ -95,6 +95,8 @@ fun NutrientManageContent(
         }
 
         if (manageItems.isEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
+
             EmptyContentText(
                 emptyText = stringResource(R.string.main_nutrient_manage_empty),
                 icon = R.drawable.icon_manage_empty
