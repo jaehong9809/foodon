@@ -30,8 +30,8 @@ class FoodRemoteRepositoryImpl @Inject constructor(
             foodApi.postFoodHistory(request).getOrThrowNull { }
         }
 
-    override suspend fun postCustomFood(request: CustomFoodRequest): ApiResult<Unit> = safeApiCall {
-        foodApi.postCustomFood(request).getOrThrowNull { }
+    override suspend fun postCustomFood(request: CustomFoodRequest): ApiResult<FoodInfoWithId> = safeApiCall {
+        foodApi.postCustomFood(request).getOrThrow { it.toDomain() }
     }
 
     override suspend fun postCustomFoodUpdate(request: CustomFoodRequest): ApiResult<FoodInfoWithId> =

@@ -24,7 +24,7 @@ class FoodRegisterViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = registerCustomFoodUseCase(foodInfo.toRequest()).toResultState()) {
                 is ResultState.Success -> {
-                    _events.emit(FoodRegisterEvent.NavigateToSearch)
+                    _events.emit(FoodRegisterEvent.NavigateToSearch(result.data))
                 }
 
                 is ResultState.Error -> {

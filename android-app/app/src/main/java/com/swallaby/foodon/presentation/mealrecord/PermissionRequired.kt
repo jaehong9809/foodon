@@ -70,13 +70,13 @@ fun PermissionRequiredScreen(
                     // 사용자가 "다시 묻지 않음"을 선택한 경우
                     if (permissionDenied && !canShowPermissionDialog) {
                         Text(
-                            "'설정' > 'foodOn' > '권한' > '카메라'에서\n'항상 확인'으로 직접 변경해주세요.",
+                            "'설정' > 'foodOn' > '권한' > '카메라'에서\n'앱 사용 중에만 허용'으로 직접 변경해주세요.",
                             style = NotoTypography.NotoMedium16.copy(color = G900),
                             textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
-                            "'설정' > 'foodOn' > '권한' > '카메라'에서\n'항상 확인'으로 변경해주세요.",
+                            "'설정' > 'foodOn' > '권한' > '카메라'에서\n'앱 사용 중에만 허용'으로 변경해주세요.",
                             style = NotoTypography.NotoMedium16.copy(color = G900),
                             textAlign = TextAlign.Center
                         )

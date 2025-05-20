@@ -21,7 +21,7 @@ interface FoodRepository {
 
     suspend fun postCustomFood(
         request: CustomFoodRequest,
-    ): ApiResult<Unit>
+    ): ApiResult<FoodInfoWithId>
 
     suspend fun postCustomFoodUpdate(
         request: CustomFoodRequest,

@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.foodsearch
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,18 +27,24 @@ import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.theme.MainWhite
 import com.swallaby.foodon.domain.food.model.Food
+import com.swallaby.foodon.domain.food.model.FoodType
+import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.foodsearch.component.FoodRegisterBottomBanner
 import com.swallaby.foodon.presentation.foodsearch.component.RecentFoodChips
 import com.swallaby.foodon.presentation.foodsearch.component.SearchBar
 import com.swallaby.foodon.presentation.foodsearch.component.SearchResultList
 import com.swallaby.foodon.presentation.foodsearch.viewmodel.FoodSearchViewModel
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.navigation.NavRoutes
 
 @Composable
 fun FoodSearchScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: FoodSearchViewModel = hiltViewModel()
+    viewModel: FoodSearchViewModel = hiltViewModel(),
+    foodEditViewModel: FoodEditViewModel? = hiltViewModel(),
+    mealEditViewModel: MealEditViewModel = hiltViewModel(),
+    foodId: Long?,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
@@ -51,7 +58,7 @@ fun FoodSearchScreen(
     }
 
     Scaffold { innerPadding ->
-        Column (
+        Column(
             modifier = modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
@@ -69,11 +76,32 @@ fun FoodSearchScreen(
                 onClearClick = { viewModel.onClearClick() },
                 onChipClick = { viewModel.onChipClick(it) },
                 onChipRemove = { viewModel.onChipRemove(it) },
-                onSearchResultClick = { /* TODO */ },
+                onSearchResultClick = { food ->
+                    Log.d("FoodSearchScreen", "food: $food")
+                    // 음식 생성 후 메뉴에 추가
+                    if (foodId == null) {
+                        mealEditViewModel.addFood(food.id)
+                        navController.popBackStack()
+                    } else {
+                        Log.d(
+                            "FoodSearchScreen", "searchFoodId = ${food.id}, selectedFoodId: $foodId"
+                        )
+                        // 검색한 음식을 기존 음식과 교체
+                        foodEditViewModel?.fetchFood(food.id, FoodType.PUBLIC)
+                        foodEditViewModel?.fetchFoodSimilar(food.name)
+                        navController.popBackStack()
+                    }
+                },
                 showBanner = uiState.showBanner,
                 bannerFoodName = uiState.bannerFoodName,
                 onBannerRegisterClick = {
-                    navController.navigate(NavRoutes.FoodGraph.FoodRegister.route)
+                    Log.d("FoodSearchScreen", "onBannerRegisterClick called with foodId: $foodId")
+                    navController.navigate(
+                        NavRoutes.FoodGraph.FoodRegister.createRoute(
+                            foodId = foodId,
+                            mealId = 0L,
+                        )
+                    )
                 }
             )
         }
