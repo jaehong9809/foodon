@@ -45,9 +45,10 @@ public class FoodService {
         checkDuplicateCustomFood(request.foodName(), member);
         Food food = Food.createCustomFoodByMember(request, member);
         foodRepository.save(food);
-        registerFoodNutrients(request.nutrients(), food);
+        List<FoodNutrient> foodNutrients = registerFoodNutrients(request.nutrients(), food);
+        Map<NutrientCode, BigDecimal> nutrientMap = convertToPerServingMap(foodNutrients, food.getServingSize());
 
-        return CustomFoodCreateResponse.from(food, request.nutrients());
+        return CustomFoodCreateResponse.from(food, NutrientProfile.from(nutrientMap));
     }
 
     @Transactional
