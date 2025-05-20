@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +50,15 @@ fun MainContentPager(
                 .fillMaxWidth()
                 .height(350.dp) // 고정 길이 사용
         ) { page ->
-            when (page) {
-                0 -> NutrientIntakeContent(intakeResult, calendarInfo)
-                1 -> NutrientManageContent(nutrientManageResult)
-                2 -> RecommendFoodContent(recommendFoods)
-                3 -> GoalManageContent(goalManageResult, onClickNavigate = onClickNavigate)
+            val scrollState = rememberScrollState()
+
+            Box(modifier = Modifier.verticalScroll(scrollState)) {
+                when (page) {
+                    0 -> NutrientIntakeContent(intakeResult, calendarInfo)
+                    1 -> NutrientManageContent(nutrientManageResult)
+                    2 -> RecommendFoodContent(recommendFoods)
+                    3 -> GoalManageContent(goalManageResult, onClickNavigate = onClickNavigate)
+                }
             }
         }
 
