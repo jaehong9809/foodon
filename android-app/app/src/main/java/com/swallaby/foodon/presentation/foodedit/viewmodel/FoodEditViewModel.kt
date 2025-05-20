@@ -55,7 +55,7 @@ class FoodEditViewModel @Inject constructor(
         }
     }
 
-    private fun fetchFoodSimilar(name: String) {
+    fun fetchFoodSimilar(name: String) {
         _uiState.update {
             it.copy(foodSimilarState = ResultState.Loading)
         }
@@ -105,10 +105,7 @@ class FoodEditViewModel @Inject constructor(
                 }
 
                 else -> {
-
                 }
-
-
             }
         }
     }

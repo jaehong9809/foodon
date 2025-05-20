@@ -7,6 +7,7 @@ import com.swallaby.foodon.data.food.remote.dto.response.FoodResponse
 import com.swallaby.foodon.data.food.remote.dto.response.FoodSimilarResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealDetailInfoResponse
 import com.swallaby.foodon.data.food.remote.dto.response.MealInfoResponse
+import com.swallaby.foodon.data.food.remote.dto.response.RecentFoodResponse
 import com.swallaby.foodon.domain.food.model.FoodType
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -32,7 +33,7 @@ interface FoodApi {
     @POST("foods/custom")
     suspend fun postCustomFood(
         @Body request: CustomFoodRequest,
-    ): BaseResponse<Unit>
+    ): BaseResponse<FoodResponse>
 
     @POST("foods/custom/modified")
     suspend fun postCustomFoodUpdate(
@@ -54,5 +55,9 @@ interface FoodApi {
     suspend fun getFoodSimilar(
         @Query("name") name: String,
     ): BaseResponse<List<FoodSimilarResponse>>
+
+    @GET("foods/custom/recent")
+    suspend fun getRecentFoods(
+    ): BaseResponse<List<RecentFoodResponse>>
 
 }

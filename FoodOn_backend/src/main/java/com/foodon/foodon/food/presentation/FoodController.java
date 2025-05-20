@@ -25,12 +25,12 @@ public class FoodController {
 
     @PostMapping("/custom")
     @Operation(summary = "음식 등록하기")
-    public ResponseEntity<Response<Void>> saveCustomFood(
+    public ResponseEntity<Response<CustomFoodCreateResponse>> saveCustomFood(
             @Valid @RequestBody CustomFoodCreateRequest request,
             @Parameter(hidden = true) @AuthMember Member member
     ){
-        foodService.saveCustomFood(request, member);
-        return ResponseUtil.created();
+        CustomFoodCreateResponse response = foodService.saveCustomFood(request, member);
+        return ResponseUtil.created(response);
     }
 
     @PostMapping("/custom/modified")

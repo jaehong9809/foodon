@@ -1,6 +1,8 @@
 package com.swallaby.foodon.presentation.foodsearch.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,13 +30,14 @@ import com.swallaby.foodon.core.ui.theme.Typography
 import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.domain.food.model.Food
+import com.swallaby.foodon.domain.food.model.UnitType
 
 
 @Composable
 fun SearchResultList(
     searchResults: LazyPagingItems<Food>,
     onClick: (Food) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier
@@ -43,9 +47,7 @@ fun SearchResultList(
         items(count = searchResults.itemCount) { index ->
             searchResults[index]?.let { item ->
                 SearchResultItem(
-                    foodItem = item,
-                    onClick = { onClick(item) },
-                    modifier = Modifier.animateItem()
+                    foodItem = item, onClick = { onClick(item) }, modifier = Modifier.animateItem()
                 )
             }
         }
@@ -57,22 +59,25 @@ fun SearchResultList(
 fun SearchResultItem(
     foodItem: Food,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
             .padding(vertical = 16.dp)
     ) {
         Text(
-            text = foodItem.name,
-            style = Typography.titleLarge,
-            color = G900
+            text = foodItem.name, style = Typography.titleLarge, color = G900
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "${foodItem.servingUnit} • ${foodItem.kcal}kcal",
+            text = "1${UnitType.valueOf(foodItem.servingUnit).value} • ${foodItem.kcal}kcal",
             style = Typography.titleMedium,
             color = G700
         )
@@ -84,12 +89,9 @@ fun SearchResultItem(
     }
 
     HorizontalDivider(
-        color = Border02,
-        thickness = 1.dp,
-        modifier = Modifier.fillMaxWidth()
+        color = Border02, thickness = 1.dp, modifier = Modifier.fillMaxWidth()
     )
 }
-
 
 
 // TODO: MainBox 컴포저블로 추후 변경
@@ -100,15 +102,14 @@ fun RegisterBox(
     textColor: Color,
     textStyle: TextStyle = NotoTypography.NotoMedium13,
     horizontalPadding: Dp = 8.dp,
-    height: Dp = 24.dp
+    height: Dp = 24.dp,
 ) {
     Box(
         modifier = Modifier
             .wrapContentWidth()
             .height(height)
             .background(color = bgColor, shape = RoundedCornerShape(4.dp))
-            .padding(horizontal = horizontalPadding),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = horizontalPadding), contentAlignment = Alignment.Center
     ) {
         Text(
             text = content,

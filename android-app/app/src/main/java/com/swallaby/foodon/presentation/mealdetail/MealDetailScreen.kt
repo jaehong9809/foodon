@@ -2,7 +2,6 @@ package com.swallaby.foodon.presentation.mealdetail
 
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -84,6 +83,7 @@ fun MealDetailScreen(
     onBackClick: () -> Unit,
     onFoodClick: (foodId: Long) -> Unit,
     onNavigateMain: () -> Unit = {},
+    onNavigateSearch: () -> Unit = {},
 ) {
 
 
@@ -126,10 +126,6 @@ fun MealDetailScreen(
     val topAppbarHeightPx = with(density) { 52.dp.toPx() }
 
     val isCollapse = remember(scrollState.value) {
-        Log.d(
-            "MealDetailScreen",
-            "remainScroll.value: ${scrollState.value - (screenWidthPx - topAppbarHeightPx)}, toolbarHeight = ${topAppbarHeightPx}"
-        )
         if (scrollState.value < screenWidthPx - topAppbarHeightPx) 0f
         else ((scrollState.value - (screenWidthPx - topAppbarHeightPx)) / topAppbarHeightPx).coerceIn(
             0f, 1f
@@ -199,7 +195,8 @@ fun MealDetailScreen(
                         foods = mealInfo.mealItems,
                         imageUri = mealInfo.imageUri,
                         onDelete = viewModel::deleteFood,
-                        enabledDeleteButton = enabledUpdate
+                        onAdd = onNavigateSearch,
+                        enabledDeleteButton = enabledUpdate,
                     )
 
 //                    Spacer(modifier = modifier.height(200.dp))
@@ -386,10 +383,6 @@ fun MealImageWithFoodLabels(
 
         // 이미지 로드 완료 후 음식 이름 버튼 표시
         if (isImageLoaded) {
-            Log.d(
-                "MealDetailScreen",
-                "Original image size: ${originalImageSize.width}x${originalImageSize.height}"
-            )
             DisplayFoodLabels(mealItems, originalImageSize, onFoodClick)
         } else {
             // 로딩 표시

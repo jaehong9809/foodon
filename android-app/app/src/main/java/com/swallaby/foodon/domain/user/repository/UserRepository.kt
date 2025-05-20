@@ -7,4 +7,5 @@ import com.swallaby.foodon.domain.user.model.User
 interface UserRepository {
     suspend fun getUserProfile(): User
     suspend fun updateUserProfile(request: UpdateProfileRequest): ApiResult<Unit>
+    suspend fun updateUserLastLogin(): ApiResult<Unit>
 }

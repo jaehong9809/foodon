@@ -1,10 +1,13 @@
 package com.swallaby.foodon.presentation.navigation
 
+import android.util.Log
 import androidx.compose.animation.ExitTransition
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.swallaby.foodon.core.result.ResultState
+import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.presentation.foodedit.FoodEditScreen
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.foodregister.FoodRegisterScreen
@@ -33,8 +37,7 @@ fun NavGraphBuilder.mealGraph(
         composable(
             NavRoutes.FoodGraph.FoodRecord.route,
             popExitTransition = { ExitTransition.None },
-            exitTransition = { ExitTransition.None }
-        ) {
+            exitTransition = { ExitTransition.None }) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
             MealRecordScreen(
                 recordViewModel = recordViewModel,
@@ -43,7 +46,11 @@ fun NavGraphBuilder.mealGraph(
                     navController.popBackStack()
                 },
                 onSearchClick = {
-                    navController.navigate(NavRoutes.FoodGraph.FoodSearch.route)
+                    navController.navigate(
+                        NavRoutes.FoodGraph.FoodSearch.createRoute(
+                            null, null
+                        )
+                    )
                 },
                 onNavigateToMealDetail = {
                     recordViewModel.resetMealRecordState()
@@ -72,6 +79,13 @@ fun NavGraphBuilder.mealGraph(
                 },
                 onNavigateMain = {
                     navController.popBackStack(NavRoutes.Main.route, inclusive = false)
+                },
+                onNavigateSearch = {
+                    navController.navigate(
+                        NavRoutes.FoodGraph.FoodSearch.createRoute(
+                            mealId, null
+                        )
+                    )
                 })
         }
 
@@ -94,6 +108,8 @@ fun NavGraphBuilder.mealGraph(
                 initFood(mealInfo, foodId)
             }
 
+            val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
+
             FoodEditScreen(
                 mealId = mealId,
                 viewModel = foodEditViewModel,
@@ -113,17 +129,18 @@ fun NavGraphBuilder.mealGraph(
                     val updateMealInfo =
                         (foodEditViewModel.uiState.value.foodEditState as ResultState.Success).data
                     mealEditViewModel.updateMealItems(updateMealInfo.mealItems)
-
-//                    val food =
-//                        updateMealInfo.mealItems.find { item -> item.foodId == foodEditViewModel.uiState.value.selectedFoodId }
-//
-//                    food?.let { it ->
-//                        mealEditViewModel.updateFood(it.copy(type = FoodType.CUSTOM_MODIFIED))
-//                    }
                     navController.popBackStack()
                 },
                 onSearchClick = {
-                    navController.navigate(NavRoutes.FoodGraph.FoodSearch.route)
+                    Log.d(
+                        "FoodEditScreen",
+                        "onSearchClick mealId = ${mealId}, foodId = $foodId, selectedFoodId = ${foodEditUiState.selectedFoodId}"
+                    )
+                    navController.navigate(
+                        NavRoutes.FoodGraph.FoodSearch.createRoute(
+                            mealId, foodId
+                        )
+                    )
                 })
         }
 
@@ -146,8 +163,7 @@ fun NavGraphBuilder.mealGraph(
                 )
             }
             val foodEditViewModel: FoodEditViewModel = hiltViewModel(backStackEntry)
-            val foodEditUiState
-                    by foodEditViewModel.uiState.collectAsStateWithLifecycle()
+            val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
             NutritionEditScreen(
                 viewModel = foodEditViewModel,
                 foodId = foodEditUiState.selectedFoodId,
@@ -164,18 +180,128 @@ fun NavGraphBuilder.mealGraph(
 
         composable(
             NavRoutes.FoodGraph.FoodRegister.route,
+            arguments = listOf(navArgument(NavRoutes.FoodGraph.FoodRegister.MEAL_ID) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            }, navArgument(NavRoutes.FoodGraph.FoodRegister.FOOD_ID) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
         ) {
             val registerViewModel = hiltViewModel<FoodRegisterViewModel>()
+            val mealId =
+                it.arguments?.getString(NavRoutes.FoodGraph.FoodRegister.MEAL_ID)?.toLongOrNull()
+                    ?: 0
+            val foodId =
+                it.arguments?.getString(NavRoutes.FoodGraph.FoodRegister.FOOD_ID)?.toLongOrNull()
+            val backStackEntry = getFoodEditBackstackEntry(mealId, foodId, navController)
+            val foodEditViewModel = backStackEntry?.let { backStack ->
+                hiltViewModel<FoodEditViewModel>(backStack)
+            }
+            Log.d("FoodRegisterScreen", "foodEditViewModel = $foodEditViewModel")
+            Log.d("FoodRegisterScreen", "mealId = $mealId, foodId = $foodId")
+
             FoodRegisterScreen(
-                onBackClick = {
-                    navController.popBackStack()
+                onBackClick = { navController.popBackStack() },
+                onNavigateToSearch = { food -> // DB로 찾은 음식
+                    // 음식을 수정 할 경우
+                    foodEditViewModel?.let { viewModel ->
+                        // 검색한 음식 영양소 조회 및 기존 음식과 교체하기 and 관련 검색어 조회
+                        viewModel.fetchFood(food.foodId, FoodType.CUSTOM)
+                        viewModel.fetchFoodSimilar(food.foodName)
+                        Log.d(
+                            "FoodRegisterScreen",
+                            "food = $food, foodId = $foodId, mealId = $mealId"
+                        )
+                        foodId?.let {
+                            navController.navigate(
+                                NavRoutes.FoodGraph.FoodEdit.createRoute(
+                                    mealId = mealId, foodId = foodId
+                                )
+                            ) {
+                                popUpTo(
+                                    NavRoutes.FoodGraph.FoodSearch.createRoute(
+                                        mealId = mealId, foodId = foodId
+                                    )
+                                ) { inclusive = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    } ?: run {
+                        // 찾는 음식이 없어 새로 등록 할 경우
+                        Log.d("FoodRegisterScreen", "register food")
+                        mealEditViewModel.addFood(food.foodId, FoodType.CUSTOM)
+                        navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
+                            popUpTo(NavRoutes.FoodGraph.MealDetail.createRoute(0L))
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+
+
                 },
                 viewModel = registerViewModel,
             )
         }
 
-        composable(NavRoutes.FoodGraph.FoodSearch.route) {
-            FoodSearchScreen(navController = navController)
+        composable(
+            route = NavRoutes.FoodGraph.FoodSearch.route,
+            arguments = listOf(navArgument(NavRoutes.FoodGraph.FoodSearch.MEAL_ID) {
+                // LongType 으로 하면 primitive long 으로 돼서 null 값을 넘길 수 없음.
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            }, navArgument(NavRoutes.FoodGraph.FoodSearch.FOOD_ID) {
+                // LongType 으로 하면 primitive long 으로 돼서 null 값을 넘길 수 없음.
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) { navBackStackEntry ->
+            val foodId =
+                navBackStackEntry.arguments?.getString(NavRoutes.FoodGraph.FoodSearch.FOOD_ID)
+                    ?.toLongOrNull()
+            val mealId =
+                navBackStackEntry.arguments?.getString(NavRoutes.FoodGraph.FoodSearch.MEAL_ID)
+                    ?.toLongOrNull() ?: 0L
+
+
+            val backStackEntry = getFoodEditBackstackEntry(mealId, foodId, navController)
+            Log.d("FoodSearchScreen", "backStackEntry = $backStackEntry")
+
+            val foodEditViewModel = backStackEntry?.let {
+                hiltViewModel<FoodEditViewModel>(it)
+            }
+
+            FoodSearchScreen(
+                navController = navController,
+                foodId = foodId,
+                mealEditViewModel = mealEditViewModel,
+                foodEditViewModel = foodEditViewModel,
+            )
         }
     }
+}
+
+@Composable
+private fun getFoodEditBackstackEntry(
+    mealId: Long, foodId: Long?, navController: NavHostController
+): NavBackStackEntry? {
+    val backStackEntry = if (mealId != null && foodId != null) {
+        Log.d("FoodSearchScreen", "mealId: $mealId, foodId: $foodId")
+        remember(navController.currentBackStackEntry) {
+            navController.getBackStackEntry(
+                NavRoutes.FoodGraph.FoodEdit.createRoute(
+                    mealId = mealId,
+                    foodId = foodId,
+                )
+            )
+        }
+    } else {
+        null
+    }
+    return backStackEntry
 }

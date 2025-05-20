@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -76,9 +75,6 @@ fun PercentageBar(
                 if (ratio > 0.5f) ratio else 0f
             }
 
-            Log.d(
-                "PercentageBar", "boxWidth = $boxWidth textWidthWithPadding: $textWidthWithPadding"
-            )
             if (boxWidth > textWidthWithPadding) {
                 Text(
                     text = percentageText,

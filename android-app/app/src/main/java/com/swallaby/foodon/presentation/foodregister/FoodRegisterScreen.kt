@@ -1,6 +1,5 @@
 package com.swallaby.foodon.presentation.foodregister
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,6 +62,7 @@ import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
 import com.swallaby.foodon.core.util.IntegerVisualTransformation
 import com.swallaby.foodon.core.util.NumberFormatPattern
 import com.swallaby.foodon.domain.food.model.FoodInfo
+import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientInfo
 import com.swallaby.foodon.domain.food.model.NutrientType
@@ -80,6 +80,7 @@ import kotlin.math.min
 fun FoodRegisterScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    onNavigateToSearch: (food: FoodInfoWithId) -> Unit,
     viewModel: FoodRegisterViewModel = hiltViewModel(),
 ) {
     val scrollState = rememberScrollState()
@@ -89,7 +90,7 @@ fun FoodRegisterScreen(
         viewModel.events.collect { event ->
             when (event) {
                 is FoodRegisterEvent.NavigateToSearch -> {
-                    onBackClick()
+                    onNavigateToSearch(event.food)
                 }
 
                 is FoodRegisterEvent.ShowErrorMessage -> {
@@ -461,6 +462,6 @@ fun UnitTypeBottomSheet(
 @Composable
 fun FoodRegisterScreenPreview() {
     FoodonTheme {
-        FoodRegisterScreen(onBackClick = {})
+        FoodRegisterScreen(onNavigateToSearch = {}, onBackClick = {})
     }
 }

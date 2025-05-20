@@ -4,9 +4,13 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.VerticalSlideAnimatedComponent
 import com.swallaby.foodon.core.ui.theme.G900
+import com.swallaby.foodon.core.ui.theme.WB500
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.util.ImageCropManager
 import com.swallaby.foodon.domain.food.model.MealItem
@@ -34,6 +40,7 @@ fun FoodInfoComponent(
     foods: List<MealItem> = emptyList(),
     onClick: (foodId: Long) -> Unit,
     onDelete: (foodId: Long) -> Unit,
+    onAdd: () -> Unit,
     enabledDeleteButton: Boolean = true,
 ) {
     val cropManager = ImageCropManager(LocalContext.current)
@@ -47,8 +54,7 @@ fun FoodInfoComponent(
     LaunchedEffect(Unit) {
         // 이미지 로드 및 크롭
         cropManager.loadAndCropImage(
-            imageUri.toString(),
-            positions
+            imageUri.toString(), positions
         ) {
             isLoad = true
         }
@@ -79,6 +85,30 @@ fun FoodInfoComponent(
                     }
                 }
             }
+
+
+            if (enabledDeleteButton) {
+                Button(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    onClick = onAdd,
+                    colors = ButtonColors(
+                        containerColor = WB500,
+                        contentColor = Color.White,
+                        disabledContainerColor = WB500.copy(alpha = 0.5f),
+                        disabledContentColor = G900.copy(alpha = 0.5f),
+                    )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("음식 추가하기", style = NotoTypography.NotoMedium16)
+                    }
+                }
+
+            }
         }
     }
 
@@ -89,5 +119,5 @@ fun FoodInfoComponent(
 @Preview
 @Composable
 fun FoodInfoComponentPreview() {
-    FoodInfoComponent(onClick = {}, onDelete = {}, imageUri = null)
+    FoodInfoComponent(onClick = {}, onDelete = {}, imageUri = null, onAdd = {})
 }

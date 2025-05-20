@@ -7,6 +7,7 @@ import com.swallaby.foodon.core.result.safeApiCall
 import com.swallaby.foodon.data.food.remote.api.FoodApi
 import com.swallaby.foodon.data.food.remote.dto.request.CustomFoodRequest
 import com.swallaby.foodon.data.food.remote.dto.request.RecordMealRequest
+import com.swallaby.foodon.data.food.remote.dto.response.RecentFoodResponse
 import com.swallaby.foodon.data.food.remote.dto.response.toDomain
 import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.FoodSimilar
@@ -29,8 +30,8 @@ class FoodRemoteRepositoryImpl @Inject constructor(
             foodApi.postFoodHistory(request).getOrThrowNull { }
         }
 
-    override suspend fun postCustomFood(request: CustomFoodRequest): ApiResult<Unit> = safeApiCall {
-        foodApi.postCustomFood(request).getOrThrowNull { }
+    override suspend fun postCustomFood(request: CustomFoodRequest): ApiResult<FoodInfoWithId> = safeApiCall {
+        foodApi.postCustomFood(request).getOrThrow { it.toDomain() }
     }
 
     override suspend fun postCustomFoodUpdate(request: CustomFoodRequest): ApiResult<FoodInfoWithId> =
@@ -50,8 +51,11 @@ class FoodRemoteRepositoryImpl @Inject constructor(
 
     override suspend fun getFood(foodId: Long, type: FoodType): ApiResult<FoodInfoWithId> =
         safeApiCall {
-            foodApi.getFood(foodId, type)
-                .getOrThrow { it.toDomain() }
+            foodApi.getFood(foodId, type).getOrThrow { it.toDomain() }
         }
 
+    override suspend fun getRecentFoods(): ApiResult<List<RecentFoodResponse>> =
+        safeApiCall {
+            foodApi.getRecentFoods().getOrThrow { it }
+        }
 }

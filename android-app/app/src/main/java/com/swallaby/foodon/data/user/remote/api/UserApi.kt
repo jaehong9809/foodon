@@ -15,4 +15,7 @@ interface UserApi {
     suspend fun updateUserProfile(
         @Body request: UpdateProfileRequest
     ): BaseResponse<Unit>
+
+    @POST("members/last-login")
+    suspend fun updateUserLastLogin(): BaseResponse<Unit>
 }

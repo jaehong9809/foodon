@@ -10,6 +10,21 @@ data class FoodInfoWithId(
     val nutrientInfo: NutrientInfo = NutrientInfo(),
 )
 
+fun FoodInfoWithId.toMealItem() = MealItem(
+    type = type,
+    foodId = foodId,
+    foodName = foodName,
+    unit = unit,
+    quantity = 1,
+    nutrientInfo = nutrientInfo,
+    positions = listOf(
+        Position(
+            height = 1.0,
+            width = 1.0,
+        )
+    )
+)
+
 data class FoodInfo(
     val foodName: String = "",
     val nutrients: NutrientInfo = NutrientInfo(),
