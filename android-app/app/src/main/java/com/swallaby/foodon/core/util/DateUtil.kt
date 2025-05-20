@@ -16,7 +16,7 @@ object DateUtil {
             // 오늘 날짜 기준으로 마지막 날짜 계산
             val lastDayOfMonth = currentYearMonth.atEndOfMonth()
 
-            val weekFields = WeekFields.of(DayOfWeek.MONDAY, 1)
+            val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
             val lastWeek = lastDayOfMonth.get(weekFields.weekOfMonth())
 
             // 현재 달이면 오늘 기준 주차만 반환, 다음 달이면 0 반환
@@ -28,6 +28,15 @@ object DateUtil {
                 0
             }
         }
+    }
+
+    fun getTotalWeekCount(currentYearMonth: YearMonth): Int {
+        val lastDayOfMonth = currentYearMonth.atEndOfMonth()
+
+        val weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1)
+        val lastWeek = lastDayOfMonth.get(weekFields.weekOfMonth())
+
+        return lastWeek
     }
 
     fun formatDate(localDate: LocalDate): String {

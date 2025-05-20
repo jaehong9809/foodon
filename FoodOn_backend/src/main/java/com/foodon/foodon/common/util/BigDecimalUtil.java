@@ -25,6 +25,13 @@ public class BigDecimalUtil {
         return safe(a).divide(b, DEFAULT_SCALE, RoundingMode.HALF_UP);
     }
 
+    public static BigDecimal divide(BigDecimal a, int scale, BigDecimal b) {
+        if (b == null || b.compareTo(BigDecimal.ZERO) == 0) {
+            throw new ArithmeticException("0으로 나눌 수 없습니다.");
+        }
+        return safe(a).divide(b, scale, RoundingMode.HALF_UP);
+    }
+
     public static BigDecimal add(BigDecimal a, BigDecimal b) {
         return safe(a).add(safe(b));
     }

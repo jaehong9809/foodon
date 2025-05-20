@@ -12,6 +12,7 @@ public record FoodDetailInfoResponse(
         FoodType type,
         Long foodId,
         String foodName,
+        BigDecimal servingSize,
         Unit unit,
         NutrientProfile nutrientInfo
 ) {
@@ -23,6 +24,7 @@ public record FoodDetailInfoResponse(
                 foodWithNutrientInfo.type(),
                 foodWithNutrientInfo.foodId(),
                 foodWithNutrientInfo.foodName(),
+                foodWithNutrientInfo.servingSize(),
                 foodWithNutrientInfo.unit(),
                 NutrientProfile.from(nutrientMap)
         );

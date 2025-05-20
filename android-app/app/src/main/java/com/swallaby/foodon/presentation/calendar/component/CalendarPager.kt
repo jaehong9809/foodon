@@ -10,10 +10,12 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
 import com.swallaby.foodon.presentation.calendar.model.CalendarStatus
 import org.threeten.bp.LocalDate
+import kotlin.math.abs
 
 @Composable
 fun CalendarPager(
@@ -24,10 +26,21 @@ fun CalendarPager(
 ) {
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-    ) {
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) { page ->
+        val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+
         Box(
             modifier = Modifier
+                .graphicsLayer {
+                    val clampedOffset = abs(pageOffset).coerceAtMost(1f)
+                    val scale = 1f - (0.03f * clampedOffset)
+                    scaleX = scale
+                    scaleY = scale
+                    alpha = 1f - (0.05f * clampedOffset)
+                }
                 .fillMaxSize()
                 .padding(horizontal = 8.dp),
             contentAlignment = Alignment.TopStart
@@ -38,5 +51,18 @@ fun CalendarPager(
                 onDateSelected = onDateSelected
             )
         }
+
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(horizontal = 8.dp),
+//            contentAlignment = Alignment.TopStart
+//        ) {
+//            CalendarBody(
+//                calendarItemMap = calendarItemMap,
+//                calendarStatus = calendarStatus,
+//                onDateSelected = onDateSelected
+//            )
+//        }
     }
 }

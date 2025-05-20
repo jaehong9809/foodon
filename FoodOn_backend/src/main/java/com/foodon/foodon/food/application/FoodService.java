@@ -1,5 +1,6 @@
 package com.foodon.foodon.food.application;
 
+import com.foodon.foodon.common.util.NutrientCalculator;
 import com.foodon.foodon.food.domain.*;
 import com.foodon.foodon.food.dto.*;
 import com.foodon.foodon.food.exception.FoodException;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,9 +45,10 @@ public class FoodService {
         checkDuplicateCustomFood(request.foodName(), member);
         Food food = Food.createCustomFoodByMember(request, member);
         foodRepository.save(food);
-        registerFoodNutrients(request.nutrients(), food);
+        List<FoodNutrient> foodNutrients = registerFoodNutrients(request.nutrients(), food);
+        Map<NutrientCode, BigDecimal> nutrientMap = convertToPerServingMap(foodNutrients, food.getServingSize());
 
-        return CustomFoodCreateResponse.from(food, request.nutrients());
+        return CustomFoodCreateResponse.from(food, NutrientProfile.from(nutrientMap));
     }
 
     @Transactional
@@ -57,9 +60,10 @@ public class FoodService {
         checkDuplicateCustomFood(registerName, member);
         Food food = Food.createCustomFoodModifiedByMember(request, registerName, member);
         foodRepository.save(food);
-        registerFoodNutrients(request.nutrients(), food);
+        List<FoodNutrient> foodNutrients = registerFoodNutrients(request.nutrients(), food);
+        Map<NutrientCode, BigDecimal> nutrientMap = convertToPerServingMap(foodNutrients, food.getServingSize());
 
-        return CustomFoodCreateResponse.from(food, request.nutrients());
+        return CustomFoodCreateResponse.from(food, NutrientProfile.from(nutrientMap));
     }
 
     private String getRegisterNameWithOrigName(String foodName, LocalDateTime dateTime) {
@@ -75,23 +79,42 @@ public class FoodService {
         }
     }
 
-    private void registerFoodNutrients(
+    private List<FoodNutrient> registerFoodNutrients(
             NutrientProfile nutrients,
             Food food
     ) {
         Map<NutrientCode, Long> nutrientCodeIdMap = getNutrientCodeMap();
-        nutrients.toMap().forEach((code, value) -> {
-            if (value == null) {
-                return;
-            }
+        List<FoodNutrient> foodNutrients = nutrients.toMap().entrySet().stream()
+                .filter(e -> e.getValue() != null)
+                .map(e -> FoodNutrient.createFoodNutrient(
+                        food.getId(),
+                        nutrientCodeIdMap.get(e.getKey()),
+                        NutrientCalculator.calculateNutrientPer100g(food.getServingSize(), e.getValue())
+                ))
+                .collect(Collectors.toList());
 
-            FoodNutrient foodNutrient = FoodNutrient.createFoodNutrient(
-                    food.getId(),
-                    nutrientCodeIdMap.get(code),
-                    value
-            );
-            foodNutrientRepository.save(foodNutrient);
-        });
+        return foodNutrientRepository.saveAll(foodNutrients);
+    }
+
+    public Map<NutrientCode, BigDecimal> convertToPerServingMap(
+            List<FoodNutrient> foodNutrients,
+            BigDecimal servingSize
+    ) {
+        Map<Long, NutrientCode> nutrientIdCodeMap = getNutrientIdToCodeMap();
+        return foodNutrients.stream()
+                .filter(n -> n.getValue() != null && nutrientIdCodeMap.containsKey(n.getNutrientId()))
+                .collect(Collectors.toMap(
+                        n -> nutrientIdCodeMap.get(n.getNutrientId()),
+                        n -> NutrientCalculator.calculateNutrientPerServing(servingSize, n.getValue())
+                ));
+    }
+
+    private Map<Long, NutrientCode> getNutrientIdToCodeMap() {
+        return nutrientRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        Nutrient::getId,
+                        Nutrient::getCode
+                ));
     }
 
     private Map<NutrientCode, Long> getNutrientCodeMap() {
@@ -117,8 +140,7 @@ public class FoodService {
         return foodInfo.nutrients().stream()
                 .collect(Collectors.toMap(
                         NutrientInfo::code,
-                        NutrientInfo::value
-                        // 1회 제공량 함량으로 변환해서 주도록 수정하겠습니다. (변환 로직이 다른 PR 에 존재)
+                        nutrientInfo -> NutrientCalculator.calculateNutrientPerServing(foodInfo.servingSize(), nutrientInfo.value())
                 ));
     }
 
