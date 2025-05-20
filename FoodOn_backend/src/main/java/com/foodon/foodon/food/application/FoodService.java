@@ -140,8 +140,7 @@ public class FoodService {
         return foodInfo.nutrients().stream()
                 .collect(Collectors.toMap(
                         NutrientInfo::code,
-                        NutrientInfo::value
-                        // 1회 제공량 함량으로 변환해서 주도록 수정하겠습니다. (변환 로직이 다른 PR 에 존재)
+                        nutrientInfo -> NutrientCalculator.calculateNutrientPerServing(foodInfo.servingSize(), nutrientInfo.value())
                 ));
     }
 
