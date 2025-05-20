@@ -3,6 +3,7 @@ package com.swallaby.foodon.presentation.navigation
 import android.util.Log
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,6 +23,7 @@ import com.swallaby.foodon.presentation.foodregister.FoodRegisterScreen
 import com.swallaby.foodon.presentation.foodregister.viewmodel.FoodRegisterViewModel
 import com.swallaby.foodon.presentation.foodsearch.FoodSearchScreen
 import com.swallaby.foodon.presentation.mealdetail.MealDetailScreen
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditEvent
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.mealrecord.MealRecordScreen
 import com.swallaby.foodon.presentation.mealrecord.viewmodel.MealRecordViewModel
@@ -221,6 +223,32 @@ fun NavGraphBuilder.mealGraph(
             Log.d(
                 "FoodRegisterScreen", "mealId = $mealId, foodId = $foodId fromRecord = $fromRecord"
             )
+            LaunchedEffect(Unit) {
+                mealEditViewModel.events.collect { event ->
+                    when (event) {
+                        is MealEditEvent.NavigateTo -> {
+                            if (fromRecord) {
+                                navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
+                                    popUpTo(
+                                        NavRoutes.FoodGraph.FoodSearch.createRoute(
+                                            0L, null, true
+                                        )
+                                    ) {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            } else navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
+                                popUpTo(NavRoutes.FoodGraph.MealDetail.createRoute(0L))
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                        else -> {}
+                    }
+                }
+            }
 
             FoodRegisterScreen(
                 onBackClick = { navController.popBackStack() },
@@ -255,23 +283,7 @@ fun NavGraphBuilder.mealGraph(
                         mealEditViewModel.addFood(
                             food.foodId, FoodType.CUSTOM, fromRecord = fromRecord
                         )
-                        if (fromRecord) {
-                            navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
-                                popUpTo(
-                                    NavRoutes.FoodGraph.FoodSearch.createRoute(
-                                        0L, null, true
-                                    )
-                                ) {
-                                    inclusive = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        } else navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
-                            popUpTo(NavRoutes.FoodGraph.MealDetail.createRoute(0L))
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+
                     }
 
 

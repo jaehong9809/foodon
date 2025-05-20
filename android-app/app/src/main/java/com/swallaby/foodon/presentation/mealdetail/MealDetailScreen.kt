@@ -112,6 +112,7 @@ fun MealDetailScreen(
                 is MealEditEvent.ShowErrorMessage -> {
                     Toast.makeText(context, event.errorMessageRes, Toast.LENGTH_SHORT).show()
                 }
+                else -> {}
             }
         }
     }

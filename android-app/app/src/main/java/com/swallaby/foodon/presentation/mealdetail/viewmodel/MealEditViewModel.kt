@@ -149,7 +149,7 @@ class MealEditViewModel @Inject constructor(
     }
 
     fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC, fromRecord: Boolean = false) {
-        Log.d(TAG, "Adding food: $foodId, fromRecord = $fromRecord")
+        Log.d("ImageCropManager", "Adding food: $foodId, fromRecord = $fromRecord")
 
         viewModelScope.launch {
             when (val result = fetchFoodUseCase(foodId, type).toResultState()) {
@@ -175,12 +175,14 @@ class MealEditViewModel @Inject constructor(
                         else mealInfo.imageUri,
                         imageFileName = if (fromRecord) "" else mealInfo.imageFileName
                     )
+                    Log.d("MealEditViewModel", "updatedMealInfo imageUri = ${updatedMealInfo.imageUri}")
 
                     _uiState.update {
                         it.copy(
                             mealEditState = ResultState.Success(updatedMealInfo)
                         )
                     }
+                    _events.emit(MealEditEvent.NavigateTo)
                 }
 
                 is ResultState.Error -> {
