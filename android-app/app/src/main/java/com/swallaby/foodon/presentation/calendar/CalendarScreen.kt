@@ -35,6 +35,7 @@ import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
 import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
@@ -125,6 +126,13 @@ fun CalendarScreen(
         viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged, isInit = isTabChanged)
     }
 
+    LaunchedEffect(selectedDate) {
+        if (calendarType == CalendarType.RECOMMENDATION) {
+            val week = getWeekOfMonth(selectedDate)
+            viewModel.updateRecommendation(currentYearMonth, week)
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
             MonthlyTabBar(
@@ -185,7 +193,7 @@ fun CalendarScreen(
                 calendarStatus = calendarStatus,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1, changeDate = true)
                 },
                 onUpdateWeight = onUpdateWeight
             )
