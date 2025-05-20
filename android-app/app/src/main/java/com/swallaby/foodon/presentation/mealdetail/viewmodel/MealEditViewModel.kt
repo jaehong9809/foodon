@@ -145,8 +145,9 @@ class MealEditViewModel @Inject constructor(
     }
 
     fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC) {
+        // todo 음식 기록일 경우 식단 시간, 이미지 업데이트 필요
         Log.d(TAG, "Adding food: $foodId")
-
+        
         viewModelScope.launch {
             when (val result = fetchFoodUseCase(foodId, type).toResultState()) {
                 is ResultState.Success -> {

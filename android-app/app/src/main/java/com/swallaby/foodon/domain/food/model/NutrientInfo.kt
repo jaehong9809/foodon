@@ -2,20 +2,20 @@ package com.swallaby.foodon.domain.food.model
 
 // 기본 영양소 정보 클래스 (기존 제공된 클래스)
 data class NutrientInfo(
-    val alcohol: Double = 0.0,
-    val carbs: Double = 0.0,
-    val cholesterol: Double = 0.0,
-    val fat: Double = 0.0,
-    val fattyAcid: Double = 0.0,
-    val fiber: Double = 0.0,
+    val alcohol: Double = 0.00,
+    val carbs: Double = 0.00,
+    val cholesterol: Double = 0.00,
+    val fat: Double = 0.00,
+    val fattyAcid: Double = 0.00,
+    val fiber: Double = 0.00,
     val kcal: Int = 0,
-    val potassium: Double = 0.0,
-    val protein: Double = 0.0,
-    val saturatedFat: Double = 0.0,
-    val sodium: Double = 0.0,
-    val sugar: Double = 0.0,
-    val transFat: Double = 0.0,
-    val unsaturatedFat: Double = 0.0,
+    val potassium: Double = 0.00,
+    val protein: Double = 0.00,
+    val saturatedFat: Double = 0.00,
+    val sodium: Double = 0.00,
+    val sugar: Double = 0.00,
+    val transFat: Double = 0.00,
+    val unsaturatedFat: Double = 0.00,
 )
 
 // 영양소 항목을 표현하는 클래스

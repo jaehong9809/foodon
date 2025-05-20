@@ -175,7 +175,7 @@ fun FoodEditScreen(
                 modifier = modifier.padding(
                     horizontal = 24.dp
                 ),
-                onDeleteClick = { onFoodDeleteClick(food.foodId) },
+                onDeleteClick = { onFoodDeleteClick(food.originalFoodId) },
                 onUpdateClick = onFoodUpdateClick,
             )
         }

@@ -84,6 +84,7 @@ class FoodEditViewModel @Inject constructor(
 //                            selectedFoodId = food.foodId,
                             foodEditState = ResultState.Success(mealInfo.copy(mealItems = mealInfo.mealItems.map { item ->
                                 if (item.foodId == tempFoodId) {
+                                    Log.d("FoodEditViewModel", "food = $food")
                                     item.copy(
                                         foodId = food.foodId,
                                         foodName = food.foodName,
@@ -115,7 +116,7 @@ class FoodEditViewModel @Inject constructor(
             val request = CustomFoodRequest(
                 foodName = mealItem.foodName,
                 nutrients = mealItem.nutrientInfo,
-                servingSize = mealItem.quantity,
+                servingSize = mealItem.servingSize.toInt(),
                 unit = mealItem.unit
             )
 

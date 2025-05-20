@@ -1,5 +1,6 @@
 package com.swallaby.foodon.presentation.foodregister
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,13 +60,10 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.core.util.IntegerVisualTransformation
-import com.swallaby.foodon.core.util.NumberFormatPattern
 import com.swallaby.foodon.domain.food.model.FoodInfo
 import com.swallaby.foodon.domain.food.model.FoodInfoWithId
 import com.swallaby.foodon.domain.food.model.NutrientConverter
 import com.swallaby.foodon.domain.food.model.NutrientInfo
-import com.swallaby.foodon.domain.food.model.NutrientType
 import com.swallaby.foodon.domain.food.model.UnitType
 import com.swallaby.foodon.presentation.foodedit.component.UnitTypeChip
 import com.swallaby.foodon.presentation.foodregister.viewmodel.FoodRegisterEvent
@@ -158,10 +156,9 @@ fun FoodRegisterScreen(
                             style = NotoTypography.NotoBold18.copy(color = G900)
                         )
                         Spacer(modifier = modifier.height(8.dp))
-                        OutLineTextField(
-                            modifier = modifier
-                                .height(48.dp)
-                                .fillMaxWidth(),
+                        OutLineTextField(modifier = modifier
+                            .height(48.dp)
+                            .fillMaxWidth(),
                             value = foodName,
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Next
@@ -194,15 +191,13 @@ fun FoodRegisterScreen(
                         )
                         Spacer(modifier = modifier.height(12.dp))
                         Row(modifier = modifier.fillMaxWidth()) {
-                            OutLineTextField(
-                                modifier = modifier
-                                    .height(48.dp)
-                                    .weight(1f),
+                            OutLineTextField(modifier = modifier
+                                .height(48.dp)
+                                .weight(1f),
                                 value = if (servingSize == null) "" else servingSize.toString(),
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                                 ),
-                                visualTransformation = IntegerVisualTransformation(maxValue = 999999),
                                 onValueChange = { newValue ->
                                     // 숫자만 필터링
                                     val filterValue =
@@ -257,13 +252,13 @@ fun FoodRegisterScreen(
                     NutrientField(
                         modifier = modifier,
                         value = item.value.toString(),
-                        formatPattern = if (item.nutrientType == NutrientType.KCAL) NumberFormatPattern.INT_THOUSAND_COMMA else NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
                         onValueChange = { newValue ->
-                            val filtered =
-                                newValue.filter { it.isDigit() || it == '.' }.toBigDecimalOrNull()
-                                    ?.toDouble() ?: 0.0
-                            val updatedValue = min(filtered, 999999.99)
+                            Log.d(
+                                "FoodRegisterScreen",
+                                "Type = ${item.nutrientType} newValue = $newValue"
+                            )
 
+                            val updatedValue = newValue.toDoubleOrNull() ?: 0.0
                             // 업데이트된 아이템 생성
                             val updatedItem = item.copy(value = updatedValue)
                             // 리스트에서 해당 아이템 교체
@@ -282,9 +277,11 @@ fun FoodRegisterScreen(
                             modifier = modifier,
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
-                                val filtered = newValue.filter { it.isDigit() || it == '.' }
-                                    .toBigDecimalOrNull()?.toDouble() ?: 0.0
-                                val updatedValue = min(filtered, 999999.99)
+                                Log.d(
+                                    "FoodRegisterScreen",
+                                    "Type = ${item.nutrientType} newValue = $newValue"
+                                )
+                                val updatedValue = newValue.toDoubleOrNull() ?: 0.0
 
                                 // 업데이트된 자식 아이템 생성
                                 val updatedChildItem = childItem.copy(value = updatedValue)
@@ -442,8 +439,7 @@ fun UnitTypeBottomSheet(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     unitTypes.forEach { unitType ->
-                        UnitTypeChip(
-                            unit = unitType.value,
+                        UnitTypeChip(unit = unitType.value,
                             isSelected = unitType == selectedUnitType,
                             onClick = {
                                 selectedUnitType = unitType

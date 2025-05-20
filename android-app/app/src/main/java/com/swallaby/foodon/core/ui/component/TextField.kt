@@ -38,9 +38,6 @@ import com.swallaby.foodon.core.ui.theme.G500
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.OutlinedTextFieldStyle
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.core.util.DoubleVisualTransformation
-import com.swallaby.foodon.core.util.IntegerVisualTransformation
-import com.swallaby.foodon.core.util.NumberFormatPattern
 
 
 @Composable
@@ -49,7 +46,6 @@ fun NutritionTextField(
     value: String,
     onValueChange: (String) -> Unit,
     unit: String = "g",
-    formatPattern: NumberFormatPattern = NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
     isLastField: Boolean = true,
 ) {
     // 숫자 키보드 설정
@@ -57,14 +53,6 @@ fun NutritionTextField(
         keyboardType = KeyboardType.Decimal,
         imeAction = if (isLastField) ImeAction.Done else ImeAction.Next
     )
-
-    // VisualTransformation 생성
-    val numberFormatTransformation = remember(formatPattern) {
-        if (formatPattern == NumberFormatPattern.DOUBLE_THOUSAND_COMMA) DoubleVisualTransformation(
-            maxValue = 999999.99
-        )
-        else IntegerVisualTransformation(maxValue = 999999)
-    }
 
     OutLineTextField(
         value = value,
@@ -74,7 +62,6 @@ fun NutritionTextField(
         onValueChange = onValueChange,
         keyboardOptions = numberKeyboardOptions,
         keyboardActions = KeyboardActions(),
-        visualTransformation = numberFormatTransformation,
         placeholder = {
             Text(
                 modifier = modifier.fillMaxWidth(),

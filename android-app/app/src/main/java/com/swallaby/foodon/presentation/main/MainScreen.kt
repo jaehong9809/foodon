@@ -1,10 +1,6 @@
 package com.swallaby.foodon.presentation.main
 
 
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -43,11 +39,9 @@ import com.swallaby.foodon.presentation.main.component.MealRecordContent
 import com.swallaby.foodon.presentation.main.model.CalendarInfo
 import com.swallaby.foodon.presentation.main.viewmodel.MainViewModel
 import com.swallaby.foodon.presentation.navigation.NavRoutes
-import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
-import kotlin.math.min
 
 @Composable
 fun MainScreen(
@@ -55,7 +49,7 @@ fun MainScreen(
     onMonthlyClick: () -> Unit = {},
     onRecordClick: () -> Unit = {},
     onMealClick: (Long) -> Unit = {},
-    onClickNavigate: (NavRoutes) -> Unit = {}
+    onClickNavigate: (NavRoutes) -> Unit = {},
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

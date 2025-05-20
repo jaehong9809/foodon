@@ -34,13 +34,11 @@ fun NavGraphBuilder.mealGraph(
     navigation(
         startDestination = NavRoutes.FoodGraph.FoodRecord.route, route = NavRoutes.FoodGraph.route
     ) {
-        composable(
-            NavRoutes.FoodGraph.FoodRecord.route,
+        composable(NavRoutes.FoodGraph.FoodRecord.route,
             popExitTransition = { ExitTransition.None },
             exitTransition = { ExitTransition.None }) {
             val recordViewModel = hiltViewModel<MealRecordViewModel>()
-            MealRecordScreen(
-                recordViewModel = recordViewModel,
+            MealRecordScreen(recordViewModel = recordViewModel,
                 editViewModel = mealEditViewModel,
                 onBackClick = {
                     navController.popBackStack()
@@ -66,8 +64,7 @@ fun NavGraphBuilder.mealGraph(
         ) {
             val mealId = it.arguments?.getLong("mealId") ?: 0L
 
-            MealDetailScreen(
-                mealId = mealId,
+            MealDetailScreen(mealId = mealId,
                 viewModel = mealEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onFoodClick = { foodId ->
@@ -110,8 +107,7 @@ fun NavGraphBuilder.mealGraph(
 
             val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
 
-            FoodEditScreen(
-                mealId = mealId,
+            FoodEditScreen(mealId = mealId,
                 viewModel = foodEditViewModel,
                 onBackClick = { navController.popBackStack() },
                 onNutritionEditClick = {
@@ -128,7 +124,17 @@ fun NavGraphBuilder.mealGraph(
                 onFoodUpdateClick = {
                     val updateMealInfo =
                         (foodEditViewModel.uiState.value.foodEditState as ResultState.Success).data
-                    mealEditViewModel.updateMealItems(updateMealInfo.mealItems)
+                    val selectedFoodId = foodEditViewModel.uiState.value.selectedFoodId
+                    // 선택한 foodId 를 originalFoodId로 변경
+                    val updatedItems = updateMealInfo.mealItems.map { food ->
+                        if (food.foodId == selectedFoodId) {
+                            food.copy(
+                                originalFoodId = selectedFoodId
+                            )
+                        } else food
+                    }
+
+                    mealEditViewModel.updateMealItems(updatedItems)
                     navController.popBackStack()
                 },
                 onSearchClick = {
@@ -164,8 +170,7 @@ fun NavGraphBuilder.mealGraph(
             }
             val foodEditViewModel: FoodEditViewModel = hiltViewModel(backStackEntry)
             val foodEditUiState by foodEditViewModel.uiState.collectAsStateWithLifecycle()
-            NutritionEditScreen(
-                viewModel = foodEditViewModel,
+            NutritionEditScreen(viewModel = foodEditViewModel,
                 foodId = foodEditUiState.selectedFoodId,
                 onBackClick = {
                     navController.popBackStack()
@@ -212,8 +217,7 @@ fun NavGraphBuilder.mealGraph(
                         viewModel.fetchFood(food.foodId, FoodType.CUSTOM)
                         viewModel.fetchFoodSimilar(food.foodName)
                         Log.d(
-                            "FoodRegisterScreen",
-                            "food = $food, foodId = $foodId, mealId = $mealId"
+                            "FoodRegisterScreen", "food = $food, foodId = $foodId, mealId = $mealId"
                         )
                         foodId?.let {
                             navController.navigate(
@@ -232,6 +236,7 @@ fun NavGraphBuilder.mealGraph(
                         }
                     } ?: run {
                         // 찾는 음식이 없어 새로 등록 할 경우
+                        // todo 음식 기록일 경우 추가 - 상세 화면으로 라우팅
                         Log.d("FoodRegisterScreen", "register food")
                         mealEditViewModel.addFood(food.foodId, FoodType.CUSTOM)
                         navController.navigate(NavRoutes.FoodGraph.MealDetail.createRoute(0L)) {
@@ -288,7 +293,7 @@ fun NavGraphBuilder.mealGraph(
 
 @Composable
 private fun getFoodEditBackstackEntry(
-    mealId: Long, foodId: Long?, navController: NavHostController
+    mealId: Long, foodId: Long?, navController: NavHostController,
 ): NavBackStackEntry? {
     val backStackEntry = if (mealId != null && foodId != null) {
         Log.d("FoodSearchScreen", "mealId: $mealId, foodId: $foodId")
