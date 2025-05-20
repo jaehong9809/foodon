@@ -1,5 +1,7 @@
 package com.swallaby.foodon.presentation.calendar
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +35,7 @@ import com.swallaby.foodon.core.ui.component.MonthlyTabBar
 import com.swallaby.foodon.core.ui.theme.Border025
 import com.swallaby.foodon.core.ui.theme.G700
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
+import com.swallaby.foodon.core.util.DateUtil.getWeekOfMonth
 import com.swallaby.foodon.core.util.DateUtil.rememberWeekCount
 import com.swallaby.foodon.core.util.toCalendarItemMap
 import com.swallaby.foodon.domain.calendar.model.CalendarItem
@@ -88,8 +91,10 @@ fun CalendarScreen(
     val calendarResult by sharedState.calendarResult.collectAsStateWithLifecycle()
     val calendarItems = (calendarResult as? ResultState.Success)?.data.orEmpty()
 
-    val calendarItemMap by remember(calendarItems) {
-        derivedStateOf { calendarItems.toCalendarItemMap() }
+    val calendarItemMap by remember(currentYearMonth, calendarItems) {
+        derivedStateOf {
+            calendarItems.toCalendarItemMap()
+        }
     }
 
     val selectedMeal by remember(calendarItemMap, selectedDate) {
@@ -107,8 +112,10 @@ fun CalendarScreen(
             val delta = pagerState.currentPage - 1
             val newMonth = currentYearMonth.plusMonths(delta.toLong())
 
-            sharedState.updateMonth(newMonth)
-            pagerState.scrollToPage(1)
+            if (newMonth != currentYearMonth) {
+                sharedState.updateMonth(newMonth)
+                pagerState.scrollToPage(1)
+            }
         }
     }
 
@@ -117,6 +124,13 @@ fun CalendarScreen(
         previousTabIndex = selectedTabIndex
 
         viewModel.updateCalendarData(calendarType, isTabChanged = isTabChanged, isInit = isTabChanged)
+    }
+
+    LaunchedEffect(selectedDate) {
+        if (calendarType == CalendarType.RECOMMENDATION) {
+            val week = getWeekOfMonth(selectedDate)
+            viewModel.updateRecommendation(currentYearMonth, week)
+        }
     }
 
     Scaffold(
@@ -138,8 +152,22 @@ fun CalendarScreen(
         ) {
             CalendarHeader(
                 currentYearMonth = currentYearMonth,
-                onPreviousMonth = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
-                onNextMonth = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } }
+                onPreviousMonth = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage - 1,
+                            animationSpec = spring(stiffness = Spring.StiffnessLow)
+                        )
+                    }
+                },
+                onNextMonth = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage + 1,
+                            animationSpec = spring(stiffness = Spring.StiffnessLow)
+                        )
+                    }
+                }
             )
 
             WeeklyLabel()
@@ -151,11 +179,10 @@ fun CalendarScreen(
                 onDateSelected = sharedState::updateDate
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            UnitContent(calendarType)
-
-            Spacer(modifier = Modifier.height(16.dp))
+            if (calendarType != CalendarType.RECOMMENDATION) {
+                UnitContent(calendarType)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             HorizontalDivider(color = Border025, thickness = 1.dp)
 
@@ -166,7 +193,7 @@ fun CalendarScreen(
                 calendarStatus = calendarStatus,
                 onTabChanged = viewModel::selectTab,
                 onWeeklyTabChanged = { weekIndex ->
-                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1)
+                    viewModel.updateRecommendation(currentYearMonth, weekIndex + 1, changeDate = true)
                 },
                 onUpdateWeight = onUpdateWeight
             )

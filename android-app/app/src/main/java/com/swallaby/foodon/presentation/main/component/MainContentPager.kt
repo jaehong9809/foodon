@@ -48,11 +48,16 @@ fun MainContentPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp) // 고정 길이 사용
+                .height(350.dp),
+            verticalAlignment = Alignment.Top
         ) { page ->
             val scrollState = rememberScrollState()
 
-            Box(modifier = Modifier.verticalScroll(scrollState)) {
+            Box(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .height(350.dp)
+            ) {
                 when (page) {
                     0 -> NutrientIntakeContent(intakeResult, calendarInfo)
                     1 -> NutrientManageContent(nutrientManageResult)

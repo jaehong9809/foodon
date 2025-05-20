@@ -51,34 +51,6 @@ class CalendarViewModel @Inject constructor(
         updateState { it.copy(inputWeight = weight) }
     }
 
-    fun updateUserWeight(
-        weight: Int,
-        onSuccess: () -> Unit,
-        onError: (Int) -> Unit
-    ) {
-        viewModelScope.launch {
-            when (val result = updateUserWeightUseCase(weight)) {
-                is ApiResult.Success -> {
-                    calendarSharedState.refreshForGoal()
-
-                    updateState {
-                        val previous = (it.weightResult as? ResultState.Success)?.data
-                        val updated = UserWeight(
-                            currentWeight = weight,
-                            goalWeight = previous?.goalWeight ?: 0
-                        )
-                        it.copy(weightResult = ResultState.Success(updated))
-                    }
-
-                    updateCalendarData(CalendarType.WEIGHT, isInit = true)
-
-                    onSuccess()
-                }
-                is ApiResult.Failure -> onError(result.error.messageRes)
-            }
-        }
-    }
-
     fun updateCalendarData(
         calendarType: CalendarType,
         isTabChanged: Boolean = false,
@@ -128,13 +100,17 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun updateRecommendation(yearMonth: YearMonth, week: Int) {
+    fun updateRecommendation(yearMonth: YearMonth, week: Int, changeDate: Boolean = false) {
         selectWeek(week - 1)
 
         fetchRecommendFoods(
             yearMonth = yearMonth,
             week = week
         )
+
+        if (changeDate) {
+            updateSelectedDate(yearMonth, week - 1)
+        }
     }
 
     private fun fetchRecommendFoods(yearMonth: YearMonth, week: Int) {
@@ -143,6 +119,52 @@ class CalendarViewModel @Inject constructor(
                 calendarSharedState.updateRecommendFoods(ResultState.Loading)
                 val result = getRecommendFoodUseCase(yearMonth, week)
                 calendarSharedState.updateRecommendFoods(result.toResultState())
+            }
+        }
+    }
+
+    private fun updateSelectedDate(yearMonth: YearMonth, weekIndex: Int) {
+        val today = LocalDate.now()
+        val firstDayOfMonth = yearMonth.atDay(1)
+        val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
+
+        val startOffset = weekIndex * 7 - firstDayOfWeek
+        val startDate = yearMonth.atDay(1).plusDays(startOffset.toLong())
+        val endDate = startDate.plusDays(6)
+
+        val newSelectedDate = when {
+            today in startDate..endDate -> today
+            startDate.month == yearMonth.month -> startDate
+            else -> yearMonth.atDay(1)
+        }
+
+        calendarSharedState.updateDate(newSelectedDate)
+    }
+
+    fun updateUserWeight(
+        weight: Int,
+        onSuccess: () -> Unit,
+        onError: (Int) -> Unit
+    ) {
+        viewModelScope.launch {
+            when (val result = updateUserWeightUseCase(weight)) {
+                is ApiResult.Success -> {
+                    calendarSharedState.refreshForGoal()
+
+                    updateState {
+                        val previous = (it.weightResult as? ResultState.Success)?.data
+                        val updated = UserWeight(
+                            currentWeight = weight,
+                            goalWeight = previous?.goalWeight ?: 0
+                        )
+                        it.copy(weightResult = ResultState.Success(updated))
+                    }
+
+                    updateCalendarData(CalendarType.WEIGHT, isInit = true)
+
+                    onSuccess()
+                }
+                is ApiResult.Failure -> onError(result.error.messageRes)
             }
         }
     }
@@ -156,7 +178,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    private fun selectWeek(index: Int) {
+    fun selectWeek(index: Int) {
         updateState { it.copy(selectedWeekIndex = index) }
     }
 
