@@ -59,4 +59,7 @@ interface FoodSearchDao {
 
     @Query("DELETE FROM foods_fts")
     suspend fun clearAllFts()
+
+    @Query("SELECT MAX(foodId) FROM foods")
+    suspend fun getLastFoodId(): Long?
 }
