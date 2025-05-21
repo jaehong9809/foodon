@@ -103,18 +103,19 @@ fun CalorieProgressBar(
             animatedNutrientRatios.forEach { nutrient ->
                 val segmentSweep = sweepAngle * nutrient.ratio
 
-                drawArc(
-                    color = nutrient.nutritionType.color,
-                    startAngle = currentAngle,
-                    sweepAngle = segmentSweep,
-                    useCenter = false,
-                    style = Stroke(width = stroke, cap = StrokeCap.Round),
-                    size = arcSize,
-                    topLeft = topLeft
-                )
-                currentAngle += segmentSweep
+                if (segmentSweep > 0f) {
+                    drawArc(
+                        color = nutrient.nutritionType.color,
+                        startAngle = currentAngle,
+                        sweepAngle = segmentSweep,
+                        useCenter = false,
+                        style = Stroke(width = stroke, cap = StrokeCap.Round),
+                        size = arcSize,
+                        topLeft = topLeft
+                    )
+                    currentAngle += segmentSweep
+                }
             }
-
 
         }
 
