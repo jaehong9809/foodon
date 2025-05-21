@@ -53,9 +53,10 @@ fun CalorieProgressBar(
     }
 
     LaunchedEffect(nutrients.map { it.nutritionType to it.ratio }) {
+        delay(100)
+
         nutrients.forEachIndexed { index, nutrient ->
             val anim = nutrientAnimations[nutrient.nutritionType] ?: return@forEachIndexed
-
             delay(index * 5L)
             anim.animateTo(
                 targetValue = nutrient.ratio,
@@ -101,19 +102,20 @@ fun CalorieProgressBar(
 
             animatedNutrientRatios.forEach { nutrient ->
                 val segmentSweep = sweepAngle * nutrient.ratio
-                if (segmentSweep > 0.5f) {
-                    drawArc(
-                        color = nutrient.nutritionType.color,
-                        startAngle = currentAngle,
-                        sweepAngle = segmentSweep,
-                        useCenter = false,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round),
-                        size = arcSize,
-                        topLeft = topLeft
-                    )
-                    currentAngle += segmentSweep
-                }
+
+                drawArc(
+                    color = nutrient.nutritionType.color,
+                    startAngle = currentAngle,
+                    sweepAngle = segmentSweep,
+                    useCenter = false,
+                    style = Stroke(width = stroke, cap = StrokeCap.Round),
+                    size = arcSize,
+                    topLeft = topLeft
+                )
+                currentAngle += segmentSweep
             }
+
+
         }
 
         BouncingAnimatedComponent {
