@@ -1,0 +1,14 @@
+mlflow
+torch
+torchvision
+scikit-learn
+pandas
+requests
+protobuf<5.0.0
+pymysql
+pillow
+python-dotenv
+pycocotools
+tqdm
+torchmetrics
+albumentations

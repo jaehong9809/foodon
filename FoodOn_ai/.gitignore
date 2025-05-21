@@ -1,0 +1,55 @@
+# Python 관련
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+**/research/
+**/.research/
+
+# 가상 환경
+**/food_env/
+**/.food_env/
+**/airflow_env/
+**/.airflow_env/
+
+**/venv/
+**/.venv/
+**/env/
+**/.aienv/
+**/*.env
+**/myenv/
+**/.myenv/
+**/*.myenv
+
+# FastAPI 및 로그
+**/logs/*
+**/*.log
+
+# 데이터베이스 관련
+**/*.db
+**/migrations/
+
+# Python 패키지 관련
+**/*.pip
+**/*.pyo
+**/*.pyd
+**/Pipfile
+**/Pipfile.lock
+
+# Docker 관련
+**/docker-compose.override.yml
+**/.dockerignore
+
+# IDE 및 편집기
+**/.vscode/
+**/.idea/
+**/*.code-workspace
+
+# 캐시 및 빌드
+**/build/
+**/dist/
+**/*.egg-info/
+**/.pytest_cache/
+
+# CI/CD
+**/.github/
