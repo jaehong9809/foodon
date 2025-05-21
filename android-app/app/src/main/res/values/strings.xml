@@ -1,0 +1,128 @@
+<resources>
+    <string name="app_name">foodOn</string>
+
+    <!-- Error & Exception -->
+    <string name="error_network">네트워크 연결을 확인해주세요.</string>
+    <string name="error_timeout">연결 요청 시간이 초과되었습니다.</string>
+    <string name="error_unauthorized">로그인이 필요합니다.</string>
+    <string name="error_unknown">알 수 없는 오류가 발생했습니다.</string>
+
+    <!-- Format -->
+    <string name="format_kcal">%skcal</string>
+    <string name="format_kg">%dkg</string>
+    <string name="format_nutrition_kg">%skg</string>
+    <string name="format_nutrition_g">%sg</string>
+    <string name="format_nutrition_mg">%smg</string>
+    <string name="format_calendar_date">%d년 %d월</string>
+    <string name="format_hour">%s시</string>
+    <string name="format_min">%s분</string>
+    <string name="format_cm">%dcm</string>
+
+    <!-- button -->
+    <string name="btn_next">다음</string>
+    <string name="btn_confirm">확인</string>
+    <string name="btn_complete">완료</string>
+    <string name="btn_input">입력하기</string>
+    <string name="btn_update">수정 완료</string>
+    <string name="btn_delete">삭제</string>
+    <string name="btn_record">기록하기</string>
+    <string name="btn_record_complete">기록 완료</string>
+
+    <!-- top bar -->
+    <string name="top_bar_nutrient_detail">영양소 전체보기</string>
+    <string name="top_bar_food_info_update">음식 정보 수정</string>
+    <string name="top_bar_nutrient_input">영양 성분 직접 입력</string>
+    <string name="top_bar_food_search">음식 찾기</string>
+    <string name="top_bar_input">직접 입력</string>
+
+    <!-- monthly -->
+    <string name="tab_rice">식사</string>
+    <string name="tab_weight">체중</string>
+    <string name="tab_recommend">추천</string>
+    <string name="tab_weekly">%d주차</string>
+    <string name="tab_content_title_meal">하루 목표 섭취량</string>
+    <string name="tab_content_title_meal_intake">섭취 칼로리</string>
+    <string name="tab_content_title_goal_weight">목표 체중</string>
+    <string name="tab_content_title_cur_weight">현재 체중</string>
+    <string name="tab_content_title_recommend">이 주의 추천 음식</string>
+    <string name="current_weight_input">현재 체중을 입력해 주세요</string>
+
+    <string name="tab_meal_bottom">단위 : kcal</string>
+    <string name="tab_weight_bottom">체중 변화(kg)</string>
+
+    <!-- food -->
+    <string name="select_gallery">앨범 선택</string>
+    <string name="food_search">음식 검색</string>
+    <string name="total_intake">전체 섭취량</string>
+    <string name="food_info_check">음식 정보를 확인해 보세요!</string>
+    <string name="food_amount">음식양</string>
+    <string name="nutritional_ingredients">영양 성분</string>
+    <string name="format_g">%dg</string>
+    <string name="over_size_image">이미지가 너무 큽니다.</string>
+    <string name="food_name">음식명</string>
+    <string name="food_quantity">내용량</string>
+    <string name="food_name_placeholder">음식 이름을 입력해 주세요</string>
+
+    <!-- image-->
+    <string name="invalid_image_resolution">이미지 해상도가 유효하지 않습니다.</string>
+    <string name="invalid_image_aspect_ratio">이미지 비율이 유효하지 않습니다.</string>
+    <string name="invalid_image_size">10MB 초과한 이미지 파일은 업로드가 불가능합니다.</string>
+
+    <!-- main -->
+    <string name="main_today">오늘</string>
+    <string name="main_meal_record_today_title">오늘 식사 기록</string>
+    <string name="main_meal_record_date_title">%s 식사 기록</string>
+    <string name="main_meal_record_empty">기록된 식단이 없습니다.</string>
+    <string name="main_nutrient_intake_today_title">오늘 섭취량</string>
+    <string name="main_nutrient_intake_date_title">%s 섭취량</string>
+    <string name="main_meal_intake_empty">기록된 식단이 없습니다.</string>
+    <string name="main_nutrient_manage_title">관리 영양소</string>
+    <string name="main_nutrient_manage_empty">섭취한 영양소가 없습니다.</string>
+    <string name="main_recommend_food_empty">추천 음식이 없습니다.</string>
+    <string name="main_nutrient_manage_detail_title">자세히보기</string>
+    <string name="main_nutrient_manage_good_title">몸에 꼭 필요한 영양소</string>
+    <string name="main_nutrient_manage_bad_title">몸에 부담을 줄 수 있는 영양소</string>
+    <string name="main_kcal_unit">kcal</string>
+    <string name="main_pager_kcal_unit">/%skcal</string>
+    <string name="main_pager_good_nutrient_range">%s - %s%s</string>
+    <string name="main_pager_bad_nutrient_range">%s%s 이하</string>
+    <string name="main_food_recommend_title">이번 주, 이 음식 어때요?</string>
+    <string name="main_food_recommend_content">지난주 식단 기록을 분석해 추천해드렸어요</string>
+    <string name="main_goal_manage_title">목표 관리</string>
+    <string name="main_profile_manage_title">신체 정보</string>
+    <string name="main_goal_manage_type">관리 유형</string>
+    <string name="main_goal_manage_calorie">목표 칼로리</string>
+    <string name="main_goal_manage_nutrient">목표 탄단지</string>
+    <string name="main_goal_manage_height">키</string>
+    <string name="main_goal_manage_cur_weight">현재 체중</string>
+    <string name="main_goal_manage_goal_weight">목표 체중</string>
+
+    <!-- food search -->
+    <string name="enter_food_name">음식명을 입력해 주세요</string>
+    <string name="search_food">음식 찾기</string>
+    <string name="recent_register_food">최근 등록한 음식</string>
+    <string name="no_food_found">찾으시는 음식이 없나요?</string>
+
+    <!-- Login -->
+    <string name="kakao_login">카카오톡으로 로그인</string>
+    <string name="error_invalid_token">토큰이 유효하지 않습니다</string>
+
+    <!-- Sign Up -->
+    <string name="gender_male_kr">남성</string>
+    <string name="gender_female_kr">여성</string>
+    <string name="gender_male_eng">MALE</string>
+    <string name="gender_female_eng">FEMALE</string>
+    <string name="gender_choice">성별을 선택해 주세요</string>
+    <string name="management_type_choice">관리 유형을 선택해 주세요</string>
+    <string name="management_type_description">선택한 유형이 목표 식단과 영양 비율에 반영돼요.</string>
+    <string name="activity_level_choice">활동량을 선택해 주세요</string>
+    <string name="body_info_input">현재 키와 체중을 입력해 주세요</string>
+    <string name="goal_weight_input">목표 체중을 입력해 주세요</string>
+    <string name="height">키</string>
+    <string name="weight">체중</string>
+    <string name="maintain_weight">현재 체중 유지</string>
+    <string name="loss_weight">체중 감량</string>
+    <string name="gain_weight">체중 증량</string>
+
+
+</resources>
