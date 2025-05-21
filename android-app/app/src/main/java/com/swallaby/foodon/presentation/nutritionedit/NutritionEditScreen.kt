@@ -37,14 +37,12 @@ import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.bottomBorder
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
 import com.swallaby.foodon.core.ui.theme.font.SpoqaTypography
-import com.swallaby.foodon.core.util.NumberFormatPattern
+import com.swallaby.foodon.core.util.StringUtil.formatNutrition
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.domain.food.model.NutrientConverter
-import com.swallaby.foodon.domain.food.model.NutrientType
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditEvent
 import com.swallaby.foodon.presentation.foodedit.viewmodel.FoodEditViewModel
 import com.swallaby.foodon.presentation.nutritionedit.component.NutrientField
-import kotlin.math.min
 
 @Composable
 fun NutritionEditScreen(
@@ -124,7 +122,10 @@ fun NutritionEditScreen(
                 ) {
                     Text(food.foodName, style = NotoTypography.NotoBold18.copy(color = G900))
                     Spacer(modifier = modifier.height(4.dp))
-                    Text("200g", style = SpoqaTypography.SpoqaMedium16.copy(color = G700))
+                    Text(
+                        formatNutrition(food.servingSize),
+                        style = SpoqaTypography.SpoqaMedium16.copy(color = G700)
+                    )
                 }
                 Box(
                     modifier = modifier
@@ -142,22 +143,14 @@ fun NutritionEditScreen(
                     NutrientField(
                         modifier = modifier,
                         value = item.value.toString(),
-                        formatPattern = if (item.nutrientType == NutrientType.KCAL) NumberFormatPattern.INT_THOUSAND_COMMA else NumberFormatPattern.DOUBLE_THOUSAND_COMMA,
                         onValueChange = { newValue ->
-                            Log.d("FoodEditScreen", "onValueChange newValue = $newValue")
-                            val filtered =
-                                newValue.filter { it.isDigit() || it == '.' }.toBigDecimalOrNull()
-                                    ?.toDouble() ?: 0.0
-                            val updatedValue = min(filtered, 999999.99)
-
-                            Log.d("FoodEditScreen", "updatedValue = $updatedValue")
+                            val updatedValue = newValue.toDoubleOrNull() ?: 0.0
                             // 업데이트된 아이템 생성
                             val updatedItem = item.copy(value = updatedValue)
                             // 리스트에서 해당 아이템 교체
                             val updatedNutritions = nutritions.toMutableList()
                             updatedNutritions[index] = updatedItem
                             nutritions = updatedNutritions
-                            Log.d("FoodEditScreen", "nutritions = $nutritions")
                         },
                         nutrient = item.name,
                         unit = item.unit,
@@ -170,12 +163,8 @@ fun NutritionEditScreen(
                             modifier = modifier,
                             value = childItem.value.toString(),
                             onValueChange = { newValue ->
-                                Log.d("FoodEditScreen", "onValueChange newValue = $newValue")
-                                val filtered = newValue.filter { it.isDigit() || it == '.' }
-                                    .toBigDecimalOrNull()?.toDouble() ?: 0.0
-                                val updatedValue = min(filtered, 999999.99)
+                                val updatedValue = newValue.toDoubleOrNull() ?: 0.0
 
-                                Log.d("FoodEditScreen", "updatedValue = $updatedValue")
                                 // 업데이트된 자식 아이템 생성
                                 val updatedChildItem = childItem.copy(value = updatedValue)
                                 // 부모 아이템의 자식 목록 업데이트
@@ -189,7 +178,6 @@ fun NutritionEditScreen(
                                 val updatedNutritions = nutritions.toMutableList()
                                 updatedNutritions[index] = updatedItem
                                 nutritions = updatedNutritions
-                                Log.d("FoodEditScreen", "nutritions = $nutritions")
                             },
                             nutrient = childItem.name,
                             unit = childItem.unit,
@@ -214,6 +202,7 @@ fun NutritionEditScreen(
                         foodName = food.foodName,
                         quantity = food.quantity,
                         unit = food.unit,
+                        servingSize = food.servingSize,
                         nutrientInfo = updatedNutrientInfo
                     )
                     onFoodUpdateClick(updateMealItem)

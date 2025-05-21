@@ -30,7 +30,6 @@ import com.swallaby.foodon.core.ui.component.OutLineTextField
 import com.swallaby.foodon.core.ui.theme.G750
 import com.swallaby.foodon.core.ui.theme.G900
 import com.swallaby.foodon.core.ui.theme.font.NotoTypography
-import com.swallaby.foodon.core.util.IntegerVisualTransformation
 import com.swallaby.foodon.domain.food.model.MealItem
 import com.swallaby.foodon.presentation.mealdetail.component.DropButton
 import kotlin.math.min
@@ -83,7 +82,6 @@ fun FoodAmountComponent(
                         keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                     ),
                     enabled = enabledUpdate,
-                    visualTransformation = IntegerVisualTransformation(maxValue = 999999),
                     onValueChange = { newValue ->
                         // 숫자만 필터링
                         val filterValue = newValue.filter { it.isDigit() }.toIntOrNull() ?: 0

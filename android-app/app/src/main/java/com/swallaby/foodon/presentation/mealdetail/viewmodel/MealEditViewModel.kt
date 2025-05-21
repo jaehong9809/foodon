@@ -1,10 +1,12 @@
 package com.swallaby.foodon.presentation.mealdetail.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.swallaby.foodon.core.presentation.BaseViewModel
 import com.swallaby.foodon.core.result.ResultState
 import com.swallaby.foodon.core.result.toResultState
+import com.swallaby.foodon.core.util.DateUtil
 import com.swallaby.foodon.domain.food.model.FoodType
 import com.swallaby.foodon.domain.food.model.MealInfo
 import com.swallaby.foodon.domain.food.model.MealItem
@@ -20,7 +22,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDateTime
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 @HiltViewModel
 class MealEditViewModel @Inject constructor(
@@ -144,8 +148,8 @@ class MealEditViewModel @Inject constructor(
 
     }
 
-    fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC) {
-        Log.d(TAG, "Adding food: $foodId")
+    fun addFood(foodId: Long, type: FoodType = FoodType.PUBLIC, fromRecord: Boolean = false) {
+        Log.d("ImageCropManager", "Adding food: $foodId, fromRecord = $fromRecord")
 
         viewModelScope.launch {
             when (val result = fetchFoodUseCase(foodId, type).toResultState()) {
@@ -153,7 +157,9 @@ class MealEditViewModel @Inject constructor(
                     val food = result.data.toMealItem()
                     val mealInfo = (_uiState.value.mealEditState as ResultState.Success).data
                     Log.d("MealEditViewModel", "mealInfo = ${mealInfo.mealItems.size}")
-                    val updatedItems = mealInfo.mealItems.toMutableList() + food
+                    val originFoodList = if (fromRecord) emptyList()
+                    else mealInfo.mealItems.toMutableList()
+                    val updatedItems = originFoodList + food
                     Log.d("MealEditViewModel", "updatedItems = ${updatedItems.size}")
 
                     val updatedMealInfo = mealInfo.copy(
@@ -161,9 +167,22 @@ class MealEditViewModel @Inject constructor(
                         totalCarbs = calculateTotalCarbs(updatedItems),
                         totalFat = calculateTotalFat(updatedItems),
                         totalKcal = calculateTotalKcal(updatedItems),
-                        totalProtein = calculateTotalProtein(updatedItems)
+                        totalProtein = calculateTotalProtein(updatedItems),
+                        mealTime = if (fromRecord) DateUtil.formatTimeToHHmm(LocalDateTime.now()) else mealInfo.mealTime,
+                        imageUri = if (fromRecord)
+                        // 기본 이미지
+                            "https://foodon-bucket.s3.ap-northeast-2.amazonaws.com/images/0b4b1c06-dbf3-4259-882f-5b10d03657aa_20250520215957771237.png".toUri()
+                        else mealInfo.imageUri,
+                        imageFileName = if (fromRecord) "" else mealInfo.imageFileName
                     )
-                    _uiState.update { it.copy(mealEditState = ResultState.Success(updatedMealInfo)) }
+                    Log.d("MealEditViewModel", "updatedMealInfo imageUri = ${updatedMealInfo.imageUri}")
+
+                    _uiState.update {
+                        it.copy(
+                            mealEditState = ResultState.Success(updatedMealInfo)
+                        )
+                    }
+                    _events.emit(MealEditEvent.NavigateTo)
                 }
 
                 is ResultState.Error -> {

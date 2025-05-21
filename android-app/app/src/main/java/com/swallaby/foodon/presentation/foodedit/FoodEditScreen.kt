@@ -109,13 +109,10 @@ fun FoodEditScreen(
 
     // food.nutrientInfo 대신 uiState 자체를 의존성으로 설정
     var nutrientInfo by remember(uiState) {
-        Log.d("Screen", "FoodEditScreen Update viewModel ${uiState}")
         mutableStateOf(NutrientConverter.convertToHierarchy(food.nutrientInfo))
     }
 
 
-//    Log.d("Screen", "FoodEditScreen ViewModel identity: ${System.identityHashCode(viewModel)}")
-    Log.d("Screen", "FoodEditScreen Food.nutrientInfo: ${food.nutrientInfo}")
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -175,7 +172,7 @@ fun FoodEditScreen(
                 modifier = modifier.padding(
                     horizontal = 24.dp
                 ),
-                onDeleteClick = { onFoodDeleteClick(food.foodId) },
+                onDeleteClick = { onFoodDeleteClick(food.originalFoodId) },
                 onUpdateClick = onFoodUpdateClick,
             )
         }

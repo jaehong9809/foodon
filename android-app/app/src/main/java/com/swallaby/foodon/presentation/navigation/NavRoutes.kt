@@ -38,28 +38,32 @@ sealed class NavRoutes(val route: String) {
 
         object FoodRecord : NavRoutes("food_record")
 
-        object FoodRegister : NavRoutes("food_register?foodId={foodId}&mealId={mealId}") {
+        object FoodRegister :
+            NavRoutes("food_register?foodId={foodId}&mealId={mealId}&fromRecord={fromRecord}") {
             const val FOOD_ID = "foodId"
             const val MEAL_ID = "mealId"
+            const val FROM_RECORD = "fromRecord"
 
-            fun createRoute(mealId: Long?, foodId: Long?): String {
+            fun createRoute(mealId: Long?, foodId: Long?, fromRecord: Boolean = false): String {
                 return if (mealId != null && foodId != null) {
                     "food_register?foodId=$foodId&mealId=$mealId"
                 } else {
-                    "food_register"
+                    "food_register?fromRecord=$fromRecord"
                 }
             }
         }
 
-        object FoodSearch : NavRoutes("food_search?foodId={foodId}&mealId={mealId}") {
+        object FoodSearch :
+            NavRoutes("food_search?foodId={foodId}&mealId={mealId}&fromRecord={fromRecord}") {
             const val FOOD_ID = "foodId"
             const val MEAL_ID = "mealId"
+            const val FROM_RECORD = "fromRecord"
 
-            fun createRoute(mealId: Long?, foodId: Long?): String {
+            fun createRoute(mealId: Long?, foodId: Long?, fromRecord: Boolean = false): String {
                 return if (mealId != null && foodId != null) {
                     "food_search?foodId=$foodId&mealId=$mealId"
                 } else {
-                    "food_search"
+                    "food_search?fromRecord=$fromRecord"
                 }
             }
         }

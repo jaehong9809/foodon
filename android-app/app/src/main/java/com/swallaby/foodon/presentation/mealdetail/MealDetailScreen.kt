@@ -112,6 +112,7 @@ fun MealDetailScreen(
                 is MealEditEvent.ShowErrorMessage -> {
                     Toast.makeText(context, event.errorMessageRes, Toast.LENGTH_SHORT).show()
                 }
+                else -> {}
             }
         }
     }
@@ -247,7 +248,6 @@ fun MealDetailScreen(
                 ModalBottomSheet(dragHandle = null, sheetState = sheetState, onDismissRequest = {
                     showBottomSheet = false
                 }) {
-                    // todo 이미지 파일
                     var selectedTime by remember { mutableStateOf("08:00") }
                     val times = mealInfo.mealTime.split(":")
 

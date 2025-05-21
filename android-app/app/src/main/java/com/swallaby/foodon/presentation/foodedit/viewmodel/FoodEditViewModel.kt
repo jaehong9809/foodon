@@ -78,16 +78,19 @@ class FoodEditViewModel @Inject constructor(
             when (val result = fetchFoodUseCase(foodId, type).toResultState()) {
                 is ResultState.Success -> {
                     val food = result.data
+                    Log.d("FoodEditViewModel", "Success fetchFood: $food")
                     val mealInfo = (_uiState.value.foodEditState as ResultState.Success).data
                     _uiState.update {
                         it.copy(
 //                            selectedFoodId = food.foodId,
                             foodEditState = ResultState.Success(mealInfo.copy(mealItems = mealInfo.mealItems.map { item ->
                                 if (item.foodId == tempFoodId) {
+                                    Log.d("FoodEditViewModel", "Fetch food Response = $food")
                                     item.copy(
                                         foodId = food.foodId,
                                         foodName = food.foodName,
                                         nutrientInfo = food.nutrientInfo,
+                                        servingSize = food.servingSize,
                                         unit = food.unit,
                                         type = food.type,
                                     )
@@ -115,7 +118,7 @@ class FoodEditViewModel @Inject constructor(
             val request = CustomFoodRequest(
                 foodName = mealItem.foodName,
                 nutrients = mealItem.nutrientInfo,
-                servingSize = mealItem.quantity,
+                servingSize = mealItem.servingSize.toInt(),
                 unit = mealItem.unit
             )
 

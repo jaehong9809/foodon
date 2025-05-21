@@ -1,6 +1,7 @@
 package com.swallaby.foodon.presentation.mealdetail.component
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ fun FoodInfoComponent(
 
     LaunchedEffect(Unit) {
         // 이미지 로드 및 크롭
+        Log.d("ImageCropManager", "imageUri: $imageUri")
         cropManager.loadAndCropImage(
             imageUri.toString(), positions
         ) {

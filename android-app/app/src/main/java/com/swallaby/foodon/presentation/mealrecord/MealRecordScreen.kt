@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -102,6 +103,7 @@ fun MealRecordScreen(
     val context = LocalContext.current
     val uiState by recordViewModel.uiState.collectAsStateWithLifecycle()
     val cropManager = ImageCropManager(context)
+
 
     // 이벤트 수집
     LaunchedEffect(Unit) {

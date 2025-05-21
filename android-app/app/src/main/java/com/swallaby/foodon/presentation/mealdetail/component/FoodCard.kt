@@ -139,7 +139,7 @@ fun FoodCard(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                food.unit.value,
+                                food.quantity.toString() + food.unit.value,
                                 style = SpoqaTypography.SpoqaMedium13.copy(color = G750)
                             )
                             Box(
@@ -177,23 +177,22 @@ fun FoodCard(
                 }
             }
             if (enabledDeleteButton) Box {
-                Box(
-                    modifier = modifier
-                        .padding(end = 2.dp)
-                        .size(32.dp)
-                        .clickable(interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = {
-                                if (!showDeletePopup) showDeletePopup = true
-                            })
-                        .onGloballyPositioned { coordinates ->
-                            // 아이콘 버튼의 위치와 크기를 저장
-                            iconPosition = IntOffset(
-                                coordinates.positionInWindow().x.roundToInt(),
-                                coordinates.positionInWindow().y.roundToInt()
-                            )
-                            iconSize = coordinates.size
-                        }, contentAlignment = Alignment.Center
+                Box(modifier = modifier
+                    .padding(end = 2.dp)
+                    .size(32.dp)
+                    .clickable(interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {
+                            if (!showDeletePopup) showDeletePopup = true
+                        })
+                    .onGloballyPositioned { coordinates ->
+                        // 아이콘 버튼의 위치와 크기를 저장
+                        iconPosition = IntOffset(
+                            coordinates.positionInWindow().x.roundToInt(),
+                            coordinates.positionInWindow().y.roundToInt()
+                        )
+                        iconSize = coordinates.size
+                    }, contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(R.drawable.icon_vertical_more),

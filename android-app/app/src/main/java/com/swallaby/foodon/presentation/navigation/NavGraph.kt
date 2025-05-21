@@ -23,7 +23,6 @@ fun NavGraph(
     modifier: Modifier = Modifier,
 ) {
     NavControllerProvider(navController = navController) {
-
         val mainViewModel: MainViewModel = hiltViewModel()
         val calendarViewModel: CalendarViewModel = hiltViewModel()
         val signUpViewModel: SignUpViewModel = hiltViewModel()

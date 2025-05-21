@@ -14,15 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.swallaby.foodon.R
 import com.swallaby.foodon.core.ui.component.CommonBackTopBar
 import com.swallaby.foodon.core.ui.theme.MainWhite
@@ -34,8 +34,12 @@ import com.swallaby.foodon.presentation.foodsearch.component.RecentFoodChips
 import com.swallaby.foodon.presentation.foodsearch.component.SearchBar
 import com.swallaby.foodon.presentation.foodsearch.component.SearchResultList
 import com.swallaby.foodon.presentation.foodsearch.viewmodel.FoodSearchViewModel
+import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditEvent
 import com.swallaby.foodon.presentation.mealdetail.viewmodel.MealEditViewModel
 import com.swallaby.foodon.presentation.navigation.NavRoutes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun FoodSearchScreen(
@@ -45,9 +49,11 @@ fun FoodSearchScreen(
     foodEditViewModel: FoodEditViewModel? = hiltViewModel(),
     mealEditViewModel: MealEditViewModel = hiltViewModel(),
     foodId: Long?,
+    fromRecord: Boolean,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(searchResults.itemCount) {
         val count = searchResults.itemCount
@@ -55,6 +61,34 @@ fun FoodSearchScreen(
 
         viewModel.updateBannerVisibility(shouldShowBanner)
         viewModel.updateBannerFoodName(uiState.query)
+    }
+
+    LaunchedEffect(Unit) {
+        mealEditViewModel.events.collect { event ->
+            when (event) {
+
+                is MealEditEvent.NavigateTo -> {
+                    if (fromRecord) navController.navigate(
+                        NavRoutes.FoodGraph.MealDetail.createRoute(
+                            0L
+                        ),
+                    ) {
+                        popUpTo(
+                            NavRoutes.FoodGraph.FoodSearch.createRoute(
+                                0L, null, fromRecord
+                            )
+                        ) {
+                            inclusive = true
+                        }
+                    }
+                    else navController.popBackStack()
+                }
+
+                else -> {
+                }
+            }
+
+        }
     }
 
     Scaffold { innerPadding ->
@@ -80,14 +114,25 @@ fun FoodSearchScreen(
                     Log.d("FoodSearchScreen", "food: $food")
                     // 음식 생성 후 메뉴에 추가
                     if (foodId == null) {
-                        mealEditViewModel.addFood(food.id)
-                        navController.popBackStack()
+                        //  음식 기록일 경우 추가 - 상세 화면으로 라우팅
+                        Log.d("FoodSearchScreen", "route: ${System.currentTimeMillis()}")
+                        mealEditViewModel.addFood(
+                            food.id,
+                            if (food.isCustom) FoodType.CUSTOM else FoodType.PUBLIC,
+                            fromRecord
+                        )
+                        Log.d("FoodSearchScreen", "route: ${System.currentTimeMillis()}")
+
+
+
                     } else {
                         Log.d(
                             "FoodSearchScreen", "searchFoodId = ${food.id}, selectedFoodId: $foodId"
                         )
                         // 검색한 음식을 기존 음식과 교체
-                        foodEditViewModel?.fetchFood(food.id, FoodType.PUBLIC)
+                        foodEditViewModel?.fetchFood(
+                            food.id, if (food.isCustom) FoodType.CUSTOM else FoodType.PUBLIC
+                        )
                         foodEditViewModel?.fetchFoodSimilar(food.name)
                         navController.popBackStack()
                     }
@@ -98,12 +143,10 @@ fun FoodSearchScreen(
                     Log.d("FoodSearchScreen", "onBannerRegisterClick called with foodId: $foodId")
                     navController.navigate(
                         NavRoutes.FoodGraph.FoodRegister.createRoute(
-                            foodId = foodId,
-                            mealId = 0L,
+                            foodId = foodId, mealId = 0L, fromRecord = fromRecord
                         )
                     )
-                }
-            )
+                })
         }
     }
 }
@@ -140,14 +183,11 @@ fun FoodSearchContent(
             )
 
             RecentFoodChips(
-                recentFoods = recentFoods,
-                onChipClick = onChipClick,
-                onChipRemove = onChipRemove
+                recentFoods = recentFoods, onChipClick = onChipClick, onChipRemove = onChipRemove
             )
 
             SearchResultList(
-                searchResults = searchResults,
-                onClick = onSearchResultClick
+                searchResults = searchResults, onClick = onSearchResultClick
             )
         }
 
