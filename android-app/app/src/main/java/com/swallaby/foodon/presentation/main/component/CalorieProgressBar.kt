@@ -53,10 +53,11 @@ fun CalorieProgressBar(
     }
 
     LaunchedEffect(nutrients.map { it.nutritionType to it.ratio }) {
+        delay(100)
+
         nutrients.forEachIndexed { index, nutrient ->
             val anim = nutrientAnimations[nutrient.nutritionType] ?: return@forEachIndexed
-
-            delay(index * 10L)
+            delay(index * 5L)
             anim.animateTo(
                 targetValue = nutrient.ratio,
                 animationSpec = tween(durationMillis = 500)
@@ -70,7 +71,7 @@ fun CalorieProgressBar(
 
     val animatedNutrientRatios = nutrients.map {
         val animatedRatio = nutrientAnimations[it.nutritionType]?.value ?: it.ratio
-        val normalized = it.ratio / totalRatio  // 여기도 it.ratio 사용
+        val normalized = it.ratio / totalRatio
         val adjusted = normalized * animatedKcalRatio * (animatedRatio / it.ratio)
         it.copy(ratio = adjusted)
     }
@@ -101,7 +102,8 @@ fun CalorieProgressBar(
 
             animatedNutrientRatios.forEach { nutrient ->
                 val segmentSweep = sweepAngle * nutrient.ratio
-                if (segmentSweep > 0.5f) {
+
+                if (segmentSweep > 0f) {
                     drawArc(
                         color = nutrient.nutritionType.color,
                         startAngle = currentAngle,
@@ -114,6 +116,7 @@ fun CalorieProgressBar(
                     currentAngle += segmentSweep
                 }
             }
+
         }
 
         BouncingAnimatedComponent {
