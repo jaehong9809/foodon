@@ -43,11 +43,13 @@ public class Member extends BaseTimeEntity {
     private Member (
             String nickname,
             String email,
-            String profileImgUrl
+            String profileImgUrl,
+            LocalDate birthday
     ){
         this.nickname = nickname;
         this.email = email;
         this.profileImage = profileImgUrl;
+        this.birthday = birthday;
     }
 
     public static Member createMember(
@@ -58,7 +60,8 @@ public class Member extends BaseTimeEntity {
         return new Member(
                 nickname,
                 email,
-                profileImgUrl
+                profileImgUrl,
+                LocalDate.now().minusYears(40)
         );
     }
 
